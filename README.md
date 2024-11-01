@@ -1,5 +1,14 @@
 # SemZip
 
+The rapid increase in log volume has put significant pressure on system storage and made compression increasingly important for service providers. General-purpose compressors are a straightforward choice but yield suboptimal results. They are not effective at leveraging the structure of logs. To address this limitation, researchers have proposed many parser-based log compressors based on log structure. However, these compressors are good at compressing repetitive elements but struggle to identify change patterns, i.e., arithmetic relationships among numerical variables, which can be used to further enhance compression performance.
+We observed that variables with the same change pattern generally share similar semantics. Furthermore, given the strong capabilities in understanding natural language, we can utilize Large Language Models (LLMs) to understand logs and extract semantics from them.
+Inspired by the key insight, we propose \textit{SemZip}, the first LLM-based log compressor by leveraging the semantics of log data. 
+\textit{SemZip} consists of two main modules, i.e., variable and log event processing modules. 
+The variable processing module utilizes task-level In-Context Learning (ICL) to guide LLMs to assign semantic tags for each variable. Then, different compression strategies are applied based on the change patterns. 
+To make \textit{SemZip} more efficient and practical, we design a caching mechanism to reduce the number of LLM queries and tokens of queries. 
+The log events are compressed using dictionary-IDs manner as existing log compressors. 
+Experiments on 16 public datasets show that \textit{SemZip} achieves an average compression ratio that is 6.7\% to 470.5\% higher than baselines. Additionally, \textit{SemZip}'s compression speed is both reasonable and practical, exceeding 10MB/s on large datasets.
+
 ##### Dataset
 
 Loghub: 
