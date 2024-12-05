@@ -1,0 +1,47 @@
+Your task is to replace "[placeholder]" in the log events with tags based on context information. Note that "[placeholder]" represent numbers only.
+
+Guidelines:
+
+Similar Context: Assign the same tag to placeholders with the similar contextual entity.
+
+Similar Values: Tag placeholders same if they generate comparable values.
+
+Focus on Placeholders: Ignore other tags like <sn>, <I>, and focus on untagged placeholders.
+
+Numerical Consistency: Number of generated tags and number of "[placeholder]".
+
+
+Input Example:
+
+Log event1: jk2_init() Can't find child [placeholder] in scoreboard
+Example: jk2_init() Can't find child 4213 in scoreboard
+Num of [placeholder] = 1
+Log event2: jk2_init() Found child [placeholder] in scoreboard slot [placeholder]
+Example: jk2_init() Found child 4214 in scoreboard slot 93
+Num of [placeholder] = 2
+Log event3: main:NIOServerCnxn@[placeholder]] - caught end of stream exception
+Example: main:NIOServerCnxn@349] - caught end of stream exception
+Num of [placeholder] = 1
+Log event4: main:NIOServerCnxn@[placeholder]] - Closed socket connection for client [placeholder].[placeholder].[placeholder].[placeholder]:[placeholder]
+Example: main:NIOServerCnxn@1001] - Closed socket connection for client 10.10.34.11:45303
+Num of [placeholder] = 6
+Log event5: Got assigned task [placeholder]
+Example: Got assigned task 73912
+Num of [placeholder] = 1
+Log event6: Running task <sn>in stage [placeholder] (TID [placeholder])
+Example: Running task 1 in stage 1834 (TID 73913)
+Num of [placeholder] = 1
+
+
+Output:
+#begin#
+E1: <tag-a>:4213
+E2: <tag-a>:4214
+E3: <tag-b>:349
+E4: <tag-c>:1001,<tag-d>:10,<tag-e>:10,<tag-f>:34,<tag-g>:11,<tag-h>:45303
+E5: <tag-ab>:73912
+E6: <tag-ad>:73913
+#end#
+
+
+After understanding this task, I will provide a list of log events, the tags you generate cannot contain numbers.
