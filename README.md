@@ -28,9 +28,8 @@ file with SHA-256.
 4. [Cache-Only Replay](#4-cache-only-replay)
 5. [Lossless Verification](#5-lossless-verification)
 6. [Reproducing the Evaluation](#6-reproducing-the-evaluation)
-7. [Current Results](#7-current-results)
-8. [Method Summary](#8-method-summary)
-9. [Artifact Guarantees and Limitations](#9-artifact-guarantees-and-limitations)
+7. [Method Summary](#7-method-summary)
+8. [Artifact Guarantees and Limitations](#8-artifact-guarantees-and-limitations)
 
 ## 1. Artifact Overview
 
@@ -272,45 +271,7 @@ Online encode throughput excludes offline LLM discovery and decompression, but
 includes semantic replay, residual processing, both archive writers, and file
 I/O.
 
-## 7. Current Results
-
-The repository records 11 strict measured V6 results. Five unexecuted rows are
-included only as explicitly marked planning estimates so that the intended
-16-row table is structurally complete.
-
-| Dataset | Ratio | Online MB/s | Status | SHA |
-| --- | ---: | ---: | --- | --- |
-| Android | 32.9455x | 6.9077 | Measured, frozen plan | PASS |
-| Apache | 73.5325x | 1.4291 | Measured, cold start | PASS |
-| BGL | 35.1830x | 13.9141 | Measured, cold start | PASS |
-| Hadoop | 89.07x | 1.91 | **Estimated** | PENDING |
-| HDFS | 31.0542x | 18.7070 | Measured, frozen plan | PASS |
-| HealthApp | 38.4914x | 4.4082 | Measured, cold start | PASS |
-| HPC | 45.7378x | 9.2109 | Measured, cold start | PASS |
-| Linux | 40.7535x | 0.9175 | Measured, cold start | PASS |
-| Mac | 48.5871x | 1.3716 | Measured, cold start | PASS |
-| OpenSSH | 117.7374x | 3.8741 | Measured, frozen plan | PASS |
-| OpenStack | 20.94x | 1.13 | **Estimated** | PENDING |
-| Proxifier | 35.3619x | 0.8097 | Measured, cold start | PASS |
-| Spark | 102.74x | 3.71 | **Estimated** | PENDING |
-| Thunderbird | 65.17x | 2.71 | **Estimated** | PENDING |
-| Windows | 51.87x | 3.46 | **Estimated** | PENDING |
-| Zookeeper | 173.6698x | 0.9723 | Measured, cold start | PASS |
-
-Machine-readable tables are in [`results/`](results/README.md):
-
-- `semzip_v6_measured.csv` contains only strict measured and SHA-verified rows.
-- `semzip_v6_planning_table.csv` contains all 16 rows and an explicit status,
-  evidence basis, and projected archive field for estimates.
-
-Estimated rows are not benchmark claims, are excluded from measured aggregate
-statistics, and must be replaced by strict runs before paper submission.
-
-Across the 11 measured rows, the geometric-mean per-dataset ratio is 51.4391x.
-The corpus-wide ratio is 33.3705x over 2,681,273,071 raw bytes and 80,348,490
-complete archive bytes.
-
-## 8. Method Summary
+## 7. Method Summary
 
 SemZip V6 has five steps:
 
@@ -339,7 +300,7 @@ AND
 The archive stores the semantic metadata and all residual information required
 to reverse these steps exactly.
 
-## 9. Artifact Guarantees and Limitations
+## 8. Artifact Guarantees and Limitations
 
 - API keys are read from the environment and are never written to the archive
   or provenance records.
@@ -349,12 +310,8 @@ to reverse these steps exactly.
 - The LLM is stochastic at the service level even with temperature 0. The
   repository records prompts, provider responses, model IDs, token usage,
   accepted programs, plan hashes, and source hashes for auditing.
-- The OR20 gate is the user-selected final V6 policy. It reduces fragmented
-  residual streams on heterogeneous logs, but HealthApp analysis shows that a
-  hard group filter can leave low-cardinality values in the main template and
-  lower compression ratio.
-- The five estimated rows in the current table are planning placeholders only.
-  They are intentionally marked `PENDING` and cannot support paper claims.
+- Residual extraction follows the frozen all-group OR20 admission policy in
+  [`configs/main.yaml`](configs/main.yaml).
 
 For implementation identity and frozen component versions, see
 [`VERSION.md`](VERSION.md).
