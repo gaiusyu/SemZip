@@ -274,8 +274,12 @@ def main() -> int:
     if result_root.exists() and any(result_root.iterdir()):
         raise RuntimeError(f"refusing to reuse nonempty result root: {result_root}")
     result_root.mkdir(parents=True, exist_ok=True)
-    if not os.environ.get("YUNWU_API_KEY"):
-        raise RuntimeError("YUNWU_API_KEY is required for cold-start discovery")
+    api_base = os.environ.get("PARE_LLM_API_BASE", "").strip()
+    api_key = os.environ.get("PARE_LLM_API_KEY", "").strip()
+    if not api_base:
+        raise RuntimeError("PARE_LLM_API_BASE is required for cold-start discovery")
+    if not api_key:
+        raise RuntimeError("PARE_LLM_API_KEY is required for cold-start discovery")
 
     workers = int(config["workers"])
     block_lines = int(config["block_lines"])
@@ -307,9 +311,10 @@ def main() -> int:
         "code_commit": code_commit,
         "source_hashes": source_hashes(root),
         "environment": {
+            "PARE_LLM_API_BASE": api_base,
             "PARE_LLM_MODEL": model,
+            "PARE_LLM_API_KEY": "<redacted-present>",
             "PYTHONHASHSEED": "0",
-            "YUNWU_API_KEY": "<redacted-present>",
         },
     }
     (result_root / "run_manifest.json").write_text(

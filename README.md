@@ -119,18 +119,19 @@ each file into 100,000-line blocks.
 
 ### 2.4 Configure the LLM API
 
-Cold discovery uses an OpenAI-compatible chat-completions endpoint. The frozen
-artifact defaults to `https://yunwu.ai/v1/chat/completions` and requests
-`gpt-4o` at temperature 0.
-
-Set the API key only through an environment variable:
+Cold discovery uses an OpenAI-compatible chat-completions endpoint. Supply the
+full endpoint and API key through environment variables; SemZip does not ship
+with a provider-specific endpoint or credential:
 
 ```bash
-export YUNWU_API_KEY='your-key'
+export PARE_LLM_API_BASE='https://your-provider.example/v1/chat/completions'
+export PARE_LLM_API_KEY='replace-with-your-key'
 ```
 
-Do not write the key into source code or configuration files. SemZip redacts
-authorization headers in its provenance records.
+Set the requested model in [`configs/main.yaml`](configs/main.yaml). Do not
+write the key into source code or configuration files. SemZip records the
+endpoint for reproducibility and redacts authorization headers in provenance
+records.
 
 ## 3. Cold-Start Compression
 

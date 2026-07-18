@@ -49,7 +49,7 @@ except Exception:
     _pare_cpp_accel = None
 
 
-DEFAULT_API_BASE = "https://yunwu.ai/v1/chat/completions"
+DEFAULT_API_BASE = ""
 DEFAULT_MODEL = "gpt-4o"
 VERSION_ID_R1 = "V-stream-template-llm-apache-r1"
 VERSION_ID_R2 = "V-stream-template-llm-apache-r2"
@@ -2896,9 +2896,12 @@ def call_llm(prompt: str, args: argparse.Namespace, cache_path: Path) -> dict[st
             "_proposal_cache_mode": "cache_only_miss",
         }
     prompt_path.write_text(prompt, encoding="utf-8")
-    api_key = os.environ.get("PARE_LLM_API_KEY") or os.environ.get("YUNWU_API_KEY")
+    api_base = str(getattr(args, "api_base", "") or "").strip()
+    api_key = os.environ.get("PARE_LLM_API_KEY", "").strip()
+    if not api_base:
+        raise RuntimeError("set PARE_LLM_API_BASE or pass --api-base")
     if not api_key:
-        raise RuntimeError("set PARE_LLM_API_KEY or YUNWU_API_KEY")
+        raise RuntimeError("set PARE_LLM_API_KEY")
     body = {
         "model": args.model,
         "response_format": {"type": "json_object"},
@@ -2912,7 +2915,7 @@ def call_llm(prompt: str, args: argparse.Namespace, cache_path: Path) -> dict[st
         "temperature": args.temperature,
     }
     request = urllib.request.Request(
-        args.api_base,
+        api_base,
         data=json.dumps(body).encode("utf-8"),
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
         method="POST",
