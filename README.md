@@ -1,11 +1,10 @@
 # SemZip
 
-> **SIGMOD submission artifact notice.** The repository snapshot prepared for
-> our SIGMOD submission was incomplete. During the final submission rush,
-> inadequate disk-space management led us to use the wrong snapshot and
-> inadvertently remove some supporting materials, including parts of the
-> ablation study. If we are invited to submit a major revision, we will restore
-> the missing experiments and their supporting artifacts.
+> **SIGMOD submission artifact notice.** Our paper exceeded the 12-page limit.
+> During the rushed final shortening process, we inadvertently removed some
+> supporting content, including parts of the ablation study, and submitted an
+> incomplete repository snapshot. If we are invited to submit a major revision,
+> we will restore the missing experiments and their supporting artifacts.
 
 SemZip is a lossless log compressor that uses an LLM during an offline
 discovery stage to synthesize reversible semantic extraction programs. The
