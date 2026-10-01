@@ -1,7 +1,8 @@
 # R76 track B3 (rq2): matched-span surface vs latent representation control on the R73 pool programs
 
-> **This copy.** `plans/` (including `PLAN_IDENTITY.json`), the archives and the logs are not included (see
-> `../CODE_PROVENANCE.md`); the plans are the main-result plans in `deployments/main_pool/`.
+> **This copy.** `plans/PLAN_IDENTITY.json` is included; the plan files under `plans/` are not repeated because they are the
+> main-result plans in `deployments/main_pool/` (all 16 `plan_sha256` values equal the SHA-256 of
+> `deployments/main_pool/<D>/program.json`). The archives and the logs are not included (see `../CODE_PROVENANCE.md`).
 
 Pre-registered design: `../DEV_DESIGN_R76_zh.md`, section B, item **B3**:
 the R70 matched-span surface/latent control, re-run on the pooled-selection (R73
@@ -147,7 +148,7 @@ and are not additive compressed components.
 | `prepare_plans.py` | `59845bd1e6c8b60c305bad48e63048f542f58ab5c2bc1430a820c01695d84333` |
 | `results_table.py` (post-run table only) | `9b3ea24bf842300f0637764a625770ed56ac85ddd903e50ed53982d95076a47a` |
 
-Plan hashes per dataset: `plans/PLAN_IDENTITY.json` (not included in this copy; the plans are the main-result plans in `deployments/main_pool/`); runtime source file hashes: `<DS>/DESIGN.json`.
+Plan hashes per dataset: `plans/PLAN_IDENTITY.json` (the plans are the main-result plans in `deployments/main_pool/`); runtime source file hashes: `<DS>/DESIGN.json`.
 
 ## Results
 

@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "kv_metrics",
+      "meaning": "key-value metrics",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "kvstart = (\\d+)\\((\\d+)\\); kvend = (\\d+)\\((\\d+)\\); length = (\\d+)/(\\d+)",
+      "replacement": "kvstart = {placeholder}; kvend = {placeholder}; length = {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0]), int(groups[2]), int(groups[4])], 'layout': [groups[1], groups[3], groups[5]]}\n\ndef inverse(record):\n    return f\"kvstart = {record['stored'][0]}({record['layout'][0]}); kvend = {record['stored'][1]}({record['layout'][1]}); length = {record['stored'][2]}/{record['layout'][2]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

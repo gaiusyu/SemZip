@@ -1,0 +1,593 @@
+{
+ "dataset": "HPC",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "fan",
+     "fan",
+     "speeds"
+    ],
+    "tags": [
+     "E"
+    ]
+   },
+   {
+    "key": [
+     "node",
+     "action",
+     "start",
+     "boot",
+     "command"
+    ],
+    "tags": [
+     "C"
+    ]
+   },
+   {
+    "key": [
+     "clusterfilesystem",
+     "clusterfilesystem",
+     "serverfilesystem",
+     "domain",
+     "is",
+     "no",
+     "longer",
+     "served",
+     "by",
+     "node",
+     "node"
+    ],
+    "tags": [
+     "B"
+    ]
+   },
+   {
+    "key": [
+     "node",
+     "node",
+     "status",
+     "configured",
+     "out"
+    ],
+    "tags": [
+     "T"
+    ]
+   },
+   {
+    "key": [
+     "node",
+     "node",
+     "status",
+     "not",
+     "responding"
+    ],
+    "tags": [
+     "J"
+    ]
+   },
+   {
+    "key": [
+     "node",
+     "component",
+     "state",
+     "change",
+     "component",
+     "alt",
+     "is",
+     "in",
+     "the",
+     "unavailable",
+     "state",
+     "hwid"
+    ],
+    "tags": [
+     "F"
+    ]
+   },
+   {
+    "key": [
+     "full",
+     "partition",
+     "status",
+     "running"
+    ],
+    "tags": [
+     "D"
+    ]
+   },
+   {
+    "key": [
+     "success",
+     "command",
+     "has",
+     "completed",
+     "successfully"
+    ],
+    "tags": [
+     "I"
+    ]
+   },
+   {
+    "key": [
+     "link",
+     "error",
+     "on",
+     "broadcast",
+     "tree"
+    ],
+    "tags": [
+     "O"
+    ]
+   },
+   {
+    "key": [
+     "new",
+     "targeting",
+     "and",
+     "child",
+     "of",
+     "command"
+    ],
+    "tags": [
+     "M"
+    ]
+   },
+   {
+    "key": [
+     "node",
+     "niff",
+     "node",
+     "node",
+     "detected",
+     "a",
+     "failed",
+     "network",
+     "connection",
+     "on",
+     "network",
+     "via",
+     "interface",
+     "alt"
+    ],
+    "tags": [
+     "K"
+    ]
+   },
+   {
+    "key": [
+     "temphigh",
+     "temperature",
+     "c",
+     "exceeds",
+     "warning",
+     "threshold"
+    ],
+    "tags": [
+     "Q"
+    ]
+   },
+   {
+    "key": [
+     "node",
+     "node",
+     "psu",
+     "psu",
+     "failure",
+     "ambient"
+    ],
+    "tags": [
+     "P"
+    ]
+   },
+   {
+    "key": [
+     "new",
+     "targeting",
+     "and"
+    ],
+    "tags": [
+     "N"
+    ]
+   },
+   {
+    "key": [
+     "abort",
+     "command",
+     "has",
+     "been",
+     "aborted"
+    ],
+    "tags": [
+     "R"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "B": "<B>",
+  "C": "<C>",
+  "D": "<D>",
+  "E": "<E>",
+  "F": "<F>",
+  "I": "<I>",
+  "J": "<J>",
+  "K": "<K>",
+  "M": "<M>",
+  "N": "<N>",
+  "O": "<O>",
+  "P": "<P>",
+  "Q": "<Q>",
+  "R": "<R>",
+  "T": "<T>",
+  "TS": "<TS>"
+ },
+ "spec_count": 16,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_atomic",
+   "pattern": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_ts_epoch10",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "raw_time:generic:{\"code\":\"BAD = {'stored': [], 'layout': []}\\n\\ndef forward(groups):\\n    text = groups[len(groups) - 1]\\n    if len(text) != 10:\\n        return BAD\\n    v = int(text)\\n    if str(v) != text:\\n        return BAD\\n    return {'stored': [v], 'layout': []}\\n\\ndef inverse(record):\\n    return str(int(record['stored'][0]))\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d+)(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d+)(?![\\w.]))$",
+    "op": "python_exec",
+    "_layout_polymorphic_shared_delta": true,
+    "_layout_placeholder_prefix": "",
+    "_layout_placeholder_suffix": ""
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "E",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "C",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "B",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "T",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "J",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "F",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "D",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "I",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "O",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "M",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "K",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "Q",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "P",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "N",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "R",
+   "value_type": "numeric"
+  }
+ ],
+ "version": 1
+}

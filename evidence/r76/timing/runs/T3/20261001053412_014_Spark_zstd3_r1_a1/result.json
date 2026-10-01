@@ -1,0 +1,68 @@
+{
+ "dataset": "Spark",
+ "method": "zstd3",
+ "repeat": 1,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_014_Spark_zstd3_r1_a1",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/Spark.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 170382248,
+ "blocks": 20,
+ "started_unix": 1790839394.3030417,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r68_external_20260923/formal_campaign_v3.py",
+   "codec-phase",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_014_Spark_zstd3_r1_a1/encode_request.json"
+  ],
+  "seconds": 1.758796513080597,
+  "returncode": 0,
+  "load_average": [
+   11.48,
+   13.26,
+   13.83
+  ],
+  "started_unix": 1790839394.3109457,
+  "own_cpu_seconds": 1.1899829999997564,
+  "other_cpu_seconds": 0.013030945000243488,
+  "other_cores": 0.007409012300928041
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r68_external_20260923/formal_campaign_v3.py",
+   "codec-phase",
+   "decode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_014_Spark_zstd3_r1_a1/decode_request.json"
+  ],
+  "seconds": 1.3219095692038536,
+  "returncode": 0,
+  "load_average": [
+   11.44,
+   13.22,
+   13.81
+  ],
+  "started_unix": 1790839396.0749376,
+  "own_cpu_seconds": 0.753816999999799,
+  "other_cpu_seconds": 0.009480325000201018,
+  "other_cores": 0.007171689517241888
+ },
+ "archive_bytes": 11494514,
+ "sha_pass": true,
+ "audit_seconds": 0.8543649166822433,
+ "encode_MB_per_s": 96.8743380674375,
+ "decode_MB_per_s": 128.89100129793002,
+ "finished_unix": 1790839398.2663548,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.011818635973851535
+ },
+ "max_other_cores": 0.007409012300928041,
+ "contaminated": false
+}

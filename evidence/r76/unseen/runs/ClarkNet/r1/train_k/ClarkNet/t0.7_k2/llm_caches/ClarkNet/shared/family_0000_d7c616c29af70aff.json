@@ -1,0 +1,139 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure, including IP/host, timestamp, HTTP method, and response code fields. These fields should be extracted into side streams for better compression and semantic clarity.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "timestamp_as_epoch_microseconds_with_timezone_offset",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[([0-9]{1,2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2})( +)([-+]\\d{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Convert timestamp and timezone offset into epoch microseconds and preserve exact formatting.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "from datetime import datetime, timedelta\n\ndef forward(groups):\n    day, month, year, hour, minute, second, sp1, offset = groups\n    text = f\"{day.zfill(2)}/{month}/{year}:{hour}:{minute}:{second} {offset}\"\n    dt = datetime.strptime(text, '%d/%b/%Y:%H:%M:%S %z')\n    epoch_micros = int(dt.timestamp() * 1000000)\n    return {'stored': [epoch_micros], 'layout': [len(sp1), len(day)]}\n\ndef inverse(record):\n    epoch_micros = record['stored'][0]\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    day_width = layout[1]\n    dt = datetime.fromtimestamp(epoch_micros / 1000000).astimezone()\n    day = str(dt.day).zfill(day_width)\n    month = dt.strftime('%b')\n    year = dt.strftime('%Y')\n    hour = dt.strftime('%H')\n    minute = dt.strftime('%M')\n    second = dt.strftime('%S')\n    offset = dt.strftime('%z')\n    return f\"[{day}/{month}/{year}:{hour}:{minute}:{second}{' ' * sp1_len}{offset}]\""
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "timestamp with timezone offset as epoch microseconds",
+      "reason": "Multiple adjacent fields collectively describe one semantic quantity (timestamp and timezone offset), which can be compactly stored as an integer."
+    },
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "client_ip_or_host",
+      "reason": "Changing IP addresses or hostnames have intrinsic structure and high entropy. Extract as a raw string for exact preservation."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "HTTP method",
+      "reason": "Stable literal structure with low entropy and no formatting variance. Keeping it in the main template reduces repetition."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "requested_uri_path",
+      "reason": "Changing paths with stable structure (slashes, alphanumeric segments) disturb the main template. Extract as a raw stream for exact preservation."
+    },
+    {
+      "slot": "S8",
+      "action": "DICT_RANK",
+      "meaning": "http_status_code",
+      "reason": "HTTP status codes are stable numeric values with predictable distribution. Extract using a dictionary rank compression scheme."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "response_size_bytes",
+      "reason": "Response sizes are numeric quantities with local repetition. Extract as compact integers with delta coding."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "client_ip_host",
+      "meaning": "client_ipv4_or_hostname",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "^(\\S+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract client IP address or hostname as a raw string for exact preservation.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "requested_uri",
+      "meaning": "requested_uri_path",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\\"GET( +)(/[^ ]+)",
+      "replacement": "\"GET{group1}{placeholder}\"",
+      "program": {
+        "intent": "Extract the URI path requested by the client as a raw string for exact preservation.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "http_status_code",
+      "meaning": "http_response_status_code",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{3})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract HTTP status code as a numeric value with dictionary rank compression.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "response_size",
+      "meaning": "response_size_bytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract response size in bytes as a numeric quantity with delta coding.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

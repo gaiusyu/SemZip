@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "network_address",
+      "meaning": "network address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "network ([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)",
+      "replacement": "network {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': ['network ']}\n\ndef inverse(record):\n    return f'{record[\"layout\"][0]}{record[\"stored\"][0]}'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

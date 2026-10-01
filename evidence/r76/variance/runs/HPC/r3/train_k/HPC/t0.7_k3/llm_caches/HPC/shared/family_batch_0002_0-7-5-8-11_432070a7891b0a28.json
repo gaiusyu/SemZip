@@ -1,0 +1,343 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "fan_speeds",
+            "tokens": [
+              "3552",
+              "3534",
+              "3375",
+              "****",
+              "3515",
+              "3479"
+            ],
+            "reason": "multiple numeric values in parentheses representing one context",
+            "target_value": "structured fan speed data",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "switch_module_fan_variable",
+            "tokens": [
+              "272839",
+              "Interconnect-0N00",
+              "1119703504",
+              "1"
+            ],
+            "reason": "structured variables for switch and fan identifiers",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix structure containing switch_module and fan identifiers"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0-S4",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "switch and fan identifiers",
+          "reason": "structured variable roles in the log line"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "fan_speeds"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "switch_module_fan_variable"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "fan_speeds",
+          "meaning": "structured fan speed data",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "fan speeds array",
+            "context_source": null,
+            "why_not_merge_raw": "structured numeric values required for analysis"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\( *(\\d{4}) +(\\d{4}) +(\\d{4}) +(\\*{4}|\\d{4}) +(\\d{4}) +(\\d{4}) *\\)",
+          "replacement": "({placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    speeds = [int(g) if g.isdigit() else -1 for g in groups]\n    return {'stored': speeds, 'layout': []}\n\ndef inverse(record):\n    speeds = [str(s) if s != -1 else '****' for s in record['stored']]\n    return '({})'.format(' '.join(speeds))"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "switch_module_fan_variable",
+          "meaning": "switch_module and fan identifiers",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured identifiers",
+            "context_source": null,
+            "why_not_merge_raw": "distinct variables captured directly"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(\\d+) +(Interconnect-[^ ]+) +switch_module +fan +(\\d+) +(\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': groups, 'layout': []}\n\ndef inverse(record):\n    return '{} {} switch_module fan {} {}'.format(*record['stored'])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "hardware_component_variable",
+            "tokens": [
+              "2557285",
+              "node-233",
+              "unix.hw",
+              "state_change.unavailable"
+            ],
+            "reason": "structured identifiers for hardware components",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing node and state change identifiers"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0-S3",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "hardware component identifiers",
+          "reason": "structured variable roles in the log line"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hardware_component_variable"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "hardware_component_variable",
+          "meaning": "hardware component identifiers",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured identifiers",
+            "context_source": null,
+            "why_not_merge_raw": "distinct variables captured directly"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(\\d+) +(node-[^ ]+) +(unix\\.hw) +(state_change\\.[^ ]+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': groups, 'layout': []}\n\ndef inverse(record):\n    return '{} {} {} {}'.format(*record['stored'])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "clusterfilesystem_variable",
+            "tokens": [
+              "2557586",
+              "node-D7",
+              "clusterfilesystem.no_server",
+              "ClusterFileSystem:"
+            ],
+            "reason": "structured identifiers for cluster filesystem and domain roles",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing clusterfilesystem identifiers"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0-S3",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "clusterfilesystem identifiers",
+          "reason": "structured variable roles in the log line"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "clusterfilesystem_variable"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "clusterfilesystem_variable",
+          "meaning": "clusterfilesystem identifiers",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured identifiers",
+            "context_source": null,
+            "why_not_merge_raw": "distinct variables captured directly"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(\\d+) +(node-D\\d+) +(clusterfilesystem\\.no_server) +(ClusterFileSystem:)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': groups, 'layout': []}\n\ndef inverse(record):\n    return '{} {} {} {}'.format(*record['stored'])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "serverfilesystem_variable",
+            "tokens": [
+              "48939",
+              "node-D0",
+              "fdmn.full",
+              "ServerFileSystem:"
+            ],
+            "reason": "structured identifiers for serverfilesystem domain roles",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing server filesystem identifiers"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0-S3",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "serverfilesystem identifiers",
+          "reason": "structured variable roles in the log line"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "serverfilesystem_variable"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "serverfilesystem_variable",
+          "meaning": "server filesystem identifiers",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured identifiers",
+            "context_source": null,
+            "why_not_merge_raw": "distinct variables captured directly"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(\\d+) +(node-D\\d+) +(fdmn\\.full) +(ServerFileSystem:)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': groups, 'layout': []}\n\ndef inverse(record):\n    return '{} {} {} {}'.format(*record['stored'])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix structure for completed command success"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0-S5",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "command success identifiers",
+          "reason": "structured variable roles in the log line"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

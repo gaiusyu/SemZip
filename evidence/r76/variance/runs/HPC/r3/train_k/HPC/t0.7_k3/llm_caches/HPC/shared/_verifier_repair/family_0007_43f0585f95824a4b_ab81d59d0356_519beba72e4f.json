@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "hardware_component_variable",
+      "meaning": "hardware component identifiers",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "(\\d+) +(node-[^ ]+) +(unix\\.hw) +(state_change\\.[^ ]+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0], groups[1], groups[2], groups[3]], 'layout': []}\n\ndef inverse(record):\n    return '{} {} {} {}'.format(record['stored'][0], record['stored'][1], record['stored'][2], record['stored'][3])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

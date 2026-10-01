@@ -1,0 +1,277 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix and structure, with varying fields that should be extracted and stored as side streams.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "message timestamp in epoch seconds",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{6,7})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "converts the timestamp to an integer for compression and reconstructs original format",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "node_id",
+        "meaning": "node identifier (e.g., node-D1, node-D4, etc.)",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(node-\\w+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "captures the node identifier as a raw string",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "filesystem_status",
+        "meaning": "status of cluster filesystem",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(clusterfilesystem\\.not_served)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "captures the status of the cluster filesystem as a raw string",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "unique_id",
+        "meaning": "unique identifier for the log entry",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(\\d{10})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "captures the unique identifier as an integer for more efficient storage",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "domain_name",
+        "meaning": "domain associated with the cluster filesystem",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "domain( +)([A-Za-z0-9_.-]+)",
+        "replacement": "domain{group1}{placeholder}",
+        "program": {
+          "intent": "captures the domain as a raw string",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "node_serving_id",
+        "meaning": "node serving the domain",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "node( +)(node-\\d+)",
+        "replacement": "node{group1}{placeholder}",
+        "program": {
+          "intent": "captures the serving node identifier as a raw string",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "UINT_DELTA",
+      "meaning": "log timestamp (epoch seconds)",
+      "reason": "This is a numeric field representing a timestamp that is compressible as a delta in numeric form."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "node identifier",
+      "reason": "The node identifier is a stable and compact string that should be stored as a raw variable."
+    },
+    {
+      "slot": "S3",
+      "action": "STREAM_RAW",
+      "meaning": "clusterfilesystem status",
+      "reason": "The clusterfilesystem status is a stable message segment that varies across instances and should be stored as a raw variable."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "unique id for the log entry",
+      "reason": "The unique id is a numeric value that can be compressed as a delta for efficient storage."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "constant field (default value)",
+      "reason": "This field is always '1' across examples, so it can be kept in the main template as a constant."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "constant field (ClusterFileSystem label)",
+      "reason": "This field is constant across examples and does not vary, so it is part of the static template."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain name",
+      "reason": "The domain name is a stable string with variable components that should be stored as a raw variable."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "serving node identifier",
+      "reason": "The serving node identifier is a stable string with a predictable pattern that should be stored as a raw variable."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "log_timestamp",
+      "meaning": "message timestamp in epoch seconds",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "(\\d{6,7})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "converts the timestamp to an integer for compression and reconstructs original format",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "node_id",
+      "meaning": "node identifier (e.g., node-D1, node-D4, etc.)",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "(node-\\w+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "captures the node identifier as a raw string",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "filesystem_status",
+      "meaning": "status of cluster filesystem",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "(clusterfilesystem\\.not_served)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "captures the status of the cluster filesystem as a raw string",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "unique_id",
+      "meaning": "unique identifier for the log entry",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{10})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "captures the unique identifier as an integer for more efficient storage",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "domain_name",
+      "meaning": "domain associated with the cluster filesystem",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "domain( +)([A-Za-z0-9_.-]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "captures the domain as a raw string",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "node_serving_id",
+      "meaning": "node serving the domain",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node( +)(node-\\d+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "captures the serving node identifier as a raw string",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

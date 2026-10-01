@@ -1,0 +1,744 @@
+{
+  "families": [
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "Date and time tokens together represent one timestamp value",
+            "target_value": "integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log messages start with a consistent date, time, and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "To capture the timestamp as a single integer"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Storing as a single integer for compression and deterministic reconstruction"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    dt = datetime.strptime(f\"20{date} {time}\", \"%Y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "Date and time tokens together represent one timestamp value",
+            "target_value": "integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log messages start with a consistent date, time, and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "To capture the timestamp as a single integer"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "broadcast_variable_id",
+          "elapsed_ms"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Storing as a single integer for compression and deterministic reconstruction"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    dt = datetime.strptime(f\"20{date} {time}\", \"%Y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "broadcast_variable_id",
+          "meaning": "Broadcast variable ID",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "broadcast_variable_id",
+            "context_source": null,
+            "why_not_merge_raw": "This is a single numeric value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "variable (\\d+)",
+          "replacement": "variable {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "elapsed_ms",
+          "meaning": "Elapsed time in milliseconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "elapsed_time_ms",
+            "context_source": null,
+            "why_not_merge_raw": "This is a single numeric value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "took (\\d+) ms",
+          "replacement": "took {placeholder} ms",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 22,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "Date and time tokens together represent one timestamp value",
+            "target_value": "integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "task_attempt_id",
+            "tokens": [
+              "S8"
+            ],
+            "reason": "The task attempt ID is an intrinsically structured variable with multiple separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "output_path",
+            "tokens": [
+              "S10"
+            ],
+            "reason": "The output path contains multiple structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log messages start with a consistent date, time, and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "To capture the timestamp as a single integer"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW",
+          "meaning": "task attempt ID",
+          "reason": "Structured variable with multiple separators"
+        },
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW",
+          "meaning": "output path",
+          "reason": "Structured variable with multiple separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "task_attempt_id",
+          "output_path"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Storing as a single integer for compression and deterministic reconstruction"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    dt = datetime.strptime(f\"20{date} {time}\", \"%Y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "task_attempt_id",
+          "meaning": "Task attempt ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "task_attempt_id",
+            "context_source": null,
+            "why_not_merge_raw": "Structured variable with multiple separators"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "task '([^']+)'",
+          "replacement": "task '{placeholder}'",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "output_path",
+          "meaning": "Output path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "output_path",
+            "context_source": null,
+            "why_not_merge_raw": "Structured variable with multiple separators"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "to (.+)",
+          "replacement": "to {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "Date and time tokens together represent one timestamp value",
+            "target_value": "integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log messages start with a consistent date, time, and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "To capture the timestamp as a single integer"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Storing as a single integer for compression and deterministic reconstruction"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    dt = datetime.strptime(f\"20{date} {time}\", \"%Y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "Date and time tokens together represent one timestamp value",
+            "target_value": "integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log messages start with a consistent date, time, and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "To capture the timestamp as a single integer"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Storing as a single integer for compression and deterministic reconstruction"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    dt = datetime.strptime(f\"20{date} {time}\", \"%Y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 21,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log messages start with a consistent date, time, and INFO prefix"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "Date and time tokens together represent one timestamp value",
+            "target_value": "integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log messages start with a consistent date, time, and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "To capture the timestamp as a single integer"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Storing as a single integer for compression and deterministic reconstruction"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    dt = datetime.strptime(f\"20{date} {time}\", \"%Y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 26,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "Date and time tokens together represent one timestamp value",
+            "target_value": "integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log messages start with a consistent date, time, and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "To capture the timestamp as a single integer"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Storing as a single integer for compression and deterministic reconstruction"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    dt = datetime.strptime(f\"20{date} {time}\", \"%Y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "Date and time tokens together represent one timestamp value",
+            "target_value": "integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "endpoint_address",
+            "tokens": [
+              "S14"
+            ],
+            "reason": "The endpoint contains multiple structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log messages start with a consistent date, time, and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "To capture the timestamp as a single integer"
+        },
+        {
+          "slot": "S14",
+          "action": "STREAM_RAW",
+          "meaning": "endpoint address",
+          "reason": "Structured variable with multiple separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "endpoint_address"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Storing as a single integer for compression and deterministic reconstruction"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    dt = datetime.strptime(f\"20{date} {time}\", \"%Y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "endpoint_address",
+          "meaning": "Endpoint address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "endpoint_address",
+            "context_source": null,
+            "why_not_merge_raw": "Structured variable with multiple separators"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "to (.+)",
+          "replacement": "to {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 18,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log messages start with a consistent date, time, and INFO prefix"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

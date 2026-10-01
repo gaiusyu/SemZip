@@ -1,0 +1,363 @@
+You are generating reversible extraction programs for several OpenStack log-line families in one batch.
+Return JSON only. The top-level object must be {"families": [...]}.
+Return exactly 8 family objects, one for each input family_id in this exact set: [2, 10, 19, 16, 17, 14, 18, 7].
+Do not omit a family. If a family has no safe function, still return it with all three class function arrays empty.
+Each output family must preserve its input family_id exactly and follow this schema:
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "1234 bytes",
+              "1.20 KB"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "10.0.0.5",
+              "/var/log/app",
+              "api.example.net",
+              "550e8400-e29b-41d4-a716-446655440000"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "user Alice",
+              "username=Alice"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "semantic role if known",
+          "reason": "why this slot is extracted, composed, or kept"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_2_formatted_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_3_common_variable": [
+          "semantic names found in this family, or an empty list"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+Class-wise completion contract:
+- Inspect Class 1, Class 2, and Class 3 independently for every family before emitting JSON.
+- class_inventory must contain all three class keys and briefly name every candidate category found; use [] when none is present.
+- Put executable proposals only in class_1_functions, class_2_functions, or class_3_functions. Always emit all three arrays, even when empty.
+- Do not emit a flat functions array or header.functions. A changing header field belongs in the class array matching its semantics.
+- The class bucket is authoritative: Class 1 and Class 2 store numeric values; Class 3 stores exact strings.
+
+For every family, fill family_analysis before writing functions. This is a short machine-readable plan, not chain-of-thought.
+- has_composable_tokens means several tokens/pieces jointly represent one value, such as weekday + month + day + time + year forming one timestamp-like value.
+- has_semantic_equivalent_tokens means two displays represent the same value, such as '1234 bytes' and '(1.20 KB)' describing the same byte count.
+- If has_composable_tokens=true, at least one function should implement the best composable_group unless exact reconstruction is impossible.
+- If has_semantic_equivalent_tokens=true, at least one function should implement the best semantic_equivalent_group unless exact reconstruction is impossible.
+- raw_variable_groups are Class 3 candidates through either of two evidence routes: (A) the captured value itself contains at least two non-alphanumeric separator occurrences explicitly encoded by the regex; or (B) a plain value is immediately introduced by a stable, unambiguous field-name literal explicitly present in the regex, such as user( +)([A-Za-z0-9]+) or username=([A-Za-z0-9]+). Whitespace alone and generic words such as for, from, to, or by do not qualify. Unanchored broad captures such as ([A-Za-z0-9]+), (\w+), or ([^ ]+) must be left to residual.
+- This planning step is meant to prevent skipping high-value fusion opportunities before regex writing.
+
+Direct per-line context schema:
+- Every function must include tag, class, value_type, target_role, context, regex, replacement, and program.
+- class must be one of class_1_composed_numeric, class_2_formatted_numeric, class_3_common_variable.
+- value_type must be numeric for class_1_composed_numeric and class_2_formatted_numeric. Use string for class_3_common_variable.
+- target_role must be log_timestamp only when the stored target itself is the primary timestamp of the log record. Use ordinary_value for every other stored target.
+- Use context=null when no other field in the same physical line should partition the target's distribution. A log_timestamp normally uses context=null.
+- Otherwise context must contain code defining project_context(line, groups). It returns the actual per-line context value as str/int, or None when absent; it must not return a semantic label.
+- line is the complete original physical log line and groups are the target regex groups. The target regex does not need to capture the context, and the context may be adjacent or non-adjacent.
+- Context only routes an already reversible target. forward(groups) and inverse(record) must reconstruct the target without context. Numeric streams use delta within each returned context; string streams use dictionary ranks within each returned context.
+- project_context must be deterministic, must not import modules, and may use provided re.search/re.match/re.fullmatch with literal safe regexes.
+- Direct projector example for 'Failed password from 173.234.31.186 port 38926 ssh2': the source_port target regex is 'port( +)(\\d+)', its target program stores int(groups[1]), and context.code is: def project_context(line, groups): m = re.search(r'from( +)((?:\\d{1,3}\\.){3}\\d{1,3})', line); return m.group(2) if m else None.
+- The example returns the concrete IP bytes, not the words source_ip and not another function tag.
+- Before writing each function, fill source_separation. This is a machine-readable audit, not a long chain-of-thought. Use decision=merge_equivalent only when the captured pieces are one semantic quantity or one piece is exactly derivable from another. Use decision=split_context_value when a textual span contains independent sources and one source predicts/groups the other. Use decision=raw_single_source only for one bounded opaque variable. Use decision=leave_to_residual when the LLM should not create a function.
+- If a target's distribution depends on another field anywhere in the same line, attach a projector to the target. Example: source_port stores only the port and project_context returns the concrete source IP from the complete line.
+- Contrastive source-separation example. Bad: store '10.10.34.12:3888' as one raw endpoint string; this repeats the IP many times and mixes address entropy with port entropy. Good: capture IP as context and store only the port as numeric value, with source_separation.decision='split_context_value', stored_source='port', context_source='ip'.
+- Contrastive source-separation example. Good merge: '1234 bytes (1.20 KB)' has two displays of one byte-size value, so use source_separation.decision='merge_equivalent' and store one canonical integer plus layout/display flags.
+
+Executable program forms:
+- Raw python_exec: store the captured raw value exactly as a string; downstream codec chooses rank/delta/raw.
+- {"op":"python_exec", "code":"..."}: real Python code defining forward(groups) and inverse(record). Use this for exact date/time, unit, duration, tuple, and compound numeric transforms.
+- python_exec code must not import modules. The verifier already provides datetime, re, math, and calendar-like helpers. Any import/from-import statement is rejected.
+- Use only the verifier-aligned Python subset: ordinary assignments, arithmetic, indexing/slicing, simple if/for/while, int/str/len/float/round/abs/min/max, datetime/timedelta/re helpers, f-strings, lists, tuples, and dicts.
+- Do not use augmented assignment such as +=, -=, *=, //=, or %=; write ordinary assignment instead. Example: write `v = v // 1000`, not `v //= 1000`.
+- Do not use comprehensions, lambda, try/except, with, class definitions, file/network/system calls, eval/exec/compile, globals/locals/vars, or double-underscore names.
+- python_exec forward(groups) must return a dict exactly shaped like {'stored': [one_value], 'layout': [optional_small_integers]}. Use layout for variable spaces or widths needed by inverse(record).
+- python_exec inverse(record) must read record['stored'] and return the exact original captured bytes as a string.
+- Do not return datetime objects, ISO strings, tuples, or plain integers from forward(). Do not make inverse(record) expect a datetime object directly.
+
+Placeholder routing contract:
+- Use exactly one {placeholder} in every replacement. The decoder uses that route to choose this function's side stream.
+- If a function consumes several capture groups that together describe one attribute, they still map to one {placeholder}, not multiple placeholders.
+- If a span contains independent attributes, emit separate functions with separate tags.
+- Do not duplicate storage: bytes consumed into {placeholder} must not also remain as {groupN}.
+
+For each family:
+- Every function must include class and target_role. Use class_1_composed_numeric for multi-piece values that become one compressible semantic integer, class_2_formatted_numeric for text or formatted tokens that express numeric meaning and can be converted into one compressible integer, and class_3_common_variable for an exact string supported by either intrinsic structure or an explicit adjacent field-name anchor. Use target_role=log_timestamp only for the primary log timestamp; otherwise use ordinary_value.
+- If a date/time-like span is present, prefer class_1_composed_numeric and write python_exec that stores one integer timestamp-like value. Do not use class_3_common_variable or raw identity for a timestamp merely because spaces or display widths vary; store those reversible display details in layout.
+- Choose class_2 not only for visibly numeric tokens, but for non-numeric or formatted text that carries numeric meaning and has a deterministic numeric representation: units, durations, byte-size displays, ordinal/state counters, severity-like levels, port-like roles, process/thread ids, slots, or structured subfields. Do not classify random-looking session ids, hashes, request ids, or opaque hex strings as class_1/class_2 merely because they can be parsed as integers.
+- Strategy switch for numbers: leave anonymous/simple numbers to deterministic residual coders, but extract semantically stable numbers whose surrounding words vary across templates. A port near an IP/host should be a class_2 target whose context projector returns the concrete IP/host when that field predicts the port distribution.
+- For every ordinary_value target, ask whether another field anywhere in the same physical line predicts or partitions its distribution. If yes, provide context.code defining project_context(line, groups); otherwise use context=null.
+- project_context returns the actual value found on this line, not a field name or another function tag. A log_timestamp normally uses context=null.
+- Context routing is available to every class. Numeric targets use context-local delta and string targets use context-local dictionary ranks, while target reconstruction remains independent of context.
+- Prefer class_3_common_variable only after one evidence route passes. Intrinsic route: the captured value has at least two separator occurrences explicit in the regex. Role-anchor route: a plain value is immediately introduced by a stable, unambiguous field-name literal explicit in the regex, such as user or username=. A semantic explanation, whitespace, or a generic word such as for/from/to/by is insufficient. Numeric-looking opaque identifiers may use class_3 only when they satisfy one route and lack semantic magnitude/order.
+- First decide whether there is a unified log header. Headers can use brackets, punctuation, or component fields, not just whitespace.
+- Put changing header fields in header.functions.
+- Then propose normal value functions for hard formats such as session ids, stable-affix ids, derived date/time text, unit-bearing values, and compound numeric fields.
+- Prefer one reversible function for a complete real-world attribute over several substring functions. If adjacent tokens or neighboring pieces describe the same underlying value, capture the complete span and store one compact value when exact rendering is possible.
+- Do not split one attribute into independent streams just because it appears as several tokens or contains punctuation. A date/time-like attribute, unit-bearing display, bracketed identifier, endpoint-like text, or stable-affix id should be considered as a complete reversible span first.
+- If one displayed piece is derivable from another captured value, store the source value and render the derived text instead of creating a separate stream. If exact derivation is not safe, store the complete formatted span with raw python_exec.
+- Prefer executable python_exec for complete composed attributes when a deterministic parse/render relation is clear. Use raw python_exec when the exact bytes are opaque or when a compact inverse renderer is not safe.
+- Set general=true when the function likely applies across many families/templates, such as a repeated header attribute, address-like value, endpoint-like value, bracketed process/context id, port-like number, user/domain-like token, or other recurring value format. Set general=false for message-specific variables.
+- Set order_hint=global_composed for a global function that consumes a complete multi-piece attribute or starts at a repeated line prefix; set family_structured for context-scoped message variables; set global_atomic for simple intrinsic global values.
+- Constants remain literal. Store changing bytes once: either as {placeholder} or as preserved {groupN}, never both.
+- Unit-bearing variants must be byte-exact. If examples include both plain and displayed forms such as '123 bytes' and '123 bytes (1.20 KB)', do not consume the optional display and drop it from replacement. Store the complete formatted value span or render all captured pieces exactly.
+- Use numeric scalar programs only after checking that the scalar render reconstructs the whole matched value, including optional unit displays and alternate units.
+- Regexes must be Python re compatible, local to the matched substring, and under 220 characters.
+- Avoid broad tail captures like (.+) or (.*). Avoid bare all-number regexes unless tightly scoped by literals. For Class 3, forbid unanchored plain-token captures such as ([A-Za-z0-9]+), (\w+), and ([^ ]+). A narrow plain-token capture is allowed only when a stable, unambiguous field-name literal immediately introduces it in the same regex; whitespace or generic for/from/to/by does not qualify.
+- If functions overlap, order most specific first.
+
+Executable examples, for style only and not a closed type list:
+Example exact raw value:
+{"tag": "dot_value", "meaning": "recurring dotted value", "class": "class_3_common_variable", "general": true, "order_hint": "global_atomic", "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})", "replacement": "from {placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example exact raw plain value with an explicit role anchor:
+{"tag": "user_name", "meaning": "user_field_value", "class": "class_3_common_variable", "general": false, "order_hint": "family_structured", "regex": "user( +)([A-Za-z][A-Za-z0-9._-]*)", "replacement": "user{group1}{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example fixed-width integer:
+{"tag": "bracket_number", "meaning": "recurring bracketed numeric id", "class": "class_2_formatted_numeric", "general": true, "order_hint": "global_composed", "regex": "worker\\[(\\d{5})\\]", "replacement": "worker[{placeholder}]", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    return {'stored': [int(text)], 'layout': []}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    return str(value).zfill(5)"}}
+Example composed date/time-like attribute with a fixed exact layout:
+{"tag": "composed_time", "meaning": "complete repeated date/time-like prefix", "class": "class_1_composed_numeric", "general": true, "order_hint": "global_composed", "regex": "^([A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2})", "replacement": "{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"}}
+If exact reconstruction needs variable width, variable spaces, optional text, or any other layout bytes, either capture the complete span with raw python_exec, or emit a python_exec that stores the required layout bytes and inverse reconstructs exactly.
+
+Open executable transducer mode:
+- Prefer LLM-generated executable Python transforms for structured numeric fields, including timestamps, dates, durations, sizes, tuple-like IDs, and compound numeric tokens.
+- The transform must define forward(groups) and inverse(record). forward receives the captured value bytes; inverse reconstructs exactly the captured bytes from the stored integer.
+- A timestamp does not need true Unix time. A monotonic packed integer is acceptable if inverse renders the exact original bytes and deltas are locally small.
+- For YYYY-MM-DD HH:MM:SS,mmm, write Python that parses the seven numeric fields, packs them into one integer, and inverse-unpacks with the same zero padding and punctuation.
+- For bracketed or prefixed fields, capture only the value span and preserve stable punctuation in replacement groups.
+- Stable text is an anchor, not a side-stream value. Never store the same bytes twice: if a captured group is represented by {placeholder}, do not also keep that group as {groupN} in replacement.
+
+
+Focus function budget on complete formatted spans and semantic dependencies. Plain leftover numbers can be handled by generic residual coders unless local context gives them a stable role.
+
+### FAMILY 2
+support=4
+template_anchor_key=info image at checking
+examples_and_shapes:
+Example 0: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:05.185 2931 INFO nova.virt.libvirt.imagecache [req-addc1839-2ed5-4778-b57e-5854eb7b8b09 - - - - -] image 0673dd71-34c5-4fbb-86c4-40623fbe45b4 at (/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742): checking
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:05.185':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.virt.libvirt.imagecache':A4.A4.A7.A10 | S6='[req-addc1839-2ed5-4778-b57e-5854eb7b8b09':[A3-A4D4-D1A2D1-D4-A1D2A1-D4A2D1A1D1A1D2 | S7='-':- | S8='-':- | S9='-':- | S10='-':- | S11='-]':-] | S12='image':A5 | S13='0673dd71-34c5-4fbb-86c4-40623fbe45b4':D4A2D2-D2A1D1-D1A3-D2A1D1-D5A3D2A1D1 | S14='at':A2 | S15='(/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742):':(/A3/A3/A4/A9/_A4/A1D3A1D3A1D1A1D2A2D2A1D5A1D2A2D5A2D1A1D3): | S16='checking':A8
+Example 1: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:10.421 2931 INFO nova.virt.libvirt.imagecache [req-addc1839-2ed5-4778-b57e-5854eb7b8b09 - - - - -] image 0673dd71-34c5-4fbb-86c4-40623fbe45b4 at (/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742): checking
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:10.421':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.virt.libvirt.imagecache':A4.A4.A7.A10 | S6='[req-addc1839-2ed5-4778-b57e-5854eb7b8b09':[A3-A4D4-D1A2D1-D4-A1D2A1-D4A2D1A1D1A1D2 | S7='-':- | S8='-':- | S9='-':- | S10='-':- | S11='-]':-] | S12='image':A5 | S13='0673dd71-34c5-4fbb-86c4-40623fbe45b4':D4A2D2-D2A1D1-D1A3-D2A1D1-D5A3D2A1D1 | S14='at':A2 | S15='(/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742):':(/A3/A3/A4/A9/_A4/A1D3A1D3A1D1A1D2A2D2A1D5A1D2A2D5A2D1A1D3): | S16='checking':A8
+Example 2: nova-compute.log.2017-05-14_21:27:09 2017-05-14 19:39:15.195 2931 INFO nova.virt.libvirt.imagecache [req-addc1839-2ed5-4778-b57e-5854eb7b8b09 - - - - -] image 0673dd71-34c5-4fbb-86c4-40623fbe45b4 at (/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742): checking
+Tokens: S0='nova-compute.log.2017-05-14_21:27:09':A4-A7.A3.D4-D2-D2_D2:D2:D2 | S1='2017-05-14':D4-D2-D2 | S2='19:39:15.195':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.virt.libvirt.imagecache':A4.A4.A7.A10 | S6='[req-addc1839-2ed5-4778-b57e-5854eb7b8b09':[A3-A4D4-D1A2D1-D4-A1D2A1-D4A2D1A1D1A1D2 | S7='-':- | S8='-':- | S9='-':- | S10='-':- | S11='-]':-] | S12='image':A5 | S13='0673dd71-34c5-4fbb-86c4-40623fbe45b4':D4A2D2-D2A1D1-D1A3-D2A1D1-D5A3D2A1D1 | S14='at':A2 | S15='(/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742):':(/A3/A3/A4/A9/_A4/A1D3A1D3A1D1A1D2A2D2A1D5A1D2A2D5A2D1A1D3): | S16='checking':A8
+Example 3: nova-compute.log.2017-05-14_21:27:09 2017-05-14 19:39:20.436 2931 INFO nova.virt.libvirt.imagecache [req-addc1839-2ed5-4778-b57e-5854eb7b8b09 - - - - -] image 0673dd71-34c5-4fbb-86c4-40623fbe45b4 at (/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742): checking
+Tokens: S0='nova-compute.log.2017-05-14_21:27:09':A4-A7.A3.D4-D2-D2_D2:D2:D2 | S1='2017-05-14':D4-D2-D2 | S2='19:39:20.436':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.virt.libvirt.imagecache':A4.A4.A7.A10 | S6='[req-addc1839-2ed5-4778-b57e-5854eb7b8b09':[A3-A4D4-D1A2D1-D4-A1D2A1-D4A2D1A1D1A1D2 | S7='-':- | S8='-':- | S9='-':- | S10='-':- | S11='-]':-] | S12='image':A5 | S13='0673dd71-34c5-4fbb-86c4-40623fbe45b4':D4A2D2-D2A1D1-D1A3-D2A1D1-D5A3D2A1D1 | S14='at':A2 | S15='(/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742):':(/A3/A3/A4/A9/_A4/A1D3A1D3A1D1A1D2A2D2A1D5A1D2A2D5A2D1A1D3): | S16='checking':A8
+required_value_like_slots (32 sampled occurrences):
+Example 0: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:05.185':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.virt.libvirt.imagecache':A4.A4.A7.A10 | S6='[req-addc1839-2ed5-4778-b57e-5854eb7b8b09':[A3-A4D4-D1A2D1-D4-A1D2A1-D4A2D1A1D1A1D2 | S13='0673dd71-34c5-4fbb-86c4-40623fbe45b4':D4A2D2-D2A1D1-D1A3-D2A1D1-D5A3D2A1D1 | S15='(/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742):':(/A3/A3/A4/A9/_A4/A1D3A1D3A1D1A1D2A2D2A1D5A1D2A2D5A2D1A1D3):
+Example 1: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:10.421':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.virt.libvirt.imagecache':A4.A4.A7.A10 | S6='[req-addc1839-2ed5-4778-b57e-5854eb7b8b09':[A3-A4D4-D1A2D1-D4-A1D2A1-D4A2D1A1D1A1D2 | S13='0673dd71-34c5-4fbb-86c4-40623fbe45b4':D4A2D2-D2A1D1-D1A3-D2A1D1-D5A3D2A1D1 | S15='(/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742):':(/A3/A3/A4/A9/_A4/A1D3A1D3A1D1A1D2A2D2A1D5A1D2A2D5A2D1A1D3):
+Example 2: S0='nova-compute.log.2017-05-14_21:27:09':A4-A7.A3.D4-D2-D2_D2:D2:D2 | S1='2017-05-14':D4-D2-D2 | S2='19:39:15.195':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.virt.libvirt.imagecache':A4.A4.A7.A10 | S6='[req-addc1839-2ed5-4778-b57e-5854eb7b8b09':[A3-A4D4-D1A2D1-D4-A1D2A1-D4A2D1A1D1A1D2 | S13='0673dd71-34c5-4fbb-86c4-40623fbe45b4':D4A2D2-D2A1D1-D1A3-D2A1D1-D5A3D2A1D1 | S15='(/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742):':(/A3/A3/A4/A9/_A4/A1D3A1D3A1D1A1D2A2D2A1D5A1D2A2D5A2D1A1D3):
+Example 3: S0='nova-compute.log.2017-05-14_21:27:09':A4-A7.A3.D4-D2-D2_D2:D2:D2 | S1='2017-05-14':D4-D2-D2 | S2='19:39:20.436':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.virt.libvirt.imagecache':A4.A4.A7.A10 | S6='[req-addc1839-2ed5-4778-b57e-5854eb7b8b09':[A3-A4D4-D1A2D1-D4-A1D2A1-D4A2D1A1D1A1D2 | S13='0673dd71-34c5-4fbb-86c4-40623fbe45b4':D4A2D2-D2A1D1-D1A3-D2A1D1-D5A3D2A1D1 | S15='(/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742):':(/A3/A3/A4/A9/_A4/A1D3A1D3A1D1A1D2A2D2A1D5A1D2A2D5A2D1A1D3):
+
+### FAMILY 10
+support=4
+template_anchor_key=info instance instance spawned successfully
+examples_and_shapes:
+Example 0: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:10.302 2931 INFO nova.virt.libvirt.driver [-] [instance: b9000564-fe1a-409b-b8cc-1e88b294cd1d] Instance spawned successfully.
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:10.302':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.virt.libvirt.driver':A4.A4.A7.A6 | S6='[-]':[-] | S7='[instance:':[A8: | S8='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S9='Instance':A8 | S10='spawned':A7 | S11='successfully.':A12.
+Example 1: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:51.658 2931 INFO nova.virt.libvirt.driver [-] [instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4] Instance spawned successfully.
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:51.658':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.virt.libvirt.driver':A4.A4.A7.A6 | S6='[-]':[-] | S7='[instance:':[A8: | S8='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S9='Instance':A8 | S10='spawned':A7 | S11='successfully.':A12.
+Example 2: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:17.754 2931 INFO nova.virt.libvirt.driver [-] [instance: b9000564-fe1a-409b-b8cc-1e88b294cd1d] Instance destroyed successfully.
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:17.754':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.virt.libvirt.driver':A4.A4.A7.A6 | S6='[-]':[-] | S7='[instance:':[A8: | S8='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S9='Instance':A8 | S10='destroyed':A9 | S11='successfully.':A12.
+Example 3: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:59.739 2931 INFO nova.virt.libvirt.driver [-] [instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4] Instance destroyed successfully.
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:59.739':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.virt.libvirt.driver':A4.A4.A7.A6 | S6='[-]':[-] | S7='[instance:':[A8: | S8='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S9='Instance':A8 | S10='destroyed':A9 | S11='successfully.':A12.
+required_value_like_slots (32 sampled occurrences):
+Example 0: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:10.302':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.virt.libvirt.driver':A4.A4.A7.A6 | S7='[instance:':[A8: | S8='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S11='successfully.':A12.
+Example 1: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:51.658':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.virt.libvirt.driver':A4.A4.A7.A6 | S7='[instance:':[A8: | S8='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S11='successfully.':A12.
+Example 2: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:17.754':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.virt.libvirt.driver':A4.A4.A7.A6 | S7='[instance:':[A8: | S8='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S11='successfully.':A12.
+Example 3: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:59.739':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.virt.libvirt.driver':A4.A4.A7.A6 | S7='[instance:':[A8: | S8='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S11='successfully.':A12.
+
+### FAMILY 19
+support=2
+template_anchor_key=info instance attempting claim memory mb disk gb vcpus cpu
+examples_and_shapes:
+Example 0: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:31.092 2931 INFO nova.compute.claims [req-6a763803-4838-49c7-814e-eaefbaddee9d 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4] Attempting claim: memory 2048 MB, disk 20 GB, vcpus 1 CPU
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:31.092':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-6a763803-4838-49c7-814e-eaefbaddee9d':[A3-D1A1D6-D4-D2A1D1-D3A1-A10D1A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S14='Attempting':A10 | S15='claim:':A5: | S16='memory':A6 | S17='2048':D4 | S18='MB,':A2, | S19='disk':A4 | S20='20':D2 | S21='GB,':A2, | S22='vcpus':A5 | S23='1':D1 | S24='CPU':A3
+Example 1: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:01:12.998 2931 INFO nova.compute.claims [req-97fcea79-42f7-4241-9b9e-63fe193c1929 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: b562ef10-ba2d-48ae-bf4a-18666cba4a51] Attempting claim: memory 2048 MB, disk 20 GB, vcpus 1 CPU
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:01:12.998':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-97fcea79-42f7-4241-9b9e-63fe193c1929':[A3-D2A4D2-D2A1D1-D4-D1A1D1A1-D2A2D3A1D4 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='b562ef10-ba2d-48ae-bf4a-18666cba4a51]':A1D3A2D2-A2D1A1-D2A2-A2D1A1-D5A3D1A1D2] | S14='Attempting':A10 | S15='claim:':A5: | S16='memory':A6 | S17='2048':D4 | S18='MB,':A2, | S19='disk':A4 | S20='20':D2 | S21='GB,':A2, | S22='vcpus':A5 | S23='1':D1 | S24='CPU':A3
+required_value_like_slots (32 sampled occurrences):
+Example 0: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:31.092':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-6a763803-4838-49c7-814e-eaefbaddee9d':[A3-D1A1D6-D4-D2A1D1-D3A1-A10D1A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S15='claim:':A5: | S17='2048':D4 | S18='MB,':A2, | S20='20':D2 | S21='GB,':A2, | S23='1':D1
+Example 1: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:01:12.998':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-97fcea79-42f7-4241-9b9e-63fe193c1929':[A3-D2A4D2-D2A1D1-D4-D1A1D1A1-D2A2D3A1D4 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='b562ef10-ba2d-48ae-bf4a-18666cba4a51]':A1D3A2D2-A2D1A1-D2A2-A2D1A1-D5A3D1A1D2] | S15='claim:':A5: | S17='2048':D4 | S18='MB,':A2, | S20='20':D2 | S21='GB,':A2, | S23='1':D1
+
+### FAMILY 16
+support=2
+template_anchor_key=info instance memory limit mb free mb
+examples_and_shapes:
+Example 0: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:31.093 2931 INFO nova.compute.claims [req-6a763803-4838-49c7-814e-eaefbaddee9d 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4] memory limit: 96258.00 MB, free: 95746.00 MB
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:31.093':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-6a763803-4838-49c7-814e-eaefbaddee9d':[A3-D1A1D6-D4-D2A1D1-D3A1-A10D1A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S14='memory':A6 | S15='limit:':A5: | S16='96258.00':D5.D2 | S17='MB,':A2, | S18='free:':A4: | S19='95746.00':D5.D2 | S20='MB':A2
+Example 1: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:01:12.999 2931 INFO nova.compute.claims [req-97fcea79-42f7-4241-9b9e-63fe193c1929 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: b562ef10-ba2d-48ae-bf4a-18666cba4a51] memory limit: 96258.00 MB, free: 95746.00 MB
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:01:12.999':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-97fcea79-42f7-4241-9b9e-63fe193c1929':[A3-D2A4D2-D2A1D1-D4-D1A1D1A1-D2A2D3A1D4 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='b562ef10-ba2d-48ae-bf4a-18666cba4a51]':A1D3A2D2-A2D1A1-D2A2-A2D1A1-D5A3D1A1D2] | S14='memory':A6 | S15='limit:':A5: | S16='96258.00':D5.D2 | S17='MB,':A2, | S18='free:':A4: | S19='95746.00':D5.D2 | S20='MB':A2
+required_value_like_slots (30 sampled occurrences):
+Example 0: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:31.093':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-6a763803-4838-49c7-814e-eaefbaddee9d':[A3-D1A1D6-D4-D2A1D1-D3A1-A10D1A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S15='limit:':A5: | S16='96258.00':D5.D2 | S17='MB,':A2, | S18='free:':A4: | S19='95746.00':D5.D2
+Example 1: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:01:12.999':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-97fcea79-42f7-4241-9b9e-63fe193c1929':[A3-D2A4D2-D2A1D1-D4-D1A1D1A1-D2A2D3A1D4 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='b562ef10-ba2d-48ae-bf4a-18666cba4a51]':A1D3A2D2-A2D1A1-D2A2-A2D1A1-D5A3D1A1D2] | S15='limit:':A5: | S16='96258.00':D5.D2 | S17='MB,':A2, | S18='free:':A4: | S19='95746.00':D5.D2
+
+### FAMILY 17
+support=2
+template_anchor_key=info instance total memory mb used mb
+examples_and_shapes:
+Example 0: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:31.093 2931 INFO nova.compute.claims [req-6a763803-4838-49c7-814e-eaefbaddee9d 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4] Total memory: 64172 MB, used: 512.00 MB
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:31.093':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-6a763803-4838-49c7-814e-eaefbaddee9d':[A3-D1A1D6-D4-D2A1D1-D3A1-A10D1A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S14='Total':A5 | S15='memory:':A6: | S16='64172':D5 | S17='MB,':A2, | S18='used:':A4: | S19='512.00':D3.D2 | S20='MB':A2
+Example 1: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:01:12.999 2931 INFO nova.compute.claims [req-97fcea79-42f7-4241-9b9e-63fe193c1929 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: b562ef10-ba2d-48ae-bf4a-18666cba4a51] Total memory: 64172 MB, used: 512.00 MB
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:01:12.999':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-97fcea79-42f7-4241-9b9e-63fe193c1929':[A3-D2A4D2-D2A1D1-D4-D1A1D1A1-D2A2D3A1D4 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='b562ef10-ba2d-48ae-bf4a-18666cba4a51]':A1D3A2D2-A2D1A1-D2A2-A2D1A1-D5A3D1A1D2] | S14='Total':A5 | S15='memory:':A6: | S16='64172':D5 | S17='MB,':A2, | S18='used:':A4: | S19='512.00':D3.D2 | S20='MB':A2
+required_value_like_slots (30 sampled occurrences):
+Example 0: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:31.093':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-6a763803-4838-49c7-814e-eaefbaddee9d':[A3-D1A1D6-D4-D2A1D1-D3A1-A10D1A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S15='memory:':A6: | S16='64172':D5 | S17='MB,':A2, | S18='used:':A4: | S19='512.00':D3.D2
+Example 1: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:01:12.999':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.claims':A4.A7.A6 | S6='[req-97fcea79-42f7-4241-9b9e-63fe193c1929':[A3-D2A4D2-D2A1D1-D4-D1A1D1A1-D2A2D3A1D4 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='b562ef10-ba2d-48ae-bf4a-18666cba4a51]':A1D3A2D2-A2D1A1-D2A2-A2D1A1-D5A3D1A1D2] | S15='memory:':A6: | S16='64172':D5 | S17='MB,':A2, | S18='used:':A4: | S19='512.00':D3.D2
+
+### FAMILY 14
+support=2
+template_anchor_key=info instance took seconds to build instance
+examples_and_shapes:
+Example 0: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:10.470 2931 INFO nova.compute.manager [req-8e64797b-fb99-4c8a-87e5-9a8de673412f 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: b9000564-fe1a-409b-b8cc-1e88b294cd1d] Took 19.84 seconds to build instance.
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:10.470':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-8e64797b-fb99-4c8a-87e5-9a8de673412f':[A3-D1A1D5A1-A2D2-D1A1D1A1-D2A1D1-D1A1D1A2D6A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S14='Took':A4 | S15='19.84':D2.D2 | S16='seconds':A7 | S17='to':A2 | S18='build':A5 | S19='instance.':A8.
+Example 1: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:51.794 2931 INFO nova.compute.manager [req-6a763803-4838-49c7-814e-eaefbaddee9d 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4] Took 20.71 seconds to build instance.
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:51.794':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-6a763803-4838-49c7-814e-eaefbaddee9d':[A3-D1A1D6-D4-D2A1D1-D3A1-A10D1A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S14='Took':A4 | S15='20.71':D2.D2 | S16='seconds':A7 | S17='to':A2 | S18='build':A5 | S19='instance.':A8.
+required_value_like_slots (24 sampled occurrences):
+Example 0: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:10.470':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-8e64797b-fb99-4c8a-87e5-9a8de673412f':[A3-D1A1D5A1-A2D2-D1A1D1A1-D2A1D1-D1A1D1A2D6A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S15='19.84':D2.D2 | S19='instance.':A8.
+Example 1: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:51.794':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-6a763803-4838-49c7-814e-eaefbaddee9d':[A3-D1A1D6-D4-D2A1D1-D3A1-A10D1A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S15='20.71':D2.D2 | S19='instance.':A8.
+
+### FAMILY 18
+support=2
+template_anchor_key=info instance took seconds to deallocate network for instance
+examples_and_shapes:
+Example 0: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:19.050 2931 INFO nova.compute.manager [req-c53a921a-16c7-422e-8c9d-c922a720d047 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: b9000564-fe1a-409b-b8cc-1e88b294cd1d] Took 0.48 seconds to deallocate network for instance.
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:19.050':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-c53a921a-16c7-422e-8c9d-c922a720d047':[A3-A1D2A1D3A1-D2A1D1-D3A1-D1A1D1A1-A1D3A1D3A1D3 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S14='Took':A4 | S15='0.48':D1.D2 | S16='seconds':A7 | S17='to':A2 | S18='deallocate':A10 | S19='network':A7 | S20='for':A3 | S21='instance.':A8.
+Example 1: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:01:01.080 2931 INFO nova.compute.manager [req-d473bea3-588a-441a-8b2a-a137806f8786 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4] Took 0.52 seconds to deallocate network for instance.
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:01:01.080':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-d473bea3-588a-441a-8b2a-a137806f8786':[A3-A1D3A3D1-D3A1-D3A1-D1A1D1A1-A1D6A1D4 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S14='Took':A4 | S15='0.52':D1.D2 | S16='seconds':A7 | S17='to':A2 | S18='deallocate':A10 | S19='network':A7 | S20='for':A3 | S21='instance.':A8.
+required_value_like_slots (24 sampled occurrences):
+Example 0: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:19.050':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-c53a921a-16c7-422e-8c9d-c922a720d047':[A3-A1D2A1D3A1-D2A1D1-D3A1-D1A1D1A1-A1D3A1D3A1D3 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S15='0.48':D1.D2 | S21='instance.':A8.
+Example 1: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:01:01.080':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-d473bea3-588a-441a-8b2a-a137806f8786':[A3-A1D3A3D1-D3A1-D3A1-D1A1D1A1-A1D6A1D4 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='96abccce-8d1f-4e07-b6d1-4b2ab87e23b4]':D2A6-D1A1D1A1-D1A1D2-A1D1A1D1-D1A1D1A2D2A1D2A1D1] | S15='0.52':D1.D2 | S21='instance.':A8.
+
+### FAMILY 7
+support=2
+template_anchor_key=info instance took seconds to spawn the instance on the hypervisor
+examples_and_shapes:
+Example 0: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:10.303 2931 INFO nova.compute.manager [req-8e64797b-fb99-4c8a-87e5-9a8de673412f 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: b9000564-fe1a-409b-b8cc-1e88b294cd1d] Took 19.05 seconds to spawn the instance on the hypervisor.
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:10.303':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-8e64797b-fb99-4c8a-87e5-9a8de673412f':[A3-D1A1D5A1-A2D2-D1A1D1A1-D2A1D1-D1A1D1A2D6A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S14='Took':A4 | S15='19.05':D2.D2 | S16='seconds':A7 | S17='to':A2 | S18='spawn':A5 | S19='the':A3 | S20='instance':A8 | S21='on':A2 | S22='the':A3 | S23='hypervisor.':A10.
+Example 1: nova-compute.log.1.2017-05-16_13:55:31 2017-05-16 00:00:18.571 2931 INFO nova.compute.manager [req-c53a921a-16c7-422e-8c9d-c922a720d047 113d3a99c3da401fbd62cc2caa5b96d2 54fadb412c4e40cdbaed9335e4c35a9e - - -] [instance: b9000564-fe1a-409b-b8cc-1e88b294cd1d] Took 1.03 seconds to destroy the instance on the hypervisor.
+Tokens: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:18.571':D2:D2:D2.D3 | S3='2931':D4 | S4='INFO':A4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-c53a921a-16c7-422e-8c9d-c922a720d047':[A3-A1D2A1D3A1-D2A1D1-D3A1-D1A1D1A1-A1D3A1D3A1D3 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S9='-':- | S10='-':- | S11='-]':-] | S12='[instance:':[A8: | S13='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S14='Took':A4 | S15='1.03':D1.D2 | S16='seconds':A7 | S17='to':A2 | S18='destroy':A7 | S19='the':A3 | S20='instance':A8 | S21='on':A2 | S22='the':A3 | S23='hypervisor.':A10.
+required_value_like_slots (24 sampled occurrences):
+Example 0: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:10.303':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-8e64797b-fb99-4c8a-87e5-9a8de673412f':[A3-D1A1D5A1-A2D2-D1A1D1A1-D2A1D1-D1A1D1A2D6A1 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S15='19.05':D2.D2 | S23='hypervisor.':A10.
+Example 1: S0='nova-compute.log.1.2017-05-16_13:55:31':A4-A7.A3.D1.D4-D2-D2_D2:D2:D2 | S1='2017-05-16':D4-D2-D2 | S2='00:00:18.571':D2:D2:D2.D3 | S3='2931':D4 | S5='nova.compute.manager':A4.A7.A7 | S6='[req-c53a921a-16c7-422e-8c9d-c922a720d047':[A3-A1D2A1D3A1-D2A1D1-D3A1-D1A1D1A1-A1D3A1D3A1D3 | S7='113d3a99c3da401fbd62cc2caa5b96d2':D3A1D1A1D2A1D1A2D3A3D2A2D1A3D1A1D2A1D1 | S8='54fadb412c4e40cdbaed9335e4c35a9e':D2A4D3A1D1A1D2A6D4A1D1A1D2A1D1A1 | S12='[instance:':[A8: | S13='b9000564-fe1a-409b-b8cc-1e88b294cd1d]':A1D7-A2D1A1-D3A1-A1D1A2-D1A1D2A1D3A2D1A1] | S15='1.03':D1.D2 | S23='hypervisor.':A10.

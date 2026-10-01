@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "process_tree_id",
+      "meaning": "structured process tree identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "raw_single_source",
+        "stored_source": "process_tree_id",
+        "context_source": null,
+        "why_not_merge_raw": "structured identifier with explicit separators"
+      },
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "org.apache.hadoop.yarn.util.WindowsBasedProcessTree@([0-9a-f]+)",
+      "replacement": "org.apache.hadoop.yarn.util.WindowsBasedProcessTree@{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0], 16)], 'layout': []}\n\ndef inverse(record):\n    return f'org.apache.hadoop.yarn.util.WindowsBasedProcessTree@{format(record[\"stored\"][0], \"x\")}'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

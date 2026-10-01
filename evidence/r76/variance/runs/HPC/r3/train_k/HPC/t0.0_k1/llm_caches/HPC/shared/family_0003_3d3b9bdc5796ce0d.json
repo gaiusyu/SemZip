@@ -1,0 +1,133 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure with changing fields that should be extracted into side streams.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "epoch_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{10})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Extract epoch timestamp and store as integer.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "UINT_DELTA",
+      "meaning": "epoch_timestamp",
+      "reason": "Extracted as a numeric timestamp for compression and exact reconstruction."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "node_identifier",
+      "reason": "Node identifier is a structured variable with stable affix and separator."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "clusterfilesystem_status",
+      "reason": "Cluster filesystem status is stable and does not vary significantly across examples."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "epoch_timestamp",
+      "reason": "Extracted as a numeric timestamp for compression and exact reconstruction."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "status_code",
+      "reason": "Status code is a simple numeric value that does not benefit from extraction."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "clusterfilesystem_label",
+      "reason": "Cluster filesystem label is stable and does not vary significantly across examples."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain_name",
+      "reason": "Domain name is a structured variable with stable affix and separator."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "node_name",
+      "reason": "Node name is a structured variable with stable affix and separator."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "node_identifier",
+      "meaning": "node_identifier_with_affix",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "(node-[A-Z]\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract node identifier with stable affix and separator.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "domain_name",
+      "meaning": "domain_name_with_structure",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "domain( +)([A-Za-z0-9_]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "Extract domain name with stable structure.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "node_name",
+      "meaning": "node_name_with_structure",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "node( +)(node-\\d+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "Extract node name with stable structure.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

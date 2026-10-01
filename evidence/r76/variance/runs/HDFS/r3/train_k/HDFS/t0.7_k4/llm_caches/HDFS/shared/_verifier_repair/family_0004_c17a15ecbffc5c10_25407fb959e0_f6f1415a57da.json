@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "timestamp",
+      "meaning": "log timestamp",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "regex": "^(\\d{6})( +)(\\d{6})",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    date_part = groups[0]  # The first 6 digits\n    space_part = groups[1]  # Spaces in between\n    time_part = groups[2]  # The second 6 digits\n\n    # Combine date_part and time_part into a complete datetime string\n    dt_string = date_part + time_part\n\n    # Parse the datetime string\n    dt = datetime.strptime(dt_string, '%y%m%d%H%M%S')\n\n    # Return the stored timestamp in milliseconds and the layout for spaces\n    return {\n        'stored': [int(dt.timestamp() * 1000)],\n        'layout': [len(space_part)]\n    }\n\ndef inverse(record):\n    millis = record['stored'][0]  # Retrieve the stored timestamp in milliseconds\n    space_length = record['layout'][0]  # Retrieve the length of spaces\n\n    # Convert the timestamp back to a datetime object\n    dt = datetime.fromtimestamp(millis / 1000)\n\n    # Format the datetime object back to the original format\n    dt_string = dt.strftime('%y%m%d%H%M%S')\n\n    # Reinsert the spaces based on the layout\n    date_part = dt_string[:6]  # First 6 digits are the date part\n    time_part = dt_string[6:]  # Next 6 digits are the time part\n    spaces = ' ' * space_length\n\n    return f\"{date_part}{spaces}{time_part}\"\n"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

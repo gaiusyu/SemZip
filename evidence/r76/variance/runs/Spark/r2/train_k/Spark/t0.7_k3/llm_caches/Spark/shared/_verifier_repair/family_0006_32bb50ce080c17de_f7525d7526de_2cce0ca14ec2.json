@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "estimated_size",
+      "meaning": "estimated block size",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "estimated size (\\d+(\\.\\d+)?) (B|KB|MB)",
+      "replacement": "estimated size {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = float(groups[0])\n    unit = groups[2]\n    multiplier = {'B': 1, 'KB': 1024, 'MB': 1024**2}[unit]\n    stored_value = int(round(value * multiplier))\n    return {'stored': [stored_value], 'layout': []}\n\ndef inverse(record):\n    bytes = record['stored'][0]\n    if bytes >= 1024**2:\n        value = bytes / 1024**2\n        unit = 'MB'\n    elif bytes >= 1024:\n        value = bytes / 1024\n        unit = 'KB'\n    else:\n        value = bytes\n        unit = 'B'\n    return f\"{value:.1f} {unit}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

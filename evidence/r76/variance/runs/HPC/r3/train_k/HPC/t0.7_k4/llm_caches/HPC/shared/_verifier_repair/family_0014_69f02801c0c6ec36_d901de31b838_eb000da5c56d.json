@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "network_endpoint",
+      "meaning": "composed network endpoint address and interface",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "network (\\d+\\.\\d+\\.\\d+\\.\\d+) via interface ([A-Za-z0-9]+)",
+      "replacement": "network {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    network = groups[0]\n    interface = groups[1]\n    return {'stored': [network, interface], 'layout': []}\n\ndef inverse(record):\n    network, interface = record['stored']\n    return f'network {network} via interface {interface}'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

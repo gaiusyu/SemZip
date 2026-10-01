@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "size_with_units",
+      "meaning": "file size with optional unit display",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\(size: ([0-9]+\\.[0-9]+) ([A-Za-z]+),",
+      "replacement": "(size: {placeholder},",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = float(groups[0])\n    unit = groups[1]\n    layout = [unit]\n    if unit == 'KB':\n        value *= 1024\n    elif unit == 'MB':\n        value *= 1024 * 1024\n    elif unit == 'B':\n        value = round(value)\n    return {'stored': [int(round(value))], 'layout': layout}\n\ndef inverse(record):\n    value = record['stored'][0]\n    unit = record['layout'][0]\n    if unit == 'KB':\n        value = value / 1024\n    elif unit == 'MB':\n        value = value / (1024 * 1024)\n    return f\"{value:.1f} {unit}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

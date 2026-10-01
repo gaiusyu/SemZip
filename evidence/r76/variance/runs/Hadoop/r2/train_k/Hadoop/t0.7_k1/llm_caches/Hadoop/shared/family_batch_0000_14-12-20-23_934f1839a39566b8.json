@@ -1,0 +1,359 @@
+{
+  "families": [
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "2015-10-17",
+              "15:37:59,503"
+            ],
+            "reason": "date and time together represent a timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_task_attempt_id",
+            "tokens": [
+              "attempt_1445062781478_0011_m_000000_0"
+            ],
+            "reason": "the captured value contains multiple structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "contains a consistent log prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "used for timing information"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "task_attempt_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "fields are part of a single semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = f\"{groups[0]} {groups[1]}\"\n    dt_obj = datetime.strptime(dt, '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt_obj.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    ts = int(record['stored'][0])\n    dt_obj = datetime.fromtimestamp(ts / 1000)\n    return dt_obj.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "task_attempt_id",
+          "meaning": "task_attempt_identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "task_attempt_id",
+            "context_source": null,
+            "why_not_merge_raw": "entire span represents one variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "attempt_[0-9]+_[0-9]+_[a-z]_[0-9]+_[0-9]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "contains a consistent log prefix"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 20,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "2015-10-17",
+              "15:38:01,855"
+            ],
+            "reason": "date and time together represent a timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_container_id",
+            "tokens": [
+              "container_1445062781478_0011_01_000002"
+            ],
+            "reason": "the captured value contains multiple structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "contains a consistent log prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "used for timing information"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "container_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "fields are part of a single semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = f\"{groups[0]} {groups[1]}\"\n    dt_obj = datetime.strptime(dt, '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt_obj.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    ts = int(record['stored'][0])\n    dt_obj = datetime.fromtimestamp(ts / 1000)\n    return dt_obj.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "container_id",
+          "meaning": "container_identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "container_id",
+            "context_source": null,
+            "why_not_merge_raw": "entire span represents one variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "container_[0-9]+_[0-9]+_[0-9]+_[0-9]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 23,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "2015-10-17",
+              "15:38:04,375"
+            ],
+            "reason": "date and time together represent a timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "jvm_task_id",
+            "tokens": [
+              "jvm_1445062781478_0011_m_000005"
+            ],
+            "reason": "the captured value contains multiple structural separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "task_attempt_id",
+            "tokens": [
+              "attempt_1445062781478_0011_m_000005_0"
+            ],
+            "reason": "the captured value contains multiple structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "contains a consistent log prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "used for timing information"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "jvm_id",
+          "attempt_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "fields are part of a single semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = f\"{groups[0]} {groups[1]}\"\n    dt_obj = datetime.strptime(dt, '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt_obj.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    ts = int(record['stored'][0])\n    dt_obj = datetime.fromtimestamp(ts / 1000)\n    return dt_obj.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "jvm_id",
+          "meaning": "jvm_identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "jvm_id",
+            "context_source": null,
+            "why_not_merge_raw": "entire span represents one variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "jvm_[0-9]+_[0-9]+_[a-z]_[0-9]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "task_attempt_id",
+          "meaning": "task_attempt_identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "task_attempt_id",
+            "context_source": null,
+            "why_not_merge_raw": "entire span represents one variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "attempt_[0-9]+_[0-9]+_[a-z]_[0-9]+_[0-9]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

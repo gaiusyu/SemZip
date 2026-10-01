@@ -1,0 +1,172 @@
+# every strict / template violation of every unique code (V2 validator, unchanged).
+# columns: rule | origin | detail | line:col | offending source line
+
+== code 2010036652c6ed6f3126f2ea1a2eb23aca4bf7ad814b6bccb209b62b2b98246d kind=python_exec strict=REJECT template=ACCEPT wrapped=True author=LLM (+runtime wrapper if wrapped) in_earlier_89=False
+   groups: R76C_variance_gate_or_pool_eval_plan[supp], R76C_variance_gated_candidate_plan, R76C_variance_synthesis_replay_plan, R76C_variance_synthesis_training_archive_metadata[supp]
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_forward' | 1:0 | def _orig_forward(groups):
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_inverse' | 4:0 | def _orig_inverse(record):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_space_lengths' | 7:0 | def _space_lengths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_digit_widths' | 20:0 | def _digit_widths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_space_lengths' | 33:0 | def _apply_space_lengths(text, lengths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_digit_widths' | 52:0 | def _apply_digit_widths(text, widths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_forward' | 75:11 |     base = _orig_forward([raw])
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_space_lengths' | 77:13 |     spaces = _space_lengths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_digit_widths' | 78:13 |     widths = _digit_widths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_inverse' | 104:11 |     text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_space_lengths' | 105:11 |     text = _apply_space_lengths(text, spaces)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_digit_widths' | 106:11 |     text = _apply_digit_widths(text, widths)
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 10:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 23:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 37:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 56:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 13:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 26:12 |             while i < len(text) and text[i].isdigit():
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 40:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 59:12 |             while i < len(text) and text[i].isdigit():
+
+== code 214c207667408dacadfef883c68d5af4e1043f6b55149dda2869fc20105c4ad7 kind=python_exec strict=REJECT template=ACCEPT wrapped=True author=LLM (+runtime wrapper if wrapped) in_earlier_89=True
+   groups: R73_g1_synthesis_replay_plan, R73_g1_synthesis_training_archive_metadata[supp]
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_forward' | 1:0 | def _orig_forward(groups):
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_inverse' | 6:0 | def _orig_inverse(record):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_space_lengths' | 11:0 | def _space_lengths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_digit_widths' | 24:0 | def _digit_widths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_space_lengths' | 37:0 | def _apply_space_lengths(text, lengths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_digit_widths' | 56:0 | def _apply_digit_widths(text, widths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_forward' | 79:11 |     base = _orig_forward([raw])
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_space_lengths' | 81:13 |     spaces = _space_lengths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_digit_widths' | 82:13 |     widths = _digit_widths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_inverse' | 108:11 |     text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_space_lengths' | 109:11 |     text = _apply_space_lengths(text, spaces)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_digit_widths' | 110:11 |     text = _apply_digit_widths(text, widths)
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 14:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 27:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 41:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 60:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 17:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 30:12 |             while i < len(text) and text[i].isdigit():
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 44:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 63:12 |             while i < len(text) and text[i].isdigit():
+
+== code 3728f68947e15bf6db49345234016f01eaee3b3546eb32d91632b9f5105e9608 kind=python_exec strict=REJECT template=ACCEPT wrapped=True author=LLM (+runtime wrapper if wrapped) in_earlier_89=True
+   groups: R73_g1_synthesis_replay_plan, R73_g1_synthesis_training_archive_metadata[supp]
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_forward' | 1:0 | def _orig_forward(groups):
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_inverse' | 6:0 | def _orig_inverse(record):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_space_lengths' | 11:0 | def _space_lengths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_digit_widths' | 24:0 | def _digit_widths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_space_lengths' | 37:0 | def _apply_space_lengths(text, lengths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_digit_widths' | 56:0 | def _apply_digit_widths(text, widths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_forward' | 79:11 |     base = _orig_forward([raw])
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_space_lengths' | 81:13 |     spaces = _space_lengths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_digit_widths' | 82:13 |     widths = _digit_widths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_inverse' | 108:11 |     text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_space_lengths' | 109:11 |     text = _apply_space_lengths(text, spaces)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_digit_widths' | 110:11 |     text = _apply_digit_widths(text, widths)
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 14:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 27:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 41:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 60:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 17:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 30:12 |             while i < len(text) and text[i].isdigit():
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 44:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 63:12 |             while i < len(text) and text[i].isdigit():
+
+== code 666c87d099edee14c3037f99cee379e85b7e0ac9482905e7c317de48d1a4816e kind=python_exec strict=REJECT template=ACCEPT wrapped=True author=LLM (+runtime wrapper if wrapped) in_earlier_89=False
+   groups: R76C_variance_gate_or_pool_eval_plan[supp], R76C_variance_gated_candidate_plan, R76C_variance_synthesis_replay_plan, R76C_variance_synthesis_training_archive_metadata[supp]
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_forward' | 1:0 | def _orig_forward(groups):
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_inverse' | 4:0 | def _orig_inverse(record):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_space_lengths' | 7:0 | def _space_lengths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_digit_widths' | 20:0 | def _digit_widths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_space_lengths' | 33:0 | def _apply_space_lengths(text, lengths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_digit_widths' | 52:0 | def _apply_digit_widths(text, widths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_forward' | 75:11 |     base = _orig_forward([raw])
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_space_lengths' | 77:13 |     spaces = _space_lengths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_digit_widths' | 78:13 |     widths = _digit_widths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_inverse' | 104:11 |     text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_space_lengths' | 105:11 |     text = _apply_space_lengths(text, spaces)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_digit_widths' | 106:11 |     text = _apply_digit_widths(text, widths)
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 10:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 23:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 37:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 56:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 13:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 26:12 |             while i < len(text) and text[i].isdigit():
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 40:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 59:12 |             while i < len(text) and text[i].isdigit():
+
+== code 929bc1757eb5b9bd4be581fc4987f6f3d08c0a87bbce33f2e3b540fb98deb112 kind=python_exec strict=REJECT template=ACCEPT wrapped=True author=LLM (+runtime wrapper if wrapped) in_earlier_89=False
+   groups: R73_g1_synthesis_replay_plan, R73_g1_synthesis_training_archive_metadata[supp]
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_forward' | 1:0 | def _orig_forward(groups):
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_inverse' | 4:0 | def _orig_inverse(record):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_space_lengths' | 8:0 | def _space_lengths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_digit_widths' | 21:0 | def _digit_widths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_space_lengths' | 34:0 | def _apply_space_lengths(text, lengths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_digit_widths' | 53:0 | def _apply_digit_widths(text, widths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_forward' | 76:11 |     base = _orig_forward([raw])
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_space_lengths' | 78:13 |     spaces = _space_lengths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_digit_widths' | 79:13 |     widths = _digit_widths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_inverse' | 105:11 |     text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_space_lengths' | 106:11 |     text = _apply_space_lengths(text, spaces)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_digit_widths' | 107:11 |     text = _apply_digit_widths(text, widths)
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 11:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 24:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 38:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 57:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 14:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 27:12 |             while i < len(text) and text[i].isdigit():
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 41:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 60:12 |             while i < len(text) and text[i].isdigit():
+
+== code b5354089f4996a9a4dfdf1919a60496f0eb1a14352664f5e400e4169bcb1ba0c kind=python_exec strict=REJECT template=ACCEPT wrapped=True author=LLM (+runtime wrapper if wrapped) in_earlier_89=True
+   groups: R73_g1_synthesis_replay_plan, R73_g1_synthesis_training_archive_metadata[supp], R76C_variance_gate_or_pool_eval_plan[supp], R76C_variance_gated_candidate_plan, R76C_variance_pool_selected_plan, R76C_variance_publication, R76C_variance_synthesis_replay_plan, R76C_variance_synthesis_training_archive_metadata[supp]
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_forward' | 1:0 | def _orig_forward(groups):
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_inverse' | 6:0 | def _orig_inverse(record):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_space_lengths' | 11:0 | def _space_lengths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_digit_widths' | 24:0 | def _digit_widths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_space_lengths' | 37:0 | def _apply_space_lengths(text, lengths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_digit_widths' | 56:0 | def _apply_digit_widths(text, widths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_forward' | 79:11 |     base = _orig_forward([raw])
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_space_lengths' | 81:13 |     spaces = _space_lengths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_digit_widths' | 82:13 |     widths = _digit_widths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_inverse' | 108:11 |     text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_space_lengths' | 109:11 |     text = _apply_space_lengths(text, spaces)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_digit_widths' | 110:11 |     text = _apply_digit_widths(text, widths)
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 14:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 27:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 41:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 60:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 17:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 30:12 |             while i < len(text) and text[i].isdigit():
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 44:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 63:12 |             while i < len(text) and text[i].isdigit():
+
+== code e2836ed0901f65c55ed62ee7dc11224fd7d8a5cf128539469fa3d41c599f4c5c kind=python_exec strict=REJECT template=ACCEPT wrapped=True author=LLM (+runtime wrapper if wrapped) in_earlier_89=True
+   groups: R73_g1_synthesis_replay_plan, R73_g1_synthesis_training_archive_metadata[supp], R76C_variance_gate_or_pool_eval_plan[supp], R76C_variance_gated_candidate_plan, R76C_variance_pool_selected_plan, R76C_variance_publication, R76C_variance_synthesis_replay_plan, R76C_variance_synthesis_training_archive_metadata[supp]
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_forward' | 1:0 | def _orig_forward(groups):
+   STRICT  E_UNDERSCORE | runtime_entrypoint_rename | definition name '_orig_inverse' | 6:0 | def _orig_inverse(record):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_space_lengths' | 11:0 | def _space_lengths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_digit_widths' | 24:0 | def _digit_widths(text):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_space_lengths' | 37:0 | def _apply_space_lengths(text, lengths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | definition name '_apply_digit_widths' | 56:0 | def _apply_digit_widths(text, widths):
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_forward' | 79:11 |     base = _orig_forward([raw])
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_space_lengths' | 81:13 |     spaces = _space_lengths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_digit_widths' | 82:13 |     widths = _digit_widths(raw)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_orig_inverse' | 108:11 |     text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_space_lengths' | 109:11 |     text = _apply_space_lengths(text, spaces)
+   STRICT  E_UNDERSCORE | runtime_fixed_wrapper | name '_apply_digit_widths' | 110:11 |     text = _apply_digit_widths(text, widths)
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 14:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 27:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 41:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 60:4 |     while i < len(text):
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 17:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 30:12 |             while i < len(text) and text[i].isdigit():
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 44:12 |             while i < len(text) and text[i] == ' ':
+   warn    W_WHILE | runtime_fixed_wrapper | while loop (unbounded iteration count) | 63:12 |             while i < len(text) and text[i].isdigit():
+
+== code 318fb57b59068a2918e2cbacd42e04ac13a71ea2af51ba117059d3a35d028f47 kind=python_exec strict=ACCEPT template=ACCEPT wrapped=False author=hand-written library in_earlier_89=False
+   groups: R76B2_library(hand-written)_gate_eval_plan[supp], R76B2_library(hand-written)_gated_plan, R76B2_library(hand-written)_publication, R76B2_library(hand-written)_synthesis_replay_plan, R76B2_library(hand-written)_synthesis_training_archive_metadata[supp]
+   warn    W_WHILE | program_body | while loop (unbounded iteration count) | 38:4 |     while i < 12:
+
+== code bcad91b27582c64028ea8c81ebe723f40c579d9a835c76cf795633ed2f8ddf39 kind=python_exec strict=ACCEPT template=ACCEPT wrapped=False author=hand-written library in_earlier_89=False
+   groups: R76B2_library(hand-written)_gate_eval_plan[supp], R76B2_library(hand-written)_gated_plan, R76B2_library(hand-written)_publication, R76B2_library(hand-written)_synthesis_replay_plan, R76B2_library(hand-written)_synthesis_training_archive_metadata[supp]
+   warn    W_WHILE | program_body | while loop (unbounded iteration count) | 29:4 |     while i < 4:
+

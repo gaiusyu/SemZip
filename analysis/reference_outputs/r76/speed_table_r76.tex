@@ -1,21 +1,21 @@
 \begin{table}[t]\centering\small
-\caption{Throughput in decimal MB/s of original input (encode/decode; medians of three clean serialized trials, four block workers). Session A: the twelve files no larger than BGL, geometric mean. Session B: a later session on the same files for the new baselines, with \tool\ and DeLog re-timed as anchors; geometric mean. Large: byte-weighted over twenty systematically sampled blocks of each of the four larger files. --: not timed.}
+\caption{Throughput in decimal MB/s of original input (encode/decode; medians of three clean serialized trials, four block workers). Small: geometric mean over the twelve files no larger than BGL (one session). Large: byte-weighted over twenty systematically sampled blocks each of HDFS and Thunderbird, the larger files on which every method restores all sampled blocks (all four larger files: text and supplement). --: not timed.}
 \label{tab:external-speed}
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{lrrrrrr}
+\begin{tabular}{lrrrr}
 \toprule
- & \multicolumn{2}{c}{Session A} & \multicolumn{2}{c}{Session B} & \multicolumn{2}{c}{Large} \\
-Method & Enc. & Dec. & Enc. & Dec. & Enc. & Dec. \\
+ & \multicolumn{2}{c}{Small} & \multicolumn{2}{c}{Large} \\
+Method & Enc. & Dec. & Enc. & Dec. \\
 \midrule
-\tool & 1.71 & 7.38 & -- & -- & -- & -- \\
-DeLog & 8.79 & 15.68 & -- & -- & -- & -- \\
-LogLite-BL* & 9.15 & 17.25 & -- & -- & -- & -- \\
-gzip6 & 16.64 & 26.78 & -- & -- & -- & -- \\
-XZ6 & 5.55 & 21.31 & -- & -- & -- & -- \\
-Zstd3 & 18.20 & 27.53 & -- & -- & -- & -- \\
-XZ9e & -- & -- & -- & -- & -- & -- \\
-Zstd19 & -- & -- & -- & -- & -- & -- \\
-LogShrink+R* & -- & -- & -- & -- & -- & -- \\
-LogReducer+R* & -- & -- & -- & -- & -- & -- \\
+\tool & 1.71 & 7.38 & 9.28 & 52.59 \\
+DeLog & 8.79 & 15.68 & 23.00 & 70.87 \\
+LogLite-BL* & 9.15 & 17.25 & 23.83 & 93.41 \\
+gzip6 & 16.64 & 26.78 & 86.56 & 168.71 \\
+XZ6 & 5.55 & 21.31 & 11.85 & 133.08 \\
+Zstd3 & 18.20 & 27.53 & 131.36 & 183.90 \\
+XZ9e & -- & -- & 2.36 & 118.95 \\
+Zstd19 & -- & -- & 4.60 & 142.42 \\
+LogShrink+R* & -- & -- & 0.76 & 1.78 \\
+LogReducer+R* & -- & -- & 0.91 & 1.21 \\
 \bottomrule
 \end{tabular}\end{table}

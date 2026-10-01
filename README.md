@@ -27,8 +27,10 @@ the archive.
   binaries), the 16 main deployments (`deployments/main_pool/`) and the 16 SemZip-1 deployments
   (`deployments/<Dataset>/`), all synthesis transcripts and selection records of the main result and of
   SemZip-1, all complete-file results, timing records, ablations, safety checks and the analysis generators.
-  For the R76 repeats (`evidence/r76/variance/`) and the rule-library control (`evidence/r76/library/`) only
-  the result records are included (see the track READMEs).
+  The R76 tracks include, besides their result records, the syntheses, selection records and published plans of the
+  repeats (`evidence/r76/variance/`) and of the unseen-source runs (`evidence/r76/unseen/`), the published plans and
+  gate records of the rule-library control (`evidence/r76/library/`), and their code as found on the execution host
+  (`evidence/r76/CODE_PROVENANCE.md`).
 * **Not included:** raw logs (LogHub; fetched by `scripts/prepare_data.py` and verified by SHA-256),
   including the 16 SemZip-1 training samples, which are LogHub excerpts and are rebuilt from the fetched logs by
   `offline_evidence/tools/rebuild_samples.py`; third-party baseline sources (fetched at pinned commits by
@@ -51,13 +53,21 @@ the archive.
 | `scripts/` | `prepare_data.py` (fetch + verify LogHub), `compare_to_formal.py` (replay vs recorded archive), `audit_bundle.py`, `report.py` |
 | `evidence/selection/` | main result: five syntheses per dataset with transcripts (`syntheses/`), quality gate (`selection/gate/`), pooled selection (`selection/pool/`), formal complete-file runs (`results/formal/pool`, `results/formal/qg1c0`), held-out evaluations, selection cost (`results/COST.json`), formal timing runs (`results/timing/`), and the drivers that produced them (`code/`) |
 | `evidence/evolution/` | online evolution (per-block program-free fallback measurement, Thunderbird and Spark evolution runs, updates with their syntheses, pre-registered design `DEV_DESIGN_R75_zh.md`) |
-| `evidence/r76/` | additional baselines and controls: `attribution/`, `baselines/{denum,logreducer,logshrink}/`, `codecs/`, `library/`, `rq2/` (matched replay), `variance/`, `safety/`, `timing/`, with pre-registered design `DEV_DESIGN_R76_zh.md`; provenance of every code file in `CODE_PROVENANCE.md` |
+| `evidence/r76/` | additional baselines and controls: `attribution/`, `baselines/{denum,logreducer,logshrink}/`, `codecs/`, `library/`, `rq2/` (matched replay), `variance/`, `safety/`, `timing/`, `unseen/` (four web-server access logs never used during development), `delogcheck/` (DeLog whole-file CLI versus our block adapter), with pre-registered design `DEV_DESIGN_R76_zh.md` and the shared launcher `launch.sh`; provenance of every code file in `CODE_PROVENANCE.md` |
 | `evidence/reference/` | complete-file reference identities (`r71_complete_file_reference.json`, see "Notes on this copy") and the published (literature-only) baseline numbers |
 | `analysis/` | table/text generators (`r73/`, `r76/`), `stage_layout.py`, `run_all.sh`, recorded outputs (`reference_outputs/`) |
 | `results/`, `integration/` | SemZip-1 and external-baseline complete-file results (`results/final/`), suffix (held-out) accounting (`results/suffix/`), their validator and renderers |
 | `external/` | external-codec harness (`codec_baseline.py`), LogLite adapter + patch, pinned upstream identities (`manifest.json`, `SETUP.md`), `upstreams.conf` + `fetch_baselines.sh` |
 | `offline_evidence/`, `validation_controls/`, `historical_*`, `source_study_evidence/` | SemZip-1 training transcripts and sample identities (samples rebuilt by `offline_evidence/tools/rebuild_samples.py`), replay/observer controls, historical development evidence, and the logging-source study |
 | `docs/` | data assembly (`DATA.md`), result schema, and the detailed SemZip-1 replay contract (`R71_ARTIFACT_README.md`) |
+
+### Wording edits in the manuscript inputs
+
+Five inputs that the earlier generators (`analysis/r73/`) produce were edited by hand in the manuscript for wording
+only; no number changed: `stability_text.tex` (threshold and denominator of the greedy-repeat sentence stated, one
+sentence that repeated the attribution ladder removed), `selection_cost_text.tex` (elapsed vs. summed time),
+`supp_selection.tex` (caption note on block-0 bytes), `selected_formal_table.tex` (cohort label), and
+`transfer_text.tex` (minus signs). `analysis/run_all.sh` therefore reproduces these files as generated, before the edits.
 
 ## Requirements
 
@@ -85,10 +95,10 @@ bash analysis/run_all.sh ../semzip-analysis-stage                # regenerate ev
 
 `run_all.sh` rebuilds the original record layout with symbolic links (`analysis/stage_layout.py`),
 runs the R73 generators (selection, stability, evolution, external tables) and the R76 generators
-(external ratios, attribution ladder, repeats, matched replay, library, safety, speed), and writes
-`paper_out/` directories inside the stage. Compare them with `analysis/reference_outputs/{r73,r76}/`;
-on the packaged records all 41 regenerated `.tex`/`.json` outputs are byte-identical to the recorded
-ones (`skeleton_coverage.json` is seeded from the recorded output because it needs the raw logs; the
+(external ratios, attribution ladder, repeats, matched replay, library, safety, speed, unseen sources), and writes
+`paper_out/` directories inside the stage, and byte-compares them with `analysis/reference_outputs/{r73,r76}/`
+(it exits non-zero if any differs); on the packaged records all 45 regenerated `.tex`/`.json` outputs are
+byte-identical to the recorded ones (`skeleton_coverage.json` is seeded from the recorded output because it needs the raw logs; the
 `paper_out/` directories additionally hold the figures). No experiment or model call is run.
 
 ## Fetch a LogHub dataset and verify it
@@ -152,15 +162,17 @@ process and adds the per-block audit and suffix accounting. It expects the origi
 
 | Paper element | Generator | Records |
 |---|---|---|
-| Complete-file ratios vs. baselines (external ratio table) and suffix ratios | `analysis/r76/r76_tables.py` → `external_ratio_table.tex`, `rq1_text.tex`, `supp_external.tex` | SemZip: `evidence/selection/results/formal/pool/`; DeLog, LogLite-BL, gzip6, XZ6, Zstd3: `results/final/anonymous_results.json`, `results/suffix/`; XZ9e, Zstd19, Zstd22-long, Zstd19+dict, DeLog-generic: `evidence/r76/codecs/full_20260929/`; LogShrink(+R): `evidence/r76/baselines/logshrink/full_official/`; LogReducer(+R): `evidence/r76/baselines/logreducer/full/`; Denum (lossiness proofs): `evidence/r76/baselines/denum/`; LogFold/LogPrism (literature only): `evidence/reference/published_baseline_reference_20260915.json` |
+| Complete-file ratios vs. baselines (external ratio table) and suffix ratios | `analysis/r76/r76_tables.py` → `external_ratio_table.tex`, `rq1_text.tex`, `supp_external.tex` | SemZip: `evidence/selection/results/formal/pool/`; DeLog, LogLite-BL, gzip6, XZ6, Zstd3: `results/final/anonymous_results.json`, `results/suffix/`; XZ9e, Zstd19, Zstd22-long, Zstd19+dict, DeLog-generic: `evidence/r76/codecs/full_20260929/`; LogShrink(+R): `evidence/r76/baselines/logshrink/full_official/`; LogReducer(+R): `evidence/r76/baselines/logreducer/full/` (15 of 16 files; Spark is a terminal failure, printed as `--`); Denum (lossiness proofs): `evidence/r76/baselines/denum/`; LogFold/LogPrism (literature only): `evidence/reference/published_baseline_reference_20260915.json` |
 | Attribution ladder (empty program → SemZip-1 → gated → selection; library; DeLog-generic) | `analysis/r76/ladder.py`, `r76_tables.py` → `attribution_table.tex`, `rq2_text.tex` | empty program: `evidence/r76/attribution/`; SemZip-1: `results/final/`; gated c0: `evidence/selection/results/formal/qg1c0/`; library: `evidence/r76/library/` |
 | Matched replay (latent vs. literal storage of the same matched spans) | `r76_tables.py` | `evidence/r76/rq2/` (`RESULTS.json`, per-dataset `DESIGN.json`, harness in `code/`) |
 | Repeats of the complete pipeline (HPC, HDFS, Hadoop, Spark) | `r76_tables.py` → `repeats_table.tex`, `rq3_repeats_text.tex` | run 1: `evidence/selection/`; runs 2–3: `evidence/r76/variance/runs/<Dataset>/r{2,3}/` |
 | Synthesis variability, quality gate, selection, block-0 → file transfer | `analysis/r73/stability_tex.py`, `supplement_tex.py` → `stability_*.tex`, `transfer_text.tex`, `supp_selection.tex` | `evidence/selection/syntheses/`, `selection/gate/`, `selection/pool/`, `results/heldout/`, `results/SUMMARY.json` |
 | Selection cost (model calls, synthesis time, block-0 evaluations) | `stability_tex.py` → `selection_cost_*.tex` | `evidence/selection/results/COST.json` |
-| Speed (serialized formal sessions, byte-weighted throughput) | `analysis/r73/paper_tables.py` (session A), `r76_tables.py` → `speed_table_r76.tex`, `cost_text.tex` | session A: `evidence/selection/results/timing/` and `supplementary/timing_SUMMARY.json`; new baselines / large-file samples: `evidence/r76/timing/` |
+| Speed table (serialized formal sessions; Small = the earlier session A on the twelve files no larger than BGL, geometric mean; Large = session T3, byte-weighted over 20 sampled blocks of each of the four larger files) | `analysis/r73/paper_tables.py` (session A), `r76_tables.py` → `speed_table_r76.tex`, `cost_text.tex`, `supp_timing.tex` (supplement: per-file large-file throughput) | Small: `evidence/selection/results/timing/` and `supplementary/timing_SUMMARY.json`; Large: `evidence/r76/timing/runs/T3/` (`SUMMARY_T3.json`, per-trial `result.json`, `DESIGN_*.json`). Session T2 (new baselines on the small files) was stopped by design and is incomplete; its partial records in `evidence/r76/timing/runs/T2/` are not used, so the table has no Session B column |
+| Unseen sources (four LBL ITA web-server access logs; table `tab:unseen`, its text, and the supplement's suffix table) | `r76_tables.py` → `unseen_table.tex`, `unseen_text.tex`, `supp_unseen.tex` (and one sentence of `abstract_results.tex`) | `evidence/r76/unseen/` (`summary_all.json`; inputs and SHA-256 identities with the public download URLs: `inputs.json`; SemZip runs: `runs/<Dataset>/r1/`; baselines: `baselines/main/`, `baselines/logreducer/`, `baselines/logshrink/`) |
+| DeLog: measured on our inputs versus published (supplement table `tab:delog-published`; one sentence of `rq1_text.tex`) | `r76_tables.py` → `supp_r76.tex`, `rq1_text.tex` | measured: `results/final/anonymous_results.json`; published: DeLog paper, Table 5 (constant `PUBDL` in `r76_tables.py`); whole-file official CLI check that reproduces our block-adapter numbers (Linux 27.60x, BGL 40.33x): `evidence/r76/delogcheck/` |
 | Online evolution and per-block program-free fallback | `analysis/r73/evolution_tex.py` → `evolution_rq4_text.tex`, `evolution_supp.tex` | `evidence/evolution/` |
-| Decode-time safety boundary of generated code | `r76_tables.py` (supplement) | `evidence/r76/safety/` (static AST allow-list validator V1/V2, archive scan, enforcing decoder, negative controls, full verification runs) |
+| Decode-time safety boundary of generated code | `r76_tables.py` (supplement) | `evidence/r76/safety/` (static AST allow-list validator V1/V2, archive scan, enforcing decoder, negative controls, full verification runs; `coverage_20261002/`: the same V2 check over the repeated greedy syntheses, the complete reruns, the unseen-source runs and the rule library) |
 | Logging-source study (motivation) | `source_study_evidence/verify_source_study.py` | `source_study_evidence/q1`, `q2` |
 | SemZip-1 training transcripts and replay controls | — | `offline_evidence/`, `validation_controls/` |
 
@@ -209,20 +221,19 @@ are tied to the recorded plans in `deployments/main_pool/` and transcripts in `e
 * The native binaries are Linux x86-64 builds. Other platforms need a rebuild (see above); archive
   bytes may then differ while the SHA-256 round trip must still hold.
 * Timing in `replay.py` is diagnostic. The paper's throughput comes from serialized sessions on a shared
-  host (`evidence/selection/results/timing/`); expect different absolute numbers on other machines. The formal
-  R76 timing sessions (T2: new baselines on 12 files; T3: 20 sampled blocks of the four large files) had not
-  finished when this repository was assembled: `evidence/r76/timing/` holds only smoke runs, `r76_tables.py`
-  prints `--` for every Session B and large-file speed cell, and this copy backs no speed number of XZ9e,
-  Zstd19, LogShrink+R or LogReducer+R.
-* The LogReducer(+R) records (`evidence/r76/baselines/logreducer/full/`) are a snapshot taken during a resumed
-  rerun; Zookeeper's valid PASS `result.json` is not used by the tables because its `status.json` reads
-  `RUNNING`, and Thunderbird has no result yet (details in that track's README).
+  host (`evidence/selection/results/timing/`, `evidence/r76/timing/runs/T3/`); expect different absolute numbers on
+  other machines. The large-file speeds are measured on 20 sampled blocks per file, not on whole files. The R76
+  small-file session T2 was stopped by design and is incomplete (`evidence/r76/timing/runs/T2/INCOMPLETE.md`), so no
+  small-file speed of XZ9e, Zstd19, LogShrink+R or LogReducer+R is reported.
+* LogReducer+R restores 15 of the 16 files byte-exactly (Thunderbird, the last to finish, 45.24x with 2,113/2,113
+  blocks SHA-verified); Spark is a terminal failure, so its cell and the LogReducer+R aggregate rows print `--`
+  (`evidence/r76/baselines/logreducer/README.md`).
 * Generated code is executed in-process at decode time; the frozen decoder trusts its archives. The
   safety track documents this boundary and provides a validating decoder (`evidence/r76/safety/`).
-* Two R76 formal `result.json` files are stored in compacted form to keep the repository small (see "Notes on
-  this copy").
-* Code of the R76 tracks is checked against hashes recorded by the runs where such hashes exist; the rest is
-  marked as mirror copies, and a few auxiliary scripts are not included (`evidence/r76/CODE_PROVENANCE.md`).
+* Two R76 formal `result.json` files and the safety coverage record `coverage_check_result.json` are stored in
+  compacted form to keep the repository small (see "Notes on this copy").
+* Code of the R76 tracks was copied from the execution host and is checked against hashes recorded by the runs where
+  such hashes exist (`evidence/r76/CODE_PROVENANCE.md`, which also lists what is not included).
 * Correctness evidence is finite validation of these inputs and programs, not a proof for arbitrary
   generated code or inputs.
 
@@ -234,7 +245,8 @@ are tied to the recorded plans in `deployments/main_pool/` and transcripts in `e
 * The storage policies' free-text `proposal_source` field was edited in this copy. The runtime does not read it, so
   archives are unaffected. `storage_sha256` in `metadata/deployments.json` and `metadata/deployments_main_pool.json`
   is the hash of the published file; `storage_sha256_as_run` (main deployments) and
-  `metadata/storage_policy_hashes.json` (every edited policy) give the hash recorded by the runs.
+  `metadata/storage_policy_hashes.json` (every edited policy, including the published policies of the R76 repeats,
+  unseen-source runs and rule library) give the hash recorded by the runs.
 * Gated-c0 rung (`evidence/selection/results/formal/qg1c0/`): the plans are
   `evidence/selection/selection/gate/c0/<Dataset>/selected_plan.json`; the storage policies of that run are included
   for 9 of the 14 datasets (equal to the policies in `evidence/selection/deployments_selected/`), but not for
@@ -249,13 +261,32 @@ are tied to the recorded plans in `deployments/main_pool/` and transcripts in `e
   entries are replaced by their count and the SHA-256 of their canonical JSON (`_compaction` in each file gives
   the original size and SHA-256). The analysis generators read only retained fields. The 11 MB aggregate
   `evidence/r76/codecs/full_20260929/results.json` is omitted; the per-trial records it aggregates are included.
-* `evidence/r76/attribution/plans/` was regenerated for this copy and is byte-identical to the plans that were
-  run (hash check in `evidence/r76/attribution/README.md`).
+* `evidence/r76/safety/coverage_20261002/coverage_check_result.json` (15 MB) is compacted to 4.4 MB: in the file
+  records of its supplementary scope (training-archive metadata and gate/pool evaluation plans, 3,495 records), the
+  per-occurrence code list is replaced by its count, its distinct code keys and the SHA-256 of its canonical JSON;
+  every main-scope file record, every per-code verdict (with the code and each violation) and every summary are kept
+  (`_compaction` in the file). No generator reads this file.
+* `evidence/r76/attribution/plans/` was regenerated for this copy; it is byte-identical to the plans of the original
+  run on the execution host and to the hashes recorded by the runs (`evidence/r76/attribution/README.md`).
 * `evidence/reference/r71_complete_file_reference.json` is an earlier (R71) reference used by `formal_full.py`
   only for the raw identity, byte count and block count of each input. Its plan hashes and archive sizes refer to
   superseded development plans that are not shipped and are not the SemZip-1 or main-result deployments.
 * `source/.gitignore` belongs to the frozen source snapshot and lists the two backend binaries; they are
   nevertheless tracked in this repository.
+* Local wall-clock times of the execution host were converted to UTC in this copy: time strings and time-tagged file and
+  directory names of the R76 tracks (listed in `evidence/r76/CODE_PROVENANCE.md`, "Time stamps and time-tagged names in
+  this copy"), the `hhmmss` session tag of the R73 timing records (`evidence/selection/results/timing/<tag>_*.json` and
+  their `_dest`; `evidence/selection/MANIFEST.json` lists the renamed files) and one design-time remark in
+  `evidence/evolution/evo.py` and `evidence/evolution/spark/evo.py`. In the response-content control
+  `validation_controls/fresh_response_boundary/`, the name and offset of the non-UTC zone used by its two explanatory
+  conditions are withheld: the records read `<NON_UTC_ZONE>`,
+  `validation_controls/fresh_response_boundary/tools/run_suite.py` takes the zone from `RESPONSE_BOUNDARY_NON_UTC_ZONE`,
+  and the recorded SHA-256 of the three files edited for this read "withheld". The package inventories (`MANIFEST.json`,
+  `validation_controls/FILES.json`, `offline_evidence/FILES.json`, `evidence/evolution/MANIFEST.json`,
+  `evidence/selection/MANIFEST.json`) list the files as published. `source/VERSION.md` (version notes of the frozen
+  snapshot, read by no code) is omitted in the same way as the nine legacy files already omitted from `source/`; its
+  original hash stays in `metadata/source_provenance.json` (`omitted_legacy_files`), so the records that list it remain
+  valid.
 
 ## Data and third-party terms
 

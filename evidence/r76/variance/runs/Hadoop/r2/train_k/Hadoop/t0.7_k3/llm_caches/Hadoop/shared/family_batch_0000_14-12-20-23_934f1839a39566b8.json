@@ -1,0 +1,267 @@
+{
+  "families": [
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:37:59,503"
+            ],
+            "reason": "Date and time tokens together represent one timestamp",
+            "target_value": "microsecond-level timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "attempt_1445062781478_0011_m_000000_0",
+              "attempt_1445062781478_0011_m_000001_0"
+            ],
+            "reason": "The captured value contains structural separators encoded by the regex (e.g., underscores, periods).",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines have a repeated timestamp and INFO prefix."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | KEEP_IN_MAIN",
+          "meaning": "Timestamp of the log entry",
+          "reason": "Timestamp is central to log semantics and should be extracted as a single integer."
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "Task attempt ID",
+          "reason": "Structured variable with separators; should be extracted and preserved as is."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "task_attempt_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "microsecond timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Timestamp is composed of date and time tokens, which together represent a single value."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_str, time_str = groups\n    dt = datetime.strptime(f\"{date_str} {time_str}\", \"%Y-%m-%d %H:%M:%S,%f\")\n    micros = int(dt.timestamp() * 1000000)\n    return {'stored': [micros], 'layout': []}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "task_attempt_id",
+          "meaning": "task_attempt_identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "task_attempt_id",
+            "context_source": null,
+            "why_not_merge_raw": "The task attempt ID is an intrinsically structured value."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "attempt_\\d+_\\d+_[a-z]_\\d+_\\d+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "17:04:03,483"
+            ],
+            "reason": "Date and time tokens together represent one timestamp",
+            "target_value": "microsecond-level timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines start with a repeated timestamp and INFO prefix."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | KEEP_IN_MAIN",
+          "meaning": "Timestamp of the log entry",
+          "reason": "Timestamp is central to log semantics and should be extracted as a single integer."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "microsecond timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Timestamp is composed of date and time tokens, which together represent a single value."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_str, time_str = groups\n    dt = datetime.strptime(f\"{date_str} {time_str}\", \"%Y-%m-%d %H:%M:%S,%f\")\n    micros = int(dt.timestamp() * 1000000)\n    return {'stored': [micros], 'layout': []}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 20,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:38:01,855"
+            ],
+            "reason": "Date and time tokens together represent one timestamp",
+            "target_value": "microsecond-level timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines start with a standard timestamp and INFO prefix."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | KEEP_IN_MAIN",
+          "meaning": "Timestamp of the log entry",
+          "reason": "Timestamp is central to log semantics and should be extracted as a single integer."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "microsecond timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Timestamp is composed of date and time tokens, which together represent a single value."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_str, time_str = groups\n    dt = datetime.strptime(f\"{date_str} {time_str}\", \"%Y-%m-%d %H:%M:%S,%f\")\n    micros = int(dt.timestamp() * 1000000)\n    return {'stored': [micros], 'layout': []}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 23,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent timestamp and INFO prefix."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

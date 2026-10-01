@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "jvm_id",
+      "meaning": "jvm_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "ID: jvm_([a-zA-Z0-9_]+)",
+      "replacement": "ID: jvm_{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': ['ID: jvm_']}\n\ndef inverse(record):\n    return f\"{record['layout'][0]}{record['stored'][0]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

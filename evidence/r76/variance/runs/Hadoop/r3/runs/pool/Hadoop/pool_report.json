@@ -1,0 +1,161 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "Hadoop",
+  "candidates": [
+    {
+      "cid": "c3",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r3/runs/qg/c3/Hadoop/selected_plan.json",
+      "train_cost": 297974
+    },
+    {
+      "cid": "c0",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r3/runs/qg/c0/Hadoop/selected_plan.json",
+      "train_cost": 299686
+    },
+    {
+      "cid": "c1",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r3/runs/qg/c1/Hadoop/selected_plan.json",
+      "train_cost": 304010
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r3/runs/qg/c2/Hadoop/selected_plan.json",
+      "train_cost": 308982
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r3/runs/qg/c4/Hadoop/selected_plan.json",
+      "train_cost": 347318
+    }
+  ],
+  "start": "c3",
+  "start_train_bytes": 297974,
+  "start_cost_reproduced": true,
+  "pool_groups": 31,
+  "duplicate_groups_skipped": 3,
+  "selected_train_bytes": 278282,
+  "selected_tags": [
+    "TS0",
+    "I",
+    "B",
+    "F",
+    "M",
+    "X2E",
+    "X0C",
+    "X4L",
+    "X4O",
+    "X0N",
+    "X4HP",
+    "X1PT",
+    "X0B",
+    "X4J",
+    "X1C",
+    "X4M"
+  ],
+  "selected_plan_sha256": "587d275abcc6bfc00e5f4cadb42085716c2247c46262a9ca4b9bd26fbb37dc14",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 61,
+      "n_improving": 11,
+      "before": 297974,
+      "accepted": [
+        {
+          "move": "add:X2E",
+          "screen_cost": 290786,
+          "applied_cost": 290786
+        },
+        {
+          "move": "add:X0C",
+          "screen_cost": 293394,
+          "applied_cost": 286038
+        },
+        {
+          "move": "add:X4L",
+          "screen_cost": 295786,
+          "applied_cost": 283230
+        },
+        {
+          "move": "add:X4O",
+          "screen_cost": 296786,
+          "applied_cost": 282066
+        },
+        {
+          "move": "add:X0N",
+          "screen_cost": 297174,
+          "applied_cost": 281154
+        },
+        {
+          "move": "replace:C->X4HP",
+          "screen_cost": 297266,
+          "applied_cost": 280826
+        },
+        {
+          "move": "add:X1PT",
+          "screen_cost": 297586,
+          "applied_cost": 279710
+        }
+      ],
+      "after": 279710
+    },
+    {
+      "round": 1,
+      "n_moves": 52,
+      "n_improving": 4,
+      "before": 279710,
+      "accepted": [
+        {
+          "move": "add:X0B",
+          "screen_cost": 279002,
+          "applied_cost": 279002
+        },
+        {
+          "move": "add:X4J",
+          "screen_cost": 279278,
+          "applied_cost": 278438
+        }
+      ],
+      "after": 278438
+    },
+    {
+      "round": 2,
+      "n_moves": 52,
+      "n_improving": 1,
+      "before": 278438,
+      "accepted": [
+        {
+          "move": "add:X1C",
+          "screen_cost": 278310,
+          "applied_cost": 278310
+        }
+      ],
+      "after": 278310
+    },
+    {
+      "round": 3,
+      "n_moves": 51,
+      "n_improving": 1,
+      "before": 278310,
+      "accepted": [
+        {
+          "move": "add:X4M",
+          "screen_cost": 278282,
+          "applied_cost": 278282
+        }
+      ],
+      "after": 278282
+    },
+    {
+      "stage": "eliminate",
+      "tag": "X4M",
+      "before": 278282,
+      "after": 278310,
+      "accepted": false
+    }
+  ],
+  "evaluations": 237,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "8d13beb9b0ff65a4dd7136f18dd2713f58e0c1ff408e1b9f811f842fd0f72d19"
+}

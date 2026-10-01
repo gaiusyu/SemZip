@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "size_value",
+      "meaning": "size in bytes or KB",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\(size:( +)(\\d+\\.\\d+)( +)(B|KB|MB)\\)",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = float(groups[1])\n    unit = groups[3].lower()\n    multiplier = 1 if unit == 'b' else (1024 if unit == 'kb' else 1024 * 1024)\n    stored_value = int(value * multiplier)\n    layout = [len(groups[0]), len(groups[2])]\n    return {'stored': [stored_value], 'layout': layout}\n\ndef inverse(record):\n    stored_value = record['stored'][0]\n    layout = record['layout']\n    spaces_before = ' ' * layout[0]\n    spaces_after = ' ' * layout[1]\n\n    if stored_value < 1024:\n        display_value = stored_value\n        unit = 'B'\n    elif stored_value < 1024 * 1024:\n        display_value = stored_value / 1024\n        unit = 'KB'\n    else:\n        display_value = stored_value / (1024 * 1024)\n        unit = 'MB'\n\n    return f\"(size:{spaces_before}{display_value:.1f}{spaces_after}{unit})\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

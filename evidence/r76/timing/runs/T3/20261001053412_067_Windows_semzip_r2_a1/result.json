@@ -1,0 +1,89 @@
+{
+ "dataset": "Windows",
+ "method": "semzip",
+ "repeat": 2,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_067_Windows_semzip_r2_a1",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/Windows.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 465577918,
+ "blocks": 20,
+ "started_unix": 1790846541.7231305,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "encode",
+   "--input",
+   "<WORKDIR>/r76_additional_20260929/timing/samples/Windows.sample20.log",
+   "--plan",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Windows/program.json",
+   "--dataset",
+   "Windows",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_067_Windows_semzip_r2_a1/work",
+   "--block-size",
+   "100000",
+   "--workers",
+   "4"
+  ],
+  "seconds": 50.52554701268673,
+  "returncode": 0,
+  "load_average": [
+   13.45,
+   13.38,
+   13.71
+  ],
+  "started_unix": 1790846541.7260916,
+  "own_cpu_seconds": 159.77506800000083,
+  "other_cpu_seconds": 5.365248070999172,
+  "other_cores": 0.10618881710774915
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "decode",
+   "--archive",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_067_Windows_semzip_r2_a1/work/archive",
+   "--output",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_067_Windows_semzip_r2_a1/restored.owned.log",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_067_Windows_semzip_r2_a1/decode",
+   "--workers",
+   "4"
+  ],
+  "seconds": 8.2321053519845,
+  "returncode": 0,
+  "load_average": [
+   13.2,
+   13.34,
+   13.69
+  ],
+  "started_unix": 1790846592.2604547,
+  "own_cpu_seconds": 20.086105999998836,
+  "other_cpu_seconds": 0.31745406200116477,
+  "other_cores": 0.0385629250875217
+ },
+ "archive_bytes": 773110,
+ "fallback_blocks": 0,
+ "sha_pass": true,
+ "audit_seconds": 1.521580532193184,
+ "encode_MB_per_s": 9.214703165570786,
+ "decode_MB_per_s": 56.55636050476004,
+ "finished_unix": 1790846602.0449266,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.05741612524725757
+ },
+ "max_other_cores": 0.10618881710774915,
+ "contaminated": false
+}

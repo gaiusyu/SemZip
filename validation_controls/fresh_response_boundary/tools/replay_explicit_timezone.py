@@ -22,7 +22,7 @@ def parse_response(value):
     return payload
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--source',type=Path,required=True);p.add_argument('--evidence',type=Path,required=True);p.add_argument('--dataset',required=True);p.add_argument('--expected-plan',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--timezone',choices=['UTC0','Asia/Shanghai'],required=True);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--source',type=Path,required=True);p.add_argument('--evidence',type=Path,required=True);p.add_argument('--dataset',required=True);p.add_argument('--expected-plan',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--timezone',required=True,help='UTC0, or the IANA name of the non-UTC zone of the explanatory control (withheld in this anonymous copy)');a=p.parse_args()
     source=a.source.resolve();evidence=a.evidence.resolve();out=a.output.resolve();assert not out.exists();out.mkdir()
     d=a.dataset;dataset=evidence/d;sample=dataset/'sample.log';expected=a.expected_plan.resolve();config=read(evidence/'configuration.json');sample_config=config['sampling_configuration_by_dataset'][d]
     source_before={str(q.relative_to(source)):sha(q) for q in source.rglob('*') if q.is_file() and '__pycache__' not in q.parts and q.suffix!='.pyc'}

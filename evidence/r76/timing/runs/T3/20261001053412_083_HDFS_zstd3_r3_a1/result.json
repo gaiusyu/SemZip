@@ -1,0 +1,68 @@
+{
+ "dataset": "HDFS",
+ "method": "zstd3",
+ "repeat": 3,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_083_HDFS_zstd3_r3_a1",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/HDFS.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 277338890,
+ "blocks": 20,
+ "started_unix": 1790849094.3835824,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r68_external_20260923/formal_campaign_v3.py",
+   "codec-phase",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_083_HDFS_zstd3_r3_a1/encode_request.json"
+  ],
+  "seconds": 1.9518802985548973,
+  "returncode": 0,
+  "load_average": [
+   14.03,
+   14.68,
+   15.14
+  ],
+  "started_unix": 1790849094.3918576,
+  "own_cpu_seconds": 1.8102930000004562,
+  "other_cpu_seconds": 0.026428404999543798,
+  "other_cores": 0.013539972209930315
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r68_external_20260923/formal_campaign_v3.py",
+   "codec-phase",
+   "decode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_083_HDFS_zstd3_r3_a1/decode_request.json"
+  ],
+  "seconds": 1.387316957116127,
+  "returncode": 0,
+  "load_average": [
+   14.03,
+   14.68,
+   15.14
+  ],
+  "started_unix": 1790849096.3493562,
+  "own_cpu_seconds": 1.174778000000515,
+  "other_cpu_seconds": 0.013337653999484944,
+  "other_cores": 0.009613991907956258
+ },
+ "archive_bytes": 29213877,
+ "sha_pass": true,
+ "audit_seconds": 1.140852503478527,
+ "encode_MB_per_s": 142.08806257501132,
+ "decode_MB_per_s": 199.91025740542796,
+ "finished_unix": 1790849098.900995,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.006856781204205911
+ },
+ "max_other_cores": 0.013539972209930315,
+ "contaminated": false
+}

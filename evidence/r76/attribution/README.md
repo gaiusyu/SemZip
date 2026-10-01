@@ -14,8 +14,8 @@ gated c0 plan (`evidence/selection/results/formal/qg1c0/`) and the pooled select
 | `empty_summary.json` | per-dataset summary used by `analysis/r76/ladder.py` and `r76_tables.py` |
 
 The 16 plan/policy pairs are the empty program of `evidence/evolution/spark/empty/` with only the dataset name
-changed. They were regenerated for this copy (the files of the original run stayed on the execution host) and are
-byte-identical to the files that were run: their SHA-256 values equal `plan_sha256` and `storage_sha256` of every
+changed. They were first regenerated for this copy and then compared with the files of the original run on the execution
+host: all 32 files are byte-identical. They are the files that were run: their SHA-256 values equal `plan_sha256` and `storage_sha256` of every
 formal record and of `empty_summary.json`. Check:
 
 ```sh
@@ -41,4 +41,6 @@ original record layout described in the main README ("Replaying the formal drive
 python3 formal_full.py empty <Dataset> plans/<Dataset>/extraction.json plans/<Dataset>/storage.json
 ```
 
-Each run writes `runs/formal/empty/<Dataset>/result.json`. No model call is involved.
+Each run writes `runs/formal/empty/<Dataset>/result.json`. No model call is involved. `run_empty.sh` is the launcher that
+ran the 16 datasets in this order with this command (the track's `formal_full.py` is a byte-identical copy of the R73
+driver and is not repeated).

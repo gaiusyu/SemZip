@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "size_display",
+      "meaning": "size_with_units",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\((estimated size )(\\d+(?:\\.\\d+)?) (KB|MB|B), free (\\d+(?:\\.\\d+)?) (MB)\\)",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    try:\n        value, unit = float(groups[1]), groups[2]\n        scale = {'B': 1, 'KB': 1024, 'MB': 1024 ** 2}\n        if unit not in scale:\n            raise ValueError(f\"Unknown unit: {unit}\")\n        canonical_value = int(value * scale[unit])\n        return {'stored': [canonical_value], 'layout': [unit]}\n    except ValueError as e:\n        raise ValueError(f\"Error processing input: {e}\")\n\ndef inverse(record):\n    canonical_value, unit = record['stored'][0], record['layout'][0]\n    scale = {'B': 1, 'KB': 1024, 'MB': 1024 ** 2}\n    if unit not in scale:\n        raise ValueError(f\"Unknown unit: {unit}\")\n    value = canonical_value / scale[unit]\n    return f\"estimated size {value:.1f} {unit}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

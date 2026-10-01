@@ -1,0 +1,106 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "Spark",
+  "candidates": [
+    {
+      "cid": "c0",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Spark/r3/runs/qg/c0/Spark/selected_plan.json",
+      "train_cost": 220757
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Spark/r3/runs/qg/c2/Spark/selected_plan.json",
+      "train_cost": 237617
+    },
+    {
+      "cid": "c1",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Spark/r3/runs/qg/c1/Spark/selected_plan.json",
+      "train_cost": 239877
+    },
+    {
+      "cid": "c3",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Spark/r3/runs/qg/c3/Spark/selected_plan.json",
+      "train_cost": 240869
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Spark/r3/runs/qg/c4/Spark/selected_plan.json",
+      "train_cost": 242101
+    }
+  ],
+  "start": "c0",
+  "start_train_bytes": 220757,
+  "start_cost_reproduced": true,
+  "pool_groups": 25,
+  "duplicate_groups_skipped": 2,
+  "selected_train_bytes": 214645,
+  "selected_tags": [
+    "TS",
+    "M",
+    "N",
+    "G",
+    "O",
+    "C",
+    "F",
+    "I",
+    "P",
+    "X1DU",
+    "X2K"
+  ],
+  "selected_plan_sha256": "6879b56d504bb2aa65c448667f94a348f5ff6f286a84f18085cf2bb9ba80cfe0",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 42,
+      "n_improving": 4,
+      "before": 220757,
+      "accepted": [
+        {
+          "move": "add:X1DU",
+          "screen_cost": 218045,
+          "applied_cost": 218045
+        },
+        {
+          "move": "add:X2K",
+          "screen_cost": 218725,
+          "applied_cost": 216029
+        }
+      ],
+      "after": 216029
+    },
+    {
+      "round": 1,
+      "n_moves": 42,
+      "n_improving": 2,
+      "before": 216029,
+      "accepted": [
+        {
+          "move": "remove:K",
+          "screen_cost": 214645,
+          "applied_cost": 214645
+        }
+      ],
+      "after": 214645
+    },
+    {
+      "round": 2,
+      "n_moves": 38,
+      "n_improving": 0,
+      "before": 214645,
+      "accepted": [],
+      "after": 214645
+    },
+    {
+      "stage": "eliminate",
+      "tag": "C",
+      "before": 214645,
+      "after": 214645,
+      "accepted": false
+    }
+  ],
+  "evaluations": 121,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "7f7055b26c08454a7527dabdfd374c60ff52b72ffd01393ed73b8589fad023cf"
+}

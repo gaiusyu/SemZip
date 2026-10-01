@@ -1,0 +1,1131 @@
+{
+  "families": [
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_syslog",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_syslog"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_ts_epoch10",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_syslog",
+          "meaning": "timestamp: syslog month day time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: syslog month day time",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_syslog"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![A-Za-z])(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( +)(\\d{1,2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nMONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']\n\ndef month_index(name):\n    i = 0\n    while i < 12:\n        if MONTHS[i] == name:\n            return i\n        i = i + 1\n    return -1\n\ndef render(v, layout):\n    t = v // 86400\n    rest = v % 86400\n    d = t % 32\n    mo = t // 32\n    return MONTHS[mo] + ' ' * int(layout[0]) + str(d).zfill(int(layout[2])) + ' ' * int(layout[1]) + sod_text(rest)\n\ndef forward(groups):\n    if len(groups) != 7:\n        return BAD\n    mon, sp1, day, sp2, hh, mm, ss = groups\n    mo = month_index(mon)\n    d = int(day)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if mo < 0 or d < 1 or d > 31 or len(sp1) > 255 or len(sp2) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    v = (mo * 32 + d) * 86400 + h * 3600 + mi * 60 + s\n    layout = [len(sp1), len(sp2), len(day)]\n    if render(v, layout) != mon + sp1 + day + sp2 + hh + ':' + mm + ':' + ss:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_ts_epoch10",
+          "meaning": "timestamp: 10-digit unix epoch seconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp: 10-digit unix epoch seconds",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_epoch10"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_syslog",
+        "ts_epoch10",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 33,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_syslog",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_syslog"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_ts_epoch10",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_syslog",
+          "meaning": "timestamp: syslog month day time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: syslog month day time",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_syslog"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![A-Za-z])(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( +)(\\d{1,2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nMONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']\n\ndef month_index(name):\n    i = 0\n    while i < 12:\n        if MONTHS[i] == name:\n            return i\n        i = i + 1\n    return -1\n\ndef render(v, layout):\n    t = v // 86400\n    rest = v % 86400\n    d = t % 32\n    mo = t // 32\n    return MONTHS[mo] + ' ' * int(layout[0]) + str(d).zfill(int(layout[2])) + ' ' * int(layout[1]) + sod_text(rest)\n\ndef forward(groups):\n    if len(groups) != 7:\n        return BAD\n    mon, sp1, day, sp2, hh, mm, ss = groups\n    mo = month_index(mon)\n    d = int(day)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if mo < 0 or d < 1 or d > 31 or len(sp1) > 255 or len(sp2) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    v = (mo * 32 + d) * 86400 + h * 3600 + mi * 60 + s\n    layout = [len(sp1), len(sp2), len(day)]\n    if render(v, layout) != mon + sp1 + day + sp2 + hh + ':' + mm + ':' + ss:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_ts_epoch10",
+          "meaning": "timestamp: 10-digit unix epoch seconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp: 10-digit unix epoch seconds",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_epoch10"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_syslog",
+        "ts_epoch10",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 31,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_syslog",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_syslog"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_ts_epoch10",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_syslog",
+          "meaning": "timestamp: syslog month day time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: syslog month day time",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_syslog"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![A-Za-z])(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( +)(\\d{1,2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nMONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']\n\ndef month_index(name):\n    i = 0\n    while i < 12:\n        if MONTHS[i] == name:\n            return i\n        i = i + 1\n    return -1\n\ndef render(v, layout):\n    t = v // 86400\n    rest = v % 86400\n    d = t % 32\n    mo = t // 32\n    return MONTHS[mo] + ' ' * int(layout[0]) + str(d).zfill(int(layout[2])) + ' ' * int(layout[1]) + sod_text(rest)\n\ndef forward(groups):\n    if len(groups) != 7:\n        return BAD\n    mon, sp1, day, sp2, hh, mm, ss = groups\n    mo = month_index(mon)\n    d = int(day)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if mo < 0 or d < 1 or d > 31 or len(sp1) > 255 or len(sp2) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    v = (mo * 32 + d) * 86400 + h * 3600 + mi * 60 + s\n    layout = [len(sp1), len(sp2), len(day)]\n    if render(v, layout) != mon + sp1 + day + sp2 + hh + ':' + mm + ':' + ss:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_ts_epoch10",
+          "meaning": "timestamp: 10-digit unix epoch seconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp: 10-digit unix epoch seconds",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_epoch10"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_syslog",
+        "ts_epoch10",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_syslog",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "lib_ipv4",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_syslog"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_ts_epoch10",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": [
+          "lib_ipv4"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_syslog",
+          "meaning": "timestamp: syslog month day time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: syslog month day time",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_syslog"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![A-Za-z])(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( +)(\\d{1,2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nMONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']\n\ndef month_index(name):\n    i = 0\n    while i < 12:\n        if MONTHS[i] == name:\n            return i\n        i = i + 1\n    return -1\n\ndef render(v, layout):\n    t = v // 86400\n    rest = v % 86400\n    d = t % 32\n    mo = t // 32\n    return MONTHS[mo] + ' ' * int(layout[0]) + str(d).zfill(int(layout[2])) + ' ' * int(layout[1]) + sod_text(rest)\n\ndef forward(groups):\n    if len(groups) != 7:\n        return BAD\n    mon, sp1, day, sp2, hh, mm, ss = groups\n    mo = month_index(mon)\n    d = int(day)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if mo < 0 or d < 1 or d > 31 or len(sp1) > 255 or len(sp2) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    v = (mo * 32 + d) * 86400 + h * 3600 + mi * 60 + s\n    layout = [len(sp1), len(sp2), len(day)]\n    if render(v, layout) != mon + sp1 + day + sp2 + hh + ':' + mm + ':' + ss:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_ts_epoch10",
+          "meaning": "timestamp: 10-digit unix epoch seconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp: 10-digit unix epoch seconds",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_epoch10"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "lib_ipv4",
+          "meaning": "ipv4 address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "ipv4 address",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ipv4"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\d.])((?:\\d{1,3}\\.){3}\\d{1,3})(?![\\d.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_syslog",
+        "ts_epoch10",
+        "decimal_int",
+        "ipv4"
+      ]
+    },
+    {
+      "family_id": 23,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_syslog",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_syslog"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_ts_epoch10",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_syslog",
+          "meaning": "timestamp: syslog month day time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: syslog month day time",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_syslog"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![A-Za-z])(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( +)(\\d{1,2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nMONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']\n\ndef month_index(name):\n    i = 0\n    while i < 12:\n        if MONTHS[i] == name:\n            return i\n        i = i + 1\n    return -1\n\ndef render(v, layout):\n    t = v // 86400\n    rest = v % 86400\n    d = t % 32\n    mo = t // 32\n    return MONTHS[mo] + ' ' * int(layout[0]) + str(d).zfill(int(layout[2])) + ' ' * int(layout[1]) + sod_text(rest)\n\ndef forward(groups):\n    if len(groups) != 7:\n        return BAD\n    mon, sp1, day, sp2, hh, mm, ss = groups\n    mo = month_index(mon)\n    d = int(day)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if mo < 0 or d < 1 or d > 31 or len(sp1) > 255 or len(sp2) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    v = (mo * 32 + d) * 86400 + h * 3600 + mi * 60 + s\n    layout = [len(sp1), len(sp2), len(day)]\n    if render(v, layout) != mon + sp1 + day + sp2 + hh + ':' + mm + ':' + ss:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_ts_epoch10",
+          "meaning": "timestamp: 10-digit unix epoch seconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp: 10-digit unix epoch seconds",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_epoch10"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_syslog",
+        "ts_epoch10",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_syslog",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_syslog"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_ts_epoch10",
+          "lib_hex_bare",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_syslog",
+          "meaning": "timestamp: syslog month day time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: syslog month day time",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_syslog"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![A-Za-z])(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( +)(\\d{1,2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nMONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']\n\ndef month_index(name):\n    i = 0\n    while i < 12:\n        if MONTHS[i] == name:\n            return i\n        i = i + 1\n    return -1\n\ndef render(v, layout):\n    t = v // 86400\n    rest = v % 86400\n    d = t % 32\n    mo = t // 32\n    return MONTHS[mo] + ' ' * int(layout[0]) + str(d).zfill(int(layout[2])) + ' ' * int(layout[1]) + sod_text(rest)\n\ndef forward(groups):\n    if len(groups) != 7:\n        return BAD\n    mon, sp1, day, sp2, hh, mm, ss = groups\n    mo = month_index(mon)\n    d = int(day)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if mo < 0 or d < 1 or d > 31 or len(sp1) > 255 or len(sp2) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    v = (mo * 32 + d) * 86400 + h * 3600 + mi * 60 + s\n    layout = [len(sp1), len(sp2), len(day)]\n    if render(v, layout) != mon + sp1 + day + sp2 + hh + ':' + mm + ':' + ss:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_ts_epoch10",
+          "meaning": "timestamp: 10-digit unix epoch seconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp: 10-digit unix epoch seconds",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_epoch10"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+          }
+        },
+        {
+          "tag": "lib_hex_bare",
+          "meaning": "hexadecimal number",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hexadecimal number",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type hex_bare"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.:-])(?=[0-9a-fA-F]*[0-9])(?=[0-9a-fA-F]*[a-fA-F])([0-9a-fA-F]{4,15})(?![\\w.:-])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    h = f'{v:x}'.zfill(int(layout[0]))\n    if int(layout[1]) == 1:\n        h = h.upper()\n    return h\n\ndef forward(groups):\n    digits = groups[len(groups) - 1]\n    case = 0\n    if digits != digits.lower():\n        case = 1\n    v = int(digits, 16)\n    layout = [len(digits), case]\n    if render(v, layout) != digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_syslog",
+        "ts_epoch10",
+        "hex_bare",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 28,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_syslog",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_syslog"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_ts_epoch10",
+          "lib_fixed_point",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_syslog",
+          "meaning": "timestamp: syslog month day time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: syslog month day time",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_syslog"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![A-Za-z])(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( +)(\\d{1,2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nMONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']\n\ndef month_index(name):\n    i = 0\n    while i < 12:\n        if MONTHS[i] == name:\n            return i\n        i = i + 1\n    return -1\n\ndef render(v, layout):\n    t = v // 86400\n    rest = v % 86400\n    d = t % 32\n    mo = t // 32\n    return MONTHS[mo] + ' ' * int(layout[0]) + str(d).zfill(int(layout[2])) + ' ' * int(layout[1]) + sod_text(rest)\n\ndef forward(groups):\n    if len(groups) != 7:\n        return BAD\n    mon, sp1, day, sp2, hh, mm, ss = groups\n    mo = month_index(mon)\n    d = int(day)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if mo < 0 or d < 1 or d > 31 or len(sp1) > 255 or len(sp2) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    v = (mo * 32 + d) * 86400 + h * 3600 + mi * 60 + s\n    layout = [len(sp1), len(sp2), len(day)]\n    if render(v, layout) != mon + sp1 + day + sp2 + hh + ':' + mm + ':' + ss:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_ts_epoch10",
+          "meaning": "timestamp: 10-digit unix epoch seconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp: 10-digit unix epoch seconds",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_epoch10"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+          }
+        },
+        {
+          "tag": "lib_fixed_point",
+          "meaning": "fixed-point decimal number",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "fixed-point decimal number",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type fixed_point"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,12})\\.(\\d{1,6})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    iw = int(layout[1])\n    fw = int(layout[2])\n    s = str(abs(v)).zfill(iw + fw)\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + s[:iw] + '.' + s[iw:]\n\ndef forward(groups):\n    if len(groups) != 3:\n        return BAD\n    neg, ip, fp = groups\n    n = 0\n    v = int(ip + fp)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(ip), len(fp)]\n    if render(v, layout) != neg + ip + '.' + fp:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_syslog",
+        "ts_epoch10",
+        "fixed_point",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_syslog",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_syslog"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_ts_epoch10",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_syslog",
+          "meaning": "timestamp: syslog month day time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: syslog month day time",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_syslog"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![A-Za-z])(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( +)(\\d{1,2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nMONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']\n\ndef month_index(name):\n    i = 0\n    while i < 12:\n        if MONTHS[i] == name:\n            return i\n        i = i + 1\n    return -1\n\ndef render(v, layout):\n    t = v // 86400\n    rest = v % 86400\n    d = t % 32\n    mo = t // 32\n    return MONTHS[mo] + ' ' * int(layout[0]) + str(d).zfill(int(layout[2])) + ' ' * int(layout[1]) + sod_text(rest)\n\ndef forward(groups):\n    if len(groups) != 7:\n        return BAD\n    mon, sp1, day, sp2, hh, mm, ss = groups\n    mo = month_index(mon)\n    d = int(day)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if mo < 0 or d < 1 or d > 31 or len(sp1) > 255 or len(sp2) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    v = (mo * 32 + d) * 86400 + h * 3600 + mi * 60 + s\n    layout = [len(sp1), len(sp2), len(day)]\n    if render(v, layout) != mon + sp1 + day + sp2 + hh + ':' + mm + ':' + ss:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_ts_epoch10",
+          "meaning": "timestamp: 10-digit unix epoch seconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp: 10-digit unix epoch seconds",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_epoch10"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_syslog",
+        "ts_epoch10",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_syslog",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_syslog"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_ts_epoch10",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_syslog",
+          "meaning": "timestamp: syslog month day time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: syslog month day time",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_syslog"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![A-Za-z])(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( +)(\\d{1,2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nMONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']\n\ndef month_index(name):\n    i = 0\n    while i < 12:\n        if MONTHS[i] == name:\n            return i\n        i = i + 1\n    return -1\n\ndef render(v, layout):\n    t = v // 86400\n    rest = v % 86400\n    d = t % 32\n    mo = t // 32\n    return MONTHS[mo] + ' ' * int(layout[0]) + str(d).zfill(int(layout[2])) + ' ' * int(layout[1]) + sod_text(rest)\n\ndef forward(groups):\n    if len(groups) != 7:\n        return BAD\n    mon, sp1, day, sp2, hh, mm, ss = groups\n    mo = month_index(mon)\n    d = int(day)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if mo < 0 or d < 1 or d > 31 or len(sp1) > 255 or len(sp2) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    v = (mo * 32 + d) * 86400 + h * 3600 + mi * 60 + s\n    layout = [len(sp1), len(sp2), len(day)]\n    if render(v, layout) != mon + sp1 + day + sp2 + hh + ':' + mm + ':' + ss:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_ts_epoch10",
+          "meaning": "timestamp: 10-digit unix epoch seconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp: 10-digit unix epoch seconds",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_epoch10"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_syslog",
+        "ts_epoch10",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 30,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_syslog",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_syslog"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_ts_epoch10"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_syslog",
+          "meaning": "timestamp: syslog month day time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: syslog month day time",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_syslog"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![A-Za-z])(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( +)(\\d{1,2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nMONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']\n\ndef month_index(name):\n    i = 0\n    while i < 12:\n        if MONTHS[i] == name:\n            return i\n        i = i + 1\n    return -1\n\ndef render(v, layout):\n    t = v // 86400\n    rest = v % 86400\n    d = t % 32\n    mo = t // 32\n    return MONTHS[mo] + ' ' * int(layout[0]) + str(d).zfill(int(layout[2])) + ' ' * int(layout[1]) + sod_text(rest)\n\ndef forward(groups):\n    if len(groups) != 7:\n        return BAD\n    mon, sp1, day, sp2, hh, mm, ss = groups\n    mo = month_index(mon)\n    d = int(day)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if mo < 0 or d < 1 or d > 31 or len(sp1) > 255 or len(sp2) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    v = (mo * 32 + d) * 86400 + h * 3600 + mi * 60 + s\n    layout = [len(sp1), len(sp2), len(day)]\n    if render(v, layout) != mon + sp1 + day + sp2 + hh + ':' + mm + ':' + ss:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_ts_epoch10",
+          "meaning": "timestamp: 10-digit unix epoch seconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp: 10-digit unix epoch seconds",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_epoch10"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(?<![\\w.])([1-9]\\d{9})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef forward(groups):\n    text = groups[len(groups) - 1]\n    if len(text) != 10:\n        return BAD\n    v = int(text)\n    if str(v) != text:\n        return BAD\n    return {'stored': [v], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_syslog",
+        "ts_epoch10"
+      ]
+    }
+  ],
+  "_library_version": "LIBRARY-V1",
+  "_proposal_cache_mode": "library_v1"
+}

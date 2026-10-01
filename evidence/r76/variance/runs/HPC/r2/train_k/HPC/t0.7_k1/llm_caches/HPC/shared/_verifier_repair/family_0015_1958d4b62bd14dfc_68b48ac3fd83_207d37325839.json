@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "temperature_display",
+      "meaning": "temperature display value",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\((\\d+)C\\)",
+      "replacement": "({placeholder}C)",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = int(groups[0])\n    return {'stored': [value], 'layout': ['(', 'C)']}\n\ndef inverse(record):\n    value = record['stored'][0]\n    layout = record['layout']\n    return f\"{layout[0]}{value}{layout[1]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

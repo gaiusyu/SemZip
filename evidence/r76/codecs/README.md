@@ -1,6 +1,11 @@
 # R76 track `codecs/`: high-effort general-purpose codecs + DeLog-generic
 
-> **This copy.** `tools/`, `delog/`, `logs/`, `summarize.py`, `check_generic_tags.py`, `full_20260929_launch.json` and the aggregate `full_20260929/results.json` (an aggregate of the included per-trial `result.json` files) are not included in this copy (see `../CODE_PROVENANCE.md`); the records and code that are included are listed there.
+> **This copy.** Included: the harness, `summarize.py`, `check_generic_tags.py`, `full_20260929_launch.json`, the DeLog-generic
+> patch `delog/generic_vs_official.compressor.diff` (DeLog-generic = official DeLog at the pinned commit with this patch
+> applied to `compressor.cpp`) with its verification record `delog/VERIFY_generic_vs_official.txt`, and every per-trial
+> record. Not included: `tools/` (the zstd 1.5.6 release tree and binary), the DeLog sources and binaries in
+> `delog/official_rebuild/` and `delog/generic/`, `logs/`, the archives, and the aggregate `full_20260929/results.json`
+> (an aggregate of the included per-trial `result.json` files). See `../CODE_PROVENANCE.md`.
 
 Pre-registered design: `../DEV_DESIGN_R76_zh.md`, section A (外部基线): "DeLog-generic" and
 "通用压缩器高压缩档". Nothing in this directory reads or writes outside `codecs/` except

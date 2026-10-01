@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "attempt_id",
+      "meaning": "structured attempt identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "raw_single_source",
+        "stored_source": "attempt",
+        "context_source": null,
+        "why_not_merge_raw": "intrinsically structured value"
+      },
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "attempt_([0-9_]+)",
+      "replacement": "attempt_{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0].replace('_', ''))], 'layout': []}\n\ndef inverse(record):\n    stored_value = str(record['stored'][0])\n    return f\"attempt_{stored_value[:13]}_{stored_value[13:]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

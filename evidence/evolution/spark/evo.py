@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""R75-EVO: pre-registered Thunderbird evolution on window blocks 0..99 (DEV_DESIGN_R75_zh.md, written 2026-09-27 23:40 CST
+"""R75-EVO: pre-registered Thunderbird evolution on window blocks 0..99 (DEV_DESIGN_R75_zh.md, written 2026-09-27 15:40 UTC
 before any R75 result). Plan bank + empty program, per-block min; byte-based trigger; each update = the unchanged main
 training pipeline (5 fresh syntheses T=0 x1 + T=0.7 x4 -> QG-V1 -> QG-POOL-V2 -> storage fit) on the trigger block b;
 validation on block b+1; publication effective from block b+2. Time is counted in blocks (synthesis latency ignored).

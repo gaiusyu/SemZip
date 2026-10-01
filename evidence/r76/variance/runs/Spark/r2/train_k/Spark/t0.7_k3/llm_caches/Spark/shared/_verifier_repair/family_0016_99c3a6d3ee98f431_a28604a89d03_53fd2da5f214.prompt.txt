@@ -1,0 +1,85 @@
+You are a verifier-repair agent for Spark log compression.
+Repair exactly one rejected reversible extraction function.
+Return exact JSON only: {"functions": [ ... ]}.
+
+Goal:
+- Keep the original semantic intent when possible.
+- Make the function pass a strict byte-exact verifier.
+- Do not add dataset-specific constants beyond what appears in the examples and failed regex.
+- Prefer the smallest safe repair: fix class/value_type, regex boundary, replacement, or python_exec code.
+Repair category: executed_counterexample.
+The verifier executed your program and supplies an actual failing input,
+stored record, reconstructed text or exception below. Fix only program.code.
+Keep regex, replacement, class, value_type, context and semantic intent unchanged.
+Do not evade the failure by narrowing coverage to examples or storing raw text
+instead of the intended number. Preserve every display byte via exact arithmetic
+and the permitted layout. Do not assume floating-point scaling is exact.
+forward receives all regex capture groups, or [whole_match] when there are none.
+Available globals: abs, datetime, float, int, len, max, min, round, str, timedelta.
+Imports and external state are forbidden. Return an empty list if unrepairable.
+
+Required function schema:
+{
+  "tag": "short_name",
+  "meaning": "short meaning",
+  "class": "class_1_composed_numeric | class_2_formatted_numeric | class_3_common_variable",
+  "value_type": "numeric | string",
+  "target_role": "log_timestamp | ordinary_value",
+  "context": null,
+  "regex": "Python regex with explicit capture groups",
+  "replacement": "template containing {placeholder} and any needed {groupN}",
+  "program": {
+    "op": "python_exec",
+    "code": "def forward(groups):\n    ...\n\ndef inverse(record):\n    ..."
+  }
+}
+
+Python execution contract:
+- forward(groups) receives the captured value groups selected by the compiler.
+- It returns {'stored': [...], 'layout': [...]}.
+- inverse(record) reconstructs exactly the placeholder text from record['stored'] and record['layout'].
+- For raw variables, use this executable pattern:
+  def forward(groups):
+      return {'stored': [groups[0]], 'layout': []}
+  def inverse(record):
+      return str(record['stored'][0])
+- For numeric variables, store int values, not strings.
+- Preserve exact spaces by capturing them as ( +) and either keeping them as {groupN} in replacement or storing layout.
+- When repairing context, replace null with {"code": "def project_context(line, groups): ..."}; the function returns the actual context value or None.
+
+Verifier failure:
+{
+  "status": "rejected_semantic_three_class",
+  "reasons": [
+    "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+    "executed_counterexample={\"whole_match\": \"Getting 13 non-empty blocks out of 13 blocks\", \"groups\": [\"13\", \"13\"], \"failure\": \"SyntaxError: f-string: unmatched '[' (<unknown>, line 5)\"}"
+  ]
+}
+
+Failed function:
+{
+  "tag": "block_count",
+  "meaning": "block count comparison",
+  "class": "class_1_composed_numeric",
+  "value_type": "numeric",
+  "target_role": "ordinary_value",
+  "context": null,
+  "source_separation": {
+    "decision": "merge_equivalent",
+    "stored_source": "block count",
+    "context_source": null,
+    "why_not_merge_raw": "numeric block count derivable"
+  },
+  "general": false,
+  "order_hint": "family_structured",
+  "regex": "Getting (\\d+) non-empty blocks out of (\\d+) blocks",
+  "replacement": "{placeholder}",
+  "program": {
+    "op": "python_exec",
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0]), int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return f'Getting {record['stored'][0]} non-empty blocks out of {record['stored'][1]} blocks'"
+  }
+}
+
+Family examples:
+- 16/04/07 10:58:59 INFO storage.ShuffleBlockFetcherIterator: Getting 13 non-empty blocks out of 13 blocks
+- 16/04/07 11:04:14 INFO storage.ShuffleBlockFetcherIterator: Getting 13 non-empty blocks out of 13 blocks

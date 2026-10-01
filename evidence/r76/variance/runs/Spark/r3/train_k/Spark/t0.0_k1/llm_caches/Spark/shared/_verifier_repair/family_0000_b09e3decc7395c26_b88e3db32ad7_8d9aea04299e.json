@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "size_display",
+      "meaning": "size in human-readable format",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "merge_equivalent",
+        "stored_source": "size_in_bytes",
+        "context_source": null,
+        "why_not_merge_raw": "size display is derivable from size in bytes"
+      },
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "\\(size: ([0-9]+\\.[0-9]+) (KB|MB|B),",
+      "replacement": "(size: {placeholder},",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    size = float(groups[0])\n    unit = groups[1]\n    multiplier = {'B': 1, 'KB': 1024, 'MB': 1024**2}[unit]\n    return {'stored': [int(round(size * multiplier))], 'layout': []}\n\ndef inverse(record):\n    size_in_bytes = int(record['stored'][0])\n    if size_in_bytes >= 1024**2:\n        return f'{size_in_bytes / 1024**2:.1f} MB'\n    elif size_in_bytes >= 1024:\n        return f'{size_in_bytes / 1024:.1f} KB'\n    else:\n        return f'{size_in_bytes} B'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

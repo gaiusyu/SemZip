@@ -1,0 +1,117 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The log lines share a consistent prefix structure with a timestamp and client identifier, which should be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "timestamp_with_timezone_offset",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2})( +)([-+]\\d{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Parse and store timestamp with timezone offset as epoch microseconds, preserving layout for spaces and offset formatting.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    day, month, year, hour, minute, second, sp1, tz_offset = groups\n    month_map = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}\n    dt_text = f\"{year}-{month_map[month]:02}-{int(day):02} {hour}:{minute}:{second}\"\n    dt = datetime.strptime(dt_text, '%Y-%m-%d %H:%M:%S')\n    tz_hours = int(tz_offset[:3])\n    tz_minutes = int(tz_offset[0] + tz_offset[3:])\n    tz_delta = timedelta(hours=tz_hours, minutes=tz_minutes)\n    dt = dt - tz_delta\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1), int(tz_offset)]}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    layout = record['layout']\n    sp1_len = layout[0]\n    tz_offset = layout[1]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    tz_hours = tz_offset // 100\n    tz_minutes = abs(tz_offset % 100)\n    tz_delta = timedelta(hours=tz_hours, minutes=tz_minutes)\n    dt = dt + tz_delta\n    formatted = dt.strftime('%d/%b/%Y:%H:%M:%S')\n    tz_str = f\"{tz_hours:+03}{tz_minutes:02}\"\n    return f\"[{formatted}{' ' * sp1_len}{tz_str}]\""
+        }
+      },
+      {
+        "tag": "client_identifier",
+        "meaning": "client_host_or_ipv4",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "^(\\S+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Store the client identifier (host or IPv4) as a raw string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "client_identifier",
+      "reason": "The client identifier (host or IPv4) varies across examples and should be stored as a raw stream for exact reconstruction."
+    },
+    {
+      "slot": "S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "timestamp_with_timezone",
+      "reason": "The timestamp and timezone are semantically linked and should be stored as a single epoch microseconds value with layout details preserved."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "requested_resource_path",
+      "reason": "The requested resource path is a variable-length sequence with separators and should be stored as a raw string to preserve structure."
+    },
+    {
+      "slot": "S8",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "HTTP_response_code",
+      "reason": "The HTTP response code is a stable numeric token with low entropy and should remain in the main template."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "response_size_bytes",
+      "reason": "The response size in bytes is a numeric value suitable for delta compression."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "requested_resource",
+      "meaning": "HTTP_requested_resource_path",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "\\\"GET( +)([^ ]+)",
+      "replacement": "\"GET{group1}{placeholder}",
+      "program": {
+        "intent": "Capture the requested HTTP resource path as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "response_size",
+      "meaning": "HTTP_response_size_bytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": {
+        "code": "def project_context(line, groups):\n    m = re.search(r'^\\S+', line)\n    if m:\n        return m.group(0)\n    return None"
+      },
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "(\\d+)$",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Capture the response size in bytes as a numeric value.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

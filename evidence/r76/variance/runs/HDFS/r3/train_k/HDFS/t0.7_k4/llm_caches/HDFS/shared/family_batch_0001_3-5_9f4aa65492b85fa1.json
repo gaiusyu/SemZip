@@ -1,0 +1,217 @@
+{
+  "families": [
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "S0 (date-like) and S1 (time-like) together form one timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_id_variable",
+            "tokens": [
+              "S9"
+            ],
+            "reason": "the captured value in S9 contains explicit structural separators (underscore and optional minus sign) encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "S0-S4 form a repeated prefix across all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "S0 and S1 together form a timestamp and must be extracted and stored as one integer"
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "block identifier",
+          "reason": "S9 is a structured variable that must be extracted and stored"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id_variable"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "composed date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S0 and S1 together represent one logical timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) (\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]\n    time_part = groups[1]\n    timestamp = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\n    return {'stored': [int(timestamp.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    timestamp = datetime.fromtimestamp(micros / 1000000)\n    return timestamp.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block id",
+            "context_source": null,
+            "why_not_merge_raw": "block id is a standalone structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_(-?\\d+)",
+          "replacement": "blk_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"blk_{record['stored'][0]}\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "S0 (date-like) and S1 (time-like) together form one timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_id_variable",
+            "tokens": [
+              "S8"
+            ],
+            "reason": "the captured value in S8 contains explicit structural separators (underscore and optional minus sign) encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "S0-S4 form a repeated prefix across all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "S0 and S1 together form a timestamp and must be extracted and stored as one integer"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "block identifier",
+          "reason": "S8 is a structured variable that must be extracted and stored"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id_variable"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "composed date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S0 and S1 together represent one logical timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) (\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]\n    time_part = groups[1]\n    timestamp = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\n    return {'stored': [int(timestamp.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    timestamp = datetime.fromtimestamp(micros / 1000000)\n    return timestamp.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block id",
+            "context_source": null,
+            "why_not_merge_raw": "block id is a standalone structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_(-?\\d+)",
+          "replacement": "blk_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"blk_{record['stored'][0]}\""
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

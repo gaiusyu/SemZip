@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "kvend_formatted",
+      "meaning": "Key-value end with alternate display",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "kvend = (\\d+)\\((\\d+)\\)",
+      "replacement": "kvend = {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    base_value = int(groups[0])\n    alt_value = int(groups[1])\n    return {'stored': [base_value, alt_value], 'layout': []}\n\ndef inverse(record):\n    base_value = record['stored'][0]\n    alt_value = record['stored'][1]\n    return f\"{base_value}({alt_value})\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

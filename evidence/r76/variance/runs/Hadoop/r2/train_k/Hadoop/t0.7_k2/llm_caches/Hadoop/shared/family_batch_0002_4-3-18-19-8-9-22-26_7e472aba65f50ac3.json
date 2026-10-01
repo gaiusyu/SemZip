@@ -1,0 +1,420 @@
+{
+  "families": [
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "kvstart and kvend values with parentheses",
+            "tokens": [
+              "kvstart = 26214396(104857584)",
+              "kvend = 17301360(69205440)"
+            ],
+            "reason": "values with parentheses represent two formats of the same numeric quantity",
+            "target_value": "canonical integer value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated timestamp and INFO format at the start of every line"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "kvstart",
+          "kvend"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "kvstart_value",
+          "meaning": "kvstart canonical value",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "canonical integer from kvstart",
+            "context_source": null,
+            "why_not_merge_raw": "parenthetical value is equivalent to the main value"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "kvstart\\s*=\\s*(\\d+)\\((\\d+)\\);",
+          "replacement": "kvstart = {placeholder};",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"{record['stored'][0]}({record['stored'][0] * 4})\""
+          }
+        },
+        {
+          "tag": "kvend_value",
+          "meaning": "kvend canonical value",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "canonical integer from kvend",
+            "context_source": null,
+            "why_not_merge_raw": "parenthetical value is equivalent to the main value"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "kvend\\s*=\\s*(\\d+)\\((\\d+)\\);",
+          "replacement": "kvend = {placeholder};",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"{record['stored'][0]}({record['stored'][0] * 4})\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated timestamp and INFO format at the start of every line"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 18,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "container_and_attempt_ids",
+            "tokens": [
+              "container_1445062781478_0011_01_000002",
+              "attempt_1445062781478_0011_m_000000_0"
+            ],
+            "reason": "intrinsically structured identifiers with multiple separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated timestamp and INFO format at the start of every line"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "container_id",
+          "attempt_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "container_id",
+          "meaning": "container identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "container_id",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured identifier"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "container\\s+([a-zA-Z0-9_]+)",
+          "replacement": "container {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "attempt_id",
+          "meaning": "attempt identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "attempt_id",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured identifier"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "to\\s+([a-zA-Z0-9_]+)",
+          "replacement": "to {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 19,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated timestamp and INFO format at the start of every line"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated timestamp and INFO format at the start of every line"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 9,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated timestamp and INFO format at the start of every line"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 22,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated timestamp and INFO format at the start of every line"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 26,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated timestamp and INFO format at the start of every line"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 29,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "file_path",
+            "tokens": [
+              "/tmp/hadoop-msrabi/nm-local-dir/usercache/msrabi/appcache/application_1445062781478_0011"
+            ],
+            "reason": "the captured value contains multiple explicit separators and structured components",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated timestamp and INFO format at the start of every line"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "file_path"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "file_path",
+          "meaning": "file path for application data",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "file_path",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured file path"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "child:\\s*(/[^ ]+)",
+          "replacement": "child: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "host_and_port",
+            "tokens": [
+              "MSRA-SA-41.fareast.corp.microsoft.com:42313"
+            ],
+            "reason": "the value contains a structured hostname and port, separated explicitly by a colon",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated timestamp and INFO format at the start of every line"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "host_and_port"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "host_and_port",
+          "meaning": "host and port pair",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "host_and_port",
+            "context_source": null,
+            "why_not_merge_raw": "structured host and port with explicit separator"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "proxy\\s+:\\s+([a-zA-Z0-9\\-.]+:\\d+)",
+          "replacement": "proxy : {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "container_id",
+      "meaning": "container identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "raw_single_source",
+        "stored_source": "container_id",
+        "context_source": null,
+        "why_not_merge_raw": "intrinsically structured variable with separators"
+      },
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "container_([0-9]+_[0-9]+_[0-9]+_[0-9]+)",
+      "replacement": "container_{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0].replace('_', ''))], 'layout': []}\n\ndef inverse(record):\n    stored_str = str(record['stored'][0])\n    return 'container_' + '_'.join([stored_str[:13], stored_str[13:17], stored_str[17:19], stored_str[19:]])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,66 @@
+{
+ "dataset": "Proxifier",
+ "method": "zstd19",
+ "repeat": 1,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_010_Proxifier_zstd19_r1_a1",
+ "session": "T2",
+ "formal": true,
+ "input": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Proxifier.log",
+ "input_kind": "full",
+ "sampled_blocks": false,
+ "raw_bytes": 2541814,
+ "blocks": 1,
+ "started_unix": 1790855984.9897954,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_codec_r76.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_010_Proxifier_zstd19_r1_a1/encode_request.json"
+  ],
+  "seconds": 2.853609099984169,
+  "returncode": 0,
+  "load_average": [
+   12.18,
+   14.07,
+   18.35
+  ],
+  "started_unix": 1790855984.9965727,
+  "own_cpu_seconds": 1.1468300000000013,
+  "other_cpu_seconds": 0.020131523999998624,
+  "other_cores": 0.007054758831582892
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_codec_r76.py",
+   "decode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_010_Proxifier_zstd19_r1_a1/decode_request.json"
+  ],
+  "seconds": 2.8781068846583366,
+  "returncode": 0,
+  "load_average": [
+   11.84,
+   13.97,
+   18.3
+  ],
+  "started_unix": 1790855987.8551116,
+  "own_cpu_seconds": 0.09492499999999637,
+  "other_cpu_seconds": 0.02069605200000363,
+  "other_cores": 0.007190855944344291
+ },
+ "archive_bytes": 120664,
+ "sha_pass": true,
+ "audit_seconds": 0.012036725878715515,
+ "encode_MB_per_s": 0.8907365763636306,
+ "decode_MB_per_s": 0.8831548312361379,
+ "finished_unix": 1790855990.749586,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.006578288087928051
+ },
+ "max_other_cores": 0.007190855944344291,
+ "contaminated": false
+}

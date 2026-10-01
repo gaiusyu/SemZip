@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "task_count",
+      "meaning": "number of tasks",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "Submitting ([0-9]+) missing tasks",
+      "replacement": "Submitting {placeholder} missing tasks",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"Submitting {record['stored'][0]} missing tasks\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

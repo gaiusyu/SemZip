@@ -1,0 +1,100 @@
+{
+ "dataset": "Windows",
+ "method": "logreducer_r",
+ "repeat": 1,
+ "status": "PASS",
+ "attempt": 2,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_026_Windows_logreducer_r_r1_a2",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/Windows.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 465577918,
+ "blocks": 20,
+ "started_unix": 1790840652.4447017,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_lr.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_026_Windows_logreducer_r_r1_a2/encode_request.json"
+  ],
+  "seconds": 105.75233820825815,
+  "returncode": 0,
+  "load_average": [
+   11.74,
+   12.46,
+   12.78
+  ],
+  "started_unix": 1790840652.452407,
+  "own_cpu_seconds": 162.1736719999999,
+  "other_cpu_seconds": 0.8198498940001002,
+  "other_cores": 0.007752546259408177
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_lr.py",
+   "decode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_026_Windows_logreducer_r_r1_a2/decode_request.json"
+  ],
+  "seconds": 31.253936678171158,
+  "returncode": 0,
+  "load_average": [
+   14.26,
+   13.0,
+   12.95
+  ],
+  "started_unix": 1790840758.2099743,
+  "own_cpu_seconds": 42.61800399999993,
+  "other_cpu_seconds": 0.26154608200007345,
+  "other_cores": 0.008368420423106135
+ },
+ "archive_bytes": 1399768,
+ "native_archive_bytes": 1394956,
+ "block_failures": {
+  "encode": [],
+  "decode": []
+ },
+ "sha_pass": true,
+ "audit_seconds": 1.5558321475982666,
+ "encode_native": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_lr.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_026_Windows_logreducer_r_r1_a2/encode_native_request.json"
+  ],
+  "seconds": 36.608099438250065,
+  "returncode": 0,
+  "load_average": [
+   15.28,
+   13.39,
+   13.08
+  ],
+  "started_unix": 1790840791.0747285,
+  "own_cpu_seconds": 80.59758000000011,
+  "other_cpu_seconds": 0.29457569199989564,
+  "other_cores": 0.008046735463467068
+ },
+ "native_encode_consistency": {
+  "blocks": 20,
+  "blocks_compared": 20,
+  "encode_fail_pattern_equal": true,
+  "structure_equal_all": true,
+  "native_bytes_adapted_run": 1394752,
+  "native_bytes_native_run": 1394793,
+  "max_abs_block_native_byte_diff": 18
+ },
+ "encode_MB_per_s": 4.402530723085641,
+ "decode_MB_per_s": 14.89661679404297,
+ "encode_native_MB_per_s": 12.7178937214517,
+ "finished_unix": 1790840827.6896074,
+ "quiet_before": {
+  "waited_seconds": 40,
+  "other_cores_before": 0.024080986730593938
+ },
+ "max_other_cores": 0.008368420423106135,
+ "contaminated": false
+}

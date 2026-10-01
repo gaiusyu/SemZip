@@ -1,0 +1,125 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated header structure with fields like host, timestamp, request type, and status code, which can be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "client_host",
+        "meaning": "client_host_or_ip_address",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(\\S+)( +)-",
+        "replacement": "{placeholder}{group2}-",
+        "program": {
+          "intent": "Raw stream for client host or IP address",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "request_uri",
+        "meaning": "requested_URI_path_with_optional_query",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(\"GET( +)(\\S+)) HTTP/1\\.0\"",
+        "replacement": "{group1}{placeholder} HTTP/1.0\"",
+        "program": {
+          "intent": "Raw stream for request URI path and query",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[2]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "status_code",
+        "meaning": "HTTP_response_status_code",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(\\d{3})( +)(\\d+)",
+        "replacement": "{placeholder}{group2}{group3}",
+        "program": {
+          "intent": "Numeric stream for HTTP response status code",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+        }
+      },
+      {
+        "tag": "response_size",
+        "meaning": "response_size_in_bytes",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(\\d+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Numeric stream for response size in bytes",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+        }
+      }
+    ],
+    "slot_actions": [
+      {
+        "slot": "S0",
+        "action": "STREAM_RAW",
+        "meaning": "client_host_or_ip",
+        "reason": "The host/IP changes frequently and has a stable structural separator pattern."
+      },
+      {
+        "slot": "S3+S4",
+        "action": "COMPOSE_FIELDS_TO_INT",
+        "meaning": "log_timestamp_with_timezone_offset",
+        "reason": "The closely adjacent fields in S3 and S4 together describe the complete timestamp with timezone offset."
+      },
+      {
+        "slot": "S5",
+        "action": "KEEP_IN_MAIN",
+        "meaning": "HTTP_method_GET",
+        "reason": "The HTTP method is stable and does not vary across examples, so keeping it in the main template is more efficient."
+      },
+      {
+        "slot": "S6",
+        "action": "STREAM_RAW",
+        "meaning": "request_uri",
+        "reason": "The URI changes frequently and has a stable structural pattern with separators like slashes, question marks, and equals signs."
+      },
+      {
+        "slot": "S7",
+        "action": "KEEP_IN_MAIN",
+        "meaning": "HTTP_version",
+        "reason": "The HTTP version is stable and does not vary across examples, so keeping it in the main template is more efficient."
+      },
+      {
+        "slot": "S8",
+        "action": "STREAM_RAW",
+        "meaning": "response_status_code",
+        "reason": "The status code changes frequently and is a numeric value with a stable role."
+      },
+      {
+        "slot": "S9",
+        "action": "STREAM_RAW",
+        "meaning": "response_size_bytes",
+        "reason": "The response size changes frequently and is a numeric value with a stable role."
+      }
+    ]
+  },
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,372 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "S0 and S1 together form a timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "S11",
+              "S12"
+            ],
+            "reason": "'6.1' and 'KB' together represent a single size value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "S9"
+            ],
+            "reason": "The value contains explicit separators (e.g., ':') encoded by regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "S5"
+            ],
+            "reason": "A plain value is introduced by a stable field-name literal",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent repeated prefix in log format"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp is formed by combining date and time fields"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "size_value"
+        ],
+        "class_3_common_variable": [
+          "broadcast_id",
+          "host_address"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "combined date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "date and time tokens represent one composite value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    dt = datetime.fromtimestamp(record['stored'][0] / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "size_value",
+          "meaning": "size in bytes or KB",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "size",
+            "context_source": null,
+            "why_not_merge_raw": "size is represented with unit suffix"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "\\(size: (\\d+\\.\\d+) (KB|MB)\\)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    value = float(groups[0])\n    unit = groups[1].lower()\n    multiplier = 1024 if unit == 'kb' else (1024 * 1024 if unit == 'mb' else 1)\n    return {'stored': [int(value * multiplier)], 'layout': [unit]}\n\ndef inverse(record):\n    value = record['stored'][0]\n    unit = record['layout'][0]\n    if unit == 'kb':\n        display_value = value / 1024\n        unit = 'KB'\n    elif unit == 'mb':\n        display_value = value / (1024 * 1024)\n        unit = 'MB'\n    else:\n        display_value = value\n        unit = 'B'\n    return f'(size: {display_value:.1f} {unit})'"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "broadcast_id",
+          "meaning": "broadcast identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "broadcast identifier",
+            "context_source": null,
+            "why_not_merge_raw": "single isolated value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(broadcast_\\d+_piece\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "host_address",
+          "meaning": "host address and port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "host address",
+            "context_source": null,
+            "why_not_merge_raw": "single isolated value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(\\w+[-\\.]\\w+-\\d+:\\d+|\\d{1,3}(?:\\.\\d{1,3}){3}:\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "S0 and S1 together form a timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "S6"
+            ],
+            "reason": "The value contains explicit separators (e.g., ':' and '/') encoded by regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent repeated prefix in log format"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp is formed by combining date and time fields"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "file_path"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "combined date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "date and time tokens represent one composite value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    dt = datetime.fromtimestamp(record['stored'][0] / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "file_path",
+          "meaning": "file path with offset and size",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "complete file path with offset and size",
+            "context_source": null,
+            "why_not_merge_raw": "complete structured value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "((?:hdfs://[^ ]+|Paths:[^ ]+))",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "S13",
+              "S14"
+            ],
+            "reason": "'330.9' and 'KB' together represent a single size value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "S5"
+            ],
+            "reason": "A plain value is introduced by a stable field-name literal",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent repeated prefix in log format"
+      },
+      "slot_actions": [
+        {
+          "slot": "S13+S14",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "estimated size",
+          "reason": "size is represented with unit suffix"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "estimated_size"
+        ],
+        "class_3_common_variable": [
+          "broadcast_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "estimated_size",
+          "meaning": "size in bytes or KB",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "size",
+            "context_source": null,
+            "why_not_merge_raw": "size is represented with unit suffix"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "\\(estimated size (\\d+\\.\\d+) (B|KB|MB), free \\d+\\.\\d+ MB\\)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    value = float(groups[0])\n    unit = groups[1].lower()\n    multiplier = 1 if unit == 'b' else (1024 if unit == 'kb' else 1024 * 1024)\n    return {'stored': [int(value * multiplier)], 'layout': [unit]}\n\ndef inverse(record):\n    value = record['stored'][0]\n    unit = record['layout'][0]\n    if unit == 'kb':\n        display_value = value / 1024\n        unit = 'KB'\n    elif unit == 'mb':\n        display_value = value / (1024 * 1024)\n        unit = 'MB'\n    else:\n        display_value = value\n        unit = 'B'\n    return f'(estimated size {display_value:.1f} {unit})'"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "broadcast_id",
+          "meaning": "broadcast identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "broadcast identifier",
+            "context_source": null,
+            "why_not_merge_raw": "single isolated value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(broadcast_\\d+(?:_piece\\d+)?)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

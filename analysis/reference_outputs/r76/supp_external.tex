@@ -1,3 +1,4 @@
+\setlength{\tabcolsep}{3pt}
 \begin{longtable}{lrrrrrrrrr}
 \caption{Supplementary external measurements. Left: further general-purpose settings (Zstd19+D: dictionary trained on block 0 and counted once per file) and DeLog without its dataset-specific regular expressions, all byte-exact from archives alone. Zstd22L: zstd --ultra -22 --long=27. Right: compression-only ratios of LogShrink and LogReducer as released (not byte-exact; exact files marked e), the number of LogShrink blocks that failed to encode or decode, and Denum\textquotesingle s compression-only ratio (its format cannot restore the input; not losslessly verifiable).}\label{tab:supp-external}\\
 \toprule
@@ -19,8 +20,8 @@ OpenSSH & 14.32 & 24.39 & 23.48 & 66.05 & 102.87 & 0 & 83.48 & PASS & 101.42 \\
 OpenStack & 12.14 & 16.31 & 15.74 & 20.22 & 22.55 & 0 & 22.99$^e$ & PASS & 22.12 \\
 Proxifier & 13.59 & 21.13 & 11.12 & 25.62 & 26.95 & 0 & 27.34 & PASS & 27.32 \\
 Spark & 15.24 & 25.15 & 24.81 & 49.40 & -- & 48 & -- & FAIL & 59.66 \\
-Thunderbird & 18.82 & 29.46 & 27.71 & 60.34 & 58.37 & 0 & -- & -- & 62.75 \\
+Thunderbird & 18.82 & 29.46 & 27.71 & 60.34 & 58.37 & 0 & 49.80 & PASS & 62.75 \\
 Windows & 145.95 & 291.39 & 247.41 & 493.23 & -- & 42 & 327.42 & PASS & 480.96 \\
-Zookeeper & 23.03 & 38.80 & 27.64 & 116.67 & 111.87 & 0 & -- & -- & 135.40 \\
+Zookeeper & 23.03 & 38.80 & 27.64 & 116.67 & 111.87 & 0 & 116.39 & PASS & 135.40 \\
 \bottomrule
 \end{longtable}

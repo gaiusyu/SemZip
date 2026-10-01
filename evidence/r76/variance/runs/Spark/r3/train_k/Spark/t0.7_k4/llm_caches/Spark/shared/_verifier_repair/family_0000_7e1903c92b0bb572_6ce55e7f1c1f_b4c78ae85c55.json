@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "size_value",
+      "meaning": "size in bytes or KB",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\(size: (\\d+\\.\\d+) (B|KB|MB)\\)",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = float(groups[0])\n    unit = groups[1].lower()\n    if unit == 'b':\n        multiplier = 1\n    elif unit == 'kb':\n        multiplier = 1024\n    elif unit == 'mb':\n        multiplier = 1024 * 1024\n    else:\n        raise ValueError(\"Unknown unit\")\n    return {'stored': [int(value * multiplier)], 'layout': [groups[1]]}\n\ndef inverse(record):\n    value = record['stored'][0]\n    unit = record['layout'][0]\n    if unit.lower() == 'kb':\n        display_value = value / 1024\n    elif unit.lower() == 'mb':\n        display_value = value / (1024 * 1024)\n    else:\n        display_value = value\n    return f'(size: {display_value:.1f} {unit})'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

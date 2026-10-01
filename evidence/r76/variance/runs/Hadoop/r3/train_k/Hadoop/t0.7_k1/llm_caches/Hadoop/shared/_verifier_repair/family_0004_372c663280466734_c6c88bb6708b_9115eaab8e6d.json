@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "kvstart_formatted",
+      "meaning": "Key-value start with alternate display",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "kvstart = (\\d+)\\((\\d+)\\)",
+      "replacement": "kvstart = {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    base_value = int(groups[0])\n    alt_value = int(groups[1])\n    return {'stored': [base_value], 'layout': [alt_value & 0xFF]}\n\ndef inverse(record):\n    base_value = record['stored'][0]\n    alt_value = record['layout'][0]\n    return f\"{base_value}({alt_value})\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

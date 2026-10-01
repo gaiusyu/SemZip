@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "attempt_id",
+      "meaning": "structured attempt identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "attempt_([0-9]+_[0-9]+_[a-z]_[0-9]+_[0-9]+)",
+      "replacement": "attempt_{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"attempt_{record['stored'][0]}\" if record['stored'] else \"\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

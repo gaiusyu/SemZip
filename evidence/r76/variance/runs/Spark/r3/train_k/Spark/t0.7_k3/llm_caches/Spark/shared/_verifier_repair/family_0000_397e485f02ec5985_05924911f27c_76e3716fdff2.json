@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "size_display",
+      "meaning": "size_with_units",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\((size:( +))(\\d+(?:\\.\\d+)?)( +)(KB|GB|B),( +)free:( +)(\\d+(?:\\.\\d+)?)( +)(MB|GB)\\)",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    size_value, size_unit = float(groups[2]), groups[4]\n    free_value, free_unit = float(groups[8]), groups[10]\n    scale = {'B': 1, 'KB': 1024, 'GB': 1024 ** 3, 'MB': 1024 ** 2}\n    size_canonical = int(size_value * scale[size_unit])\n    free_canonical = int(free_value * scale[free_unit])\n    return {'stored': [size_canonical, free_canonical], 'layout': [size_unit, free_unit]}\n\ndef inverse(record):\n    size_canonical, free_canonical = record['stored']\n    size_unit, free_unit = record['layout']\n    scale = {'B': 1, 'KB': 1024, 'GB': 1024 ** 3, 'MB': 1024 ** 2}\n    size_value = size_canonical / scale[size_unit]\n    free_value = free_canonical / scale[free_unit]\n    return f\"size: {size_value:.1f} {size_unit}, free: {free_value:.1f} {free_unit}\"\n"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "timestamp",
+      "meaning": "composed timestamp",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "regex": "(\\d{6})( +)(\\d{6})",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    date_part = groups[0]  # YYMMDD\n    space_part = groups[1]  # Space separator\n    time_part = groups[2]  # HHMMSS\n    packed = int(date_part + time_part)  # Combine date and time\n    layout = [len(space_part)]  # Store space length\n    return {'stored': [packed], 'layout': layout}\n\ndef inverse(record):\n    packed = str(record['stored'][0])\n    layout = record['layout']\n    date_part = packed[:6]\n    time_part = packed[6:]\n    space_part = ' ' * layout[0]  # Reconstruct space separator\n    return f\"{date_part}{space_part}{time_part}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

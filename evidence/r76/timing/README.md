@@ -1,6 +1,24 @@
 # R76 track `timing/`: formal timing of the new baselines (pre-registered design section D)
 
-> **This copy.** No formal session (T2/T3) of this track had finished when this copy was assembled: only the smoke runs (`runs/smoke/`) are included, and `runs/T2/`, `runs/T3/`, `samples/`, `vendor/` and `logs/` are not. Consequently `analysis/r76/r76_tables.py` prints `--` for every Session B and large-file speed cell, and no speed number of XZ9e, Zstd19, LogShrink+R or LogReducer+R is backed by this copy.
+> **This copy.** **T3 finished** (2026-10-01; every one of the 120 trial cells has a clean terminal result, and
+> LogReducer+R on Spark and LogShrink+R on Spark and Windows are timed only because they do not restore their blocks
+> byte for byte, as expected): `runs/T3/` holds its design
+> (`DESIGN_20261001053412.json`), one `result.json` per trial attempt (SemZip trials also `decode/summary.json`) and the
+> summary `SUMMARY_T3.{json,md}`, which `analysis/r76/r76_tables.py` reads for the Large column of the speed table.
+> **T2 is incomplete and not used**: it was stopped by design after 23 of 216 trials to free the host for the
+> pre-registered unseen-source track (`../DEV_DESIGN_R76_zh.md`, section R76-G); `runs/T2/` keeps its two design files
+> and the finished trial records for completeness only (`runs/T2/INCOMPLETE.md`), and there is no `SUMMARY_T2`. The
+> speed table's Small column is therefore the earlier serialized session A (`evidence/selection/results/timing/`), and
+> no small-file speed of XZ9e, Zstd19, LogShrink+R or LogReducer+R is reported. `runs/STATUS.json` is the heartbeat at
+> the T2 stop. The launchers that resumed the sessions after host restarts (`start_after_runs.sh`, `start_after_lr.sh`,
+> `start_after_lr2.sh`, `chain_20261001.sh`) are included; `samples/` (LogHub blocks), `vendor/` (a byte-identical copy
+> of `../codecs/codec_baseline_r76.py`), `logs/` and the per-trial work files (requests, phase records, archives) are
+> not. The smoke design and summary files (`runs/smoke/*/DESIGN_*.json`, `runs/smoke/*/SUMMARY_smoke_*.{json,md}`) are not
+> included either; the smoke trial records are (`runs/smoke/{T2,T3}/<tag>_*/result.json`), and the table under "Smoke"
+> lists every smoke trial. Times in this README are UTC. The driver named session tags (`<tag>` = `YYYYMMDDhhmmss` in
+> run directory and `DESIGN_<tag>.json` names) after the execution host's local clock; in this copy every tag is the
+> UTC time instead, and every reference to it (READMEs, `runs/T3/SUMMARY_T3.json` `trial_dirs`, the `_dest` and argument
+> paths in the trial records) was renamed accordingly.
 
 Pre-registered design: `../DEV_DESIGN_R76_zh.md`, section D (成本): "加入新基线，与 R73 `timing_campaign.py` 同协议——
 12 个文件，3 次，串行，交替顺序，等机器空闲" and "4 个大文件：每个文件取 20 个等间隔块，块号为 round(i·(N−1)/19)，
@@ -21,8 +39,8 @@ the driver only waits until the container is quiet.
 | `vendor/codec_baseline_r76.py` | byte-identical copy of `../codecs/codec_baseline_r76.py` (checked at every start) |
 | `check_sample_semzip.py` | read-only check: SemZip per-block archive bytes on a sample = R73 whole-file run |
 | `samples/<D>.sample20.{log,json}` | T3 inputs + verification manifests; `samples/HDFS.mini2.*` = smoke mini-sample |
-| `runs/T2/`, `runs/T3/` | formal sessions: one dir per trial attempt, `DESIGN_<tag>.json`, `SUMMARY_T2|T3.{json,md}` |
-| `runs/smoke/` | smoke (NOT formal), `runs/smoke/*/SUMMARY_smoke_*.{json,md}` |
+| `runs/T2/`, `runs/T3/` | formal sessions: one dir per trial attempt, `DESIGN_<tag>.json`, `SUMMARY_T3.{json,md}` (T2 has no summary, `runs/T2/INCOMPLETE.md`) |
+| `runs/smoke/` | smoke (NOT formal): one dir per trial with its `result.json`; its `DESIGN_*.json` and `SUMMARY_smoke_*.{json,md}` are not included in this copy |
 | `runs/STATUS.json` | driver heartbeat (waiting for quiet / current trial) |
 | `logs/` | `smoke.log`, `formal.log`, `materialize*.log` |
 
@@ -113,7 +131,7 @@ reported as timed-only. Thunderbird results of those whole-file runs were not fi
 ## Smoke (non-formal; 1 repeat; quietness ignored while ~7 other cores were busy)
 
 Command (2026-09-29 20:47 UTC, detached): `AGNICE=5 ../launch.sh logs/smoke.log python3 -u timing_r76.py smoke`
-(code hashes as in "Hashes"; `runs/smoke/*/DESIGN_*.json`). T2 methods on Linux and Proxifier (whole files), T3
+(code hashes as in "Hashes", recorded in the smoke design files, which are not included in this copy). T2 methods on Linux and Proxifier (whole files), T3
 methods on `HDFS.mini2.log`. Every trial: separate encode and decode processes, archive-only decode, per-block and
 full-file SHA audit outside the timers. The container was fully loaded (other_cores 6.3-7.9 in every phase), so every
 trial is flagged `CONTAMINATED`; the seconds below are NOT timing results, only evidence that each path runs.
@@ -150,8 +168,8 @@ blocks 0/111 (244,092 and 414,268 B), i.e. a sampled block is encoded exactly as
 | T3-mini | HDFS | logreducer_r | PASS | 1,311,944 | 24,999,077 | 2 | 19.3 | 7.9 | 11.1 | equal (4) |
 | T3-mini | HDFS | logshrink_r | PASS | 1,890,788 | 24,999,077 | 2 | 68.4 | 25.6 | 36.0 | equal (7) |
 
-(`runs/smoke/*/SUMMARY_smoke_*.md` repeat these as MB/s; their header line about other_cores <= 0.5 does not apply
-to the smoke, whose JSON carries `"note": "SMOKE, NOT FORMAL"`.)
+(The smoke summaries `SUMMARY_smoke_*.{json,md}`, not included in this copy, repeat these as MB/s; their header line
+about other_cores <= 0.5 does not apply to the smoke, whose JSON carries `"note": "SMOKE, NOT FORMAL"`.)
 
 ## Formal launch
 
@@ -163,7 +181,7 @@ AGNICE=0 <WORKDIR>/r76_additional_20260929/launch.sh \
   logs/formal.log python3 -u timing_r76.py formal
 ```
 
-pid 875620 (`runs/DRIVER.lock`), log `logs/formal.log`, design `runs/T2/DESIGN_20260930050818.json`. It runs T2
+pid 875620 (`runs/DRIVER.lock`), log `logs/formal.log`, design `runs/T2/DESIGN_20260929210818.json`. It runs T2
 (216 trials) and then T3 (120 trials); before every attempt it waits for the quiet condition (at launch the
 container used ~6.5 other cores: the LogShrink/LogReducer/codecs/library Thunderbird runs and the Denum run).
 
@@ -198,7 +216,8 @@ Total ≈ 11-13 h of quiet time plus retries of contaminated trials (each retry 
 5. **Native-only encode as a separate timed process** (see Methods) instead of a sum of per-block times.
 6. **`SHA_FAIL` terminal status** (R73 only knew PASS/FAILED) so that deterministic per-block failures of the
    official tools are timed and reported instead of re-run forever; `FAILED` keeps R73's retry-on-resume behaviour.
-7. Trial directories carry a full timestamp tag (R73: HH:MM:SS) and "latest" is ordered by `finished_unix`.
+7. Trial directories carry a full timestamp tag (R73: HH:MM:SS; both UTC in this copy) and "latest" is ordered by
+   `finished_unix`.
 8. Heartbeat: while waiting, a `WAIT quiet` line about every 10 minutes and `runs/STATUS.json`.
 9. `zstd19` uses the R76 zstd 1.5.6 build (as in `../codecs`), `zstd3` the R68 zstd 1.4.8 (as in R68/R73).
 10. Sample materialization settles the written file (fsync + stable stat for 2 s, `codec_baseline_r76.settle_file`)
@@ -223,7 +242,8 @@ Total ≈ 11-13 h of quiet time plus retries of contaminated trials (each retry 
 | R73 `art/frozen/guarded_backend_v2.py` | `72bca1ca7c92f797d5a6a11d2300ad0bdee2ae209f972044b0fe3eb86c8b4d01` |
 | R73 `timing_campaign.py` (copied logic) | not listed (machine-specific path replaced in this copy) |
 
-The smoke and the formal launch used exactly these driver/phase files (`static.sha256` in each `DESIGN_*.json`).
+The smoke and the formal launch used exactly these driver/phase files (`static.sha256` in each `DESIGN_*.json`; the
+smoke design files are not included in this copy).
 
 ## Notes (2026-09-29 21:40 UTC)
 - The first formal driver (pid 875620) was stopped before any trial ran, because its 6-hour give-up would spend contamination attempts while the Thunderbird runs of the other R76 tracks were still active. start_after_runs.sh now waits for those runs (LogReducer 1225310, codecs 1245963, LogShrink 1396946, library 1463284, Denum encode-only 731978) to exit and then execs the unchanged timing_r76.py formal (log logs/formal_after_runs.log).

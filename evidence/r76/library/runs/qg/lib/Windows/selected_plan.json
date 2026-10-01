@@ -1,0 +1,45 @@
+{
+ "dataset": "Windows",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS"
+  ],
+  "local_families": [],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "TS": "<TS>"
+ },
+ "spec_count": 1,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "(?<![\\d.])(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?:([,.])(\\d{3}))?(?![\\d:])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\nSEPS = ['', ',', '.']\n\ndef render(v, layout):\n    ms = v % 1000\n    t = v // 1000\n    days = t // 86400\n    ymd = civil_from_days(days)\n    text = str(ymd[0]).zfill(4) + '-' + two(ymd[1]) + '-' + two(ymd[2]) + ' ' * int(layout[0]) + sod_text(t % 86400)\n    if int(layout[1]) > 0:\n        text = text + SEPS[int(layout[1])] + str(ms).zfill(3)\n    return text\n\ndef forward(groups):\n    if len(groups) != 9:\n        return BAD\n    yy, mo, dd, sp, hh, mm, ss, fsep, frac = groups\n    y = int(yy)\n    m = int(mo)\n    d = int(dd)\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if m < 1 or m > 12 or d < 1 or d > 31 or len(sp) > 255:\n        return BAD\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    code = 0\n    ms = 0\n    tail = ''\n    if fsep == ',':\n        code = 1\n    if fsep == '.':\n        code = 2\n    if code > 0:\n        ms = int(frac)\n        tail = fsep + frac\n    v = ((days_from_civil(y, m, d) * 86400) + h * 3600 + mi * 60 + s) * 1000 + ms\n    layout = [len(sp), code]\n    if render(v, layout) != yy + '-' + mo + '-' + dd + sp + hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\d.])(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2})(?:([,.])(\\d{3}))?(?![\\d:]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_ts_ymd_hms",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "raw_time:year:{\"code\":\"BAD = {'stored': [], 'layout': []}\\n\\ndef days_from_civil(y, m, d):\\n    y = y - (1 if m <= 2 else 0)\\n    era = (y if y >= 0 else y - 399) // 400\\n    yoe = y - era * 400\\n    mp = (m + 9) % 12\\n    doy = (153 * mp + 2) // 5 + d - 1\\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\\n    return era * 146097 + doe - 719468\\n\\ndef civil_from_days(z):\\n    z = z + 719468\\n    era = (z if z >= 0 else z - 146096) // 146097\\n    doe = z - era * 146097\\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\\n    y = yoe + era * 400\\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\\n    mp = (5 * doy + 2) // 153\\n    d = doy - (153 * mp + 2) // 5 + 1\\n    m = mp + 3 if mp < 10 else mp - 9\\n    y = y + (1 if m <= 2 else 0)\\n    return [y, m, d]\\n\\ndef two(v):\\n    return str(v).zfill(2)\\n\\ndef sod_text(t):\\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\\n\\ndef valid_hms(h, mi, s):\\n    return h < 24 and mi < 60 and s < 60\\n\\nSEPS = ['', ',', '.']\\n\\ndef render(v, layout):\\n    ms = v % 1000\\n    t = v // 1000\\n    days = t // 86400\\n    ymd = civil_from_days(days)\\n    text = str(ymd[0]).zfill(4) + '-' + two(ymd[1]) + '-' + two(ymd[2]) + ' ' * int(layout[0]) + sod_text(t % 86400)\\n    if int(layout[1]) > 0:\\n        text = text + SEPS[int(layout[1])] + str(ms).zfill(3)\\n    return text\\n\\ndef forward(groups):\\n    if len(groups) != 9:\\n        return BAD\\n    yy, mo, dd, sp, hh, mm, ss, fsep, frac = groups\\n    y = int(yy)\\n    m = int(mo)\\n    d = int(dd)\\n    h = int(hh)\\n    mi = int(mm)\\n    s = int(ss)\\n    if m < 1 or m > 12 or d < 1 or d > 31 or len(sp) > 255:\\n        return BAD\\n    if valid_hms(h, mi, s) == False:\\n        return BAD\\n    code = 0\\n    ms = 0\\n    tail = ''\\n    if fsep == ',':\\n        code = 1\\n    if fsep == '.':\\n        code = 2\\n    if code > 0:\\n        ms = int(frac)\\n        tail = fsep + frac\\n    v = ((days_from_civil(y, m, d) * 86400) + h * 3600 + mi * 60 + s) * 1000 + ms\\n    layout = [len(sp), code]\\n    if render(v, layout) != yy + '-' + mo + '-' + dd + sp + hh + ':' + mm + ':' + ss + tail:\\n        return BAD\\n    return {'stored': [v], 'layout': layout}\\n\\ndef inverse(record):\\n    return render(int(record['stored'][0]), record.get('layout', []))\",\"group_regex\":\"^(?:(?<![\\\\d.])(\\\\d{4})-(\\\\d{2})-(\\\\d{2})( +)(\\\\d{2}):(\\\\d{2}):(\\\\d{2})(?:([,.])(\\\\d{3}))?(?![\\\\d:]))$\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS",
+   "value_type": "numeric"
+  }
+ ],
+ "version": 1
+}

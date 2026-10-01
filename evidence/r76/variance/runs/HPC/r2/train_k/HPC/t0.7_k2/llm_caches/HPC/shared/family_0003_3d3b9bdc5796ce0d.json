@@ -1,0 +1,133 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure with changing fields that should be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "timestamp_epoch",
+        "meaning": "epoch_time_log_timestamp",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{6,10})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Reversible transformation of epoch timestamp to and from its numeric representation.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "UINT_DELTA",
+      "meaning": "epoch timestamp in seconds",
+      "reason": "Epoch timestamps are numeric values and can be effectively compressed using delta coding."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "node identifier",
+      "reason": "Node identifiers are structured strings with consistent prefixes and suffixes, making them good candidates for raw extraction."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "the 'clusterfilesystem.not_served' literal",
+      "reason": "This field is a stable literal value and does not require extraction."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "unique identifier or secondary timestamp",
+      "reason": "This is a numeric value that can be delta-coded efficiently."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "constant value '1'",
+      "reason": "This field is a stable constant and does not require extraction."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "the 'ClusterFileSystem:' literal",
+      "reason": "This is a stable literal prefix and does not require extraction."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain name or identifier",
+      "reason": "Domain names are changing structured strings, making them good candidates for raw extraction."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "node endpoint identifier",
+      "reason": "Node endpoints are structured strings with consistent prefixes and suffixes, making them good candidates for raw extraction."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "node_identifier",
+      "meaning": "unique_node_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "(node-[A-Z]\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Preserve the exact node identifier as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "domain_identifier",
+      "meaning": "unique_domain_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "domain( +)([A-Za-z0-9_]+(?:_[A-Za-z0-9_]+)*)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "Preserve the exact domain name/identifier as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "node_endpoint",
+      "meaning": "unique_node_endpoint",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "node( +)(node-\\d+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "Preserve the exact node endpoint identifier as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

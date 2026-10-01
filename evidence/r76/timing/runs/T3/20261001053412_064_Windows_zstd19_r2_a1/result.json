@@ -1,0 +1,66 @@
+{
+ "dataset": "Windows",
+ "method": "zstd19",
+ "repeat": 2,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_064_Windows_zstd19_r2_a1",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/Windows.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 465577918,
+ "blocks": 20,
+ "started_unix": 1790845845.655978,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_codec_r76.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_064_Windows_zstd19_r2_a1/encode_request.json"
+  ],
+  "seconds": 20.681478433310986,
+  "returncode": 0,
+  "load_average": [
+   12.98,
+   13.14,
+   13.95
+  ],
+  "started_unix": 1790845845.6640966,
+  "own_cpu_seconds": 55.77321099999972,
+  "other_cpu_seconds": 0.2143456740002776,
+  "other_cores": 0.010364136910784772
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_codec_r76.py",
+   "decode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_064_Windows_zstd19_r2_a1/decode_request.json"
+  ],
+  "seconds": 2.0940959453582764,
+  "returncode": 0,
+  "load_average": [
+   12.91,
+   13.12,
+   13.94
+  ],
+  "started_unix": 1790845866.350739,
+  "own_cpu_seconds": 1.5077000000001135,
+  "other_cpu_seconds": 0.02953869399988651,
+  "other_cores": 0.014105702303354955
+ },
+ "archive_bytes": 1749858,
+ "sha_pass": true,
+ "audit_seconds": 1.5247900038957596,
+ "encode_MB_per_s": 22.511829582265683,
+ "decode_MB_per_s": 222.3288379083055,
+ "finished_unix": 1790845870.0040944,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.006312263083414592
+ },
+ "max_other_cores": 0.014105702303354955,
+ "contaminated": false
+}

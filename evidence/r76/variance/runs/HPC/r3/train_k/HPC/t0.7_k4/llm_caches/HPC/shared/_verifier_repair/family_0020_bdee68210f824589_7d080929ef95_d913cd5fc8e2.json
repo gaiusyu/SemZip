@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "node_id",
+      "meaning": "structured node identifier",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "node-([0-9]+)",
+      "replacement": "node-{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return 'node-' + str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

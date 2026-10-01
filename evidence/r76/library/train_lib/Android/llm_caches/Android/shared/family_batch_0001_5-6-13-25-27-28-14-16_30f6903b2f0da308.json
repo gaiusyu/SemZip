@@ -1,0 +1,884 @@
+{
+  "families": [
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_hms",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_hms"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_hex_prefixed",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_hms",
+          "meaning": "timestamp: time of day HH:MM:SS with optional fraction",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: time of day HH:MM:SS with optional fraction",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_hms"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_hex_prefixed",
+          "meaning": "hexadecimal number with 0x prefix",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hexadecimal number with 0x prefix",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type hex_prefixed"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(0[xX])([0-9a-fA-F]{1,15})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\nPREFIXES = ['0x', '0X']\n\ndef render(v, layout):\n    h = f'{v:x}'.zfill(int(layout[1]))\n    if int(layout[2]) == 1:\n        h = h.upper()\n    return PREFIXES[int(layout[0])] + h\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    prefix, digits = groups\n    pcode = 0\n    if prefix == '0X':\n        pcode = 1\n    case = 0\n    if digits != digits.lower():\n        case = 1\n    v = int(digits, 16)\n    layout = [pcode, len(digits), case]\n    if render(v, layout) != prefix + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_hms",
+        "hex_prefixed",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_hms",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_hms"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_hms",
+          "meaning": "timestamp: time of day HH:MM:SS with optional fraction",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: time of day HH:MM:SS with optional fraction",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_hms"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_hms",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_hms",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_hms"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_hms",
+          "meaning": "timestamp: time of day HH:MM:SS with optional fraction",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: time of day HH:MM:SS with optional fraction",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_hms"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_hms",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_hms",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_hms"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_hex_bare",
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_hms",
+          "meaning": "timestamp: time of day HH:MM:SS with optional fraction",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: time of day HH:MM:SS with optional fraction",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_hms"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_hex_bare",
+          "meaning": "hexadecimal number",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hexadecimal number",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type hex_bare"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.:-])(?=[0-9a-fA-F]*[0-9])(?=[0-9a-fA-F]*[a-fA-F])([0-9a-fA-F]{4,15})(?![\\w.:-])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    h = f'{v:x}'.zfill(int(layout[0]))\n    if int(layout[1]) == 1:\n        h = h.upper()\n    return h\n\ndef forward(groups):\n    digits = groups[len(groups) - 1]\n    case = 0\n    if digits != digits.lower():\n        case = 1\n    v = int(digits, 16)\n    layout = [len(digits), case]\n    if render(v, layout) != digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        },
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_hms",
+        "hex_bare",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 27,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_hms",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_hms"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_hms",
+          "meaning": "timestamp: time of day HH:MM:SS with optional fraction",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: time of day HH:MM:SS with optional fraction",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_hms"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_hms",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 28,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_hms",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_hms"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_hms",
+          "meaning": "timestamp: time of day HH:MM:SS with optional fraction",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: time of day HH:MM:SS with optional fraction",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_hms"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_hms",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_hms",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_hms"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_hms",
+          "meaning": "timestamp: time of day HH:MM:SS with optional fraction",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: time of day HH:MM:SS with optional fraction",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_hms"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_hms",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_hms",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_hms"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_hms",
+          "meaning": "timestamp: time of day HH:MM:SS with optional fraction",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: time of day HH:MM:SS with optional fraction",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_hms"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_hms",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_hms",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_hms"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_hms",
+          "meaning": "timestamp: time of day HH:MM:SS with optional fraction",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: time of day HH:MM:SS with optional fraction",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_hms"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_hms",
+        "decimal_int"
+      ]
+    },
+    {
+      "family_id": 20,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "lib_ts_hms",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "library proposer: no header model"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "lib_ts_hms"
+        ],
+        "class_2_formatted_numeric": [
+          "lib_decimal_int"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "lib_ts_hms",
+          "meaning": "timestamp: time of day HH:MM:SS with optional fraction",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp: time of day HH:MM:SS with optional fraction",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type ts_hms"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "lib_decimal_int",
+          "meaning": "decimal integer",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "decimal integer",
+            "context_source": null,
+            "why_not_merge_raw": "fixed library type decimal_int"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))"
+          }
+        }
+      ],
+      "class_3_functions": [],
+      "_library_version": "LIBRARY-V1",
+      "_library_types": [
+        "ts_hms",
+        "decimal_int"
+      ]
+    }
+  ],
+  "_library_version": "LIBRARY-V1",
+  "_proposal_cache_mode": "library_v1"
+}

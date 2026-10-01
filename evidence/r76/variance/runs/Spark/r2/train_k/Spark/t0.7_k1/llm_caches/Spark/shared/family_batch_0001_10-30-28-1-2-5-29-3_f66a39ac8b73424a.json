@@ -1,0 +1,510 @@
+{
+  "families": [
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "date and time fields combine into a timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "numeric_metrics",
+            "tokens": [
+              "total",
+              "boot",
+              "init",
+              "finish"
+            ],
+            "reason": "fields represent numeric metrics for task times",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing timestamp and static text"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp and metrics",
+          "reason": "fields describe log timestamp and task metrics"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp",
+          "metrics"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp components",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp components must be stored as one compact value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^\\d{2}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 30,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "acl_roles",
+            "tokens": [
+              "yarn",
+              "curi"
+            ],
+            "reason": "fields represent roles in ACL configuration",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing timestamp and static text"
+      },
+      "slot_actions": [
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "ACL roles",
+          "reason": "roles are part of ACL configuration"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "acl_roles"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "acl_roles",
+          "meaning": "ACL roles",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "role list",
+            "context_source": null,
+            "why_not_merge_raw": "roles are stored as exact strings"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "to: ([^ ]+)",
+          "replacement": "to: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 28,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing timestamp and static text"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "task_stage_tid",
+            "tokens": [
+              "task id",
+              "stage id",
+              "TID"
+            ],
+            "reason": "fields together describe task identification",
+            "target_value": "one compact numeric value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing timestamp and static text"
+      },
+      "slot_actions": [
+        {
+          "slot": "S6 or S9 or S10",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "task stage and TID",
+          "reason": "fields describe task identification"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "task_stage_tid"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "task_stage_tid",
+          "meaning": "task identification",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "task id + stage id + TID",
+            "context_source": null,
+            "why_not_merge_raw": "fields form one compact numeric value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "task (\\d+\\.\\d+) in stage (\\d+\\.\\d+) \\(TID (\\d+)\\)",
+          "replacement": "task {placeholder} in stage {group2} (TID {group3})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    task_id = float(groups[0])\n    stage_id = float(groups[1])\n    tid = int(groups[2])\n    compact_value = int(task_id * 1e6 + stage_id * 1e3 + tid)\n    return {'stored': [compact_value], 'layout': []}\n\ndef inverse(record):\n    compact_value = int(record['stored'][0])\n    task_id = compact_value // int(1e6)\n    stage_id = (compact_value % int(1e6)) // int(1e3)\n    tid = compact_value % int(1e3)\n    return f\"{task_id}.{stage_id} (TID {tid})\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "task_stage_tid_duration",
+            "tokens": [
+              "task id",
+              "stage id",
+              "TID",
+              "duration"
+            ],
+            "reason": "fields together describe task identification and duration",
+            "target_value": "one compact numeric value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing timestamp and static text"
+      },
+      "slot_actions": [
+        {
+          "slot": "S6 or S13",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "task stage TID and duration",
+          "reason": "fields describe task identification and duration"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "task_stage_tid_duration"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "task_stage_tid_duration",
+          "meaning": "task identification and duration",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "task id + stage id + TID + duration",
+            "context_source": null,
+            "why_not_merge_raw": "fields form one compact numeric value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "task (\\d+\\.\\d+) in stage (\\d+\\.\\d+) \\(TID (\\d+)\\) in (\\d+) ms",
+          "replacement": "task {placeholder} in stage {group2} (TID {group3}) in {group4} ms",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    task_id = float(groups[0])\n    stage_id = float(groups[1])\n    tid = int(groups[2])\n    duration = int(groups[3])\n    compact_value = int(task_id * 1e6 + stage_id * 1e3 + tid) * int(1e6) + duration\n    return {'stored': [compact_value], 'layout': []}\n\ndef inverse(record):\n    compact_value = int(record['stored'][0])\n    duration = compact_value % int(1e6)\n    task_tid_stage = compact_value // int(1e6)\n    task_id = task_tid_stage // int(1e6)\n    stage_id = (task_tid_stage % int(1e6)) // int(1e3)\n    tid = task_tid_stage % int(1e3)\n    return f\"{task_id}.{stage_id} (TID {tid}) in {duration} ms\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "task_stage_tid_bytes",
+            "tokens": [
+              "task id",
+              "stage id",
+              "TID",
+              "bytes"
+            ],
+            "reason": "fields together describe task identification and bytes sent",
+            "target_value": "one compact numeric value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing timestamp and static text"
+      },
+      "slot_actions": [
+        {
+          "slot": "S6 or S9 or S12",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "task stage TID and bytes sent",
+          "reason": "fields describe task identification and bytes sent"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "task_stage_tid_bytes"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "task_stage_tid_bytes",
+          "meaning": "task identification and bytes sent",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "task id + stage id + TID + bytes sent",
+            "context_source": null,
+            "why_not_merge_raw": "fields form one compact numeric value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "task (\\d+\\.\\d+) in stage (\\d+\\.\\d+) \\(TID (\\d+)\\)\\. (\\d+) bytes",
+          "replacement": "task {placeholder} in stage {group2} (TID {group3}). {group4} bytes",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    task_id = float(groups[0])\n    stage_id = float(groups[1])\n    tid = int(groups[2])\n    bytes_sent = int(groups[3])\n    compact_value = int(task_id * 1e6 + stage_id * 1e3 + tid) * int(1e6) + bytes_sent\n    return {'stored': [compact_value], 'layout': []}\n\ndef inverse(record):\n    compact_value = int(record['stored'][0])\n    bytes_sent = compact_value % int(1e6)\n    task_tid_stage = compact_value // int(1e6)\n    task_id = task_tid_stage // int(1e6)\n    stage_id = (task_tid_stage % int(1e6)) // int(1e3)\n    tid = task_tid_stage % int(1e3)\n    return f\"{task_id}.{stage_id} (TID {tid}) {bytes_sent} bytes\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 29,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "result_stage_tasks",
+            "tokens": [
+              "ResultStage id",
+              "missing tasks"
+            ],
+            "reason": "fields together describe a result stage and task count",
+            "target_value": "one compact numeric value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing timestamp and static text"
+      },
+      "slot_actions": [
+        {
+          "slot": "S5 or S10",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "result stage and task count",
+          "reason": "fields describe result stage and task count"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "result_stage_tasks"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "result_stage_tasks",
+          "meaning": "result stage and task count",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "result stage id + missing tasks",
+            "context_source": null,
+            "why_not_merge_raw": "fields form one compact numeric value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "Submitting (\\d+) missing tasks from ResultStage (\\d+)",
+          "replacement": "Submitting {placeholder} missing tasks from ResultStage {group2}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    task_count = int(groups[0])\n    stage_id = int(groups[1])\n    compact_value = stage_id * int(1e5) + task_count\n    return {'stored': [compact_value], 'layout': []}\n\ndef inverse(record):\n    compact_value = int(record['stored'][0])\n    task_count = compact_value % int(1e5)\n    stage_id = compact_value // int(1e5)\n    return f\"{task_count} missing tasks from ResultStage {stage_id}\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "task_stage_tid_running",
+            "tokens": [
+              "task id",
+              "stage id",
+              "TID"
+            ],
+            "reason": "fields together describe task identification",
+            "target_value": "one compact numeric value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix containing timestamp and static text"
+      },
+      "slot_actions": [
+        {
+          "slot": "S6 or S9 or S10",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "task stage and TID",
+          "reason": "fields describe task identification"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "task_stage_tid_running"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "task_stage_tid_running",
+          "meaning": "task identification",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "task id + stage id + TID",
+            "context_source": null,
+            "why_not_merge_raw": "fields form one compact numeric value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "task (\\d+\\.\\d+) in stage (\\d+\\.\\d+) \\(TID (\\d+)\\)",
+          "replacement": "task {placeholder} in stage {group2} (TID {group3})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    task_id = float(groups[0])\n    stage_id = float(groups[1])\n    tid = int(groups[2])\n    compact_value = int(task_id * 1e6 + stage_id * 1e3 + tid)\n    return {'stored': [compact_value], 'layout': []}\n\ndef inverse(record):\n    compact_value = int(record['stored'][0])\n    task_id = compact_value // int(1e6)\n    stage_id = (compact_value % int(1e6)) // int(1e3)\n    tid = compact_value % int(1e3)\n    return f\"{task_id}.{stage_id} (TID {tid})\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

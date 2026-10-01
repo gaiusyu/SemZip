@@ -1,0 +1,14 @@
+\begin{table}[t]\centering\footnotesize
+\caption{Unseen sources: four public web-server access logs never used during development (complete-file ratios; every cell decoded from its archive alone with matching SHA-256). The pipeline, prompts, and constants are unchanged; DeLog has no hand-written rules for these sources. --: the tool failed on at least one block.}
+\label{tab:unseen}
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Source & Lines & \tool & DeLog & LogShrink+R* & LogReducer+R* & LogLite-BL* & XZ9e & Zstd19 \\
+\midrule
+NASA & 1.89M & \textbf{22.76} & 20.31 & 21.56 & 18.96 & 9.82 & 16.36 & 15.59 \\
+ClarkNet & 1.65M & \textbf{19.12} & 17.04 & -- & 15.38 & 9.14 & 14.44 & 13.70 \\
+USask & 2.41M & \textbf{16.65} & 15.28 & -- & -- & 8.63 & 13.60 & 12.86 \\
+Calgary & 0.73M & 21.12 & 18.66 & 21.23 & \textbf{21.25} & 12.36 & 16.87 & 15.13 \\
+\bottomrule
+\end{tabular}\end{table}

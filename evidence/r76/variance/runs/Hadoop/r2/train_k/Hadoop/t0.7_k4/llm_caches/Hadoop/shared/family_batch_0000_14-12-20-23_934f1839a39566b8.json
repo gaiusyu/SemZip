@@ -1,0 +1,261 @@
+{
+  "families": [
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:37:59,503"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "attempt_1445062781478_0011_m_000000_0",
+              "attempt_1445062781478_0011_m_000001_0"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated log prefix with date/time and INFO label"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "task_attempt_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "repeated log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "datetime",
+            "context_source": null,
+            "why_not_merge_raw": "exact reconstruction possible"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "task_attempt_id",
+          "meaning": "task attempt identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "task_attempt_id",
+            "context_source": null,
+            "why_not_merge_raw": "independent identifier"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "attempt_(\\d{13}_\\d{4}_\\w_\\d{6}_\\d)",
+          "replacement": "attempt_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"attempt_{record['stored'][0]}\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated log prefix with date/time and INFO label"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 20,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "container_1445062781478_0011_01_000002",
+              "container_1445062781478_0011_01_000003"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated log prefix with date/time and INFO label"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "container_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "container_id",
+          "meaning": "container identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "container_id",
+            "context_source": null,
+            "why_not_merge_raw": "independent identifier"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "container_(\\d{13}_\\d{4}_\\d{2}_\\d{6})",
+          "replacement": "container_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"container_{record['stored'][0]}\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 23,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "jvm_1445062781478_0011_m_000007",
+              "attempt_1445062781478_0011_m_000005_0"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated log prefix with date/time and INFO label"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "jvm_id",
+          "task_attempt_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "jvm_id",
+          "meaning": "JVM identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "jvm_id",
+            "context_source": null,
+            "why_not_merge_raw": "independent identifier"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "jvm_(\\d{13}_\\d{4}_\\w_\\d{6})",
+          "replacement": "jvm_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"jvm_{record['stored'][0]}\""
+          }
+        },
+        {
+          "tag": "task_attempt_id",
+          "meaning": "task attempt identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "task_attempt_id",
+            "context_source": null,
+            "why_not_merge_raw": "independent identifier"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "attempt_(\\d{13}_\\d{4}_\\w_\\d{6}_\\d)",
+          "replacement": "attempt_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"attempt_{record['stored'][0]}\""
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

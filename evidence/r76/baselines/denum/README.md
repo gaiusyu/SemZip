@@ -1,7 +1,9 @@
 # R76 baseline track: Denum (ASE 2024), independent 100k-line blocks
 
-> **This copy.** `prove_lossy.py`, `check_enconly_smoke.py`, `src/`, `bin/`, `pydeps/` and the logs are not included (see
-> `../../CODE_PROVENANCE.md`); their outputs (`proofs/SUMMARY.json`, the smoke checks) are.
+> **This copy.** The adapters and all analysis scripts (`prove_lossy.py`, `check_enconly_smoke.py`, `equiv_check.py`,
+> `diff_roundtrip.py`, `summarize_smoke.py`, `native_official.sh`) are included with their outputs (`proofs/SUMMARY.json`,
+> the smoke checks). `src/` (the upstream Denum source), `bin/`, `pydeps/` and the logs are not (see
+> `../../CODE_PROVENANCE.md`).
 
 Track dir: `r76_additional_20260929/baselines/denum/`, working on 2026-09-29.
 Design: `../../DEV_DESIGN_R76_zh.md`, section A. Status: **BLOCKED. No full run launched.**

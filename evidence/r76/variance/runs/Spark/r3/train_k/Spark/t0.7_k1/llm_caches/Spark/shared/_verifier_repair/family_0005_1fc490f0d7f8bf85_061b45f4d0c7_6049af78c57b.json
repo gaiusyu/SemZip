@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "task_metadata",
+      "meaning": "task and result metadata",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "task (\\d+\\.\\d+) in stage (\\d+\\.\\d+) \\(TID (\\d+)\\). (\\d+) bytes result",
+      "replacement": "task {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    task_id = float(groups[0])\n    stage_id = float(groups[1])\n    tid = int(groups[2])\n    result_bytes = int(groups[3])\n    return {'stored': [task_id, stage_id, tid, result_bytes], 'layout': []}\n\ndef inverse(record):\n    task_id, stage_id, tid, result_bytes = record['stored']\n    return f\"task {task_id:.1f} in stage {stage_id:.1f} (TID {tid}). {result_bytes} bytes result\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

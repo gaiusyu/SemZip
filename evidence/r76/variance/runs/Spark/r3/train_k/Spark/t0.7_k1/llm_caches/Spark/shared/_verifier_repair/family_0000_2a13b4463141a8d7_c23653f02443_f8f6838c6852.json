@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "log_timestamp",
+      "meaning": "composed date/time value",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    dt = datetime.strptime(groups[0], '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp())], 'layout': []}\n\ndef inverse(record):\n    ts = int(record['stored'][0])\n    dt = datetime.fromtimestamp(ts)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,388 @@
+{
+  "families": [
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "2015-10-17",
+              "15:38:11,254"
+            ],
+            "reason": "Date and time tokens combine to form a timestamp.",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "kvstart_kvend_length",
+            "tokens": [
+              "26214396(104857584)",
+              "17301360(69205440)",
+              "8913037/6553600"
+            ],
+            "reason": "Different displays represent the same underlying values.",
+            "target_value": "integer-like values",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent prefix including date, time, and INFO level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "kvstart_kvend_length"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Primary timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "combined timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Combining date and time tokens allows for a compact timestamp representation."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "kvstart_formatted",
+          "meaning": "Key-value start with alternate display",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "base numeric value",
+            "context_source": null,
+            "why_not_merge_raw": "Compact representation of numeric value with optional display details."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "kvstart = (\\d+)\\((\\d+)\\)",
+          "replacement": "kvstart = {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    base_value = int(groups[0])\n    alt_value = int(groups[1])\n    return {'stored': [base_value], 'layout': [alt_value]}\n\ndef inverse(record):\n    base_value = record['stored'][0]\n    alt_value = record['layout'][0]\n    return f\"{base_value}({alt_value})\""
+          }
+        },
+        {
+          "tag": "kvend_formatted",
+          "meaning": "Key-value end with alternate display",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "base numeric value",
+            "context_source": null,
+            "why_not_merge_raw": "Compact representation of numeric value with optional display details."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "kvend = (\\d+)\\((\\d+)\\)",
+          "replacement": "kvend = {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    base_value = int(groups[0])\n    alt_value = int(groups[1])\n    return {'stored': [base_value], 'layout': [alt_value]}\n\ndef inverse(record):\n    base_value = record['stored'][0]\n    alt_value = record['layout'][0]\n    return f\"{base_value}({alt_value})\""
+          }
+        },
+        {
+          "tag": "length_formatted",
+          "meaning": "Length with alternate display",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "base numeric value",
+            "context_source": null,
+            "why_not_merge_raw": "Compact representation of numeric value with optional display details."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "length = (\\d+)/(\\d+)",
+          "replacement": "length = {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    base_value = int(groups[0])\n    alt_value = int(groups[1])\n    return {'stored': [base_value], 'layout': [alt_value]}\n\ndef inverse(record):\n    base_value = record['stored'][0]\n    alt_value = record['layout'][0]\n    return f\"{base_value}/{alt_value}\""
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "2015-10-17",
+              "15:38:11,254"
+            ],
+            "reason": "Date and time tokens combine to form a timestamp.",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent prefix including date, time, and INFO level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Primary timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "combined timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Combining date and time tokens allows for a compact timestamp representation."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 18,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent prefix including date, time, and INFO level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 19,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent prefix including date, time, and INFO level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent prefix including date, time, and INFO level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 9,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent prefix including date, time, and INFO level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 22,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent prefix including date, time, and INFO level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 26,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent prefix including date, time, and INFO level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 29,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent prefix including date, time, and INFO level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines have a consistent prefix including date, time, and INFO level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

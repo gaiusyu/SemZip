@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "kvend",
+      "meaning": "key-value end",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "kvend = ([0-9]+)\\(([0-9]+)\\);",
+      "replacement": "kvend = {placeholder};",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = int(groups[0])\n    display = int(groups[1])\n    return {'stored': [value, display], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0]\n    display = record['stored'][1]\n    return f'{value}({display})'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

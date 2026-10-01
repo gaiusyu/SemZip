@@ -1,0 +1,219 @@
+{
+  "families": [
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "081109",
+              "203521"
+            ],
+            "reason": "date and time tokens together represent one timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "blk_7503483334202473044",
+              "blk_-1608999687919862906"
+            ],
+            "reason": "the captured block identifier contains a structured prefix and numeric suffix",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header structure in this family"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "date and time tokens are extracted and composed into one timestamp value"
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "block identifier",
+          "reason": "block identifier is extracted and stored as a structured variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "combined date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "date and time tokens are combined into one semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) (\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date = groups[0]\n    time = groups[1]\n    dt = datetime.strptime(date + time, '%y%m%d%H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_identifier",
+          "meaning": "structured block ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured block ID",
+            "context_source": null,
+            "why_not_merge_raw": "block ID is treated as an independent opaque variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_[\\-\\d]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "081109",
+              "203552"
+            ],
+            "reason": "date and time tokens together represent one timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "blk_-9073992586687739851",
+              "blk_38865049064139660"
+            ],
+            "reason": "the captured block identifier contains a structured prefix and numeric suffix",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header structure in this family"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "date and time tokens are extracted and composed into one timestamp value"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "block identifier",
+          "reason": "block identifier is extracted and stored as a structured variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "combined date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "date and time tokens are combined into one semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) (\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date = groups[0]\n    time = groups[1]\n    dt = datetime.strptime(date + time, '%y%m%d%H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_identifier",
+          "meaning": "structured block ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured block ID",
+            "context_source": null,
+            "why_not_merge_raw": "block ID is treated as an independent opaque variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_[\\-\\d]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

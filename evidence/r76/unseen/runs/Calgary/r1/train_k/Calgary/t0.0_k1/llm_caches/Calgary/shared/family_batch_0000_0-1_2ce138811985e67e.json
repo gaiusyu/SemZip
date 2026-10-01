@@ -1,0 +1,233 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_with_timezone",
+            "tokens": [
+              "day",
+              "month",
+              "year",
+              "hour",
+              "minute",
+              "second",
+              "timezone"
+            ],
+            "reason": "tokens together represent a complete timestamp with timezone",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "1.gif",
+              "index.html",
+              "568.map?230,337",
+              "621.gif"
+            ],
+            "reason": "captured values contain explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix with stable structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp with timezone",
+          "reason": "composed timestamp extracted for semantic role"
+        },
+        {
+          "slot": "S6",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "resource identifier",
+          "reason": "structured variable extracted for semantic role"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_with_timezone"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "resource_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_with_timezone",
+          "meaning": "complete timestamp with timezone",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp with timezone",
+            "context_source": null,
+            "why_not_merge_raw": "all tokens together represent one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2}) ([-+]\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = f\"{groups[0]}/{groups[1]}/{groups[2]}:{groups[3]}:{groups[4]}:{groups[5]} {groups[6]}\"\n    dt = datetime.strptime(text, '%d/%b/%Y:%H:%M:%S %z')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%d/%b/%Y:%H:%M:%S %z')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "resource_identifier",
+          "meaning": "structured resource identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "resource identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\\"GET ([^ ]+)",
+          "replacement": "\"GET {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_with_timezone",
+            "tokens": [
+              "day",
+              "month",
+              "year",
+              "hour",
+              "minute",
+              "second",
+              "timezone"
+            ],
+            "reason": "tokens together represent a complete timestamp with timezone",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "20.html",
+              "index.html",
+              "107.html",
+              "37.html"
+            ],
+            "reason": "captured values contain explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix with stable structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp with timezone",
+          "reason": "composed timestamp extracted for semantic role"
+        },
+        {
+          "slot": "S6",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "resource identifier",
+          "reason": "structured variable extracted for semantic role"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_with_timezone"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "resource_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_with_timezone",
+          "meaning": "complete timestamp with timezone",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp with timezone",
+            "context_source": null,
+            "why_not_merge_raw": "all tokens together represent one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2}) ([-+]\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = f\"{groups[0]}/{groups[1]}/{groups[2]}:{groups[3]}:{groups[4]}:{groups[5]} {groups[6]}\"\n    dt = datetime.strptime(text, '%d/%b/%Y:%H:%M:%S %z')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%d/%b/%Y:%H:%M:%S %z')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "resource_identifier",
+          "meaning": "structured resource identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "resource identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\\"GET ([^ ]+)",
+          "replacement": "\"GET {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

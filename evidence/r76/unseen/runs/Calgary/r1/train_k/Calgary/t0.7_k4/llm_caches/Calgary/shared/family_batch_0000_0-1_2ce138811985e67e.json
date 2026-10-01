@@ -1,0 +1,306 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "day",
+              "month",
+              "year",
+              "hour",
+              "minute",
+              "second",
+              "timezone_offset"
+            ],
+            "reason": "date/time components together represent a timestamp value",
+            "target_value": "one integer-like timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "endpoint_variable",
+            "tokens": [
+              "local",
+              "remote"
+            ],
+            "reason": "explicit endpoint type is captured by regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "resource_variable",
+            "tokens": [
+              "index.html",
+              "1.gif"
+            ],
+            "reason": "resource identifiers are captured with intrinsic structure in regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "prefix appears consistent across log lines"
+      },
+      "slot_actions": [
+        {
+          "slot": "S3 or S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "timestamp extracted and composed from multiple tokens"
+        },
+        {
+          "slot": "S0",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "request origin type",
+          "reason": "endpoint type extracted for classification"
+        },
+        {
+          "slot": "S6",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "requested resource",
+          "reason": "resource identifier extracted for analysis"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "endpoint_type",
+          "resource_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp components are explicitly combinable"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2}) ([-+]\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "from datetime import datetime\n\ndef forward(groups):\n    date_str = f'{groups[0]} {groups[1]} {groups[2]} {groups[3]}:{groups[4]}:{groups[5]} {groups[6]}'\n    dt = datetime.strptime(date_str, '%d %b %Y %H:%M:%S %z')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('[%d/%b/%Y:%H:%M:%S %z]')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "endpoint_type",
+          "meaning": "request origin type",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "endpoint type",
+            "context_source": null,
+            "why_not_merge_raw": "endpoint field is independent"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "^(local|remote)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "resource_identifier",
+          "meaning": "requested resource",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "resource identifier",
+            "context_source": null,
+            "why_not_merge_raw": "resource field is independent"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\\"GET (\\S+) HTTP",
+          "replacement": "\"GET {placeholder} HTTP",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "day",
+              "month",
+              "year",
+              "hour",
+              "minute",
+              "second",
+              "timezone_offset"
+            ],
+            "reason": "date/time components together represent a timestamp value",
+            "target_value": "one integer-like timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "endpoint_variable",
+            "tokens": [
+              "local",
+              "remote"
+            ],
+            "reason": "explicit endpoint type is captured by regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "resource_variable",
+            "tokens": [
+              "index.html",
+              "20.html",
+              "37.html"
+            ],
+            "reason": "resource identifiers are captured with intrinsic structure in regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "prefix appears consistent across log lines"
+      },
+      "slot_actions": [
+        {
+          "slot": "S3 or S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "timestamp extracted and composed from multiple tokens"
+        },
+        {
+          "slot": "S0",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "request origin type",
+          "reason": "endpoint type extracted for classification"
+        },
+        {
+          "slot": "S6",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "requested resource",
+          "reason": "resource identifier extracted for analysis"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "endpoint_type",
+          "resource_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp components are explicitly combinable"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2}) ([-+]\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "from datetime import datetime\n\ndef forward(groups):\n    date_str = f'{groups[0]} {groups[1]} {groups[2]} {groups[3]}:{groups[4]}:{groups[5]} {groups[6]}'\n    dt = datetime.strptime(date_str, '%d %b %Y %H:%M:%S %z')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('[%d/%b/%Y:%H:%M:%S %z]')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "endpoint_type",
+          "meaning": "request origin type",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "endpoint type",
+            "context_source": null,
+            "why_not_merge_raw": "endpoint field is independent"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "^(local|remote)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "resource_identifier",
+          "meaning": "requested resource",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "resource identifier",
+            "context_source": null,
+            "why_not_merge_raw": "resource field is independent"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\\"GET (\\S+) HTTP",
+          "replacement": "\"GET {placeholder} HTTP",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

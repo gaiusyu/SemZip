@@ -1,0 +1,221 @@
+{
+  "version": "QG-V1",
+  "implementation": "qg_select2 (parallel evaluation, same decisions)",
+  "dataset": "Calgary",
+  "input_plan": "<WORKDIR>/r76_additional_20260929/unseen/runs/Calgary/r1/train_k/Calgary/t0.7_k2/training_work/Calgary/replay_plan.json",
+  "input_plan_sha256": "68aabebeb9e999fc3385a6d2ae415e69e7dea20c5415a65930d19526390cb526",
+  "training_block_sha256": "6cadad8a1f35522a75991b33d476c19ef9653b5fba5af6a6013940f59c85cb9c",
+  "selected_plan_sha256": "37acd689c09dbd51f884bd4e7515fbf5b78a9253197a631b504c44e39f38db35",
+  "original_train_archive_bytes": 365007,
+  "empty_train_archive_bytes": 367459,
+  "selected_train_archive_bytes": 364667,
+  "removed_tags": [
+    "C"
+  ],
+  "kept_tags": [
+    "A",
+    "RV0"
+  ],
+  "evaluations": 7,
+  "decisions": [
+    {
+      "stage": "B",
+      "tag": "C",
+      "before": 365007,
+      "after": 364667,
+      "accepted": true,
+      "all": {
+        "A": 367779,
+        "C": 364667,
+        "RV0": 365007
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "RV0",
+      "before": 364667,
+      "after": 364667,
+      "accepted": false,
+      "all": {
+        "A": 367459,
+        "RV0": 364667
+      }
+    },
+    {
+      "stage": "C",
+      "tag": "C",
+      "before": 364667,
+      "after": 365007,
+      "accepted": false
+    }
+  ],
+  "eval_log": [
+    {
+      "eval": 1,
+      "key": "4e7a381e3a00",
+      "label": "original",
+      "tags": [
+        "A",
+        "C",
+        "RV0"
+      ],
+      "archive_bytes": 365007,
+      "seconds": 11.46
+    },
+    {
+      "eval": 2,
+      "key": "7fd82ebe5ca6",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 367459,
+      "seconds": 3.82
+    },
+    {
+      "eval": 1,
+      "key": "4e7a381e3a00",
+      "label": "original",
+      "tags": [
+        "A",
+        "C",
+        "RV0"
+      ],
+      "archive_bytes": 365007,
+      "seconds": 11.46,
+      "cached": true
+    },
+    {
+      "eval": 2,
+      "key": "7fd82ebe5ca6",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 367459,
+      "seconds": 3.82,
+      "cached": true
+    },
+    {
+      "eval": 3,
+      "key": "88e7f0f2e7f9",
+      "label": "B:-A",
+      "tags": [
+        "C",
+        "RV0"
+      ],
+      "archive_bytes": 367779,
+      "seconds": 4.07
+    },
+    {
+      "eval": 4,
+      "key": "940a89d03ebd",
+      "label": "B:-C",
+      "tags": [
+        "A",
+        "RV0"
+      ],
+      "archive_bytes": 364667,
+      "seconds": 10.89
+    },
+    {
+      "eval": 5,
+      "key": "8f331b37b292",
+      "label": "B:-RV0",
+      "tags": [
+        "A",
+        "C"
+      ],
+      "archive_bytes": 365007,
+      "seconds": 10.66
+    },
+    {
+      "eval": 3,
+      "key": "88e7f0f2e7f9",
+      "label": "B:-A",
+      "tags": [
+        "C",
+        "RV0"
+      ],
+      "archive_bytes": 367779,
+      "seconds": 4.07,
+      "cached": true
+    },
+    {
+      "eval": 4,
+      "key": "940a89d03ebd",
+      "label": "B:-C",
+      "tags": [
+        "A",
+        "RV0"
+      ],
+      "archive_bytes": 364667,
+      "seconds": 10.89,
+      "cached": true
+    },
+    {
+      "eval": 5,
+      "key": "8f331b37b292",
+      "label": "B:-RV0",
+      "tags": [
+        "A",
+        "C"
+      ],
+      "archive_bytes": 365007,
+      "seconds": 10.66,
+      "cached": true
+    },
+    {
+      "eval": 6,
+      "key": "632e283c8250",
+      "label": "B:-A",
+      "tags": [
+        "RV0"
+      ],
+      "archive_bytes": 367459,
+      "seconds": 3.99
+    },
+    {
+      "eval": 7,
+      "key": "52294e4009fc",
+      "label": "B:-RV0",
+      "tags": [
+        "A"
+      ],
+      "archive_bytes": 364667,
+      "seconds": 10.58
+    },
+    {
+      "eval": 6,
+      "key": "632e283c8250",
+      "label": "B:-A",
+      "tags": [
+        "RV0"
+      ],
+      "archive_bytes": 367459,
+      "seconds": 3.99,
+      "cached": true
+    },
+    {
+      "eval": 7,
+      "key": "52294e4009fc",
+      "label": "B:-RV0",
+      "tags": [
+        "A"
+      ],
+      "archive_bytes": 364667,
+      "seconds": 10.58,
+      "cached": true
+    },
+    {
+      "eval": 1,
+      "key": "4e7a381e3a00",
+      "label": "C:+C",
+      "tags": [
+        "A",
+        "C",
+        "RV0"
+      ],
+      "archive_bytes": 365007,
+      "seconds": 11.46,
+      "cached": true
+    }
+  ],
+  "llm_calls": 0
+}

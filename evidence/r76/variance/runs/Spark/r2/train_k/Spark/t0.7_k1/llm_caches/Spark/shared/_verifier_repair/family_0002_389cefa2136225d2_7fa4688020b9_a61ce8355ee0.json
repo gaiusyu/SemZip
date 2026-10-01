@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "task_stage_tid_duration",
+      "meaning": "task identification and duration",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "merge_equivalent",
+        "stored_source": "task id + stage id + TID + duration",
+        "context_source": null,
+        "why_not_merge_raw": "fields form one compact numeric value"
+      },
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "task (\\d+\\.\\d+) in stage (\\d+\\.\\d+) \\(TID (\\d+)\\) in (\\d+) ms",
+      "replacement": "task {group1} in stage {group2} (TID {group3}) in {group4} ms",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    task_id = int(float(groups[0]) * 1000)\n    stage_id = int(float(groups[1]) * 1000)\n    tid = int(groups[2])\n    duration = int(groups[3])\n    compact_value = (task_id * 10**12) + (stage_id * 10**9) + (tid * 10**6) + duration\n    return {'stored': [compact_value], 'layout': []}\n\ndef inverse(record):\n    compact_value = int(record['stored'][0])\n    duration = compact_value % 10**6\n    tid = (compact_value // 10**6) % 10**3\n    stage_id = (compact_value // 10**9) % 10**3\n    task_id = (compact_value // 10**12) % 10**3\n    task_id = task_id / 1000\n    stage_id = stage_id / 1000\n    return f\"{task_id:.1f} in stage {stage_id:.1f} (TID {tid}) in {duration} ms\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

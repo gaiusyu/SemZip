@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "broadcast_block",
+      "meaning": "broadcast block identifier",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "broadcast_([0-9]+)_piece0",
+      "replacement": "broadcast_{placeholder}_piece0",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"broadcast_{record['stored'][0]}_piece0\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

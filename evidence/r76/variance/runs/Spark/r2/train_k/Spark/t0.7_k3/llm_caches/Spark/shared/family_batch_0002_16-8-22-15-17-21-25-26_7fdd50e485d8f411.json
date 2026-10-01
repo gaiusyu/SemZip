@@ -1,0 +1,749 @@
+{
+  "families": [
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "16/04/07",
+              "10:58:59"
+            ],
+            "reason": "date and time tokens together represent one timestamp value",
+            "target_value": "one integer-like timestamp value",
+            "must_emit_function": true
+          },
+          {
+            "name": "block_count",
+            "tokens": [
+              "13 non-empty blocks",
+              "13 blocks"
+            ],
+            "reason": "multiple tokens together describe the same block count",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix across log lines"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp",
+          "block_count"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_value",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "compact timestamp representation required"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        },
+        {
+          "tag": "block_count",
+          "meaning": "block count comparison",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "block count",
+            "context_source": null,
+            "why_not_merge_raw": "numeric block count derivable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Getting (\\d+) non-empty blocks out of (\\d+) blocks",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0]), int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return f'Getting {record['stored'][0]} non-empty blocks out of {record['stored'][1]} blocks'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "15/09/01",
+              "18:16:43"
+            ],
+            "reason": "date and time tokens together represent one timestamp value",
+            "target_value": "one integer-like timestamp value",
+            "must_emit_function": true
+          },
+          {
+            "name": "broadcast_duration",
+            "tokens": [
+              "422 ms",
+              "199 ms"
+            ],
+            "reason": "units and numeric duration describe one attribute",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix across log lines"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp",
+          "broadcast_duration"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_value",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "compact timestamp representation required"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        },
+        {
+          "tag": "broadcast_duration",
+          "meaning": "broadcast duration in ms",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "duration",
+            "context_source": null,
+            "why_not_merge_raw": "numeric duration derivable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "took (\\d+) ms",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f'took {record['stored'][0]} ms'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 22,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "task_attempt_id",
+            "tokens": [
+              "'attempt_201604071049_0012_m_000007_141'",
+              "'attempt_201604071058_0050_m_000007_587'"
+            ],
+            "reason": "structured token contains multiple separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "hdfs_path",
+            "tokens": [
+              "hdfs://10.10.34.11:9000/pjhe/test/2/_temporary/0/task_201604071049_0012_m_000007",
+              "hdfs://10.10.34.11:9000/pjhe/test/9/_temporary/0/task_201604071058_0050_m_000007"
+            ],
+            "reason": "value contains multiple explicit separators like slashes and colons",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix across log lines"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "task_attempt_id",
+          "hdfs_path"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "task_attempt_id",
+          "meaning": "structured task attempt identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "task attempt id",
+            "context_source": null,
+            "why_not_merge_raw": "opaque structured identifier"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "'(attempt_\\d{12}_\\d{4}_m_\\d{6}_\\d{3})'",
+          "replacement": "'{placeholder}'",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "hdfs_path",
+          "meaning": "HDFS task path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "path",
+            "context_source": null,
+            "why_not_merge_raw": "opaque structured path"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(hdfs://(?:\\d{1,3}\\.){3}\\d{1,3}:\\d+/[\\w_/]+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "16/04/07",
+              "10:58:59"
+            ],
+            "reason": "date and time tokens together represent one timestamp value",
+            "target_value": "one integer-like timestamp value",
+            "must_emit_function": true
+          },
+          {
+            "name": "remote_fetch_duration",
+            "tokens": [
+              "56 ms",
+              "16 ms"
+            ],
+            "reason": "units and numeric duration describe one attribute",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix across log lines"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp",
+          "remote_fetch_duration"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_value",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "compact timestamp representation required"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        },
+        {
+          "tag": "remote_fetch_duration",
+          "meaning": "remote fetch duration in ms",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "duration",
+            "context_source": null,
+            "why_not_merge_raw": "numeric duration derivable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "in (\\d+) ms",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f'in {record['stored'][0]} ms'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "shuffle_id",
+            "tokens": [
+              "6,",
+              "13,"
+            ],
+            "reason": "numeric shuffle id with trailing separator",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix across log lines"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "shuffle_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "shuffle_id",
+          "meaning": "shuffle identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "shuffle id",
+            "context_source": null,
+            "why_not_merge_raw": "opaque numeric identifier"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "shuffle (\\d+),",
+          "replacement": "shuffle {placeholder},",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'shuffle {record['stored'][0]},'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 21,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "rdd_partition_id",
+            "tokens": [
+              "rdd_97_7",
+              "rdd_107_7"
+            ],
+            "reason": "structured token contains multiple separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix across log lines"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "rdd_partition_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "rdd_partition_id",
+          "meaning": "structured RDD partition identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "partition id",
+            "context_source": null,
+            "why_not_merge_raw": "opaque structured identifier"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Partition (rdd_\\d+_\\d+)",
+          "replacement": "Partition {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "task_set_id",
+            "tokens": [
+              "0.0",
+              "1.0"
+            ],
+            "reason": "structured token with multiple numeric parts",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix across log lines"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "task_set_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "task_set_id",
+          "meaning": "task set identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "task set id",
+            "context_source": null,
+            "why_not_merge_raw": "opaque numeric identifier"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "task set (\\d+\\.\\d+)",
+          "replacement": "task set {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'task set {record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 26,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "removed_task_set_id",
+            "tokens": [
+              "0.0,",
+              "1.0,"
+            ],
+            "reason": "structured token contains multiple separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix across log lines"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "removed_task_set_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "removed_task_set_id",
+          "meaning": "removed task set identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "task set id",
+            "context_source": null,
+            "why_not_merge_raw": "opaque structured identifier"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "TaskSet (\\d+\\.\\d+),",
+          "replacement": "TaskSet {placeholder},",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'TaskSet {record['stored'][0]},'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "shuffle_id",
+            "tokens": [
+              "0"
+            ],
+            "reason": "numeric shuffle id captured directly",
+            "must_emit_function": true
+          },
+          {
+            "name": "endpoint_address",
+            "tokens": [
+              "mesos-slave-19:44974",
+              "mesos-slave-31:55220"
+            ],
+            "reason": "value contains multiple explicit separators like hyphen and colon",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix across log lines"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "shuffle_id",
+          "endpoint_address"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "shuffle_id",
+          "meaning": "shuffle identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "shuffle id",
+            "context_source": null,
+            "why_not_merge_raw": "opaque numeric identifier"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "shuffle (\\d+)",
+          "replacement": "shuffle {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'shuffle {record['stored'][0]}'"
+          }
+        },
+        {
+          "tag": "endpoint_address",
+          "meaning": "endpoint address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "opaque structured address"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "to (mesos-slave-\\d+:\\d+)",
+          "replacement": "to {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'to {record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 18,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "tracker_endpoint",
+            "tokens": [
+              "NettyRpcEndpointRef(spark://MapOutputTracker@10.10.34.25:36782)"
+            ],
+            "reason": "value contains multiple explicit separators encoded in the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix across log lines"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "tracker_endpoint"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "tracker_endpoint",
+          "meaning": "structured tracker endpoint",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "tracker endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "opaque structured identifier"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "endpoint = (NettyRpcEndpointRef\\(spark://MapOutputTracker@\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d+\\))",
+          "replacement": "endpoint = {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'endpoint = {record['stored'][0]}'"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

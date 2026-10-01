@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "kvstart_value",
+      "meaning": "start key-value pair with units",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\bkvstart = (\\d+)\\((\\d+)\\);",
+      "replacement": "kvstart = {placeholder};",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    canonical_value = int(groups[1])\n    layout_value = int(groups[0])\n    return {'stored': [canonical_value], 'layout': [layout_value]}\n\ndef inverse(record):\n    canonical_value = int(record['stored'][0])\n    layout_value = int(record['layout'][0])\n    return f\"{layout_value}({canonical_value})\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

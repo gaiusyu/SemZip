@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "boot_value",
+      "meaning": "boot time value",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "boot = (-?\\d+)",
+      "replacement": "boot = {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"boot = {record['stored'][0]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

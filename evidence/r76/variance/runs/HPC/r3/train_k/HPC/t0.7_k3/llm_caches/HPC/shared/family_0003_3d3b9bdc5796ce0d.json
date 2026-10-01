@@ -1,0 +1,132 @@
+{
+  "header": {
+    "has_unified_header": false,
+    "reason": "The sampled lines do not share a consistent prefix or header structure that needs to be handled independently.",
+    "functions": []
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "unique identifier or timestamp",
+      "reason": "S0 represents a unique numeric identifier or timestamp. Its role is opaque and does not exhibit structured semantics suitable for numeric compression."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "source node identifier",
+      "reason": "S1 represents a node identifier with a structured alphanumeric format (e.g., node-D4). It is an opaque identifier and has no clear numerical semantics."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "indicates the status of the clusterfilesystem",
+      "reason": "S3 is a stable string that appears to be repeated across all examples. Since it does not vary, it is best kept as a literal in the main template."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "epoch timestamp",
+      "reason": "S4 is a 10-digit numeric value that likely represents an epoch timestamp. This makes it a good candidate for delta compression."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "static numerical value",
+      "reason": "S5 is a static integer (1 in all examples). There is no value in extracting it as it does not vary."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "static prefix for ClusterFileSystem",
+      "reason": "S6 is a stable constant string (ClusterFileSystem:). It does not vary across examples and should remain in the template as a literal."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain name",
+      "reason": "S9 represents a domain name with varying alphanumeric structure. It is best treated as a raw stream due to its relatively high entropy and structured format."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "destination node identifier",
+      "reason": "S16 represents a node identifier with a structured alphanumeric format (e.g., node-140). It is an opaque identifier and has no clear numerical semantics."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "epoch_timestamp",
+      "meaning": "epoch_timestamp_in_seconds",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{10})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extracts a 10-digit epoch timestamp and applies delta compression for efficient storage.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    },
+    {
+      "tag": "domain_name",
+      "meaning": "variable_domain_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "domain( +)([A-Za-z0-9_]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the variable domain name for storage as a raw stream.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "source_node",
+      "meaning": "source_node_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(node-[A-Z]\\d)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extracts the source node identifier for storage as a raw stream.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "destination_node",
+      "meaning": "destination_node_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node( +)(node-\\d+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the destination node identifier for storage as a raw stream.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

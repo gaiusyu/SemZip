@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "targeting_range",
+      "meaning": "composed targeting range",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "domains:([A-Za-z0-9_-]+) and nodes:([A-Za-z0-9]+)",
+      "replacement": "domains:{group1} and nodes:{group2}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    domain = groups[0]\n    nodes = groups[1]\n    return {'stored': [domain, nodes], 'layout': []}\n\ndef inverse(record):\n    domain = record['stored'][0]\n    nodes = record['stored'][1]\n    return f'domains:{domain} and nodes:{nodes}'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "estimated_size",
+      "meaning": "size in bytes or KB",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\(estimated( +)size( +)(\\d+\\.\\d+)( +)(B|KB|MB),( +)free( +)\\d+\\.\\d+( +)MB\\)",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = float(groups[2])\n    unit = groups[4].lower()\n    multiplier = 1 if unit == 'b' else (1024 if unit == 'kb' else 1024 * 1024)\n    return {'stored': [int(value * multiplier)], 'layout': [len(groups[1]), len(groups[3]), len(groups[5]), len(groups[6]), len(groups[7])]}\n\ndef inverse(record):\n    value = record['stored'][0]\n    layout = record['layout']\n    space1 = ' ' * layout[0]\n    space2 = ' ' * layout[1]\n    space3 = ' ' * layout[2]\n    space4 = ' ' * layout[3]\n    space5 = ' ' * layout[4]\n\n    if value < 1024:\n        display_value = value\n        unit = 'B'\n    elif value < 1024 ** 2:\n        display_value = value / 1024\n        unit = 'KB'\n    else:\n        display_value = value / (1024 ** 2)\n        unit = 'MB'\n\n    return f\"(estimated{space1}size{space2}{display_value:.1f}{space3}{unit},{space4}free{space5}530.3 MB)\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

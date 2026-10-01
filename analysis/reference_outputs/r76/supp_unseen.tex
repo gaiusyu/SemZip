@@ -1,0 +1,17 @@
+\subsection{Unseen sources}
+
+The four logs are the LBL Internet Traffic Archive HTTP access logs NASA (July 1995), ClarkNet (28 August 1995), USask, and Calgary, selected by a fixed rule (every server log with at least 700,000 lines, one file per server) before any result; they are decompressed unchanged. The SemZip pipeline differs from the main runs only in reading the input identities of these files. LogShrink+R (default header length) fails on ClarkNet (its decoder crashes on nine blocks containing bare carriage returns) and on USask (its encoder fails on block 2); LogReducer+R fails on USask (the official encoder crashes on block 2). On the 24 USask blocks both tools encode, LogShrink+R is 1.3\% smaller and LogReducer+R 0.2\% larger than \tool\ on the same blocks.
+
+\begin{longtable}{lrrrrrrrrrrr}\caption{Unseen sources: complete-file ratios of every method, and suffix ratios (blocks 1 onward) of \tool\ and DeLog. --: the tool failed on at least one block.}\label{tab:unseen-suffix}\\\toprule
+
+Source & \tool\ & DeLog & LS+R & LR+R & LogLite & gzip6 & XZ6 & XZ9e & Zstd3 & Zstd19 & Suffix S/D \\\midrule
+
+NASA & 22.76 & 20.31 & 21.56 & 18.96 & 9.82 & 9.92 & 15.10 & 16.36 & 9.72 & 15.59 & 22.79/20.32 \\
+
+ClarkNet & 19.12 & 17.04 & -- & 15.38 & 9.14 & 7.85 & 13.82 & 14.44 & 9.31 & 13.70 & 19.13/17.05 \\
+
+USask & 16.65 & 15.28 & -- & -- & 8.63 & 7.65 & 13.13 & 13.60 & 8.59 & 12.86 & 16.67/15.29 \\
+
+Calgary & 21.12 & 18.66 & 21.23 & 21.25 & 12.36 & 9.61 & 15.51 & 16.87 & 9.44 & 15.13 & 20.98/18.54 \\
+
+\bottomrule\end{longtable}

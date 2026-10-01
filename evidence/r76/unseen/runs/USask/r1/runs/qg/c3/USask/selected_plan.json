@@ -1,0 +1,86 @@
+{
+ "dataset": "USask",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [],
+  "local_families": [],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "RV0": "<RV0>",
+  "RV1": "<RV1>"
+ },
+ "residual_schema_plan": {
+  "passes": [
+   {
+    "alpha_contexts": [],
+    "groups": [
+     {
+      "group_key": [
+       "context",
+       "-",
+       "[D+/A/D+:D+:D+:D+",
+       "<-D+]>"
+      ],
+      "tag_base": "RV0"
+     },
+     {
+      "group_key": [
+       "context",
+       "<\"A>",
+       "/~A/A.A\"",
+       "<D+>"
+      ],
+      "tag_base": "RV1"
+     }
+    ],
+    "mode": "context"
+   }
+  ]
+ },
+ "spec_count": 2,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "",
+   "pattern": "residual-variable:[\"context\", \"-\", \"[D+/A/D+:D+:D+:D+\", \"<-D+]>\"]",
+   "program": {},
+   "proposal_tag": "",
+   "replacement": "{placeholder}",
+   "semantic_class": "",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "RV0",
+   "value_type": ""
+  },
+  {
+   "context_group": 0,
+   "context_policy": "",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "",
+   "pattern": "residual-variable:[\"context\", \"<\\\"A>\", \"/~A/A.A\\\"\", \"<D+>\"]",
+   "program": {},
+   "proposal_tag": "",
+   "replacement": "{placeholder}",
+   "semantic_class": "",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "RV1",
+   "value_type": ""
+  }
+ ],
+ "version": 1
+}

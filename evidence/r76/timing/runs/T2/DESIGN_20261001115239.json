@@ -1,0 +1,1342 @@
+{
+ "session": "T2",
+ "formal": true,
+ "datasets": [
+  "Linux",
+  "Proxifier",
+  "Apache",
+  "Zookeeper",
+  "Mac",
+  "HealthApp",
+  "HPC",
+  "Hadoop",
+  "OpenStack",
+  "OpenSSH",
+  "Android",
+  "BGL"
+ ],
+ "methods": [
+  "semzip",
+  "delog",
+  "logreducer_r",
+  "logshrink_r",
+  "xz9e",
+  "zstd19"
+ ],
+ "input_kind": "full",
+ "repeats": 3,
+ "inputs": {
+  "Linux": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Linux.log",
+  "Proxifier": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Proxifier.log",
+  "Apache": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Apache.log",
+  "Zookeeper": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Zookeeper.log",
+  "Mac": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Mac.log",
+  "HealthApp": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/HealthApp.log",
+  "HPC": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/HPC.log",
+  "Hadoop": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Hadoop.log",
+  "OpenStack": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/OpenStack.log",
+  "OpenSSH": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/OpenSSH.log",
+  "Android": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Android.log",
+  "BGL": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/BGL.log"
+ },
+ "schedule": [
+  {
+   "dataset": "Linux",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "Linux",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "Linux",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Linux",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Linux",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "Linux",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "Apache",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Apache",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Apache",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "Apache",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "Apache",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "Apache",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Mac",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "Mac",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "Mac",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "Mac",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "Mac",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Mac",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "HPC",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "HPC",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "HPC",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "HPC",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "HPC",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "HPC",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Android",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "Android",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "Android",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "Android",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "Android",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "Android",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "BGL",
+   "method": "zstd19",
+   "repeat": 1
+  },
+  {
+   "dataset": "BGL",
+   "method": "semzip",
+   "repeat": 1
+  },
+  {
+   "dataset": "BGL",
+   "method": "delog",
+   "repeat": 1
+  },
+  {
+   "dataset": "BGL",
+   "method": "logreducer_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "BGL",
+   "method": "logshrink_r",
+   "repeat": 1
+  },
+  {
+   "dataset": "BGL",
+   "method": "xz9e",
+   "repeat": 1
+  },
+  {
+   "dataset": "Linux",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "Linux",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Linux",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Linux",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "Linux",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "Linux",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "Apache",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Apache",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "Apache",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "Apache",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "Apache",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "Apache",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Mac",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "Mac",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "Mac",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "Mac",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Mac",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Mac",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "HPC",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "HPC",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "HPC",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "HPC",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "HPC",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "HPC",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Android",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "Android",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "Android",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "Android",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Android",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "Android",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "BGL",
+   "method": "semzip",
+   "repeat": 2
+  },
+  {
+   "dataset": "BGL",
+   "method": "delog",
+   "repeat": 2
+  },
+  {
+   "dataset": "BGL",
+   "method": "logreducer_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "BGL",
+   "method": "logshrink_r",
+   "repeat": 2
+  },
+  {
+   "dataset": "BGL",
+   "method": "xz9e",
+   "repeat": 2
+  },
+  {
+   "dataset": "BGL",
+   "method": "zstd19",
+   "repeat": 2
+  },
+  {
+   "dataset": "Linux",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Linux",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Linux",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "Linux",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "Linux",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "Linux",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "Proxifier",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Apache",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "Apache",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "Apache",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "Apache",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "Apache",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Apache",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Zookeeper",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "Mac",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "Mac",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "Mac",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Mac",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Mac",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "Mac",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "HealthApp",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "HPC",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "HPC",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "HPC",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "HPC",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "HPC",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "HPC",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "Hadoop",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenStack",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "OpenSSH",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "Android",
+   "method": "semzip",
+   "repeat": 3
+  },
+  {
+   "dataset": "Android",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "Android",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Android",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "Android",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "Android",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "BGL",
+   "method": "delog",
+   "repeat": 3
+  },
+  {
+   "dataset": "BGL",
+   "method": "logreducer_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "BGL",
+   "method": "logshrink_r",
+   "repeat": 3
+  },
+  {
+   "dataset": "BGL",
+   "method": "xz9e",
+   "repeat": 3
+  },
+  {
+   "dataset": "BGL",
+   "method": "zstd19",
+   "repeat": 3
+  },
+  {
+   "dataset": "BGL",
+   "method": "semzip",
+   "repeat": 3
+  }
+ ],
+ "codec_specs": {
+  "delog": {
+   "decode_arguments": [
+    "ARCHIVE_DIRECTORY",
+    "OUTPUT_FILE",
+    "1"
+   ],
+   "decoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/decompress",
+   "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+   "encode_arguments": [
+    "DATASET",
+    "text",
+    "100000",
+    "1",
+    "0",
+    "lzma",
+    "normal"
+   ],
+   "encoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/Delog_compress",
+   "encoder_sha256": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739",
+   "mode": "official-cli-independent-block-adapter",
+   "suffix": ".tar.xz"
+  },
+  "xz9e": {
+   "exe": "xz",
+   "encode": [
+    "-9e",
+    "-T1",
+    "-c"
+   ],
+   "decode": [
+    "-d",
+    "-T1",
+    "-c"
+   ],
+   "suffix": ".xz",
+   "executable": "/usr/bin/xz",
+   "executable_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+   "version": "xz (XZ Utils) 5.2.5\nliblzma 5.2.5\n"
+  },
+  "zstd19": {
+   "exe": "zstd",
+   "encode": [
+    "-19",
+    "-T1",
+    "-q",
+    "-c"
+   ],
+   "decode": [
+    "-d",
+    "-T1",
+    "-q",
+    "-c"
+   ],
+   "suffix": ".zst",
+   "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+   "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+   "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  }
+ },
+ "r76_codec_specs_equal_codecs_full_run": {
+  "xz9e": true,
+  "zstd19": true
+ },
+ "semzip_publications": {
+  "Linux": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Linux/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Linux/storage/storage.json",
+   "program_sha256": "bf6fffa8916f3838869446f51052be17cb01878ff832406cd7ebf4ac3cda8ac6",
+   "storage_sha256": "f87906238843babe22306fbc35a2485b72a4d30e10f3438d33e97be6baac40f6",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "Proxifier": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Proxifier/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Proxifier/storage/storage.json",
+   "program_sha256": "40276efb33bb872a6e075e8bde5e1b8a0c687c74aa3565ae359a5abec589cb6b",
+   "storage_sha256": "247077b18182efb3c7a51e967757b6c3bbd0ad328f55ac685459ab11f78929e5",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "Apache": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Apache/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Apache/storage/storage.json",
+   "program_sha256": "a181559060560d43e3a834cbd456518c4bdf41a5722f9f1f80317f57fb90755f",
+   "storage_sha256": "159686fe3b56dce319f7023289fa8344f7fa8c0107793dba7cadd5b5e82472cd",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "Zookeeper": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Zookeeper/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Zookeeper/storage/storage.json",
+   "program_sha256": "c74525d5a2beda06bd0a1846034fee21053497a569b694b2eda753dd10c9889f",
+   "storage_sha256": "a117b085e123498b0923dbf87e4574ea758b8f6731c8d002ad43e3899718b608",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "Mac": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Mac/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Mac/storage/storage.json",
+   "program_sha256": "ecd9095b47e9ae70ed364b245f5adb2a6bc95202af0645e082d72f565ac8c44d",
+   "storage_sha256": "e093e67b174d7c1f4373101410ad8aa1902236e35b18d823429414a47e9adcc2",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "HealthApp": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/HealthApp/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/HealthApp/storage/storage.json",
+   "program_sha256": "7d53d11fca0e665871e21e6570d7fa57e74d8c8c3889a1a1ddcc3f2a621d0700",
+   "storage_sha256": "4ef746fa657b536ef0b7efd1406a0bcbbd1ea419eb16c8a6b095bf4508521ead",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "HPC": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/HPC/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/HPC/storage/storage.json",
+   "program_sha256": "2377b5f8c3a38554b20eb06aa6f5192eb12c9450d4c3c5068e37ae68b96a3384",
+   "storage_sha256": "6a9641d20d01e909bbea84dbe590f9afb17d698aba94bbbec372bfd321326476",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "Hadoop": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Hadoop/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Hadoop/storage/storage.json",
+   "program_sha256": "0417d5568b5303247528d1767edfd5a9f38965cc3a3e0f67257b9d9be92b2875",
+   "storage_sha256": "4b6d471f0a442950e50cdc3c4f7864f9bd0110752232e3e803ec7410f1c7e243",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "OpenStack": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/OpenStack/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/OpenStack/storage/storage.json",
+   "program_sha256": "e173464e8149647394382db21b2336c69b7f4bda2185d9482134effbaf3366d6",
+   "storage_sha256": "4c3b790c34613877c83e5d9098b2ef458f6bed9a116bd039c0783d17c512fbfa",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "OpenSSH": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/OpenSSH/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/OpenSSH/storage/storage.json",
+   "program_sha256": "ce864c4c4ca334de8072ad04d80c8f3ff85845ea2febcd1a85b31d1b7b92118c",
+   "storage_sha256": "fce657ffdafe28a37024299ff1764bd69b838ad19b9ff745a008bb453c2af099",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "Android": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Android/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Android/storage/storage.json",
+   "program_sha256": "2d5f64c5c8407cd1d4c910e21f4e47f0a8fc9c0fd30fe7e3948a310b4e6a5054",
+   "storage_sha256": "36926b0190912731653ceecf9c37f908ea62b6bb175d6027e4c71e2d1675bfac",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  },
+  "BGL": {
+   "plan": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/BGL/program.json",
+   "storage": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/BGL/storage/storage.json",
+   "program_sha256": "0b2be563ad191d57fd8eda4681ab3096f5df008092aa5ac6c151cebc320ce0c4",
+   "storage_sha256": "35e3b07309b37b8a2c7bdf67339756eb456cf3cc2d854ab9a22c25b967c660e1",
+   "publication_sha256": "withheld: file contained a machine-specific path"
+  }
+ },
+ "workers": 4,
+ "quiet_cores": 0.5,
+ "static": {
+  "sha256": {
+   "timing_r76.py": "withheld: file contained a machine-specific path",
+   "phase_lr.py": "dcfc9b7178a93646db3b7577e85acdba11ba2b90620d183a4ce8222a12b63caf",
+   "phase_ls.py": "92218db24cc55277dfdfeb56edb95ce618035c9054bc7ec29ece7a191e4b5680",
+   "phase_codec_r76.py": "withheld: file contained a machine-specific path",
+   "vendor/codec_baseline_r76.py": "withheld: file contained a machine-specific path",
+   "r76/baselines/logreducer/lr_run2.py": "bbf044c186b58bd40d0c38826df2a0a2b09add1074eee7d24024d0598c6ce549",
+   "r76/baselines/logshrink/adapter/ls_run.py": "withheld: file contained a machine-specific path",
+   "r76/baselines/logshrink/adapter/ls_segment.py": "121a5e74a4e473c6c51a8edadb68b9f92d50f6922db77bfbb900cab390854a76",
+   "r76/baselines/logshrink/adapter/ls_seg_runner.py": "1fb277853474c6413307a74c80140a4bf2e93eea66250be2db3a8bd46f64d157",
+   "r68/formal_campaign_v3.py": "cf4d58f056e55bcf0b9a9dbe3922ba754ce499ca4b7c2d39a75f078e00869f87",
+   "r68/codec_baseline.py": "0b0c15f6f33ce2180201f11e07606373417dd78087aef2f5a8125075e757c26d",
+   "r68/loglite_adapter.py": "73fbc851b33ce3d15a47e6fadadcd47d91250eeb9e1adbdbdb563bcfc9a07b77",
+   "r73/art/frozen/guarded_backend_v2.py": "72bca1ca7c92f797d5a6a11d2300ad0bdee2ae209f972044b0fe3eb86c8b4d01",
+   "r73/art/frozen/guarded_backend.py": "80b91d005d0476b1cfe6b53ea376de7d82d24caa29d4c0feb58460bc0fab32fc",
+   "r73/art/frozen/runtime_cache_boundary.py": "e2098cb527c652aa0cd4464cffd0a16e7e7ca6ccff2c59474fc812069adfb911",
+   "r73/timing_campaign.py (reference)": "withheld: file contained a machine-specific path",
+   "logreducer/THULR": "95437458431908131877a5c5514d40db81a69a781befbf4dd0ae173cf0819377",
+   "logreducer/Elastic": "c074a4620d748c75b19c237033361f0bb54266341a3279da512cf8f1a225fa69",
+   "zstd-1.5.6": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2"
+  },
+  "logshrink_static_hashes": {
+   "parser/THULR": "c8d50742309159dc8baa52804be2103b00ecf24ad4547ce29e560813f91117c4",
+   "parser/Elastic": "6d0085ef8f30c6d462bb234c96ca4827cdb069e606047429eac925927bfcea0f",
+   "decompression/restore.py": "ae6c93bde7aa369d02eba073e174ee63d0a1cdbc7660dfd164445c0dc1a15e6f",
+   "decompression/restore_r76.py": "55d052579bb973ae4a8d6d71378033f9baf5a2c000ca383998c913fb7836307c",
+   "decompression/decompress.py": "b8932e4aeac780c6a805b32b976b1b4387db02facea061783621e810d1c2c1a8",
+   "decompression/decompress_r76.py": "130c7bd2f89534805a8334b2d9eccbc46c9b523c02a3f01599ecf30eaa36d21c",
+   "logshrink.py": "61a363bf4a69c8e50afa7903be3c59de5a35c5c7295b7838d7e0d1de24831227",
+   "compression/compress.py": "54809dab86f15a9c92cb3f808bfba915a79b051d8ed41136cdb153e4b78d0fea",
+   "preprocess.py": "92a32d50e66bf964c8b40057de9d2315580cc453503b22106975327383ac7b0f",
+   "parser/training.py": "60ae7cb2099cfbbfc18173d798c6ac45e04b3ac2215735e9f68c26d2bafa8793",
+   "parser/sampler.py": "4aec236a22ab5480d25db1ceaae8999a6326492fb8738789964c324f07104052",
+   "run.py": "8e735c39b1c9dc36cf5de7a5e7d5a3d28dd50787a652bec9c02c2c5a34dd3959",
+   "analyzer/property_miner.py": "211b08b97b2ad45a9fb32b180d4bdf0a5e910f7ebeffe623123d4d822934a5e8",
+   "adapter/ls_run.py": "withheld: file contained a machine-specific path",
+   "adapter/ls_seg_runner.py": "1fb277853474c6413307a74c80140a4bf2e93eea66250be2db3a8bd46f64d157",
+   "adapter/ls_segment.py": "121a5e74a4e473c6c51a8edadb68b9f92d50f6922db77bfbb900cab390854a76",
+   "adapter/make_restore_r76.py": "4083d970c631d6f58a328fe670301c3368d2129881a3f02b278c6e13b4bf3018"
+  },
+  "scan_bytecode_identical_to_r68": {
+   "lr_run2.scan": true,
+   "ls_run.scan": true,
+   "codec_baseline_r76.scan": true
+  },
+  "python": "3.9.2 (default, Feb 28 2021, 17:03:44) \n[GCC 10.2.1 20210110]",
+  "host": "<DEV_HOST>",
+  "logshrink_python": "/usr/bin/python3.9"
+ },
+ "env_added": {
+  "all": {
+   "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "logreducer_r/logshrink_r": {
+   "OMP_NUM_THREADS": "1",
+   "OPENBLAS_NUM_THREADS": "1",
+   "MKL_NUM_THREADS": "1",
+   "NUMEXPR_NUM_THREADS": "1",
+   "LC_ALL": "en_US.UTF-8",
+   "LANG": "en_US.UTF-8"
+  }
+ },
+ "started_unix": 1790855559.5500538,
+ "scope": "R68-FORMAL-R71-OUTER-CLI-V3 timing scope (as R73 timing_campaign.py); same host, one serialized session per table; 4 block workers for every method",
+ "label": "whole files"
+}

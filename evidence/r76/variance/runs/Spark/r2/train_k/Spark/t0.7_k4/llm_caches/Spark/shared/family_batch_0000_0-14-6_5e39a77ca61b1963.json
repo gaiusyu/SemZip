@@ -1,0 +1,356 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "16/04/07",
+              "10:46:42"
+            ],
+            "reason": "date and time components can be composed into one integer-like timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "105.0 B",
+              "0.1 KB"
+            ],
+            "reason": "different displays of the same underlying size value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "10.10.34.25",
+              "mesos-slave-26:58204",
+              "mesos-slave-28:47083"
+            ],
+            "reason": "captured values contain structural separators explicitly encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix with date and time"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Date-time value",
+          "reason": "Timestamp is a common log feature and can be composed into one integer-like value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp",
+          "size"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "host_address",
+          "broadcast_block"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "log record timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time as one timestamp-like value",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp components are part of one semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "host_address",
+          "meaning": "host IP and port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "host:port",
+            "context_source": null,
+            "why_not_merge_raw": "the value is opaque and does not contain multiple independent sources"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "on ([A-Za-z0-9\\.-]+:\\d+)",
+          "replacement": "on {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "broadcast_block",
+          "meaning": "broadcast block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block identifier",
+            "context_source": null,
+            "why_not_merge_raw": "the identifier is opaque and does not contain multiple independent sources"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "broadcast_([0-9]+)_piece0",
+          "replacement": "broadcast_{placeholder}_piece0",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"broadcast_{record['stored'][0]}_piece0\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "15/09/01",
+              "18:16:44"
+            ],
+            "reason": "date and time components can be composed into one integer-like timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "hdfs://10.10.34.11:9000/pjhe/logs/sosp_29_withID.log:1342177280+134217728",
+              "/yxsu/dataset/ImageNet/ILSVRC2012_img_test/ILSVRC2012_test_00001334.JPEG:0+75678,/yxsu/dataset/ImageNet/ILSVRC2012_img_test/ILSVRC2012_test_00001336.JPEG:0+144458"
+            ],
+            "reason": "captured values contain structural separators explicitly encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix with date and time"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Date-time value",
+          "reason": "Timestamp is a common log feature and can be composed into one integer-like value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "file_path"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "log record timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time as one timestamp-like value",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp components are part of one semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "file_path",
+          "meaning": "structured file path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "complete file path",
+            "context_source": null,
+            "why_not_merge_raw": "the value is opaque and does not contain multiple independent sources"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "split: (.+)",
+          "replacement": "split: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "15/09/01",
+              "18:16:43"
+            ],
+            "reason": "date and time components can be composed into one integer-like timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "1776.0 B",
+              "1.8 KB"
+            ],
+            "reason": "different displays of the same underlying size value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "broadcast_1_piece0",
+              "broadcast_0_piece0"
+            ],
+            "reason": "captured values contain structural separators explicitly encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix with date and time"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Date-time value",
+          "reason": "Timestamp is a common log feature and can be composed into one integer-like value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp",
+          "size"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "log record timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time as one timestamp-like value",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp components are part of one semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_identifier",
+          "meaning": "broadcast block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block identifier",
+            "context_source": null,
+            "why_not_merge_raw": "the identifier is opaque and does not contain multiple independent sources"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Block (broadcast_[0-9]+)",
+          "replacement": "Block {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

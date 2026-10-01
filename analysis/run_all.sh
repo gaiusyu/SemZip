@@ -18,4 +18,14 @@ mkdir -p paper_out
 python3 ladder.py > ladder.log 2>&1 && cp ladder.json paper_out/ladder.json
 python3 r76_tables.py > build_r76.log 2>&1
 echo "outputs: $STAGE/r73_quality_gate_20260927/analysis/paper_out  $STAGE/r76_additional_20260929/analysis/paper_out"
-echo "compare with: $REPO/analysis/reference_outputs/{r73,r76}"
+# byte-compare every recorded output in analysis/reference_outputs/{r73,r76} with the regenerated one
+n=0; bad=0
+for pair in "r73:$STAGE/r73_quality_gate_20260927/analysis/paper_out" "r76:$STAGE/r76_additional_20260929/analysis/paper_out"; do
+  sub="${pair%%:*}"; out="${pair#*:}"
+  for ref in "$REPO/analysis/reference_outputs/$sub"/*; do
+    n=$((n + 1)); f="$(basename "$ref")"
+    cmp -s "$ref" "$out/$f" || { bad=$((bad + 1)); echo "DIFFERS: $sub/$f"; }
+  done
+done
+echo "byte-identical to analysis/reference_outputs/{r73,r76}: $((n - bad))/$n"
+[ "$bad" -eq 0 ]

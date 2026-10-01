@@ -1,0 +1,737 @@
+{
+  "families": [
+    {
+      "family_id": 21,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:38:01,860"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "attempt_1445062781478_0011_m_000004_0",
+              "attempt_1445062781478_0011_m_000009_0"
+            ],
+            "reason": "the captured value itself contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix with timestamp, log level, and logger name"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 + S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp is composed from multiple fields and is necessary for event ordering"
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW",
+          "meaning": "attempt identifier",
+          "reason": "structured attempt identifier with separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "attempt_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "full timestamp composed from date and time tokens"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "attempt_id",
+          "meaning": "attempt identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "attempt_id",
+            "context_source": null,
+            "why_not_merge_raw": "structured identifier with explicit separators"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "attempt_([0-9]+_[0-9]+_[a-z]+_[0-9]+_[0-9]+)",
+          "replacement": "attempt_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'attempt_{record[\"stored\"][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:37:58,405"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "duration_display",
+            "tokens": [
+              "10 second(s)"
+            ],
+            "reason": "different displays of the same underlying duration value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix with timestamp, log level, and logger name"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 + S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp is composed from multiple fields and is necessary for event ordering"
+        },
+        {
+          "slot": "S9 + S10",
+          "action": "STREAM_RAW",
+          "meaning": "duration value",
+          "reason": "different display formats for the same duration value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "duration"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "full timestamp composed from date and time tokens"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "duration_value",
+          "meaning": "snapshot duration",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "duration",
+            "context_source": null,
+            "why_not_merge_raw": "canonical numeric representation of duration"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "at ([0-9]+) second\\(s\\)",
+          "replacement": "at {placeholder} second(s)",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f'{record[\"stored\"][0]} second(s)'"
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:38:22,095"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "spill 0",
+              "spill 1"
+            ],
+            "reason": "plain value introduced by stable 'spill' role anchor encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix with timestamp, log level, and logger name"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 + S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp is composed from multiple fields and is necessary for event ordering"
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW",
+          "meaning": "spill sequence number",
+          "reason": "plain numeric value introduced by role anchor"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "spill_sequence"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "full timestamp composed from date and time tokens"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "spill_sequence",
+          "meaning": "spill sequence number",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "spill sequence",
+            "context_source": null,
+            "why_not_merge_raw": "plain numeric value introduced by role anchor"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "spill ([0-9]+)",
+          "replacement": "spill {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'spill {record[\"stored\"][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 31,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:38:05,551"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "org.apache.hadoop.yarn.util.WindowsBasedProcessTree@1153ed81",
+              "org.apache.hadoop.yarn.util.WindowsBasedProcessTree@93fcf10"
+            ],
+            "reason": "the captured value itself contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix with timestamp, log level, and logger name"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 + S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp is composed from multiple fields and is necessary for event ordering"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW",
+          "meaning": "structured process tree identifier",
+          "reason": "structured identifier with separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "process_tree_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "full timestamp composed from date and time tokens"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "process_tree_id",
+          "meaning": "structured process tree identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "process_tree_id",
+            "context_source": null,
+            "why_not_merge_raw": "structured identifier with explicit separators"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "org.apache.hadoop.yarn.util.WindowsBasedProcessTree@([0-9a-f]+)",
+          "replacement": "org.apache.hadoop.yarn.util.WindowsBasedProcessTree@{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'org.apache.hadoop.yarn.util.WindowsBasedProcessTree@{record[\"stored\"][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:37:58,359"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "hadoop-metrics2.properties"
+            ],
+            "reason": "the captured value itself contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix with timestamp, log level, and logger name"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 + S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp is composed from multiple fields and is necessary for event ordering"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW",
+          "meaning": "properties file identifier",
+          "reason": "structured identifier with separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "properties_file"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "full timestamp composed from date and time tokens"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "properties_file",
+          "meaning": "properties file identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "properties_file",
+            "context_source": null,
+            "why_not_merge_raw": "structured identifier with explicit separators"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "loaded properties from ([A-Za-z0-9.-]+)",
+          "replacement": "loaded properties from {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'loaded properties from {record[\"stored\"][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 27,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:38:04,192"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix with timestamp, log level, and logger name"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 + S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp is composed from multiple fields and is necessary for event ordering"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "full timestamp composed from date and time tokens"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 30,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:38:05,529"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix with timestamp, log level, and logger name"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 + S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp is composed from multiple fields and is necessary for event ordering"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "full timestamp composed from date and time tokens"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2015-10-17",
+              "15:38:11,254"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix with timestamp, log level, and logger name"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 + S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp is composed from multiple fields and is necessary for event ordering"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "full timestamp composed from date and time tokens"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

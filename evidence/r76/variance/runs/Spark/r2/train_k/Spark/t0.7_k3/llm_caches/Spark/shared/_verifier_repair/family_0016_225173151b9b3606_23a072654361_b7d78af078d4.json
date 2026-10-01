@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "block_count",
+      "meaning": "block count comparison",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "Getting( +)(\\d+)( +)non-empty( +)blocks( +)out( +)of( +)(\\d+)( +)blocks",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1]), int(groups[7])], 'layout': [len(groups[0]), len(groups[2]), len(groups[3]), len(groups[4]), len(groups[5]), len(groups[6]), len(groups[8])]}\n\ndef inverse(record):\n    layout = record['layout']\n    return f\"Getting{' ' * layout[0]}{record['stored'][0]}{' ' * layout[1]}non-empty{' ' * layout[2]}blocks{' ' * layout[3]}out{' ' * layout[4]}of{' ' * layout[5]}{record['stored'][1]}{' ' * layout[6]}blocks\"\n"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

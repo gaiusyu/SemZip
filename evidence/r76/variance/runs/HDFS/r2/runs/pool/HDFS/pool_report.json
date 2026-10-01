@@ -1,0 +1,89 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "HDFS",
+  "candidates": [
+    {
+      "cid": "c1",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/HDFS/r2/runs/qg/c1/HDFS/selected_plan.json",
+      "train_cost": 376088
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/HDFS/r2/runs/qg/c4/HDFS/selected_plan.json",
+      "train_cost": 376500
+    },
+    {
+      "cid": "c3",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/HDFS/r2/runs/qg/c3/HDFS/selected_plan.json",
+      "train_cost": 422844
+    },
+    {
+      "cid": "c0",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/HDFS/r2/runs/qg/c0/HDFS/selected_plan.json",
+      "train_cost": 430608
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/HDFS/r2/runs/qg/c2/HDFS/selected_plan.json",
+      "train_cost": 440100
+    }
+  ],
+  "start": "c1",
+  "start_train_bytes": 376088,
+  "start_cost_reproduced": true,
+  "pool_groups": 11,
+  "duplicate_groups_skipped": 4,
+  "selected_train_bytes": 366024,
+  "selected_tags": [
+    "TS",
+    "IP",
+    "A",
+    "K",
+    "X3A"
+  ],
+  "selected_plan_sha256": "1dda28c9694a323b7cbadae283270e6ad87fa3e901601f17bd51b93a083ecbd0",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 31,
+      "n_improving": 2,
+      "before": 376088,
+      "accepted": [
+        {
+          "move": "add:X3A",
+          "screen_cost": 366024,
+          "applied_cost": 366024
+        }
+      ],
+      "after": 366024
+    },
+    {
+      "round": 1,
+      "n_moves": 30,
+      "n_improving": 0,
+      "before": 366024,
+      "accepted": [],
+      "after": 366024
+    },
+    {
+      "stage": "compile",
+      "tag": "TS",
+      "variant": "width_agnostic",
+      "before": 366024,
+      "after": 366024,
+      "accepted": false
+    },
+    {
+      "stage": "eliminate",
+      "tag": "K",
+      "before": 366024,
+      "after": 366024,
+      "accepted": false
+    }
+  ],
+  "evaluations": 61,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "96cb9b6e43519dd84056542f80724455387f37edf313469404da0547d11f17a6"
+}

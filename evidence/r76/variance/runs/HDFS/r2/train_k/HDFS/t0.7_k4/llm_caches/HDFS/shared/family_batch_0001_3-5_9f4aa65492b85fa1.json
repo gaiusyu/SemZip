@@ -1,0 +1,221 @@
+{
+  "families": [
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "081109",
+              "203521"
+            ],
+            "reason": "S0 and S1 together represent a timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "blk_7503483334202473044",
+              "blk_-1608999687919862906"
+            ],
+            "reason": "the captured block ID itself contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "the log has a consistent prefix structure for each line"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "timestamp spans multiple tokens and is required for temporal analysis"
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "block_id",
+          "reason": "block ID is necessary for tracking operations on specific blocks"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "composed timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp composed from S0 and S1",
+            "context_source": null,
+            "why_not_merge_raw": "the timestamp is better represented as a single integer-like value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) (\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]\n    time_part = groups[1]\n    dt = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000)\n    return dt.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block ID",
+            "context_source": null,
+            "why_not_merge_raw": "block ID is a unique identifier with structural separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_[-\\d]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "081109",
+              "203552"
+            ],
+            "reason": "S0 and S1 together represent a timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "blk_-9073992586687739851",
+              "blk_-2917825689581470793",
+              "blk_38865049064139660",
+              "blk_3947106522258141922"
+            ],
+            "reason": "the captured block ID itself contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "the log has a consistent prefix structure for each line"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "timestamp spans multiple tokens and is required for temporal analysis"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "block_id",
+          "reason": "block ID is necessary for tracking operations on specific blocks"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "composed timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp composed from S0 and S1",
+            "context_source": null,
+            "why_not_merge_raw": "the timestamp is better represented as a single integer-like value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) (\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]\n    time_part = groups[1]\n    dt = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000)\n    return dt.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block ID",
+            "context_source": null,
+            "why_not_merge_raw": "block ID is a unique identifier with structural separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_[-\\d]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

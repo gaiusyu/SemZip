@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "task_stage_tid_bytes",
+      "meaning": "task identification and bytes sent",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "merge_equivalent",
+        "stored_source": "task id + stage id + TID + bytes sent",
+        "context_source": null,
+        "why_not_merge_raw": "fields form one compact numeric value"
+      },
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "task (\\d+\\.\\d+) in stage (\\d+\\.\\d+) \\(TID (\\d+)\\)\\. (\\d+) bytes",
+      "replacement": "task {placeholder} in stage {group2} (TID {group3}). {group4} bytes",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    task_id = int(float(groups[0]) * 1000)\n    stage_id = int(float(groups[1]) * 1000)\n    tid = int(groups[2])\n    bytes_sent = int(groups[3])\n    compact_value = (task_id * 10**15) + (stage_id * 10**12) + (tid * 10**6) + bytes_sent\n    return {'stored': [compact_value], 'layout': []}\n\ndef inverse(record):\n    compact_value = record['stored'][0]\n    bytes_sent = compact_value % 10**6\n    tid_stage_task = compact_value // 10**6\n    tid = tid_stage_task % 10**6\n    stage_task = tid_stage_task // 10**6\n    stage_id = (stage_task % 10**3) / 1000.0\n    task_id = (stage_task // 10**3) / 1000.0\n    return f\"{task_id:.1f} in stage {stage_id:.1f} (TID {tid}). {bytes_sent} bytes\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

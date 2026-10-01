@@ -1,0 +1,145 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header that includes the client IP/domain, timestamp, HTTP method, and protocol version. These fields are stable and can be extracted into side streams.",
+    "functions": [
+      {
+        "tag": "log_timestamp_utc",
+        "meaning": "timestamp_with_timezone_offset_as_epoch_microseconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2})( +)([-+]\\d{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Pack timestamp and timezone offset into one integer for exact rendering.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    day, month, year, hour, minute, second, sp, offset = groups\n    text = f\"{day.zfill(2)}/{month}/{year} {hour}:{minute}:{second} {offset}\"\n    dt = datetime.strptime(text, '%d/%b/%Y %H:%M:%S %z')\n    micros = int(dt.timestamp() * 1000000)\n    return {'stored': [micros], 'layout': [len(sp)]}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    layout = record.get('layout', [])\n    sp_len = layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000, tz=datetime.timezone.utc).astimezone()\n    day = dt.strftime('%d')\n    month = dt.strftime('%b')\n    year = dt.strftime('%Y')\n    time = dt.strftime('%H:%M:%S')\n    offset = dt.strftime('%z')\n    return f\"[{day}/{month}/{year}:{time}{' ' * sp_len}{offset}]\""
+        }
+      },
+      {
+        "tag": "client_ip_or_domain",
+        "meaning": "client_ipv4_or_domain_name",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(\\S+)( +)-",
+        "replacement": "{placeholder}{group2}-",
+        "program": {
+          "intent": "Capture client IP/domain name.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': [len(groups[1])]}\n\ndef inverse(record):\n    value = record['stored'][0]\n    sp_len = record['layout'][0]\n    return f\"{value}{' ' * sp_len}-\""
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "client IP/domain name",
+      "reason": "Client IP/domain name is a stable identifier with clear structure and varying entropy."
+    },
+    {
+      "slot": "S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "timestamp with timezone offset",
+      "reason": "Timestamp and timezone offset are combined into one integer to preserve exact rendering."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "HTTP method",
+      "reason": "HTTP method is stable and does not disturb the template."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "HTTP URL path",
+      "reason": "URL path changes frequently and has structural meaning, making it suitable for extraction."
+    },
+    {
+      "slot": "S7",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "HTTP protocol version",
+      "reason": "Protocol version is stable and does not disturb the template."
+    },
+    {
+      "slot": "S8",
+      "action": "DICT_RANK",
+      "meaning": "HTTP status code",
+      "reason": "HTTP status code is a low-entropy numeric value with a limited set of possible values."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "response byte size",
+      "reason": "Response byte size is a stable numeric quantity with high locality, suitable for compact delta coding."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "http_status_code",
+      "meaning": "http_response_status_code",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "(\\d{3})( +)",
+      "replacement": "{placeholder}{group2}",
+      "program": {
+        "intent": "Capture HTTP status code and preserve trailing spaces.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': [len(groups[1])]}\n\ndef inverse(record):\n    code = record['stored'][0]\n    sp_len = record['layout'][0]\n    return f\"{code}{' ' * sp_len}\""
+      }
+    },
+    {
+      "tag": "response_byte_size",
+      "meaning": "http_response_byte_size",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "(\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Capture the numeric response byte size.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "http_url_path",
+      "meaning": "http_request_url_path",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\/\\S+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Capture HTTP URL path as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

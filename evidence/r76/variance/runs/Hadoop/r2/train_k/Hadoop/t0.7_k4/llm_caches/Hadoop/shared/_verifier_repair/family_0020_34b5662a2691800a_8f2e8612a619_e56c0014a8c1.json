@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "container_id",
+      "meaning": "container identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "container_(\\d{13}_\\d{4}_\\d{2}_\\d{6})",
+      "replacement": "container_{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"container_{record['stored'][0]}\" if record['stored'] else \"\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

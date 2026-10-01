@@ -1,0 +1,133 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "Shared prefix/header with repeated structure across examples. Changing fields should be extracted as side streams for compression.",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "header_timestamp_with_timezone",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[([0-9]{2})/([A-Za-z]{3})/([0-9]{4}):([0-9]{2}):([0-9]{2}):([0-9]{2})( +)([-+][0-9]{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Exact reversible transformation for timestamp with timezone to epoch microseconds.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    day, month, year, hour, minute, second, sp1, timezone = groups\n    text = day + '/' + month + '/' + year + ' ' + hour + ':' + minute + ':' + second + ' ' + timezone\n    dt = datetime.strptime(text, '%d/%b/%Y %H:%M:%S %z')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = int(layout[0])\n    dt = datetime.fromtimestamp(micros / 1000000, tz=datetime.timezone.utc).astimezone()\n    day = dt.strftime('%d')\n    month = dt.strftime('%b')\n    year = dt.strftime('%Y')\n    hour = dt.strftime('%H')\n    minute = dt.strftime('%M')\n    second = dt.strftime('%S')\n    timezone = dt.strftime('%z')\n    return '[' + day + '/' + month + '/' + year + ':' + hour + ':' + minute + ':' + second + (' ' * sp1_len) + timezone + ']'"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "client_host_or_ip",
+      "reason": "Hostname/IP addresses are bounded variables with intrinsic structure and high entropy; extracting as raw strings preserves local template stability."
+    },
+    {
+      "slot": "S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log_timestamp_with_timezone",
+      "reason": "Timestamp and timezone together determine one exact epoch microseconds value; storing as a composed integer reduces redundancy while preserving exact reconstruction."
+    },
+    {
+      "slot": "S5+S6",
+      "action": "STREAM_RAW",
+      "meaning": "http_method_and_path",
+      "reason": "Stable HTTP method with variable paths; paths may contain separators, slashes, and queries, making them suitable for raw extraction."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "http_status_code",
+      "reason": "Status codes are stable numeric values expected to form a compact stream when extracted."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "response_byte_size",
+      "reason": "Byte sizes are stable numeric values expected to form a compressible delta stream when extracted."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "client_host_or_ip",
+      "meaning": "client_hostname_or_ipv4_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "^([^ ]+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Raw extraction of bounded hostname or IPv4.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "http_method_and_path",
+      "meaning": "http_request_method_and_path",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "\\\"([A-Z]+)( +)([^\\\"]+)\\\"",
+      "replacement": "\"{placeholder}\"",
+      "program": {
+        "intent": "Raw extraction of HTTP method and path as stable request structure.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0] + groups[1] + groups[2]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "http_status_code",
+      "meaning": "status_code_of_http_response",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{3})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Exact numeric extraction for HTTP status codes.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    },
+    {
+      "tag": "response_byte_size",
+      "meaning": "size_of_http_response_in_bytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Exact numeric extraction for HTTP response byte size.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

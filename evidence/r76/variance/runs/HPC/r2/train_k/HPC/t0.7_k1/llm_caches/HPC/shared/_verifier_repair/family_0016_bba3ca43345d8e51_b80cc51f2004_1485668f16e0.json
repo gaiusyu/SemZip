@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "ambient_temperature",
+      "meaning": "ambient temperature value",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "merge_equivalent",
+        "stored_source": "temperature value",
+        "context_source": null,
+        "why_not_merge_raw": "tokens represent one semantic value"
+      },
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "ambient=(\\d+)",
+      "replacement": "ambient={placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = int(groups[0])\n    return {'stored': [value], 'layout': ['ambient=']}\n\ndef inverse(record):\n    value = record['stored'][0]\n    prefix = record['layout'][0]\n    return f\"{prefix}{value}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

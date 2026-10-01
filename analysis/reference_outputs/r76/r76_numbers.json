@@ -193,9 +193,9 @@
    "semzip_suffix_smaller_on": 12
   },
   "logreducer": {
-   "n": 13,
-   "semzip_smaller_on": 13,
-   "semzip_suffix_smaller_on": 10
+   "n": 15,
+   "semzip_smaller_on": 15,
+   "semzip_suffix_smaller_on": 11
   },
   "logshrink": {
    "n": 14,
@@ -615,19 +615,32 @@
     "failed": 48,
     "blocks": 333
    },
+   "Thunderbird": {
+    "ratio": 49.80083971617268,
+    "exact": false,
+    "status": "PASS",
+    "failed": 0,
+    "blocks": 2113
+   },
    "Windows": {
     "ratio": 327.41624390187513,
     "exact": false,
     "status": "PASS",
     "failed": 0,
     "blocks": 1147
+   },
+   "Zookeeper": {
+    "ratio": 116.38727897838899,
+    "exact": false,
+    "status": "PASS",
+    "failed": 0,
+    "blocks": 1
    }
   }
  },
  "missing": [
-  "logreducer: ['Spark', 'Thunderbird', 'Zookeeper']",
-  "logshrink: ['Spark', 'Windows']",
-  "timing T2 (new baselines)"
+  "logreducer: ['Spark']",
+  "logshrink: ['Spark', 'Windows']"
  ],
  "per_dataset": {
   "Android": {
@@ -907,7 +920,7 @@
    "zstd22long": 29.455822665328682,
    "zstd19dict": 27.711921504994365,
    "delog_generic": 60.340959564559704,
-   "logreducer": null,
+   "logreducer": 45.2380571809747,
    "logshrink": 57.44670708357599
   },
   "Windows": {
@@ -947,7 +960,7 @@
    "zstd22long": 38.80456732826928,
    "zstd19dict": 27.642329748058675,
    "delog_generic": 116.66858383313938,
-   "logreducer": null,
+   "logreducer": 112.1110310641821,
    "logshrink": 108.06390696903114
   }
  },
@@ -1169,7 +1182,7 @@
    "zstd22long": 29.459218374386914,
    "zstd19dict": 27.715472631378,
    "delog_generic": 60.34978654397396,
-   "logreducer": null,
+   "logreducer": 45.245218075238355,
    "logshrink": 57.45769648846438
   },
   "Windows": {
@@ -1193,6 +1206,14 @@
    "logshrink": null
   }
  },
+ "delog_published": {
+  "diff_min": -2.740883864555621,
+  "diff_max": 13.278594544781663,
+  "mean_pub": 88.05575,
+  "semzip_wins": 14,
+  "geomean_pct": 11.530683367515104,
+  "summed_pct": 2.0702635796560953
+ },
  "throughput_bw": {
   "semzip": {
    "encode": 2.710905778459504,
@@ -1206,5 +1227,83 @@
    "encode": 10.055419704227376,
    "decode": 69.42604998513873
   }
+ },
+ "t3_common": [
+  "HDFS",
+  "Thunderbird"
+ ],
+ "t3_semzip_vs_delog": {
+  "encode_pct": 40.37055506576026,
+  "decode_pct": 74.20286041865411,
+  "encode_pct_all4": 29.85669842349183,
+  "decode_pct_all4": 56.56456115271918
+ },
+ "slowdown_range": [
+  3.349332152590524,
+  7.779339408006806
+ ],
+ "unseen": {
+  "rows": {
+   "NASA": {
+    "semzip": 22.75638058864547,
+    "delog": 20.309669206764376,
+    "loglite": 9.82017187590535,
+    "xz9e": 16.360100436019863,
+    "zstd19": 15.585306241963112,
+    "logshrink": 21.556905256477894,
+    "logreducer": 18.959396469254983,
+    "lines": 1891715,
+    "suffix": 22.785364338196775,
+    "delog_suffix": 20.323760282665514
+   },
+   "ClarkNet": {
+    "semzip": 19.120118403880618,
+    "delog": 17.035233238789456,
+    "loglite": 9.14161088155511,
+    "xz9e": 14.442818650584055,
+    "zstd19": 13.702879081556343,
+    "logshrink": null,
+    "logreducer": 15.378318598001695,
+    "lines": 1654882,
+    "suffix": 19.12784234359572,
+    "delog_suffix": 17.04633016386638
+   },
+   "USask": {
+    "semzip": 16.654007226315397,
+    "delog": 15.27613934527499,
+    "loglite": 8.633176110589723,
+    "xz9e": 13.597795632645672,
+    "zstd19": 12.86124766063012,
+    "logshrink": null,
+    "logreducer": null,
+    "lines": 2408625,
+    "suffix": 16.66827306418856,
+    "delog_suffix": 15.28613552051556
+   },
+   "Calgary": {
+    "semzip": 21.121794118110515,
+    "delog": 18.658827207819186,
+    "loglite": 12.361406844106464,
+    "xz9e": 16.872785556964214,
+    "zstd19": 15.132508232482527,
+    "logshrink": 21.233476969768112,
+    "logreducer": 21.253928023437634,
+    "lines": 726739,
+    "suffix": 20.97784562476082,
+    "delog_suffix": 18.535328029554787
+   }
+  },
+  "aggregate": {
+   "n_complete_vs_delog": 4,
+   "wins_vs_delog": 4,
+   "suffix_wins_vs_delog": 4,
+   "total_semzip_bytes": 34452497,
+   "total_delog_bytes": 38224332,
+   "total_bytes_difference_semzip_minus_delog": -3771835
+  },
+  "losses": [
+   "LogShrink+R* on Calgary",
+   "LogReducer+R* on Calgary"
+  ]
  }
 }

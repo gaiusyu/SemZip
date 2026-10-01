@@ -154,7 +154,7 @@ RQ2 = jl(DEV/'rq2/RESULTS.json'); rq2 = {r['dataset']: r for r in RQ2}
 NOPROG = {d for d, r in rq2.items() if r['surface_bytes'] == r['latent_bytes']}
 LAD = ['empty', 'library', 'library_floor', 'semzip1', 'gated', 'semzip', 'delog_generic', 'delog']
 L = [r'\begin{table*}[t]\centering\small',
-     r'\caption{Attribution on complete files (ratios; archive-only decoding with matching SHA-256 for every cell). Empty: the same pipeline and backend with no program (residual processing only). Library: a frozen, hand-written, dataset-agnostic program library (timestamps, IPv4, sizes, percentages, hex, decimals) through the same gate, storage fitting, and runtime, with no LLM; Lib.+floor (post hoc): the empty program replaces the library plan when it is smaller on block 0, a rule that leaves \tool\ unchanged. SemZip-1: one greedy synthesis; Gated: SemZip-1 after the quality gate; \tool: five syntheses and cost-guided selection. DeLog-gen: official DeLog without its per-dataset regular expressions. Latent: archive saving of latent over literal storage of exactly the same matched spans (matched replay); s: 20 systematically sampled blocks; n/a: literal and latent archives are byte-identical (no matched span is stored through a synthesized program).}',
+     r'\caption{Attribution on complete files (ratios; archive-only decoding with matching SHA-256 for every cell). Empty: the same pipeline and backend with no program (residual processing only). Library: a frozen, hand-written, dataset-agnostic program library (timestamps, IPv4, sizes, percentages, hex, decimals) through the same gate, storage fitting, and runtime, with no LLM; Lib.+floor (post hoc): the empty program replaces the library plan when it is smaller on block 0, a rule that leaves \tool\ unchanged. SemZip-1: one greedy synthesis; Gated: SemZip-1 after the quality gate; \tool: five syntheses and cost-guided selection. DeLog-gen: official DeLog without its per-dataset regular expressions. Latent: archive saving of latent over literal storage of exactly the same matched spans (matched replay); s: 20 systematically sampled blocks; n/a: every deployed program stores its spans as exact strings, so both branches coincide.}',
      r'\label{tab:attribution}', r'\setlength{\tabcolsep}{3.0pt}', r'\begin{tabular}{l' + 'r'*len(LAD) + 'r}', r'\toprule',
      'Dataset & ' + ' & '.join(LABEL[m] for m in LAD) + r' & Latent \\', r'\midrule']
 for d in DS:
@@ -202,7 +202,7 @@ L += [r'\bottomrule', r'\end{tabular}\end{table}']
 
 # ---------- supplement: other codec settings and non-lossless natives ----------
 SUP = ['zstd3', 'zstd22long', 'zstd19dict', 'delog_generic']
-L = [r'\begin{longtable}{l' + 'r'*(len(SUP) + 5) + '}', r'\caption{Supplementary external measurements. Left: further general-purpose settings (Zstd19+D: dictionary trained on block 0 and counted once per file) and DeLog without its dataset-specific regular expressions, all byte-exact from archives alone. Zstd22L: zstd --ultra -22 --long=27. Right: compression-only ratios of LogShrink and LogReducer as released (not byte-exact; exact files marked e), the number of LogShrink blocks that failed to encode or decode, and Denum\textquotesingle s compression-only ratio (its format cannot restore the input; not losslessly verifiable).}\label{tab:supp-external}\\',
+L = [r'\setlength{\tabcolsep}{3pt}', r'\begin{longtable}{l' + 'r'*(len(SUP) + 5) + '}', r'\caption{Supplementary external measurements. Left: further general-purpose settings (Zstd19+D: dictionary trained on block 0 and counted once per file) and DeLog without its dataset-specific regular expressions, all byte-exact from archives alone. Zstd22L: zstd --ultra -22 --long=27. Right: compression-only ratios of LogShrink and LogReducer as released (not byte-exact; exact files marked e), the number of LogShrink blocks that failed to encode or decode, and Denum\textquotesingle s compression-only ratio (its format cannot restore the input; not losslessly verifiable).}\label{tab:supp-external}\\',
      r'\toprule', 'Dataset & ' + ' & '.join(LABEL[m] for m in SUP) + r' & LS native & LS failed & LR native & LR status & Denum \\', r'\midrule\endfirsthead', r'\toprule', 'Dataset & ' + ' & '.join(LABEL[m] for m in SUP) + r' & LS native & LS failed & LR native & LR status & Denum \\', r'\midrule\endhead']
 for d in DS:
     ls_, lr_ = NAT_LS.get(d, {}), NAT_LR.get(d, {})
@@ -236,15 +236,22 @@ lr_fail = {d: v for d, v in NAT_LR.items() if v.get('status') == 'FAIL'}
 def names(ds):
     ds = list(ds)
     return ds[0] if len(ds) == 1 else (', '.join(ds[:-1]) + ' and ' + ds[-1] if ds else 'none')
+PUBDL = {'Android': 30.354, 'Apache': 59.648, 'BGL': 45.682, 'Hadoop': 79.626, 'HDFS': 29.013, 'HealthApp': 55.934, 'HPC': 46.842, 'Linux': 30.626, 'Mac': 43.687, 'OpenSSH': 106.012,
+         'OpenStack': 23.754, 'Proxifier': 30.784, 'Spark': 61.788, 'Thunderbird': 68.647, 'Windows': 541.569, 'Zookeeper': 154.926}  # DeLog paper (arXiv 2601.15084v2), Table 5
+pubdiff = [100*(PUBDL[d]/ratio('delog', d) - 1) for d in DS]
+pub_w = sum(ratio('semzip', d) > PUBDL[d] for d in DS)
+pub_g = 100*(st.geometric_mean([ratio('semzip', d) for d in DS])/st.geometric_mean(list(PUBDL.values())) - 1)
+pub_sum = 100*(sum(M['semzip'][d]['arch'] for d in DS)/sum(M['semzip'][d]['raw']/PUBDL[d] for d in DS) - 1)
+N['delog_published'] = {'diff_min': min(pubdiff), 'diff_max': max(pubdiff), 'mean_pub': st.mean(PUBDL.values()), 'semzip_wins': pub_w, 'geomean_pct': pub_g, 'summed_pct': pub_sum}
 t = []
 t.append(f"On complete files, \\tool\\ has the largest ratio on {sum(1 for d in DS if max((ratio(m, d) or 0) for m in MAIN) == ratio('semzip', d))}/16 files (Table~\\ref{{tab:external-ratios}}). "
          f"Against DeLog, the strongest baseline, it is smaller on {wins_dl}/16 files and on {swins_dl}/12 held-out suffixes, which no selection or fitting step reads. "
          f"Its geometric-mean ratio is {x(S['geomean'])} versus {x(DL['geomean'])} ({x(S['suffix_geomean'])} versus {x(DL['suffix_geomean'])} on suffixes) and its arithmetic mean {x(S['mean'])} versus {x(DL['mean'])}. "
          f"Summed archive bytes, however, are {abs(S['total_vs_delog_pct']):.2f}\\% larger than DeLog's: Thunderbird holds {TB_share:.1f}\\% of all raw bytes and is the one file where DeLog wins "
-         f"({x(ratio('semzip', 'Thunderbird'))} versus {x(ratio('delog', 'Thunderbird'))}; RQ3 shows that its frozen program rarely beats the empty program on later blocks).")
-for m, nm in (('logshrink', 'LogShrink+R'), ('logreducer', 'LogReducer+R')):
-    pass
-t.append(f"LogShrink and LogReducer as released drop carriage returns, collapse spaces, strip leading zeros, and (LogShrink) truncate integers wider than 32 bits, so neither restores most files; their adapted +R variants store the counted per-line correction. "
+         f"({x(ratio('semzip', 'Thunderbird'))} versus {x(ratio('delog', 'Thunderbird'))}; its frozen program is not even 1\\% smaller than the empty program on 79\\% of later blocks; RQ3).")
+dp = N['delog_published']
+t.append(f"DeLog's released implementation, run as its own benchmark script does, reproduces our DeLog numbers exactly on Linux and BGL, but its paper reports ratios {abs(dp['diff_min']):.1f}\\% lower to {dp['diff_max']:.1f}\\% higher per file (mean {dp['mean_pub']:.2f}$\\times$); against those published ratios \\tool\\ has the higher ratio on {dp['semzip_wins']}/16 files (geometric mean {pct(dp['geomean_pct'], 1)}) and its summed bytes are {dp['summed_pct']:.1f}\\% larger (supplement).")
+t.append(f"LogShrink and LogReducer as released do not restore most files byte-exactly (they drop carriage returns, spaces, and leading zeros), so their +R variants store a counted per-line correction. "
          f"\\tool\\ is smaller than LogShrink+R on {ag['logshrink']['semzip_smaller_on']}/{ag['logshrink']['n']} and than LogReducer+R on {ag['logreducer']['semzip_smaller_on']}/{ag['logreducer']['n']} reconstructed files"
          + (f"; LogShrink could not encode or decode every block of {names(sorted(ls_fail))}" if ls_fail else '')
          + (f", and LogReducer+R failed the SHA check on part of {names(sorted(lr_fail))}" if lr_fail else '') + ". "
@@ -260,11 +267,11 @@ t.append(f"Table~\\ref{{tab:attribution}} separates the contributions. With the 
          f"the programs of the deployed plans reduce summed archive bytes by {100*(1-S['total']/e['total']):.1f}\\% and account for {sum(1 for d in DS if M['semzip'][d]['arch'] < M['delog'][d]['arch'] and not M['empty'][d]['arch'] < M['delog'][d]['arch'])} of \\tool's {wins_dl} wins over DeLog. "
          f"One greedy synthesis (SemZip-1) reaches {x(sz1['mean'])} but is larger than the empty program on {names([d for d in DS if M['semzip1'][d]['arch'] > M['empty'][d]['arch']])}; the quality gate removes such rules ({x(g['mean'])}, {dlw('gated')}/16 files smaller than DeLog), and selection across five syntheses adds the rest ({x(S['mean'])}, {dlw('semzip')}/16).")
 t.append(f"A frozen, hand-written library of common renderers (timestamps, IPv4, sizes, percentages, hexadecimal and decimal numbers) through the same gate and runtime does not reproduce this: it is larger than the empty program on {len(lib_below_empty)}/{len(M['library'])} files. "
-         f"The gate removes one rule group at a time and never compares against the empty program; with a post-hoc empty-program floor decided on block 0, which leaves \\tool\\ unchanged, the library improves on the empty program on {len(lib_improves)} files ({names(lib_improves)}), and the equally single-candidate Gated plan is smaller than it on {sum(M['gated'][d]['arch'] < M['library_floor'][d]['arch'] for d in M['library_floor'])}/{len(M['library_floor'])} files. "
+         f"The gate removes one rule group at a time and never compares against the empty program; with a post-hoc empty-program floor decided on block 0, which leaves \\tool\\ unchanged, the library improves on the empty program on {len(lib_improves)} files ({names(lib_improves)}) and keeps the library on BGL, where it is larger, and the equally single-candidate Gated plan is smaller than it on {sum(M['gated'][d]['arch'] < M['library_floor'][d]['arch'] for d in M['library_floor'])}/{len(M['library_floor'])} files. "
          f"Official DeLog without its per-dataset regular expressions (DeLog-gen) is smaller than \\tool\\ on {sum(M['delog_generic'][d]['arch'] < M['semzip'][d]['arch'] for d in M['delog_generic'])}/{len(M['delog_generic'])} files.")
 r2 = N['rq2']
 t.append(f"The matched replay (last column) stores exactly the same matched spans either literally or as latent values, so it separates representation from field separation. Latent storage saves {min(v['saving_pct'] for d, v in r2['per_dataset'].items() if d not in r2['noprog'] and v['saving_pct'] > 0):.1f}--{r2['max_informative'][0]:.1f}\\% on {sum(1 for d, v in r2['per_dataset'].items() if d not in r2['noprog'] and v['saving_pct'] > 0)} of the {len(r2['informative'])} informative files and {r2['complete_saving_pct']:.2f}\\% summed over the {sum(1 for r in RQ2 if r['scope'] == 'complete')} fully replayed files; "
-         f"on {names(r2['noprog'])} literal and latent storage give byte-identical archives, and on Windows' sampled blocks the latent form is {abs(r2['per_dataset']['Windows']['saving_pct']):.2f}\\% larger. Field separation therefore carries most of the gain over the empty program, and latent values add a smaller, file-dependent share.")
+         f"on {names(r2['noprog'])} literal and latent storage give byte-identical archives, and on Windows' sampled blocks the latent form is {abs(r2['per_dataset']['Windows']['saving_pct']):.2f}\\% larger. Over the {sum(1 for r in RQ2 if r['scope'] == 'complete')} fully replayed files, literal storage of the separated spans is {100*(1 - N['rq2']['complete_surface']/sum(M['empty'][r['dataset']]['arch'] for r in RQ2 if r['scope'] == 'complete')):.1f}\\% smaller than the empty program and latent storage a further {N['rq2']['complete_saving_pct']:.1f}\\%: field separation carries most of the gain, and latent values add a smaller, file-dependent share.")
 (OUT/'rq2_text.tex').write_text('\n'.join(t) + '\n')
 
 rp = N['repeats']
@@ -286,20 +293,20 @@ N['throughput_bw'] = {m: {'encode': bw(m, 'encode_MB_per_s'), 'decode': bw(m, 'd
 tb = N['throughput_bw']
 
 # ---------- abstract / conclusion numbers ----------
-OTHERS = [(m, n) for m, n in (('logshrink', 'LogShrink+R'), ('logreducer', 'LogReducer+R'), ('loglite', 'LogLite-BL'), ('xz9e', 'XZ~9e')) if M[m]]
+OTHERS = [(m, n) for m, n in (('logshrink', 'LogShrink+R'), ('logreducer', 'LogReducer+R'), ('loglite', 'LogLite-BL'), ('xz9e', 'XZ9e')) if M[m]]
 beaten = [n for m, n in OTHERS if beat_all(m)]
-ab = (f"On all sixteen LogHub files, each decoded byte-exactly from its archive alone, \\tool\\ produces smaller archives than DeLog on {wins_dl} files (geometric-mean ratio {S['geomean']:.1f}$\\times$ versus {DL['geomean']:.1f}$\\times$) and on {swins_dl} of 12 held-out suffixes, "
-      + (f"and smaller than {names(beaten)} (the adapted methods restored byte-exactly) on every file they restore; " if len(beaten) == len(OTHERS) else f"and smaller than the other log compressors on most files they restore; ")
+ab = (f"On sixteen LogHub files, each decoded byte-exactly from its archive alone, \\tool\\ is smaller than DeLog on {swins_dl} of 12 held-out suffixes (geometric-mean ratio {S['suffix_geomean']:.1f}$\\times$ versus {DL['suffix_geomean']:.1f}$\\times$) and {wins_dl} of 16 complete files, "
+      + (f"and smaller than {names(beaten)} (+R: released tools plus a counted correction) on every file they restore; " if len(beaten) == len(OTHERS) else f"and smaller than the other log compressors on most files they restore; ")
       + f"summed bytes are {S['total_vs_delog_pct']:.2f}\\% larger than DeLog's because \\tool\\ loses on the largest file. "
-      f"Without its programs the same pipeline reaches a geometric mean of {e['geomean']:.1f}$\\times$ instead of {S['geomean']:.1f}$\\times$, a hand-written renderer library does not recover the difference, and "
-      + ("two further complete runs keep all four narrow wins over DeLog. " if allw else "further complete runs test the narrow wins. ")
-      + f"On the twelve completely timed files, encoding runs at {100*tb['semzip']['encode']/tb['delog']['encode']:.1f}--{100*TS['semzip']['encode_gmean']/TS['delog']['encode_gmean']:.1f}\\% of DeLog's throughput (byte-weighted and geometric mean).")
+      f"Without its programs the same pipeline reaches a geometric mean of {e['geomean']:.1f}$\\times$ instead of {S['geomean']:.1f}$\\times$; field separation provides most of this gain and latent values a smaller, file-dependent share. "
+      + ("Two further complete runs keep all four narrow wins over DeLog. " if allw else "")
+      + "ENCODE_SPEED_PLACEHOLDER")
 (OUT/'abstract_results.tex').write_text(ab + '\n')
 ALLCMP = [m for m in ('logshrink', 'logreducer', 'loglite', 'gzip6', 'xz6', 'xz9e', 'zstd3', 'zstd19', 'zstd22long', 'zstd19dict', 'delog_generic') if M[m]]
 allbeat = all(beat_all(m) for m in ALLCMP)
 co = (f"It is smaller than DeLog on {wins_dl}/16 LogHub files and {swins_dl}/12 held-out suffixes"
-      + (" and smaller than every other evaluated compressor on every file it restores" if allbeat else "") + f", at summed bytes {pct(S['total_vs_delog_pct'])} relative to DeLog and a slower encoder; "
-      f"without its programs the same pipeline reaches {e['mean']:.2f}$\\times$, and a hand-written library does not substitute for them.")
+      + (" and, on LogHub, smaller than every other evaluated compressor on every file that compressor restores" if allbeat else "") + f", at summed bytes {pct(S['total_vs_delog_pct'])} relative to DeLog and a slower encoder; "
+      f"without its programs the same pipeline reaches a mean of {e['mean']:.2f}$\\times$ instead of {S['mean']:.2f}$\\times$, and a hand-written library does not substitute for them.")
 (OUT/'conclusion_results.tex').write_text(co + '\n')
 N['missing'] = missing
 (OUT/'r76_numbers.json').write_text(json.dumps(N, indent=1, default=str))
@@ -308,10 +315,10 @@ print('abstract/conclusion/cost written; missing now:', missing)
 # ======================= supplement section (R76) =======================
 def esc(s): return s.replace('\\', r'\textbackslash{}').replace('_', r'\_').replace('%', r'\%').replace('&', r'\&').replace('#', r'\#').replace('$', r'\$').replace('{', r'\{').replace('}', r'\}').replace('~', r'\textasciitilde{}').replace('^', r'\^{}')
 U = [r'\section{Additional baselines and controls}\label{sec:r76}\sloppy',
-     r'All experiments in this section were specified in a design document written before any of their results existed (29 September 2026, 01:30 UTC); later changes are appended to that document as dated change-log entries and are stated below. Every compression cell decodes from its archive alone and matches per-block and full-file SHA-256 digests of the original inputs.']
+     r'All experiments in this section were specified in a design document written before any of their results existed; later changes are appended to that document as dated change-log entries and are stated below. Every compression cell decodes from its archive alone and matches per-block and full-file SHA-256 digests of the original inputs.']
 # --- log-specific baselines
 U += [r'\subsection{Log-specific baselines}',
-      r'The +R correction deviates from the pre-registered adaptation rule (change log, 29 September, 05:30 UTC); it was recorded before any new-baseline ratio comparison and was not applied to Denum. LogShrink (commit 59ce494) and LogReducer (commit 4000541) run their official pipelines independently on every 100,000-line block, including their own sampling and template training on that block (samplers seeded with 0); their decoders read only the block archive, which contains the native payload, every model file the official restore reads, and, for the +R variants, a per-line correction. '
+      r'The +R correction deviates from the pre-registered adaptation rule (recorded in the change log); it was recorded before any new-baseline ratio comparison and was not applied to Denum. LogShrink (commit 59ce494) and LogReducer (commit 4000541) run their official pipelines independently on every 100,000-line block, including their own sampling and template training on that block (samplers seeded with 0); their decoders read only the block archive, which contains the native payload, every model file the official restore reads, and, for the +R variants, a per-line correction. '
       r'As released, both tools drop carriage returns, strip leading and trailing whitespace, collapse runs of header spaces, and drop leading zeros; LogShrink also truncates integers wider than 32 bits (e.g., HDFS block identifiers). The correction is computed from the original block and the tool\textquotesingle s own decoded output only, compressed with LZMA, and counted. '
       r'LogShrink\textquotesingle s official decoder additionally needed five fixes that change no archive byte (empty failed-log files, column-file ordering, header-file ordering, whole-line template matching, and delimiter recovery). LogShrink uses its shipped per-dataset header lengths; LogReducer uses its generic defaults. '
       + '; '.join([f"LogReducer+R failed the SHA check on {v['failed']} of {d}\\textquotesingle s {v['blocks']} blocks" for d, v in sorted(NAT_LR.items()) if v.get('status') == 'FAIL'] + [f"LogShrink could not encode or decode {v['failed_blocks']} of {d}\\textquotesingle s {v['blocks']} blocks" for d, v in sorted(NAT_LS.items()) if v.get('failed_blocks')]) + '; these files have no valid ratio for the affected tool. '
@@ -326,12 +333,17 @@ U += [r'\paragraph{Denum.} The released Denum compressor (commit a3a6975) replac
       f"For each of the sixteen datasets we changed one line of block 0 by moving a digit across a group boundary; in all {sum(r['all_archive_members_identical'] for r in DP)} cases the original and the modified block produce byte-identical archive members, so no decoder can restore both. Examples: "
       + '; '.join(r"\texttt{" + esc(win(r['original_line'], r['modified_line'])) + r"} vs.\ \texttt{" + esc(win(r['modified_line'], r['original_line'])) + '}' for r in ex) + '. Denum is therefore excluded from the lossless comparison.']
 PUB = jl(ROOT/'results/published_baseline_reference_20260915.json')
-U += [r'\paragraph{Published numbers without implementations.} LogFold and LogPrism provide no public implementation (checked 29 September 2026: the LogFold repository holds only a license and README; the LogPrism repository is empty). Their papers report the following ratios for 100,000-line chunks; input identities are not verified and these numbers are not matched observations.',
+U += [r'\paragraph{Published numbers without implementations.} LogFold and LogPrism provide no public implementation (checked before submission: the LogFold repository holds only a license and README; the LogPrism repository is empty). Their papers report the following ratios for 100,000-line chunks; input identities are not verified and these numbers are not matched observations.',
       r'\begin{longtable}{l' + 'r'*(len(PUB) + 1) + r'}\caption{Published ratios (literature context only) next to \tool.}\label{tab:published}\\\toprule',
       'Dataset & ' + ' & '.join(p['method'] + ' (' + p['source_version'] + ')' for p in PUB) + r' & \tool\ \\\midrule']
 pubrows = {p['method']: {r['dataset']: r['reported_ratio'] for r in p['rows']} for p in PUB}
 for d in DS:
     U.append(d + ' & ' + ' & '.join(fmt(pubrows[p['method']].get(d)) for p in PUB) + f" & {fmt(ratio('semzip', d))}" + r' \\')
+U += [r'\bottomrule\end{longtable}']
+U += [r'\paragraph{DeLog: released implementation versus published ratios.} Running the released DeLog (commit 64a074f) on whole files with the command line of its own benchmark script (text mode, 100,000-line blocks, four threads, frequency threshold 0, LZMA, normal mode) gives 27.60$\times$ on Linux and 40.33$\times$ on BGL, identical to our block adapter, whereas the DeLog paper reports 30.63$\times$ and 45.68$\times$. All tables use the measured values; the published ratios are listed here.',
+      r'\begin{longtable}{lrrrr}\caption{DeLog: measured on our inputs versus published (literature only).}\label{tab:delog-published}\\\toprule', r'Dataset & Measured & Published & Difference & \tool\ \\\midrule']
+for d in DS:
+    U.append(f"{d} & {fmt(ratio('delog', d))} & {fmt(PUBDL[d])} & {pct(100*(PUBDL[d]/ratio('delog', d) - 1), 1)} & {fmt(ratio('semzip', d))}" + r' \\')
 U += [r'\bottomrule\end{longtable}']
 # --- library
 LR_ = {r['dataset']: r for r in jl(DEV/'library/library_report.json')}
@@ -363,7 +375,7 @@ SC = jl(DEV/'safety/static_check_result.json')
 U += [r'\subsection{Decode-time safety}',
       r'\textbf{Audit.} The runtime executes \texttt{python\_exec} code with \texttt{exec(compile(...))} after an allow-list check of syntax nodes, in a namespace limited to \texttt{datetime}, \texttt{timedelta}, \texttt{int}, \texttt{str}, \texttt{len}, \texttt{float}, \texttt{round}, \texttt{abs}, \texttt{min}, \texttt{max}, and a restricted import shim; context programs also receive the \texttt{re} module. Names beginning with a double underscore are rejected. Code runs in the decoding worker process with the decoder\textquotesingle s privileges and no resource limits, and semantic archives are unpacked without member-path filtering. '
       r'Four crafted archives derived from the Apache archive test this boundary: an injected import (rejected by the runtime), a format string reading \texttt{\{0.\_\_class\_\_\}} (accepted), a context program reading \texttt{re.enum.sys} (accepted, top level executed), and a tar member \texttt{../} path (not executed against the unprotected decoder).',
-      f"\\textbf{{Check.}} The enforced check rejects imports, names and attributes beginning with an underscore outside the runtime\\textquotesingle s fixed wrapper, reflective built-ins, format fields, and module attributes outside an allow-list, and preflights tar members. It rejects all four crafted archives. Over {SC['unique_codes_checked']} distinct programs from all syntheses, deployments, and evolution runs, the only strict-rule findings ({SC['error_rule_counts_over_unique_codes'].get('E_UNDERSCORE', 0)} underscore names in {SC['unique_codes_template_wrapped']} programs) come from the runtime\\textquotesingle s own fixed wrapper, which the check recognizes exactly; LLM-written code has no violation. With the check enforced before any program is compiled, all sixteen archives (3,797 blocks) decode byte-exactly."]
+      f"\\textbf{{Check.}} The enforced check rejects imports, names and attributes beginning with an underscore outside the runtime\\textquotesingle s fixed wrapper, reflective built-ins, format fields, and module attributes outside an allow-list, and preflights tar members. It rejects all four crafted archives. Over {SC['unique_codes_checked']} distinct programs from all syntheses, deployments, and evolution runs, the only strict-rule findings ({SC['error_rule_counts_over_unique_codes'].get('E_UNDERSCORE', 0)} underscore names in {SC['unique_codes_template_wrapped']} programs) come from the runtime\\textquotesingle s own fixed wrapper, which the check recognizes exactly; LLM-written code has no violation. A later pass with the same validator over the repeated greedy syntheses, the complete reruns, and the unseen-source runs adds 45 distinct LLM-written programs (134 in total) and again finds no violation outside the fixed wrapper; the eleven hand-written library programs also pass. With the check enforced before any program is compiled, all sixteen archives (3,797 blocks) decode byte-exactly."]
 (OUT/'supp_r76.tex').write_text('\n\n'.join(U) + '\n')
 print('supplement section written')
 
@@ -381,35 +393,111 @@ if T3:  # matched subset: datasets where every T3 method is lossless in all repe
     def t3bw(m, ph):
         per = T3['methods'][m]['per_dataset']; return sum(per[d]['raw_bytes'] for d in common) / sum(per[d][ph + '_seconds'] for d in common) / 1e6 if common else None
     N['t3_common'] = common
+HASB = bool(T2)
 L = [r'\begin{table}[t]\centering\small',
      r'\caption{Throughput in decimal MB/s of original input (encode/decode; medians of three clean serialized trials, four block workers). '
-     r'Session A: the twelve files no larger than BGL, geometric mean. Session B: a later session on the same files for the new baselines, with \tool\ and DeLog re-timed as anchors; geometric mean. '
-     r'Large: byte-weighted over twenty systematically sampled blocks of each of the four larger files'
-     + (f" (datasets where every method is lossless: {names(N.get('t3_common', []))})" if T3 else '') + r'. --: not timed.}',
-     r'\label{tab:external-speed}', r'\setlength{\tabcolsep}{4pt}', r'\begin{tabular}{lrrrrrr}', r'\toprule',
-     r' & \multicolumn{2}{c}{Session A} & \multicolumn{2}{c}{Session B} & \multicolumn{2}{c}{Large} \\', r'Method & Enc. & Dec. & Enc. & Dec. & Enc. & Dec. \\', r'\midrule']
+     r'Small: geometric mean over the twelve files no larger than BGL (one session). '
+     + (r'Session B: a later session on the same files for the new baselines, with \tool\ and DeLog re-timed as anchors; geometric mean. ' if HASB else '')
+     + (f"Large: byte-weighted over twenty systematically sampled blocks each of {names(N.get('t3_common', []))}, the larger files on which every method restores all sampled blocks (all four larger files: text and supplement)" if T3 else 'Large: not timed') + r'. --: not timed.}',
+     r'\label{tab:external-speed}', r'\setlength{\tabcolsep}{4pt}', r'\begin{tabular}{l' + 'rr' * (3 if HASB else 2) + '}', r'\toprule',
+     r' & \multicolumn{2}{c}{Small}' + (r' & \multicolumn{2}{c}{Session B}' if HASB else '') + r' & \multicolumn{2}{c}{Large} \\',
+     r'Method & Enc. & Dec.' + (r' & Enc. & Dec.' if HASB else '') + r' & Enc. & Dec. \\', r'\midrule']
 for m, tm in SPEED:
     a_e = TS.get(m, {}).get('encode_gmean'); a_d = TS.get(m, {}).get('decode_gmean')
     b_e = tget(T2, tm, 'encode_gmean'); b_d = tget(T2, tm, 'decode_gmean')
-    l_e = t3bw(tm, 'encode') if (T3 and tm in (T3['methods'] if T3 else {})) else None
-    l_d = t3bw(tm, 'decode') if (T3 and tm in (T3['methods'] if T3 else {})) else None
-    L.append(LABEL[m] + ' & ' + ' & '.join(fmt(v) for v in (a_e, a_d, b_e, b_d, l_e, l_d)) + r' \\')
+    l_e = t3bw(tm, 'encode') if (T3 and tm in T3['methods']) else None
+    l_d = t3bw(tm, 'decode') if (T3 and tm in T3['methods']) else None
+    vals = (a_e, a_d) + ((b_e, b_d) if HASB else ()) + (l_e, l_d)
+    L.append(LABEL[m] + ' & ' + ' & '.join(fmt(v) for v in vals) + r' \\')
 L += [r'\bottomrule', r'\end{tabular}\end{table}']
 (OUT/'speed_table_r76.tex').write_text('\n'.join(L) + '\n')
-t = [f"Across the twelve files of session A, \\tool's geometric-mean encoding and decoding throughputs are {100*TS['semzip']['encode_gmean']/TS['delog']['encode_gmean']:.1f}\\% and {100*TS['semzip']['decode_gmean']/TS['delog']['decode_gmean']:.1f}\\% of DeLog's, and it is slower than DeLog on every file in both directions. "
+if T3:
+    TT = [r'\subsection{Large-file throughput}', r'The four larger files were timed on twenty systematically spaced original blocks each (block indices $\mathrm{round}(i(N-1)/19)$, byte-identical to the originals), three clean serialized trials per method and file with four block workers, in a session separate from the twelve-file session. MB/s of original input; medians. --: not losslessly restored in all repeats (timed only).',
+          r'\begin{longtable}{lrrrrrrrr}\caption{Large-file throughput per sampled file (encode/decode MB/s).}\label{tab:t3-perfile}\\\toprule', r'Method & \multicolumn{2}{c}{HDFS} & \multicolumn{2}{c}{Spark} & \multicolumn{2}{c}{Windows} & \multicolumn{2}{c}{Thunderbird} \\\midrule']
+    for m, tm in SPEED:
+        if tm not in T3['methods']: continue
+        per = T3['methods'][tm]['per_dataset']; cells = []
+        for d in LARGE:
+            e_ = per.get(d)
+            cells += ([fmt(e_['encode_MB_per_s']), fmt(e_['decode_MB_per_s'])] if (e_ and e_['lossless_all_repeats']) else ['--', '--'])
+        TT.append(LABEL[m] + ' & ' + ' & '.join(cells) + r' \\')
+    TT += [r'\bottomrule\end{longtable}']
+    (OUT/'supp_timing.tex').write_text('\n\n'.join(TT) + '\n')
+t = [f"Across the twelve smaller files, \\tool's geometric-mean encoding and decoding throughputs are {100*TS['semzip']['encode_gmean']/TS['delog']['encode_gmean']:.1f}\\% and {100*TS['semzip']['decode_gmean']/TS['delog']['decode_gmean']:.1f}\\% of DeLog's, and it is slower than DeLog on every file in both directions. "
      f"Geometric means favor small files, where process start-up dominates both tools; weighted by bytes, \\tool\\ encodes at {tb['semzip']['encode']:.2f} and decodes at {tb['semzip']['decode']:.2f}~MB/s versus {tb['delog']['encode']:.2f} and {tb['delog']['decode']:.2f}~MB/s for DeLog."]
 if T2:
     sb = lambda m, k: T2['methods'][m].get(k)
     t.append(f"In session B, LogShrink+R encodes at {sb('logshrink_r', 'encode_gmean'):.2f} and LogReducer+R at {sb('logreducer_r', 'encode_gmean'):.2f}~MB/s (geometric mean; \\tool\\ {sb('semzip', 'encode_gmean'):.2f}, DeLog {sb('delog', 'encode_gmean'):.2f}).")
 else:
-    missing.append('timing T2 (new baselines)')
+    pass  # T2 stopped by design (DEV_DESIGN_R76_zh.md, R76-G resources note); Small column = R73 session A
 if T3:
     se, de, sd, dd = t3bw('semzip', 'encode'), t3bw('delog', 'encode'), t3bw('semzip', 'decode'), t3bw('delog', 'decode')
-    t.append(f"On the sampled blocks of the four larger files, which hold 98\\% of all bytes, \\tool\\ encodes at {se:.2f} and decodes at {sd:.2f}~MB/s versus {de:.2f} and {dd:.2f}~MB/s for DeLog ({100*se/de:.1f}\\% and {100*sd/dd:.1f}\\%).")
-    N['t3_semzip_vs_delog'] = {'encode_pct': 100*se/de, 'decode_pct': 100*sd/dd}
+    a4 = {m: {k: T3['methods'][m][k] for k in ('encode_byte_weighted_MB_per_s', 'decode_byte_weighted_MB_per_s')} for m in ('semzip', 'delog')}
+    s4e, d4e = a4['semzip']['encode_byte_weighted_MB_per_s'], a4['delog']['encode_byte_weighted_MB_per_s']
+    s4d, d4d = a4['semzip']['decode_byte_weighted_MB_per_s'], a4['delog']['decode_byte_weighted_MB_per_s']
+    t.append(f"On twenty sampled blocks of each of the four larger files, which hold 98\\% of all bytes, \\tool\\ encodes at {s4e:.2f} and decodes at {s4d:.2f}~MB/s versus {d4e:.2f} and {d4d:.2f}~MB/s for DeLog ({100*s4e/d4e:.1f}\\% and {100*s4d/d4d:.1f}\\%, byte-weighted); "
+             f"the table's Large column uses only {names(common)}, where every method restores its blocks, and there LogShrink+R and LogReducer+R encode at {t3bw('logshrink_r', 'encode'):.2f} and {t3bw('logreducer_r', 'encode'):.2f}~MB/s.")
+    N['t3_semzip_vs_delog'] = {'encode_pct': 100*se/de, 'decode_pct': 100*sd/dd, 'encode_pct_all4': 100*s4e/d4e, 'decode_pct_all4': 100*s4d/d4d}
+    N['slowdown_range'] = (d4e/s4e, tb['delog']['encode']/tb['semzip']['encode'])
 t.append("Construction is a one-time offline cost per log source: five syntheses, the gate, and selection (above) amortize over every later block, and archival storage is written once and restored rarely. "
-         "For sources where it is smaller, \\tool\\ suits cold archives that tolerate a 5--8$\\times$ slower encoder; for hot or near-line logs, DeLog's faster encoding is the better trade.")
+         + (f"For sources where it is smaller, \\tool\\ suits cold archives that tolerate an encoder {N['slowdown_range'][0]:.1f}--{N['slowdown_range'][1]:.1f}$\\times$ slower than DeLog's; " if 'slowdown_range' in N else "For sources where it is smaller, \\tool\\ suits cold archives that tolerate a slower encoder; ") + "for hot or near-line logs, DeLog's faster encoding is the better trade.")
 (OUT/'cost_text.tex').write_text('\n'.join(t) + '\n')
+ab_txt = (OUT/'abstract_results.tex').read_text()
+sp = (f"Encoding is {N['slowdown_range'][0]:.1f}--{N['slowdown_range'][1]:.1f}$\\times$ slower than DeLog's (byte-weighted, large and small files)." if 'slowdown_range' in N
+      else f"On the twelve completely timed files, encoding runs at {100*tb['semzip']['encode']/tb['delog']['encode']:.1f}--{100*TS['semzip']['encode_gmean']/TS['delog']['encode_gmean']:.1f}\\% of DeLog's throughput (byte-weighted and geometric mean).")
+(OUT/'abstract_results.tex').write_text(ab_txt.replace('ENCODE_SPEED_PLACEHOLDER', sp))
 N['missing'] = missing
 (OUT/'r76_numbers.json').write_text(json.dumps(N, indent=1, default=str))
 print('speed table written; T2', bool(T2), 'T3', bool(T3))
+
+# ======================= R76-G: unseen sources =======================
+UG = DEV/'unseen'
+if (UG/'summary_all.json').exists():
+    U_ = jl(UG/'summary_all.json'); UD = ['NASA', 'ClarkNet', 'USask', 'Calgary']
+    def lr_u(d):
+        p_ = UG/'baselines/logreducer'/d/'status.json'
+        if not p_.exists(): return None
+        r = jl(p_); return (r['raw_bytes']/r['archive_bytes']) if (r.get('status') == 'PASS' and r.get('full_sha_match')) else None
+    def ls_u(d):
+        p_ = UG/'baselines/logshrink'/d/'result.json'
+        if not p_.exists(): return None
+        r = jl(p_); rp = r.get('repaired', {})
+        return rp.get('ratio') if (rp.get('lossless') and rp.get('full_sha256_match') and not r.get('failed_blocks')) else None
+    UC = ['semzip', 'delog', 'logshrink', 'logreducer', 'loglite', 'xz9e', 'zstd19']
+    rows = {}
+    for d in UD:
+        v = U_['datasets'][d]; b = v['baselines']
+        rows[d] = {'semzip': v['ratio'], 'delog': b['delog']['ratio'], 'loglite': b['loglite']['ratio'], 'xz9e': b['xz9e']['ratio'], 'zstd19': b['zstd19']['ratio'],
+                   'logshrink': ls_u(d), 'logreducer': lr_u(d), 'lines': v['lines'], 'suffix': v['suffix_ratio'], 'delog_suffix': b['delog']['suffix_ratio']}
+    ag_ = U_['aggregate_vs_delog']
+    L = [r'\begin{table}[t]\centering\footnotesize',
+         r'\caption{Unseen sources: four public web-server access logs never used during development (complete-file ratios; every cell decoded from its archive alone with matching SHA-256). The pipeline, prompts, and constants are unchanged; DeLog has no hand-written rules for these sources. --: the tool failed on at least one block.}',
+         r'\label{tab:unseen}', r'\setlength{\tabcolsep}{3.2pt}', r'\begin{tabular}{lr' + 'r'*len(UC) + '}', r'\toprule',
+         r'Source & Lines & ' + ' & '.join(LABEL[m] for m in UC) + r' \\', r'\midrule']
+    for d in UD:
+        L.append(f"{d} & {rows[d]['lines']/1e6:.2f}M & " + ' & '.join(bold_row([rows[d][m] for m in UC])) + r' \\')
+    L += [r'\bottomrule', r'\end{tabular}\end{table}']
+    (OUT/'unseen_table.tex').write_text('\n'.join(L) + '\n')
+    lossu = [f"{LABEL[m]} on {d}" for d in UD for m in ('logshrink', 'logreducer') if rows[d][m] and rows[d][m] > rows[d]['semzip']]
+    dlp = [100*(rows[d]['semzip']/rows[d]['delog'] - 1) for d in UD]
+    cal = [(m, 100*(rows['Calgary'][m]/rows['Calgary']['semzip'] - 1)) for m in ('logshrink', 'logreducer') if rows['Calgary'][m]]
+    t = [f"To test sources outside the development benchmark, we ran the unchanged pipeline on four public web-server access logs (Table~\\ref{{tab:unseen}}), a format absent from the sixteen files. "
+         f"\\tool\\ is smaller than DeLog on {ag_['wins_vs_delog']}/4 files and {ag_['suffix_wins_vs_delog']}/4 suffixes, with {min(dlp):.1f}--{max(dlp):.1f}\\% higher ratios and {abs(100*ag_['total_bytes_difference_semzip_minus_delog']/ag_['total_delog_bytes']):.1f}\\% fewer summed bytes, and smaller than LogLite-BL and every general-purpose setting on every file (supplement). "
+         f"The adapted baselines are closer: on Calgary, LogShrink+R and LogReducer+R are {min(v for _, v in cal):.1f}--{max(v for _, v in cal):.1f}\\% smaller than \\tool, and on the 24 of USask's 25 blocks that LogShrink+R encodes it is 1.3\\% smaller; "
+         f"LogShrink+R fails on ClarkNet and USask and LogReducer+R on USask (supplement)."]
+    (OUT/'unseen_text.tex').write_text('\n'.join(t) + '\n')
+    N['unseen'] = {'rows': rows, 'aggregate': ag_, 'losses': lossu}
+    ab_txt = (OUT/'abstract_results.tex').read_text()
+    if 'never used during development' not in ab_txt:
+        ab_txt = ab_txt.replace(' Without its programs', f" On four web-server logs never used during development it is smaller than DeLog (which has no rules for them) on all four, with {abs(100*ag_['total_bytes_difference_semzip_minus_delog']/ag_['total_delog_bytes']):.1f}\\% fewer summed bytes, although LogShrink+R and LogReducer+R are 0.5--0.6\\% smaller on one. Without its programs", 1)
+        (OUT/'abstract_results.tex').write_text(ab_txt)
+    US = [r'\subsection{Unseen sources}', r'The four logs are the LBL Internet Traffic Archive HTTP access logs NASA (July 1995), ClarkNet (28 August 1995), USask, and Calgary, selected by a fixed rule (every server log with at least 700,000 lines, one file per server) before any result; they are decompressed unchanged. The SemZip pipeline differs from the main runs only in reading the input identities of these files. '
+          r'LogShrink+R (default header length) fails on ClarkNet (its decoder crashes on nine blocks containing bare carriage returns) and on USask (its encoder fails on block 2); LogReducer+R fails on USask (the official encoder crashes on block 2). On the 24 USask blocks both tools encode, LogShrink+R is 1.3\% smaller and LogReducer+R 0.2\% larger than \tool\ on the same blocks.',
+          r'\begin{longtable}{lrrrrrrrrrrr}\caption{Unseen sources: complete-file ratios of every method, and suffix ratios (blocks 1 onward) of \tool\ and DeLog. --: the tool failed on at least one block.}\label{tab:unseen-suffix}\\\toprule', r'Source & \tool\ & DeLog & LS+R & LR+R & LogLite & gzip6 & XZ6 & XZ9e & Zstd3 & Zstd19 & Suffix S/D \\\midrule']
+    for d in UD:
+        b_ = U_['datasets'][d]['baselines']
+        US.append(f"{d} & {fmt(rows[d]['semzip'])} & {fmt(rows[d]['delog'])} & {fmt(rows[d]['logshrink'])} & {fmt(rows[d]['logreducer'])} & " + ' & '.join(fmt(b_[c]['ratio']) for c in ('loglite', 'gzip6', 'xz6', 'xz9e', 'zstd3', 'zstd19')) + f" & {fmt(rows[d]['suffix'])}/{fmt(rows[d]['delog_suffix'])}" + r' \\')
+    US += [r'\bottomrule\end{longtable}']
+    (OUT/'supp_unseen.tex').write_text('\n\n'.join(US) + '\n')
+    (OUT/'r76_numbers.json').write_text(json.dumps(N, indent=1, default=str))
+    print('unseen section written; losses', lossu)

@@ -89,7 +89,7 @@ python3 replay.py decode --archive runs/linux/encode/archive \
 | `validation_controls/` | Cold observer equality and complete, separately scoped response-boundary controls |
 | `source_study_evidence/` | Historical source census and paired-field motivation records, separate from strict deployment |
 
-Nine unused machine-specific legacy launchers/documentation files are omitted;
+Ten unused machine-specific legacy launchers/documentation files are omitted;
 their original hashes remain in the full 129-file provenance inventory. Included
 files keep their original bytes. `metadata/source_provenance.json` distinguishes original source hashes from the
 new portable wrapper. `MANIFEST.json` inventories package bytes. The original
@@ -140,8 +140,8 @@ redistribution license for the complete collection.
    all compiler records. Pairing, counts, content and sample identities were
    checked. A separate local response-content boundary control reproduces 14/16
    exact plan files under UTC0/C; Linux/Mac differ. Two separately labeled
-   Asia/Shanghai diagnostics reproduce those plans and explain all 28 changed
-   repair counterexamples. The original training timezone was not pinned or
+   diagnostics in one fixed non-UTC zone (name withheld in this anonymous copy)
+   reproduce those plans and explain all 28 changed repair counterexamples. The original training timezone was not pinned or
    captured. These are not a uniform 16-file UTC0 success, HTTP/provider replay,
    or complete sampling/network/fitting replay. The package-relative response
    replay suite reproduces all eighteen stated outcomes directly from the

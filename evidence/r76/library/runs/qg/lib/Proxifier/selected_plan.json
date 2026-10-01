@@ -1,0 +1,177 @@
+{
+ "dataset": "Proxifier",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "close",
+     "bytes",
+     "sent",
+     "bytes",
+     "received",
+     "lifetime"
+    ],
+    "tags": [
+     "B",
+     "C",
+     "D"
+    ]
+   },
+   {
+    "key": [
+     "error",
+     "could",
+     "not",
+     "connect",
+     "through",
+     "proxy",
+     "proxy",
+     "server",
+     "cannot",
+     "establish",
+     "a",
+     "connection",
+     "with",
+     "the",
+     "target",
+     "status",
+     "code"
+    ],
+    "tags": [
+     "H"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "B": "<B>",
+  "C": "<C>",
+  "D": "<D>",
+  "H": "<H>",
+  "TS": "<TS>"
+ },
+ "spec_count": 5,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef days_from_civil(y, m, d):\n    y = y - (1 if m <= 2 else 0)\n    era = (y if y >= 0 else y - 399) // 400\n    yoe = y - era * 400\n    mp = (m + 9) % 12\n    doy = (153 * mp + 2) // 5 + d - 1\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\n    return era * 146097 + doe - 719468\n\ndef civil_from_days(z):\n    z = z + 719468\n    era = (z if z >= 0 else z - 146096) // 146097\n    doe = z - era * 146097\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\n    y = yoe + era * 400\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\n    mp = (5 * doy + 2) // 153\n    d = doy - (153 * mp + 2) // 5 + 1\n    m = mp + 3 if mp < 10 else mp - 9\n    y = y + (1 if m <= 2 else 0)\n    return [y, m, d]\n\ndef two(v):\n    return str(v).zfill(2)\n\ndef sod_text(t):\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\n\ndef valid_hms(h, mi, s):\n    return h < 24 and mi < 60 and s < 60\n\ndef render(v, layout):\n    us = v % 1000000\n    text = sod_text(v // 1000000)\n    fw = int(layout[0])\n    if fw > 0:\n        text = text + '.' + str(us).zfill(6)[:fw]\n    return text\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    hh, mm, ss, frac = groups\n    h = int(hh)\n    mi = int(mm)\n    s = int(ss)\n    if valid_hms(h, mi, s) == False:\n        return BAD\n    fw = 0\n    us = 0\n    tail = ''\n    if frac != None:\n        fw = len(frac)\n        us = int(frac) * 10 ** (6 - fw)\n        tail = '.' + frac\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\n    layout = [fw]\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\d:.])(\\d{2}):(\\d{2}):(\\d{2})(?:\\.(\\d{1,6}))?(?![\\d:]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_ts_hms",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "raw_time:generic:{\"code\":\"BAD = {'stored': [], 'layout': []}\\n\\ndef days_from_civil(y, m, d):\\n    y = y - (1 if m <= 2 else 0)\\n    era = (y if y >= 0 else y - 399) // 400\\n    yoe = y - era * 400\\n    mp = (m + 9) % 12\\n    doy = (153 * mp + 2) // 5 + d - 1\\n    doe = yoe * 365 + yoe // 4 - yoe // 100 + doy\\n    return era * 146097 + doe - 719468\\n\\ndef civil_from_days(z):\\n    z = z + 719468\\n    era = (z if z >= 0 else z - 146096) // 146097\\n    doe = z - era * 146097\\n    yoe = (doe - doe // 1460 + doe // 36524 - doe // 146096) // 365\\n    y = yoe + era * 400\\n    doy = doe - (365 * yoe + yoe // 4 - yoe // 100)\\n    mp = (5 * doy + 2) // 153\\n    d = doy - (153 * mp + 2) // 5 + 1\\n    m = mp + 3 if mp < 10 else mp - 9\\n    y = y + (1 if m <= 2 else 0)\\n    return [y, m, d]\\n\\ndef two(v):\\n    return str(v).zfill(2)\\n\\ndef sod_text(t):\\n    return two(t // 3600) + ':' + two((t // 60) % 60) + ':' + two(t % 60)\\n\\ndef valid_hms(h, mi, s):\\n    return h < 24 and mi < 60 and s < 60\\n\\ndef render(v, layout):\\n    us = v % 1000000\\n    text = sod_text(v // 1000000)\\n    fw = int(layout[0])\\n    if fw > 0:\\n        text = text + '.' + str(us).zfill(6)[:fw]\\n    return text\\n\\ndef forward(groups):\\n    if len(groups) != 4:\\n        return BAD\\n    hh, mm, ss, frac = groups\\n    h = int(hh)\\n    mi = int(mm)\\n    s = int(ss)\\n    if valid_hms(h, mi, s) == False:\\n        return BAD\\n    fw = 0\\n    us = 0\\n    tail = ''\\n    if frac != None:\\n        fw = len(frac)\\n        us = int(frac) * 10 ** (6 - fw)\\n        tail = '.' + frac\\n    v = (h * 3600 + mi * 60 + s) * 1000000 + us\\n    layout = [fw]\\n    if render(v, layout) != hh + ':' + mm + ':' + ss + tail:\\n        return BAD\\n    return {'stored': [v], 'layout': layout}\\n\\ndef inverse(record):\\n    return render(int(record['stored'][0]), record.get('layout', []))\",\"group_regex\":\"^(?:(?<![\\\\d:.])(\\\\d{2}):(\\\\d{2}):(\\\\d{2})(?:\\\\.(\\\\d{1,6}))?(?![\\\\d:]))$\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(\\d{1,12})(?:\\.(\\d{1,6}))?(?:( +))?(B|KB|MB|GB)(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\nUNITS = ['B', 'KB', 'MB', 'GB']\n\ndef render(v, layout):\n    iw = int(layout[0])\n    fw = int(layout[1])\n    s = str(v).zfill(iw + fw)\n    text = s[:iw]\n    if fw > 0:\n        text = text + '.' + s[iw:]\n    return text + ' ' * int(layout[2]) + UNITS[int(layout[3])]\n\ndef forward(groups):\n    if len(groups) != 4:\n        return BAD\n    ip, fp, sp, unit = groups\n    if sp == None:\n        sp = ''\n    fw = 0\n    digits = ip\n    tail = ''\n    if fp != None:\n        fw = len(fp)\n        digits = ip + fp\n        tail = '.' + fp\n    code = -1\n    i = 0\n    while i < 4:\n        if UNITS[i] == unit:\n            code = i\n        i = i + 1\n    if code < 0 or len(sp) > 255:\n        return BAD\n    v = int(digits)\n    layout = [len(ip), fw, len(sp), code]\n    if render(v, layout) != ip + tail + sp + unit:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(\\d{1,12})(?:\\.(\\d{1,6}))?(?:( +))?(B|KB|MB|GB)(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_size_unit",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "B",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,12})\\.(\\d{1,6})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    iw = int(layout[1])\n    fw = int(layout[2])\n    s = str(abs(v)).zfill(iw + fw)\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + s[:iw] + '.' + s[iw:]\n\ndef forward(groups):\n    if len(groups) != 3:\n        return BAD\n    neg, ip, fp = groups\n    n = 0\n    v = int(ip + fp)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(ip), len(fp)]\n    if render(v, layout) != neg + ip + '.' + fp:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,12})\\.(\\d{1,6})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_fixed_point",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "C",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "D",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(?<![\\w.])(-?)(\\d{1,18})(?![\\w.])",
+   "program": {
+    "code": "BAD = {'stored': [], 'layout': []}\n\ndef render(v, layout):\n    sign = ''\n    if int(layout[0]) == 1:\n        sign = '-'\n    return sign + str(abs(v)).zfill(int(layout[1]))\n\ndef forward(groups):\n    if len(groups) != 2:\n        return BAD\n    neg, digits = groups\n    n = 0\n    v = int(digits)\n    if neg == '-':\n        n = 1\n        v = 0 - v\n    layout = [n, len(digits)]\n    if render(v, layout) != neg + digits:\n        return BAD\n    return {'stored': [v], 'layout': layout}\n\ndef inverse(record):\n    return render(int(record['stored'][0]), record.get('layout', []))",
+    "group_regex": "^(?:(?<![\\w.])(-?)(\\d{1,18})(?![\\w.]))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lib_decimal_int",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "H",
+   "value_type": "numeric"
+  }
+ ],
+ "version": 1
+}

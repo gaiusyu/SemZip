@@ -1,0 +1,213 @@
+{
+  "families": [
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "S4"
+            ],
+            "reason": "captured token represents a timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "node_identifier",
+            "tokens": [
+              "S1"
+            ],
+            "reason": "captured value contains explicit structural separator '-' encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "command_value",
+            "tokens": [
+              "S7",
+              "S8"
+            ],
+            "reason": "captured value contains explicit structural separator '(' or ')' encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "captured timestamp extracted and stored as integer for compression"
+        },
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "node identifier",
+          "reason": "captured node identifier stored as structured variable"
+        },
+        {
+          "slot": "S7+S8",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "command value",
+          "reason": "captured command value stored as structured variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node_identifier",
+          "command_value"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "timestamp value",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "captured value is an independent timestamp and does not need merging"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "action start (\\d{10})",
+          "replacement": "action start {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0]).zfill(10)"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_identifier",
+          "meaning": "node identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "node identifier",
+            "context_source": null,
+            "why_not_merge_raw": "captured value is an independent structured identifier"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "node-(\\d+)",
+          "replacement": "node-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'node-{record['stored'][0]}'"
+          }
+        },
+        {
+          "tag": "command_value",
+          "meaning": "command identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "command identifier",
+            "context_source": null,
+            "why_not_merge_raw": "captured value is an independent structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(command (\\d+)\\)",
+          "replacement": "(command {placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'(command {record['stored'][0]})'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "S4"
+            ],
+            "reason": "captured token represents a timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "captured timestamp extracted and stored as integer for compression"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "timestamp value",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "captured value is an independent timestamp and does not need merging"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "status (\\d{10})",
+          "replacement": "status {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0]).zfill(10)"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

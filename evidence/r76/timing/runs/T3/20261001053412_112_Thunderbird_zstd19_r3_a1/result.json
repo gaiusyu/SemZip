@@ -1,0 +1,66 @@
+{
+ "dataset": "Thunderbird",
+ "method": "zstd19",
+ "repeat": 3,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_112_Thunderbird_zstd19_r3_a1",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/Thunderbird.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 268957222,
+ "blocks": 20,
+ "started_unix": 1790852128.4157426,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_codec_r76.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_112_Thunderbird_zstd19_r3_a1/encode_request.json"
+  ],
+  "seconds": 66.1094211935997,
+  "returncode": 0,
+  "load_average": [
+   11.22,
+   13.91,
+   15.14
+  ],
+  "started_unix": 1790852128.4234736,
+  "own_cpu_seconds": 184.97695600000225,
+  "other_cpu_seconds": 0.5484975879977583,
+  "other_cores": 0.008296814252714413
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_codec_r76.py",
+   "decode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_112_Thunderbird_zstd19_r3_a1/decode_request.json"
+  ],
+  "seconds": 2.0732660964131355,
+  "returncode": 0,
+  "load_average": [
+   11.22,
+   13.91,
+   15.14
+  ],
+  "started_unix": 1790852194.5387397,
+  "own_cpu_seconds": 1.1478800000004412,
+  "other_cpu_seconds": 0.01759300599955882,
+  "other_cores": 0.008485647852919453
+ },
+ "archive_bytes": 9047461,
+ "sha_pass": true,
+ "audit_seconds": 1.1464001014828682,
+ "encode_MB_per_s": 4.068364495468291,
+ "decode_MB_per_s": 129.7263397425496,
+ "finished_unix": 1790852197.7833996,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.010244938415119155
+ },
+ "max_other_cores": 0.008485647852919453,
+ "contaminated": false
+}

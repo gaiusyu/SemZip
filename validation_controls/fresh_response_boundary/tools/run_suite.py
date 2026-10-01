@@ -4,6 +4,10 @@
 This invokes the original trainer through the existing response-content hook;
 it does not implement another trainer or fit storage policies. Outputs are new
 and must lie outside the artifact. Expected historical differences are retained.
+
+The two explanatory conditions use one fixed non-UTC zone, whose IANA name is
+withheld in this anonymous copy; pass it in the environment variable
+RESPONSE_BOUNDARY_NON_UTC_ZONE. Without it only the sixteen UTC0 conditions run.
 """
 import argparse
 import hashlib
@@ -13,6 +17,9 @@ from pathlib import Path
 import platform
 import subprocess
 import sys
+
+NON_UTC_ZONE_ENV = 'RESPONSE_BOUNDARY_NON_UTC_ZONE'
+NOT_RUN = 'NOT_RUN_ZONE_NOT_GIVEN'
 
 DATASETS = ['Linux', 'Proxifier', 'Apache', 'Zookeeper', 'Mac', 'HealthApp',
             'HPC', 'Hadoop', 'OpenStack', 'OpenSSH', 'Android', 'BGL', 'HDFS',
@@ -52,7 +59,8 @@ def main():
     prior = json.loads(references.read_text())
     by_key = {(r['condition'], r['dataset']): r for r in prior['rows']}
     schedule = [('uniform_utc0', d, 'UTC0') for d in DATASETS]
-    schedule += [('explanatory_shanghai', d, 'Asia/Shanghai') for d in ['Linux', 'Mac']]
+    non_utc_zone = os.environ.get(NON_UTC_ZONE_ENV) or None
+    schedule += [('explanatory_non_utc', d, non_utc_zone) for d in ['Linux', 'Mac']]
     if set(by_key) != {(c, d) for c, d, _ in schedule} or len(prior['rows']) != 18:
         raise ValueError('The prior evidence must retain all eighteen fixed outcomes')
     for r in deployments['datasets']:
@@ -68,6 +76,12 @@ def main():
     rows = []
     tools = Path(__file__).resolve().parent
     for condition, dataset, timezone in schedule:
+        if timezone is None:
+            rows.append({'condition': condition, 'dataset': dataset, 'explicit_timezone': None,
+                         'status': NOT_RUN, 'agrees_with_prior_control': None})
+            print(json.dumps({k: rows[-1][k] for k in ['condition', 'dataset', 'status',
+                                                    'agrees_with_prior_control']}), flush=True)
+            continue
         target = out / condition / dataset
         target.parent.mkdir(exist_ok=True)
         hook = tools / ('replay_utc0.py' if timezone == 'UTC0'
@@ -106,10 +120,12 @@ def main():
         print(json.dumps({k: row[k] for k in ['condition', 'dataset', 'status',
                                             'agrees_with_prior_control']}), flush=True)
     unchanged = all(inventory(root / name) == value for name, value in before.items())
+    ran = [r for r in rows if r['status'] != NOT_RUN]
+    agree = unchanged and all(r['agrees_with_prior_control'] for r in ran)
     result = {
         'schema_version': 1,
-        'status': 'PASS_PRIOR_OUTCOMES_REPRODUCED' if unchanged and all(
-            r['agrees_with_prior_control'] for r in rows) else 'DIFFERENT_OR_FAILED',
+        'status': ('PASS_PRIOR_OUTCOMES_REPRODUCED' if agree and len(ran) == 18 else
+                   'PASS_PRIOR_UTC0_OUTCOMES_REPRODUCED' if agree else 'DIFFERENT_OR_FAILED'),
         'scope': 'Packaged source, saved samples and exchanges; call_llm response-content boundary only',
         'local_os': platform.system(), 'python_version': platform.python_version(),
         'prior_evidence_sha256': sha(references),
@@ -118,14 +134,15 @@ def main():
         'protected_inputs_unchanged': unchanged,
         'uniform_utc0_exact_plan_matches': sum(r['status'] == 'PASS_IDENTICAL' for r in rows[:16]),
         'uniform_utc0_differences': sum(r['status'] == 'DIFFERENT' for r in rows[:16]),
-        'explanatory_shanghai_exact_plan_matches': sum(r['status'] == 'PASS_IDENTICAL' for r in rows[16:]),
-        'all_18_outcomes_retained': len(rows) == 18,
+        'explanatory_non_utc_run': non_utc_zone is not None,
+        'explanatory_non_utc_exact_plan_matches': sum(r['status'] == 'PASS_IDENTICAL' for r in rows[16:]),
+        'all_18_outcomes_retained': len(ran) == 18,
         'original_training_timezone_explicitly_pinned': False,
         'rows': rows,
     }
     (out / 'summary.json').write_text(json.dumps(result, indent=2, sort_keys=True) + '\n')
     print(result['status'], flush=True)
-    return 0 if result['status'] == 'PASS_PRIOR_OUTCOMES_REPRODUCED' else 1
+    return 0 if result['status'].startswith('PASS_') else 1
 
 
 if __name__ == '__main__':

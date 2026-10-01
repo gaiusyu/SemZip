@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "permission_sets",
+      "meaning": "structured permission groups",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "raw_single_source",
+        "stored_source": "permission sets",
+        "context_source": null,
+        "why_not_merge_raw": "values are inherently structured as sets"
+      },
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "Set\\(([a-zA-Z0-9, ]+)\\)",
+      "replacement": "Set({placeholder})",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    elements = [item.strip() for item in groups[0].split(',')]\n    return {'stored': elements, 'layout': []}\n\ndef inverse(record):\n    return f\"Set({', '.join(record['stored'])})\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

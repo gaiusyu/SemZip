@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "estimated_size",
+      "meaning": "size in bytes or KB",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\(estimated size (\\d+\\.\\d+) (B|KB|MB), free \\d+\\.\\d+ MB\\)",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = float(groups[0])\n    unit = groups[1].lower()\n    multiplier = 1 if unit == 'b' else (1024 if unit == 'kb' else 1024 * 1024)\n    return {'stored': [int(round(value * multiplier))], 'layout': [unit]}\n\ndef inverse(record):\n    value = record['stored'][0]\n    unit = record['layout'][0]\n    if unit == 'kb':\n        display_value = value / 1024\n        unit = 'KB'\n    elif unit == 'mb':\n        display_value = value / (1024 * 1024)\n        unit = 'MB'\n    else:\n        display_value = value\n        unit = 'B'\n    return f'(estimated size {display_value:.1f} {unit})'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

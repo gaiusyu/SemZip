@@ -1,0 +1,79 @@
+{
+ "dataset": "HPC",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "node",
+     "node",
+     "status",
+     "running"
+    ],
+    "tags": [
+     "H"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "H": "<H>",
+  "TS": "<TS>"
+ },
+ "spec_count": 2,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "(\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "intent": "Convert a Unix timestamp in seconds to a numeric value and reconstruct the exact original string.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "log_timestamp",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    return {'stored': [int(groups[0])], 'layout': []}\\n\\ndef inverse(record):\\n    return str(record['stored'][0])\",\"intent\":\"Convert a Unix timestamp in seconds to a numeric value and reconstruct the exact original string.\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "node-([A-Za-z0-9]+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "node_identifier",
+   "replacement": "node-{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "H",
+   "value_type": "string"
+  }
+ ],
+ "version": 1
+}

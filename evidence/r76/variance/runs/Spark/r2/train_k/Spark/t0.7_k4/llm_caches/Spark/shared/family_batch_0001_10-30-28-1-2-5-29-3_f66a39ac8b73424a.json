@@ -1,0 +1,354 @@
+{
+  "families": [
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "date_time",
+            "tokens": [
+              "16/04/07",
+              "10:54:15"
+            ],
+            "reason": "date and time components compose into a single timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header identified"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "date_time",
+          "total_time"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "merged timestamp value",
+            "context_source": null,
+            "why_not_merge_raw": "merging tokens for compact storage as timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    from datetime import datetime\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    from datetime import datetime\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 30,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "acl_modifiers",
+            "tokens": [
+              "yarn,curi"
+            ],
+            "reason": "list of ACLs separated by commas",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header identified"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "acl_modifiers"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "acl_list",
+          "meaning": "comma-separated ACL values",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "full ACL list",
+            "context_source": null,
+            "why_not_merge_raw": "value is already self-contained"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "to: ([A-Za-z0-9,]+)",
+          "replacement": "to: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 28,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "view_modify_permissions",
+            "tokens": [
+              "Set(yarn, yxsu)",
+              "Set(yarn, yxsu)"
+            ],
+            "reason": "structured set of users with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header identified"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "view_modify_permissions"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "view_permissions",
+          "meaning": "users with view permissions",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "users with view permissions",
+            "context_source": null,
+            "why_not_merge_raw": "value is already self-contained"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "view permissions: (Set\\([^)]+\\))",
+          "replacement": "view permissions: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "modify_permissions",
+          "meaning": "users with modify permissions",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "users with modify permissions",
+            "context_source": null,
+            "why_not_merge_raw": "value is already self-contained"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "modify permissions: (Set\\([^)]+\\))",
+          "replacement": "modify permissions: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "task_stage_tid",
+            "tokens": [
+              "task",
+              "stage",
+              "TID"
+            ],
+            "reason": "these components form a unique task identifier",
+            "target_value": "one composed value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header identified"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "task_stage_tid"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "task_info",
+          "meaning": "task stage and TID",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "task-stage-TID combined",
+            "context_source": null,
+            "why_not_merge_raw": "merging tokens for compact storage"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "task (\\d+\\.\\d+) in stage (\\d+\\.\\d+) \\(TID (\\d+)\\)",
+          "replacement": "task {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    task = float(groups[0])\n    stage = float(groups[1])\n    tid = int(groups[2])\n    return {'stored': [task, stage, tid], 'layout': []}\n\ndef inverse(record):\n    task, stage, tid = record['stored']\n    return f'task {task:.1f} in stage {stage:.1f} (TID {tid})'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header identified"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header identified"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 29,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header identified"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header identified"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

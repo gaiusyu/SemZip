@@ -1,0 +1,113 @@
+{
+  "schema": "semzip.r76.logshrink.v1",
+  "dataset": "ClarkNet",
+  "started_at": "2026-10-01T13:09:37.046059+00:00",
+  "finished_at": "2026-10-01T13:14:14.436122+00:00",
+  "partial_first_blocks_only": false,
+  "upstream": "github.com/IntelligentDDS/LogShrink",
+  "upstream_commit": "59ce49434eec06c709c7e16027a46214a6c37961",
+  "header_length_L": 5,
+  "L_mode": "generic",
+  "params": "-E E -C -K lzma -V -S -P -wh 20 -th 4 -NC 16 -mt 0.5 (sample_rate 0.1), seed 0",
+  "workers": 2,
+  "source": {
+    "path": "<WORKDIR>/r76_additional_20260929/unseen/raw/ClarkNet.log",
+    "bytes": 170957969,
+    "mtime_ns": 1790857699382474000,
+    "device": 3145846,
+    "inode": 199002808574191924
+  },
+  "raw_bytes": 170957969,
+  "raw_sha256": "cfd095483ec3b8505f7090195c89f708a412111d1cd4eba3272212763759d516",
+  "stream_full_sha256": "cfd095483ec3b8505f7090195c89f708a412111d1cd4eba3272212763759d516",
+  "input_matches_r68_inventory": true,
+  "blocks": 17,
+  "blocks_status_ok": 8,
+  "failed_blocks": [
+    {
+      "index": 0,
+      "status": "native_decode_failed",
+      "error": "RuntimeError: 7_restore_seg1 exit 1; see <WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink/ClarkNet/diagnostics/block_000000/7_restore_seg1.stderr"
+    },
+    {
+      "index": 1,
+      "status": "native_decode_failed",
+      "error": "RuntimeError: 7_restore_seg1 exit 1; see <WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink/ClarkNet/diagnostics/block_000001/7_restore_seg1.stderr"
+    },
+    {
+      "index": 3,
+      "status": "native_decode_failed",
+      "error": "RuntimeError: 7_restore_seg1 exit 1; see <WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink/ClarkNet/diagnostics/block_000003/7_restore_seg1.stderr"
+    },
+    {
+      "index": 5,
+      "status": "native_decode_failed",
+      "error": "RuntimeError: 7_restore_seg1 exit 1; see <WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink/ClarkNet/diagnostics/block_000005/7_restore_seg1.stderr"
+    },
+    {
+      "index": 7,
+      "status": "native_decode_failed",
+      "error": "RuntimeError: 7_restore_seg1 exit 1; see <WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink/ClarkNet/diagnostics/block_000007/7_restore_seg1.stderr"
+    },
+    {
+      "index": 11,
+      "status": "native_decode_failed",
+      "error": "RuntimeError: 7_restore_seg1 exit 1; see <WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink/ClarkNet/diagnostics/block_000011/7_restore_seg1.stderr"
+    },
+    {
+      "index": 13,
+      "status": "native_decode_failed",
+      "error": "RuntimeError: 7_restore_seg1 exit 1; see <WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink/ClarkNet/diagnostics/block_000013/7_restore_seg1.stderr"
+    },
+    {
+      "index": 14,
+      "status": "native_decode_failed",
+      "error": "RuntimeError: 7_restore_seg1 exit 1; see <WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink/ClarkNet/diagnostics/block_000014/7_restore_seg1.stderr"
+    },
+    {
+      "index": 15,
+      "status": "native_decode_failed",
+      "error": "RuntimeError: 7_restore_seg1 exit 1; see <WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink/ClarkNet/diagnostics/block_000015/7_restore_seg1.stderr"
+    }
+  ],
+  "native": {
+    "archive_bytes": 12304956,
+    "ratio": 13.893423836704496,
+    "suffix_raw_bytes": 160653275,
+    "suffix_archive_bytes": 11635803,
+    "suffix_ratio": 13.806806027912298,
+    "lossless_blocks": 6,
+    "full_sha256_match": false,
+    "lossless": false,
+    "payload_7z_bytes": 12299064,
+    "model_7z_bytes": 5682,
+    "model_raw_bytes": 5094,
+    "header_bytes": 210
+  },
+  "repaired": {
+    "archive_bytes": 13479856,
+    "ratio": 12.682477394417269,
+    "suffix_archive_bytes": 12810703,
+    "suffix_ratio": 12.54055105328724,
+    "residual_bytes": 1174900,
+    "lossless_blocks": 8,
+    "full_sha256_match": false,
+    "lossless": false,
+    "fallback_blocks": 2,
+    "differing_lines": 0
+  },
+  "timing": {
+    "wall_seconds_encode_decode_audit": 277.38998940587044,
+    "sum_block_encode_seconds": 385.07462114840746,
+    "sum_block_decode_seconds": 156.44601502269506,
+    "sum_residual_seconds": 5.557445682585239,
+    "sum_patch_seconds": 0.10508933663368225,
+    "encode_MB_per_s_single_worker": 0.44396062376209655,
+    "decode_MB_per_s_single_worker": 1.0927601382189231,
+    "resumed_blocks": 0
+  },
+  "host": {
+    "node": "<DEV_HOST>",
+    "python": "3.9.2"
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "families": [
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "node-127",
+              "node-230",
+              "node-240",
+              "node-239",
+              "node-136",
+              "node-103",
+              "node-155",
+              "node-130"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          },
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "1073118184",
+              "1072983531",
+              "1074119684",
+              "1072762114"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node identifier",
+          "timestamp-like variable"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_id",
+          "meaning": "node identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "node identifier",
+            "context_source": null,
+            "why_not_merge_raw": "node identifier is an independent variable, no equivalent tokens"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "node-([0-9]+)",
+          "replacement": "node-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'node-{record[\"stored\"][0]}'"
+          }
+        },
+        {
+          "tag": "timestamp_variable",
+          "meaning": "timestamp-like variable",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timestamp-like variable",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp-like variable is an independent variable, no equivalent tokens"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\b([0-9]{10})\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "2313342",
+              "2313298",
+              "2560321",
+              "2560276",
+              "2560320",
+              "2560275"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "partition identifier"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "partition_id",
+          "meaning": "partition identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "partition identifier",
+            "context_source": null,
+            "why_not_merge_raw": "partition identifier is an independent variable, no equivalent tokens"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\b([0-9]{7})\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

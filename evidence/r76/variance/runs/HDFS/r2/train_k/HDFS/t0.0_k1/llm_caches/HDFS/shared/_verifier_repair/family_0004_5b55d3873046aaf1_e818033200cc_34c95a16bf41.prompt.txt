@@ -1,0 +1,89 @@
+You are a verifier-repair agent for HDFS log compression.
+Repair exactly one rejected reversible extraction function.
+Return exact JSON only: {"functions": [ ... ]}.
+
+Goal:
+- Keep the original semantic intent when possible.
+- Make the function pass a strict byte-exact verifier.
+- Do not add dataset-specific constants beyond what appears in the examples and failed regex.
+- Prefer the smallest safe repair: fix class/value_type, regex boundary, replacement, or python_exec code.
+Repair category: executed_counterexample.
+The verifier executed your program and supplies an actual failing input,
+stored record, reconstructed text or exception below. Fix only program.code.
+Keep regex, replacement, class, value_type, context and semantic intent unchanged.
+Do not evade the failure by narrowing coverage to examples or storing raw text
+instead of the intended number. Preserve every display byte via exact arithmetic
+and the permitted layout. Do not assume floating-point scaling is exact.
+forward receives all regex capture groups, or [whole_match] when there are none.
+Available globals: abs, datetime, float, int, len, max, min, round, str, timedelta.
+Imports and external state are forbidden. Return an empty list if unrepairable.
+
+Required function schema:
+{
+  "tag": "short_name",
+  "meaning": "short meaning",
+  "class": "class_1_composed_numeric | class_2_formatted_numeric | class_3_common_variable",
+  "value_type": "numeric | string",
+  "target_role": "log_timestamp | ordinary_value",
+  "context": null,
+  "regex": "Python regex with explicit capture groups",
+  "replacement": "template containing {placeholder} and any needed {groupN}",
+  "program": {
+    "op": "python_exec",
+    "code": "def forward(groups):\n    ...\n\ndef inverse(record):\n    ..."
+  }
+}
+
+Python execution contract:
+- forward(groups) receives the captured value groups selected by the compiler.
+- It returns {'stored': [...], 'layout': [...]}.
+- inverse(record) reconstructs exactly the placeholder text from record['stored'] and record['layout'].
+- For raw variables, use this executable pattern:
+  def forward(groups):
+      return {'stored': [groups[0]], 'layout': []}
+  def inverse(record):
+      return str(record['stored'][0])
+- For numeric variables, store int values, not strings.
+- Preserve exact spaces by capturing them as ( +) and either keeping them as {groupN} in replacement or storing layout.
+- When repairing context, replace null with {"code": "def project_context(line, groups): ..."}; the function returns the actual context value or None.
+
+Verifier failure:
+{
+  "status": "rejected_semantic_three_class",
+  "reasons": [
+    "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+    "executed_counterexample={\"whole_match\": \"blk_7854771516489510256\", \"groups\": [\"7854771516489510256\"], \"record\": {\"stored\": [\"7854771516489510256\"], \"layout\": []}, \"inverse\": \"blk_7854771516489510256\", \"restored_match\": \"blk_blk_7854771516489510256\", \"failure\": \"roundtrip_mismatch\"}"
+  ]
+}
+
+Failed function:
+{
+  "tag": "block_id",
+  "meaning": "structured block identifier",
+  "class": "class_3_common_variable",
+  "value_type": "string",
+  "target_role": "ordinary_value",
+  "context": null,
+  "source_separation": {
+    "decision": "raw_single_source",
+    "stored_source": "block_id",
+    "context_source": null,
+    "why_not_merge_raw": "block_id is a standalone structured value"
+  },
+  "general": true,
+  "order_hint": "global_atomic",
+  "regex": "blk_(-?\\d+)",
+  "replacement": "blk_{placeholder}",
+  "program": {
+    "op": "python_exec",
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'blk_{record[\"stored\"][0]}'"
+  }
+}
+
+Family examples:
+- 081109 203529 29 INFO dfs.FSNamesystem: BLOCK* NameSystem.allocateBlock: /user/root/rand/_temporary/_task_200811092030_0001_m_000079_0/part-00079. blk_7854771516489510256
+- 081109 203530 26 INFO dfs.FSNamesystem: BLOCK* NameSystem.allocateBlock: /user/root/rand/_temporary/_task_200811092030_0001_m_000111_0/part-00111. blk_1717858812220360316
+- 081109 203530 27 INFO dfs.FSNamesystem: BLOCK* NameSystem.allocateBlock: /user/root/rand/_temporary/_task_200811092030_0001_m_000121_0/part-00121. blk_-2519617320378473615
+- 081109 203530 28 INFO dfs.FSNamesystem: BLOCK* NameSystem.allocateBlock: /user/root/rand/_temporary/_task_200811092030_0001_m_000007_0/part-00007. blk_-8531310335568756456
+- 081109 203523 148 INFO dfs.DataNode$DataXceiver: 10.250.11.100:50010 Served block blk_-3544583377289625738 to /10.250.19.102
+- 081109 203523 149 INFO dfs.DataNode$DataXceiver: 10.251.111.209:50010 Served block blk_-1608999687919862906 to /10.250.19.102

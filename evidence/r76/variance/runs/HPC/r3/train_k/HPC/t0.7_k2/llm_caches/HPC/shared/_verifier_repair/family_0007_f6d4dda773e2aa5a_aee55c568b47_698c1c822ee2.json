@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "component_id",
+      "meaning": "structured component identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\\\042([^\\\\]+)\\\\042",
+      "replacement": "\\\"{placeholder}\\\"",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'\\\\042{record[\"stored\"][0]}\\\\042'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

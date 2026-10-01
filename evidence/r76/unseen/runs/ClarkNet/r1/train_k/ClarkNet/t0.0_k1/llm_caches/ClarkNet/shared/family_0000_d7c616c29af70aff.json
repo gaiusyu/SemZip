@@ -1,0 +1,145 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure with changing fields that should be extracted into side streams.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "timestamp_with_timezone_offset",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2})( +)([-+]\\d{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Reversible transformation of timestamp with timezone offset into epoch microseconds.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    day, month, year, hour, minute, second, sp1, offset = groups\n    text = f'{day} {month} {year} {hour}:{minute}:{second} {offset}'\n    dt = datetime.strptime(text, '%d %b %Y %H:%M:%S %z')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000, tz=datetime.timezone.utc)\n    day = dt.strftime('%d')\n    month = dt.strftime('%b')\n    year = dt.strftime('%Y')\n    hour = dt.strftime('%H')\n    minute = dt.strftime('%M')\n    second = dt.strftime('%S')\n    offset = dt.strftime('%z')\n    return f'[{day}/{month}/{year}:{hour}:{minute}:{second}' + (' ' * sp1_len) + offset + ']'"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "client_host_or_ip",
+      "reason": "The client host/IP varies across examples and has a structured format with separators, making it suitable for raw extraction."
+    },
+    {
+      "slot": "S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "timestamp_with_timezone_offset",
+      "reason": "The timestamp and timezone offset together form one semantic value that can be compactly represented as epoch microseconds."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "HTTP_method",
+      "reason": "The HTTP method is a stable constant across examples and does not disturb the main template."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "requested_resource_path",
+      "reason": "The resource path varies across examples and has a structured format with separators, making it suitable for raw extraction."
+    },
+    {
+      "slot": "S7",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "HTTP_version",
+      "reason": "The HTTP version is a stable constant across examples and does not disturb the main template."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "HTTP_status_code",
+      "reason": "The HTTP status code is a numeric value with a stable semantic role and is suitable for compact numeric extraction."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "response_size_bytes",
+      "reason": "The response size is a numeric value with a stable semantic role and is suitable for compact numeric extraction."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "client_host",
+      "meaning": "client_host_or_ip_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "^(\\S+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Raw extraction of client host or IP address.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "resource_path",
+      "meaning": "requested_resource_path",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\\"GET( +)(\\S+)",
+      "replacement": "\"GET{group1}{placeholder}",
+      "program": {
+        "intent": "Raw extraction of requested resource path.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "http_status",
+      "meaning": "http_status_code",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{3})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Compact numeric extraction of HTTP status code.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    },
+    {
+      "tag": "response_size",
+      "meaning": "response_size_in_bytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d+)$",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Compact numeric extraction of response size in bytes.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

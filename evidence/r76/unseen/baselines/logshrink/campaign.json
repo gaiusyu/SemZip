@@ -1,0 +1,207 @@
+{
+  "schema": "semzip.r76.logshrink.v1",
+  "started_at": "2026-10-01T13:07:43.967003+00:00",
+  "argv": [
+    "<WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink_adapter/ls_run_unseen.py",
+    "--datasets",
+    "Calgary",
+    "ClarkNet",
+    "NASA",
+    "USask",
+    "--output",
+    "<WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink",
+    "--workers",
+    "2",
+    "--L-mode",
+    "generic",
+    "--resume"
+  ],
+  "pid": 586606,
+  "static_hashes": {
+    "parser/THULR": "c8d50742309159dc8baa52804be2103b00ecf24ad4547ce29e560813f91117c4",
+    "parser/Elastic": "6d0085ef8f30c6d462bb234c96ca4827cdb069e606047429eac925927bfcea0f",
+    "decompression/restore.py": "ae6c93bde7aa369d02eba073e174ee63d0a1cdbc7660dfd164445c0dc1a15e6f",
+    "decompression/restore_r76.py": "55d052579bb973ae4a8d6d71378033f9baf5a2c000ca383998c913fb7836307c",
+    "decompression/decompress.py": "b8932e4aeac780c6a805b32b976b1b4387db02facea061783621e810d1c2c1a8",
+    "decompression/decompress_r76.py": "130c7bd2f89534805a8334b2d9eccbc46c9b523c02a3f01599ecf30eaa36d21c",
+    "logshrink.py": "61a363bf4a69c8e50afa7903be3c59de5a35c5c7295b7838d7e0d1de24831227",
+    "compression/compress.py": "54809dab86f15a9c92cb3f808bfba915a79b051d8ed41136cdb153e4b78d0fea",
+    "preprocess.py": "92a32d50e66bf964c8b40057de9d2315580cc453503b22106975327383ac7b0f",
+    "parser/training.py": "60ae7cb2099cfbbfc18173d798c6ac45e04b3ac2215735e9f68c26d2bafa8793",
+    "parser/sampler.py": "4aec236a22ab5480d25db1ceaae8999a6326492fb8738789964c324f07104052",
+    "run.py": "8e735c39b1c9dc36cf5de7a5e7d5a3d28dd50787a652bec9c02c2c5a34dd3959",
+    "analyzer/property_miner.py": "211b08b97b2ad45a9fb32b180d4bdf0a5e910f7ebeffe623123d4d822934a5e8",
+    "adapter/ls_run.py": "withheld: file contained a machine-specific path",
+    "adapter/ls_seg_runner.py": "1fb277853474c6413307a74c80140a4bf2e93eea66250be2db3a8bd46f64d157",
+    "adapter/ls_segment.py": "121a5e74a4e473c6c51a8edadb68b9f92d50f6922db77bfbb900cab390854a76",
+    "adapter/make_restore_r76.py": "4083d970c631d6f58a328fe670301c3368d2129881a3f02b278c6e13b4bf3018",
+    "unseen/ls_run_unseen.py": "withheld: file contained a machine-specific path"
+  },
+  "datasets": {
+    "Calgary": {
+      "blocks": 8,
+      "blocks_status_ok": 8,
+      "native": {
+        "archive_bytes": 2294247,
+        "ratio": 22.786074908237865,
+        "suffix_raw_bytes": 45114766,
+        "suffix_archive_bytes": 1996786,
+        "suffix_ratio": 22.59369106153589,
+        "lossless_blocks": 2,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 2291928,
+        "model_7z_bytes": 2239,
+        "model_raw_bytes": 1406,
+        "header_bytes": 80
+      },
+      "repaired": {
+        "archive_bytes": 2462003,
+        "ratio": 21.233476969768112,
+        "suffix_archive_bytes": 2136530,
+        "suffix_ratio": 21.115905697556318,
+        "residual_bytes": 167756,
+        "lossless_blocks": 8,
+        "full_sha256_match": true,
+        "lossless": true,
+        "fallback_blocks": 0,
+        "differing_lines": 284608
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 112.9750654399395,
+        "sum_block_encode_seconds": 150.08428344130516,
+        "sum_block_decode_seconds": 65.31123011559248,
+        "sum_residual_seconds": 5.220860101282597,
+        "sum_patch_seconds": 0.7808806076645851,
+        "encode_MB_per_s_single_worker": 0.3483168443846047,
+        "decode_MB_per_s_single_worker": 0.8004271839234484,
+        "resumed_blocks": 0
+      },
+      "header_length_L": 5
+    },
+    "ClarkNet": {
+      "blocks": 17,
+      "blocks_status_ok": 8,
+      "native": {
+        "archive_bytes": 12304956,
+        "ratio": 13.893423836704496,
+        "suffix_raw_bytes": 160653275,
+        "suffix_archive_bytes": 11635803,
+        "suffix_ratio": 13.806806027912298,
+        "lossless_blocks": 6,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 12299064,
+        "model_7z_bytes": 5682,
+        "model_raw_bytes": 5094,
+        "header_bytes": 210
+      },
+      "repaired": {
+        "archive_bytes": 13479856,
+        "ratio": 12.682477394417269,
+        "suffix_archive_bytes": 12810703,
+        "suffix_ratio": 12.54055105328724,
+        "residual_bytes": 1174900,
+        "lossless_blocks": 8,
+        "full_sha256_match": false,
+        "lossless": false,
+        "fallback_blocks": 2,
+        "differing_lines": 0
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 277.38998940587044,
+        "sum_block_encode_seconds": 385.07462114840746,
+        "sum_block_decode_seconds": 156.44601502269506,
+        "sum_residual_seconds": 5.557445682585239,
+        "sum_patch_seconds": 0.10508933663368225,
+        "encode_MB_per_s_single_worker": 0.44396062376209655,
+        "decode_MB_per_s_single_worker": 1.0927601382189231,
+        "resumed_blocks": 0
+      },
+      "header_length_L": 5
+    },
+    "NASA": {
+      "blocks": 19,
+      "blocks_status_ok": 19,
+      "native": {
+        "archive_bytes": 9520957,
+        "ratio": 21.556905256477894,
+        "suffix_raw_bytes": 194211577,
+        "suffix_archive_bytes": 9037155,
+        "suffix_ratio": 21.49034480431065,
+        "lossless_blocks": 19,
+        "full_sha256_match": true,
+        "lossless": true,
+        "payload_7z_bytes": 9514552,
+        "model_7z_bytes": 6215,
+        "model_raw_bytes": 5143,
+        "header_bytes": 190
+      },
+      "repaired": {
+        "archive_bytes": 9520957,
+        "ratio": 21.556905256477894,
+        "suffix_archive_bytes": 9037155,
+        "suffix_ratio": 21.49034480431065,
+        "residual_bytes": 0,
+        "lossless_blocks": 19,
+        "full_sha256_match": true,
+        "lossless": true,
+        "fallback_blocks": 0,
+        "differing_lines": 0
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 271.5854924544692,
+        "sum_block_encode_seconds": 355.3404224663973,
+        "sum_block_decode_seconds": 165.91932563483715,
+        "sum_residual_seconds": 0.030033856630325317,
+        "sum_patch_seconds": 0.014164753258228302,
+        "encode_MB_per_s_single_worker": 0.5775936398550567,
+        "decode_MB_per_s_single_worker": 1.23700097752149,
+        "resumed_blocks": 0
+      },
+      "header_length_L": 5
+    },
+    "USask": {
+      "blocks": 25,
+      "blocks_status_ok": 24,
+      "native": {
+        "archive_bytes": 13066977,
+        "ratio": 17.864952084939002,
+        "suffix_raw_bytes": 223762365,
+        "suffix_archive_bytes": 12510797,
+        "suffix_ratio": 17.885540385636503,
+        "lossless_blocks": 19,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 13055760,
+        "model_7z_bytes": 10977,
+        "model_raw_bytes": 14638,
+        "header_bytes": 240
+      },
+      "repaired": {
+        "archive_bytes": 13249809,
+        "ratio": 17.618436461989752,
+        "suffix_archive_bytes": 12693629,
+        "suffix_ratio": 17.627926970293522,
+        "residual_bytes": 182832,
+        "lossless_blocks": 24,
+        "full_sha256_match": false,
+        "lossless": false,
+        "fallback_blocks": 0,
+        "differing_lines": 191863
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 435.358301974833,
+        "sum_block_encode_seconds": 535.9425914138556,
+        "sum_block_decode_seconds": 298.2438423037529,
+        "sum_residual_seconds": 4.210085213184357,
+        "sum_patch_seconds": 0.6011199355125427,
+        "encode_MB_per_s_single_worker": 0.4355707528005301,
+        "decode_MB_per_s_single_worker": 0.782718315982018,
+        "resumed_blocks": 0
+      },
+      "header_length_L": 5
+    }
+  },
+  "finished_at": "2026-10-01T13:26:01.432274+00:00"
+}

@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "application_id",
+      "meaning": "application identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "application_([0-9]+_[0-9]+):",
+      "replacement": "application_{placeholder}:",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': ['application_', ':']}\n\ndef inverse(record):\n    return f\"{record['layout'][0]}{record['stored'][0]}{record['layout'][1]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

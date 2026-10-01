@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "task_attempt_id",
+      "meaning": "task attempt identifier",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "attempt_([0-9]+_[0-9]+_[a-z]+_[0-9]+_[0-9]+)",
+      "replacement": "attempt_{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    parts = groups[0].split('_')\n    stored = [int(parts[0]), int(parts[1]), parts[2], int(parts[3]), int(parts[4])]\n    return {'stored': stored, 'layout': ['_', '_', '_', '_']}\n\ndef inverse(record):\n    return 'attempt_' + '_'.join([\n        str(record['stored'][0]),\n        str(record['stored'][1]),\n        record['stored'][2],\n        str(record['stored'][3]),\n        str(record['stored'][4])\n    ])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

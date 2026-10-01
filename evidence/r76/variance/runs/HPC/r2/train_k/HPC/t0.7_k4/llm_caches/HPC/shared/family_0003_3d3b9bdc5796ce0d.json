@@ -1,0 +1,132 @@
+{
+  "header": {
+    "has_unified_header": false,
+    "reason": "The log lines do not share a consistent unified prefix/header structure that encapsulates multiple fields. The changing fields are interspersed throughout the line.",
+    "functions": []
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "numeric counter or unique identifier",
+      "reason": "S0 changes across all examples and has no clear semantic role or predictable pattern."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "node identifier",
+      "reason": "S1 contains structured identifier-like strings (e.g., node-D4) that vary across examples but have no clear numeric or semantic transformations."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "clusterfilesystem status",
+      "reason": "S3 remains constant across all examples and serves as a stable literal structure."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "timestamp-like numeric field",
+      "reason": "S4 is a numeric field with properties of a timestamp, making it suitable for delta compression."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "constant value",
+      "reason": "S5 is a constant (1) in all examples and does not need extraction."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "literal prefix",
+      "reason": "S6 is a constant structure and does not vary across examples."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain name",
+      "reason": "S9 contains structured values with separators and varying components, suitable for raw string storage."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "served node identifier",
+      "reason": "S16 contains structured identifier-like strings (e.g., node-140) that vary across examples but lack a clear numeric transformation."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "S4_timestamp",
+      "meaning": "timestamp in seconds since epoch",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{10})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Capture timestamp-like numeric field in seconds since epoch and store as integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "S9_domain_name",
+      "meaning": "domain name value",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "domain( +)([A-Za-z0-9._-]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "Capture structured domain name string for exact storage and reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "S16_node_identifier",
+      "meaning": "served node identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node( +)(node-[0-9]+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "Capture structured node identifier string for exact storage and reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "S1_node_source",
+      "meaning": "source node identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(node-[A-Z0-9]+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Capture structured source node identifier string for exact storage and reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,89 @@
+{
+ "dataset": "Thunderbird",
+ "method": "semzip",
+ "repeat": 2,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_076_Thunderbird_semzip_r2_a1",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/Thunderbird.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 268957222,
+ "blocks": 20,
+ "started_unix": 1790848925.288894,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "encode",
+   "--input",
+   "<WORKDIR>/r76_additional_20260929/timing/samples/Thunderbird.sample20.log",
+   "--plan",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Thunderbird/program.json",
+   "--dataset",
+   "Thunderbird",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_076_Thunderbird_semzip_r2_a1/work",
+   "--block-size",
+   "100000",
+   "--workers",
+   "4"
+  ],
+  "seconds": 26.548779748380184,
+  "returncode": 0,
+  "load_average": [
+   15.46,
+   15.41,
+   15.42
+  ],
+  "started_unix": 1790848925.2921753,
+  "own_cpu_seconds": 63.82186199999887,
+  "other_cpu_seconds": 0.2150119820011298,
+  "other_cores": 0.008098751959183671
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "decode",
+   "--archive",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_076_Thunderbird_semzip_r2_a1/work/archive",
+   "--output",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_076_Thunderbird_semzip_r2_a1/restored.owned.log",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_076_Thunderbird_semzip_r2_a1/decode",
+   "--workers",
+   "4"
+  ],
+  "seconds": 4.822276018559933,
+  "returncode": 0,
+  "load_average": [
+   15.34,
+   15.38,
+   15.41
+  ],
+  "started_unix": 1790848951.8493164,
+  "own_cpu_seconds": 8.798697000000175,
+  "other_cpu_seconds": 0.03608533299982497,
+  "other_cores": 0.007483050091064897
+ },
+ "archive_bytes": 3911842,
+ "fallback_blocks": 0,
+ "sha_pass": true,
+ "audit_seconds": 1.0985923632979393,
+ "encode_MB_per_s": 10.130681129192382,
+ "decode_MB_per_s": 55.77391691492562,
+ "finished_unix": 1790848957.787585,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.01972322604397295
+ },
+ "max_other_cores": 0.008098751959183671,
+ "contaminated": false
+}

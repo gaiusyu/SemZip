@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "server_address",
+      "meaning": "server_host_and_port",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "server: ([a-zA-Z0-9.-]+/\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+)",
+      "replacement": "server: {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': ['server: ']}\n\ndef inverse(record):\n    return f\"{record['layout'][0]}{record['stored'][0]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

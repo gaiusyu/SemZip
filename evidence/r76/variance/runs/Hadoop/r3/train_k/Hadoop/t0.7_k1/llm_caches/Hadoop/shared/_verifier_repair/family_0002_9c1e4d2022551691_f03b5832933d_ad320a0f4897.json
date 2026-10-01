@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "numeric_with_display",
+      "meaning": "numeric value with alternate display",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "([0-9]+)\\(([0-9]+)\\)",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    primary = int(groups[0])\n    alternate = int(groups[1])\n    return {'stored': [primary], 'layout': [alternate]}\n\ndef inverse(record):\n    primary = record['stored'][0]\n    alternate = record['layout'][0]\n    return \"{}({})\".format(primary, alternate)"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "kvstart",
+      "meaning": "start key-value range",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "kvstart = ([\\d]+)\\(([\\d]+)\\)",
+      "replacement": "kvstart = {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0]), int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return f\"{record['stored'][0]}({record['stored'][1]})\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

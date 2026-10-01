@@ -1,0 +1,376 @@
+{
+  "families": [
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_with_timezone",
+            "tokens": [
+              "day",
+              "month",
+              "year",
+              "hour",
+              "minute",
+              "second",
+              "timezone_offset"
+            ],
+            "reason": "timestamp components and timezone offset form one semantic value",
+            "target_value": "one integer-like value in microseconds",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "HEAD 45.html HTTP/1.0",
+              "HEAD 216.html HTTP/1.0"
+            ],
+            "reason": "the captured value itself contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "status code 200",
+              "status code 404"
+            ],
+            "reason": "a plain value is introduced by a stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp with timezone",
+          "reason": "timestamp components are extracted and composed into one integer-like value"
+        },
+        {
+          "slot": "S6",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "requested resource",
+          "reason": "intrinsically structured value of resource path and extension"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "status code",
+          "reason": "explicit role-anchored plain variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_with_timezone"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "requested_resource",
+          "status_code"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_with_timezone",
+          "meaning": "log timestamp with timezone",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as microseconds",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp components and timezone offset are merged into one value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2}) ([-+]\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    day, month, year, hour, minute, second, tz_offset = groups\n    month_map = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}\n    dt = datetime(int(year), month_map[month], int(day), int(hour), int(minute), int(second))\n    tz_delta = int(tz_offset[:3]) * 3600 + int(tz_offset[3:]) * 60\n    micros = int((dt.timestamp() - tz_delta) * 1000000)\n    return {'stored': [micros], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    tz_offset_hours = int(dt.utcoffset().total_seconds() / 3600)\n    tz_offset_minutes = int((dt.utcoffset().total_seconds() % 3600) / 60)\n    tz_offset = f'{tz_offset_hours:+03}{tz_offset_minutes:02}'\n    return dt.strftime(f'[%d/%b/%Y:%H:%M:%S {tz_offset}]')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "requested_resource",
+          "meaning": "resource path and extension",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "complete resource path and extension",
+            "context_source": null,
+            "why_not_merge_raw": "value contains intrinsic structure but is stored exactly as captured"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "HEAD (\\S+\\.html)",
+          "replacement": "HEAD {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "status_code",
+          "meaning": "HTTP status code",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "HTTP status code",
+            "context_source": null,
+            "why_not_merge_raw": "value is a plain field introduced by a stable field name"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": " (\\d{3}) ",
+          "replacement": " {placeholder} ",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_with_timezone",
+            "tokens": [
+              "day",
+              "month",
+              "year",
+              "hour",
+              "minute",
+              "second",
+              "timezone_offset"
+            ],
+            "reason": "timestamp components and timezone offset form one semantic value",
+            "target_value": "one integer-like value in microseconds",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "GET 155.gif",
+              "GET 156.gif"
+            ],
+            "reason": "the captured value itself contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "status code 200",
+              "status code 404"
+            ],
+            "reason": "a plain value is introduced by a stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp with timezone",
+          "reason": "timestamp components are extracted and composed into one integer-like value"
+        },
+        {
+          "slot": "S6",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "requested resource",
+          "reason": "intrinsically structured value of resource path and extension"
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "status code",
+          "reason": "explicit role-anchored plain variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_with_timezone"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "requested_resource",
+          "status_code"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_with_timezone",
+          "meaning": "log timestamp with timezone",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as microseconds",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp components and timezone offset are merged into one value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2}) ([-+]\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    day, month, year, hour, minute, second, tz_offset = groups\n    month_map = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}\n    dt = datetime(int(year), month_map[month], int(day), int(hour), int(minute), int(second))\n    tz_delta = int(tz_offset[:3]) * 3600 + int(tz_offset[3:]) * 60\n    micros = int((dt.timestamp() - tz_delta) * 1000000)\n    return {'stored': [micros], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    tz_offset_hours = int(dt.utcoffset().total_seconds() / 3600)\n    tz_offset_minutes = int((dt.utcoffset().total_seconds() % 3600) / 60)\n    tz_offset = f'{tz_offset_hours:+03}{tz_offset_minutes:02}'\n    return dt.strftime(f'[%d/%b/%Y:%H:%M:%S {tz_offset}]')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "requested_resource",
+          "meaning": "resource path and extension",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "complete resource path and extension",
+            "context_source": null,
+            "why_not_merge_raw": "value contains intrinsic structure but is stored exactly as captured"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "HEAD (\\S+\\.html)",
+          "replacement": "HEAD {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "status_code",
+          "meaning": "HTTP status code",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "HTTP status code",
+            "context_source": null,
+            "why_not_merge_raw": "value is a plain field introduced by a stable field name"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": " (\\d{3}) ",
+          "replacement": " {placeholder} ",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_with_timezone",
+            "tokens": [
+              "day",
+              "month",
+              "year",
+              "hour",
+              "minute",
+              "second",
+              "timezone_offset"
+            ],
+            "reason": "timestamp components and timezone offset form one semantic value",
+            "target_value": "one integer-like value in microseconds",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp with timezone",
+          "reason": "timestamp components are extracted and composed into one integer-like value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_with_timezone"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_with_timezone",
+          "meaning": "log timestamp with timezone",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as microseconds",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp components and timezone offset are merged into one value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2}) ([-+]\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    day, month, year, hour, minute, second, tz_offset = groups\n    month_map = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}\n    dt = datetime(int(year), month_map[month], int(day), int(hour), int(minute), int(second))\n    tz_delta = int(tz_offset[:3]) * 3600 + int(tz_offset[3:]) * 60\n    micros = int((dt.timestamp() - tz_delta) * 1000000)\n    return {'stored': [micros], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    tz_offset_hours = int(dt.utcoffset().total_seconds() / 3600)\n    tz_offset_minutes = int((dt.utcoffset().total_seconds() % 3600) / 60)\n    tz_offset = f'{tz_offset_hours:+03}{tz_offset_minutes:02}'\n    return dt.strftime(f'[%d/%b/%Y:%H:%M:%S {tz_offset}]')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

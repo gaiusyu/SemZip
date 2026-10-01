@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "task_attempt_id",
+      "meaning": "task attempt identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "attempt_(\\d{13}_\\d{4}_\\w_\\d{6}_\\d)",
+      "replacement": "attempt_{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"attempt_{record['stored'][0]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

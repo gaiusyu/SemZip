@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "headroom_vcores",
+      "meaning": "headroom virtual cores count",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "vCores:([-0-9]+)>",
+      "replacement": "vCores:{placeholder}>",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': ['vCores:', '>']}\n\ndef inverse(record):\n    return f\"{record['layout'][0]}{record['stored'][0]}{record['layout'][1]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

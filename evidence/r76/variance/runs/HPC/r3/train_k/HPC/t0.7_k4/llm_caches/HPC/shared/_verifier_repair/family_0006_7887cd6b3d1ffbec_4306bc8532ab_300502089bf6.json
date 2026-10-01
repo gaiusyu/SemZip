@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "timestamp_and_identifier",
+      "meaning": "composed primary timestamp and identifier",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "regex": "^(\\d{6,7}) .+ (\\d{10})",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    id_part = int(groups[0])\n    timestamp_part = int(groups[1])\n    return {'stored': [id_part, timestamp_part], 'layout': []}\n\ndef inverse(record):\n    id_part = record['stored'][0]\n    timestamp_part = record['stored'][1]\n    return f'{id_part} <node> {timestamp_part}'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

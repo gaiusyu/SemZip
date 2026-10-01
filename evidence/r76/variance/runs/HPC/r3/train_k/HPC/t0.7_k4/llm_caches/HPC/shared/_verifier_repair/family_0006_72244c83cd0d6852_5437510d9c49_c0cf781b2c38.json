@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "timestamp_and_identifier",
+      "meaning": "composed primary timestamp and identifier",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "regex": "^(\\d{6,7})( +).+( +)(\\d{10})",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    id_part = int(groups[0])\n    timestamp_part = int(groups[3])\n    combined = id_part * 10000000000 + timestamp_part\n    return {'stored': [combined], 'layout': [len(groups[1]), len(groups[2])]}  # Store space lengths in layout\n\ndef inverse(record):\n    combined = int(record['stored'][0])\n    id_part = combined // 10000000000\n    timestamp_part = combined % 10000000000\n    space1_len = record['layout'][0]\n    space2_len = record['layout'][1]\n    return f\"{id_part}{' ' * space1_len}<node>{' ' * space2_len}{timestamp_part}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

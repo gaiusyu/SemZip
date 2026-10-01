@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "broadcast_duration",
+      "meaning": "broadcast duration in ms",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "merge_equivalent",
+        "stored_source": "duration",
+        "context_source": null,
+        "why_not_merge_raw": "numeric duration derivable"
+      },
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "took (\\d+) ms",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f'took {record[\"stored\"][0]} ms'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

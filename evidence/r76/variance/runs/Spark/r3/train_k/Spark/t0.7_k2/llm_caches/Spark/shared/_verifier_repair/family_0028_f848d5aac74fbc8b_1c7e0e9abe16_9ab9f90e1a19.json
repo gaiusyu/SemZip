@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "user_permissions",
+      "meaning": "user_permission_set",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "raw_single_source",
+        "stored_source": "user permissions",
+        "context_source": null,
+        "why_not_merge_raw": "The permission set is a structured value with commas and parentheses."
+      },
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "permissions: Set\\(([^)]+)\\)",
+      "replacement": "permissions: Set({placeholder})",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0].strip()], 'layout': []}\n\ndef inverse(record):\n    return f'Set({record[\"stored\"][0]})'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

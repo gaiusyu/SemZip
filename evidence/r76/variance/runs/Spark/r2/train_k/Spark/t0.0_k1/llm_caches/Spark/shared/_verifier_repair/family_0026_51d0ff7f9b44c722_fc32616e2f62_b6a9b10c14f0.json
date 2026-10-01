@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "task_set_id",
+      "meaning": "task set ID",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "raw_single_source",
+        "stored_source": "task set ID",
+        "context_source": null,
+        "why_not_merge_raw": "task set ID is a standalone structured value"
+      },
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "TaskSet ([\\d.]+),",
+      "replacement": "TaskSet {placeholder},",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [float(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"{record['stored'][0]:.1f},\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "byte_size",
+      "meaning": "byte size display",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "(\\d+)\\((\\d+)\\)",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    primary_value = int(groups[0])\n    equivalent_value = int(groups[1])\n    return {'stored': [primary_value], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0]\n    return f'{value}({value})'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

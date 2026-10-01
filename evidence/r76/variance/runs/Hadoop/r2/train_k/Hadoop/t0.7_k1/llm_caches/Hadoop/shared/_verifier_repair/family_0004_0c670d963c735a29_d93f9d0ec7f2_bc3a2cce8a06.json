@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "kvstart_kvend_length",
+      "meaning": "structured numeric values for key-value operations",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "kvstart = (\\d+)\\((\\d+)\\); kvend = (\\d+)\\((\\d+)\\); length = (\\d+)/(\\d+)",
+      "replacement": "kvstart = {group1}({group2}); kvend = {group3}({group4}); length = {group5}/{group6}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    kvstart = int(groups[0])\n    kvend = int(groups[2])\n    length_actual = int(groups[4])\n    return {'stored': [kvstart, kvend, length_actual], 'layout': [groups[1], groups[3], groups[5]]}\n\ndef inverse(record):\n    kvstart, kvend, length_actual = record['stored']\n    kvstart_display, kvend_display, length_max = record['layout']\n    return f\"kvstart = {kvstart}({kvstart_display}); kvend = {kvend}({kvend_display}); length = {length_actual}/{length_max}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

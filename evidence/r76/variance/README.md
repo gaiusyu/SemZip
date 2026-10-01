@@ -1,12 +1,21 @@
 # R76 track C: variability of the complete SemZip pipeline (HPC, Hadoop, HDFS, Spark)
 
-> **This copy.** For runs r2 and r3 only the result records are included: `runs/<D>/<R>/runs/formal/pool/<D>/result.json`,
-> the per-candidate gate/pool evaluation records (`runs/qg/c*/<D>/eval_*/`, `runs/pool/<D>/eval_*/`), the synthesis
-> summaries (`train_k/<D>/*/training_work/<D>/summary.json`) and `summary.json`. The synthesis transcripts
-> (`exchanges/`), `training.json`, `replay_plan.json`, the gate reports and selected plans, `candidates.json`,
-> `pool_report.json`, the published program/policy/publication files, `repeat.json`, `code/`, `driver_versions/` and the
-> logs stayed on the execution host. The repeats table is regenerated from the included records, but the repeats
-> themselves cannot be replayed or audited from this copy.
+> **This copy.** For runs r2 and r3 the records of every step are included: `repeat.json`; the five syntheses
+> (`train_k/<D>/<cand>/training.json`, `training_work/<D>/{replay_plan,summary}.json` and the model exchanges
+> `llm_caches/<D>/shared/**/family_*.{prompt.txt,json}`, i.e. every prompt and parsed response); the gate
+> (`runs/qg/c*/<D>/`: `qg_report.json`, `selected_plan.json`, `eval_cache.json`, and per evaluation the block-0 round trip
+> `eval_*/tc/rt/result.json` with its decode summary); the pool (`runs/pool/<D>/`: `candidates.json`, `pool_report.json`,
+> `selected_plan.json`, `eval_cache.json` and the per-evaluation records); the published program and storage policy
+> (`runs/publish/pool/<D>/`); and the formal record (`runs/formal/pool/<D>/result.json`). Code: `rep.py`,
+> `check_r73_repro.py`, `code/formal_full.py` (the only changed driver), `code/SHA256SUMS.r73_originals` and the earlier
+> driver versions `driver_versions/rep_v1_smoke.py` and `rep_v2.py` (`rep_v3.py` is byte-identical to `rep.py`). The other
+> `code/*.py` are the unchanged R73 drivers published in `evidence/selection/code/` (as-run hashes in
+> `code/SHA256SUMS.r73_originals`) and are not repeated. Not included: run logs, archives, the per-candidate storage-fit work files (`tc/storage/`), the copies of
+> each evaluated plan (`eval_*/plan.json`; `eval_cache.json` identifies every evaluated plan by its SHA-256 and rule
+> tags), the raw HTTP records of the model calls (`_api_records/`: raw request and response bodies plus the gateway's HTTP
+> response headers; every prompt and the parsed model output are kept in the cache files), and
+> the training blocks (`train/`, `raw/`, `r69root/`). Hashes of code files that contained machine-specific paths are
+> withheld in `repeat.json` and `code/SHA256SUMS.r73_originals` (`../CODE_PROVENANCE.md`).
 
 This track runs the pre-registered design in `../DEV_DESIGN_R76_zh.md`, section C (written 2026-09-29 01:30 UTC, before any
 R76 result). For each of HPC, Hadoop, HDFS and Spark (the files where R73 pool leads DeLog by only 2-6 %), it runs

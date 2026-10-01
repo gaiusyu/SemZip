@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "progress_value",
+      "meaning": "task progress value",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "is : ([0-9]+\\.[0-9]+)",
+      "replacement": "is : {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(float(groups[0]) * 100000000)], 'layout': []}\n\ndef inverse(record):\n    return f\"is : {record['stored'][0] / 100000000:.8f}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

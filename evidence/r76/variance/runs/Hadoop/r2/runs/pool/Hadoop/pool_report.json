@@ -1,0 +1,98 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "Hadoop",
+  "candidates": [
+    {
+      "cid": "c0",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r2/runs/qg/c0/Hadoop/selected_plan.json",
+      "train_cost": 296554
+    },
+    {
+      "cid": "c1",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r2/runs/qg/c1/Hadoop/selected_plan.json",
+      "train_cost": 297326
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r2/runs/qg/c2/Hadoop/selected_plan.json",
+      "train_cost": 304394
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r2/runs/qg/c4/Hadoop/selected_plan.json",
+      "train_cost": 311458
+    },
+    {
+      "cid": "c3",
+      "plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r2/runs/qg/c3/Hadoop/selected_plan.json",
+      "train_cost": 318166
+    }
+  ],
+  "start": "c0",
+  "start_train_bytes": 296554,
+  "start_cost_reproduced": true,
+  "pool_groups": 13,
+  "duplicate_groups_skipped": 6,
+  "selected_train_bytes": 286318,
+  "selected_tags": [
+    "TS",
+    "PT",
+    "H",
+    "C",
+    "D",
+    "E",
+    "X4D",
+    "X1G"
+  ],
+  "selected_plan_sha256": "c2470fd383965011f831b9e6b7c9d48ab554ca4f311666a9b3e5ac9b6f7adca7",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 31,
+      "n_improving": 2,
+      "before": 296554,
+      "accepted": [
+        {
+          "move": "add:X4D",
+          "screen_cost": 286430,
+          "applied_cost": 286430
+        }
+      ],
+      "after": 286430
+    },
+    {
+      "round": 1,
+      "n_moves": 31,
+      "n_improving": 1,
+      "before": 286430,
+      "accepted": [
+        {
+          "move": "add:X1G",
+          "screen_cost": 286318,
+          "applied_cost": 286318
+        }
+      ],
+      "after": 286318
+    },
+    {
+      "round": 2,
+      "n_moves": 31,
+      "n_improving": 0,
+      "before": 286318,
+      "accepted": [],
+      "after": 286318
+    },
+    {
+      "stage": "eliminate",
+      "tag": "C",
+      "before": 286318,
+      "after": 286318,
+      "accepted": false
+    }
+  ],
+  "evaluations": 91,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "8d13beb9b0ff65a4dd7136f18dd2713f58e0c1ff408e1b9f811f842fd0f72d19"
+}

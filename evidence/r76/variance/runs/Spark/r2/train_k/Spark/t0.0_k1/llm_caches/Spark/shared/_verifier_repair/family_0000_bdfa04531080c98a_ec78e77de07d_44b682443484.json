@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "size_display",
+      "meaning": "size in KB or bytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\(size: ([0-9]+\\.[0-9]+) (KB|B)",
+      "replacement": "(size: {placeholder} {group1}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = float(groups[0])\n    unit = groups[1]\n    if unit == 'KB':\n        value = int(round(value * 1024))\n    else:\n        value = int(value)\n    return {'stored': [value], 'layout': []}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    if value >= 1024:\n        return f'{value / 1024:.1f} KB'\n    else:\n        return f'{value} B'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

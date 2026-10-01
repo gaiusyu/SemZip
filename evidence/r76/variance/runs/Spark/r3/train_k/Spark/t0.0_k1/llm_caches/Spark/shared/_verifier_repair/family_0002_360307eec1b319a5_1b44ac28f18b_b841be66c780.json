@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "stage_id",
+      "meaning": "stage identifier",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "stage ([0-9]+\\.[0-9]+)",
+      "replacement": "stage {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value = float(groups[0])\n    return {'stored': [int(value)], 'layout': [value - int(value)]}\n\ndef inverse(record):\n    integer_part = record['stored'][0]\n    fractional_part = record['layout'][0]\n    return f\"stage {integer_part + fractional_part:.1f}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

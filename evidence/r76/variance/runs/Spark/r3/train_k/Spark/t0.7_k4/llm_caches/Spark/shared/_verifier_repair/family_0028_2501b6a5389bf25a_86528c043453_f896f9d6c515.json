@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "view_permissions",
+      "meaning": "users with view permissions",
+      "class": "class_2_formatted_numeric",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "users with view permissions: Set\\(([^)]+)\\)",
+      "replacement": "users with view permissions: Set({placeholder})",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    users = groups[0].split(', ')\n    return {'stored': [len(users)], 'layout': [users]}\n\ndef inverse(record):\n    users = ', '.join(record['layout'][0])\n    return f\"users with view permissions: Set({users})\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,137 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_with_offset",
+            "tokens": [
+              "[D2/A3/D4:D2:D2:D2",
+              "-D4]"
+            ],
+            "reason": "date, time, and timezone offset combine to form a single timestamp value",
+            "target_value": "one integer-like timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no consistent repeated prefix or header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp with timezone offset",
+          "reason": "to store the timestamp as a single compact value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_with_offset"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_with_offset",
+          "meaning": "composed log timestamp with timezone offset",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp with timezone offset",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp and offset together describe a single semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2}/[A-Za-z]{3}/\\d{4}):(\\d{2}:\\d{2}:\\d{2})( -\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    from datetime import datetime, timedelta\n    date_str = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(date_str, '%d/%b/%Y %H:%M:%S')\n    offset = int(groups[2]) // 100 * 3600 + int(groups[2]) % 100 * 60\n    micros = int((dt.timestamp() - offset) * 1000000)\n    return {'stored': [micros, offset], 'layout': []}\n\ndef inverse(record):\n    from datetime import datetime, timedelta\n    micros, offset = record['stored']\n    dt = datetime.fromtimestamp(micros / 1000000 + offset)\n    return dt.strftime('[%d/%b/%Y:%H:%M:%S') + f\" {offset // 3600:02}{offset % 3600 // 60:02}]\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_with_offset",
+            "tokens": [
+              "[D2/A3/D4:D2:D2:D2",
+              "-D4]"
+            ],
+            "reason": "date, time, and timezone offset combine to form a single timestamp value",
+            "target_value": "one integer-like timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no consistent repeated prefix or header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp with timezone offset",
+          "reason": "to store the timestamp as a single compact value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_with_offset"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_with_offset",
+          "meaning": "composed log timestamp with timezone offset",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp with timezone offset",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp and offset together describe a single semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2}/[A-Za-z]{3}/\\d{4}):(\\d{2}:\\d{2}:\\d{2})( -\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    from datetime import datetime, timedelta\n    date_str = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(date_str, '%d/%b/%Y %H:%M:%S')\n    offset = int(groups[2]) // 100 * 3600 + int(groups[2]) % 100 * 60\n    micros = int((dt.timestamp() - offset) * 1000000)\n    return {'stored': [micros, offset], 'layout': []}\n\ndef inverse(record):\n    from datetime import datetime, timedelta\n    micros, offset = record['stored']\n    dt = datetime.fromtimestamp(micros / 1000000 + offset)\n    return dt.strftime('[%d/%b/%Y:%H:%M:%S') + f\" {offset // 3600:02}{offset % 3600 // 60:02}]\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

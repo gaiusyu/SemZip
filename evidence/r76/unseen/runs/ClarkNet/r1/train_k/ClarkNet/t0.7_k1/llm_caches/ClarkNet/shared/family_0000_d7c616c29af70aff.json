@@ -1,0 +1,181 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure including client IP, request method, timestamp, and HTTP version, which can be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "client_ip",
+        "meaning": "source_client_ipv4_or_host",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "^((?:\\d{1,3}\\.){3}\\d{1,3}|(?:[\\w\\-\\.]+))",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Store the client IP or hostname exactly as a raw string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "access_time",
+        "meaning": "access_timestamp_as_epoch_microseconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2})( +)([+-]\\d{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Store the full access timestamp as epoch microseconds.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    day, month, year, hour, minute, second, sp, offset = groups\n    text = day + '/' + month + '/' + year + ' ' + hour + ':' + minute + ':' + second + ' ' + offset\n    dt = datetime.strptime(text, '%d/%b/%Y %H:%M:%S %z')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp_len = layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000, tz=datetime.timezone(datetime.timedelta(hours=int(record['stored'][0] % 10000 / 100))))\n    day = dt.strftime('%d')\n    month = dt.strftime('%b')\n    year = dt.strftime('%Y')\n    time = dt.strftime('%H:%M:%S')\n    offset = dt.strftime('%z')\n    return '[' + day + '/' + month + '/' + year + ':' + time + ' ' + (' ' * sp_len) + offset + ']'"
+        }
+      },
+      {
+        "tag": "http_method",
+        "meaning": "request_http_method",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "\\\"([A-Z]+)",
+        "replacement": "\\\"{placeholder}",
+        "program": {
+          "intent": "Store the HTTP method exactly as a raw string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "http_version",
+        "meaning": "http_version_string",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(HTTP/\\d\\.\\d)\\\"",
+        "replacement": "{placeholder}\\\"",
+        "program": {
+          "intent": "Store the HTTP version string exactly as a raw string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "source_client_ipv4_or_host",
+      "reason": "The client IP/hostname is a high-entropy variable with intrinsic structure and recurring format."
+    },
+    {
+      "slot": "S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "access_timestamp_as_epoch_microseconds",
+      "reason": "The access timestamp is composed of multiple adjacent fields forming one semantic value."
+    },
+    {
+      "slot": "S5",
+      "action": "STREAM_RAW",
+      "meaning": "request_http_method",
+      "reason": "The HTTP method is a stable variable anchored by quotes, and it is reused across requests."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "http_version_string",
+      "reason": "The HTTP version is a stable variable with intrinsic structure and recurring format."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "requested_resource_path",
+      "reason": "The requested resource path is high-entropy and has intrinsic structure with slashes, dots, and alphanumeric segments."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "http_response_status_code",
+      "reason": "The response status code is a numeric value with low entropy and is likely to form a compressible numeric stream."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "response_payload_size_in_bytes",
+      "reason": "The payload size is a numeric value with low entropy and is likely to form a compressible numeric stream."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "requested_resource_path",
+      "meaning": "requested_resource_path",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "\\\"GET( +)(/[^ ]+)",
+      "replacement": "\\\"GET{group1}{placeholder}",
+      "program": {
+        "intent": "Store the requested resource path exactly as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "http_response_status_code",
+      "meaning": "http_response_status_code",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{3})( +)",
+      "replacement": "{placeholder}{group2}",
+      "program": {
+        "intent": "Store the HTTP status code as a numeric value while preserving spacing.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': [len(groups[1])]}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    sp = ' ' * record['layout'][0]\n    return str(v) + sp"
+      }
+    },
+    {
+      "tag": "response_payload_size",
+      "meaning": "response_payload_size_in_bytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d+)( +)$",
+      "replacement": "{placeholder}{group2}",
+      "program": {
+        "intent": "Store the payload size as an integer while preserving spacing.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': [len(groups[1])]}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    sp = ' ' * record['layout'][0]\n    return str(v) + sp"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

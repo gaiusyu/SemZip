@@ -1,0 +1,149 @@
+{
+  "header": {
+    "has_unified_header": false,
+    "reason": "The sampled lines do not share a repeated prefix/header with changing fields; the template is primarily about variable values in the message body."
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "UINT_DELTA",
+      "meaning": "record identifier or sequence number",
+      "reason": "Preserve this as a numeric stream since it is a stable sequence identifier and fits well with a delta coding strategy."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "node identifier",
+      "reason": "The node identifier has stable structure and high entropy due to variable components (e.g. node-D4). It is better preserved as a raw stream."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "operation status",
+      "reason": "This field is stable across examples and does not vary enough to justify extraction; keeping it in the main template reduces redundancy."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "timestamp-like numeric value",
+      "reason": "Store this as a numeric stream since it is monotonic and fits well with a delta coding approach."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "constant field with value '1'",
+      "reason": "This field is invariant across examples and should remain as a literal constant in the template."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "ClusterFileSystem prefix identifier",
+      "reason": "This field is invariant across examples and does not disturb the template structure."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain name",
+      "reason": "The domain name has variable components (e.g. root13_domain, storage314) and should be preserved as a raw stream."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "target node",
+      "reason": "The target node has variable components (e.g. node-140) and should be preserved as a raw stream."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "record_id",
+      "meaning": "sequence_number_or_record_identifier",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "delta-coded numeric stream for record identifiers",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "node_identifier",
+      "meaning": "node_identifier_with_variable_components",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(node-[A-Z]\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "raw stream for node identifiers",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "timestamp_numeric",
+      "meaning": "timestamp_like_numeric_value",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{10})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "delta-coded numeric stream for timestamps",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "domain_name",
+      "meaning": "variable_domain_name",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "domain( +)([A-Za-z0-9_]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "raw stream for domain names",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "target_node",
+      "meaning": "target_node_with_variable_components",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node( +)(node-[A-Za-z0-9-]+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "raw stream for target nodes",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

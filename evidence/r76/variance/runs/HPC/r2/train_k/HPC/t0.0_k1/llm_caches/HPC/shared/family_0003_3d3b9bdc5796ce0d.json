@@ -1,0 +1,151 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure with stable tokens and changing fields that should be extracted into side streams.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "epoch_timestamp_in_seconds",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{10})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Extract epoch timestamp in seconds and store as integer.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "UINT_DELTA",
+      "meaning": "log_sequence_number",
+      "reason": "This slot represents a numeric sequence number that is likely to be compressible using delta coding."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "node_identifier",
+      "reason": "This slot represents a structured node identifier with a stable prefix and variable suffix, making it suitable for raw extraction."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "clusterfilesystem_status",
+      "reason": "This slot is a stable literal structure that does not vary across examples and does not benefit from extraction."
+    },
+    {
+      "slot": "S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "epoch_timestamp_in_seconds",
+      "reason": "This slot represents a timestamp in seconds and is suitable for numeric extraction and compression."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "constant_value",
+      "reason": "This slot is a stable constant across all examples and does not need extraction."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "ClusterFileSystem_label",
+      "reason": "This slot is a stable literal structure that does not vary across examples and does not benefit from extraction."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain_name",
+      "reason": "This slot represents a structured domain name with variable components, making it suitable for raw extraction."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "node_name",
+      "reason": "This slot represents a structured node name with a stable prefix and variable suffix, making it suitable for raw extraction."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "log_sequence_number",
+      "meaning": "log_sequence_number_as_integer",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{6,7})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract log sequence number and store as integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    },
+    {
+      "tag": "node_identifier",
+      "meaning": "node_identifier_with_prefix_and_suffix",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(node-[A-Z]\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract node identifier as raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "domain_name",
+      "meaning": "structured_domain_name",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "domain( +)([A-Za-z0-9_]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "Extract domain name as raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "node_name",
+      "meaning": "node_name_with_prefix_and_suffix",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node( +)(node-\\d+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "Extract node name as raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

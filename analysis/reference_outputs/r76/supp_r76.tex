@@ -1,16 +1,16 @@
 \section{Additional baselines and controls}\label{sec:r76}\sloppy
 
-All experiments in this section were specified in a design document written before any of their results existed (29 September 2026, 01:30 UTC); later changes are appended to that document as dated change-log entries and are stated below. Every compression cell decodes from its archive alone and matches per-block and full-file SHA-256 digests of the original inputs.
+All experiments in this section were specified in a design document written before any of their results existed; later changes are appended to that document as dated change-log entries and are stated below. Every compression cell decodes from its archive alone and matches per-block and full-file SHA-256 digests of the original inputs.
 
 \subsection{Log-specific baselines}
 
-The +R correction deviates from the pre-registered adaptation rule (change log, 29 September, 05:30 UTC); it was recorded before any new-baseline ratio comparison and was not applied to Denum. LogShrink (commit 59ce494) and LogReducer (commit 4000541) run their official pipelines independently on every 100,000-line block, including their own sampling and template training on that block (samplers seeded with 0); their decoders read only the block archive, which contains the native payload, every model file the official restore reads, and, for the +R variants, a per-line correction. As released, both tools drop carriage returns, strip leading and trailing whitespace, collapse runs of header spaces, and drop leading zeros; LogShrink also truncates integers wider than 32 bits (e.g., HDFS block identifiers). The correction is computed from the original block and the tool\textquotesingle s own decoded output only, compressed with LZMA, and counted. LogShrink\textquotesingle s official decoder additionally needed five fixes that change no archive byte (empty failed-log files, column-file ordering, header-file ordering, whole-line template matching, and delimiter recovery). LogShrink uses its shipped per-dataset header lengths; LogReducer uses its generic defaults. LogReducer+R failed the SHA check on 48 of Spark\textquotesingle s 333 blocks; LogShrink could not encode or decode 48 of Spark\textquotesingle s 333 blocks; LogShrink could not encode or decode 42 of Windows\textquotesingle s 1147 blocks; these files have no valid ratio for the affected tool. The official DeLog build (commit 64a074f) and DeLog-gen differ only in the per-dataset regular-expression map (emptied in DeLog-gen); the decoders are identical.
+The +R correction deviates from the pre-registered adaptation rule (recorded in the change log); it was recorded before any new-baseline ratio comparison and was not applied to Denum. LogShrink (commit 59ce494) and LogReducer (commit 4000541) run their official pipelines independently on every 100,000-line block, including their own sampling and template training on that block (samplers seeded with 0); their decoders read only the block archive, which contains the native payload, every model file the official restore reads, and, for the +R variants, a per-line correction. As released, both tools drop carriage returns, strip leading and trailing whitespace, collapse runs of header spaces, and drop leading zeros; LogShrink also truncates integers wider than 32 bits (e.g., HDFS block identifiers). The correction is computed from the original block and the tool\textquotesingle s own decoded output only, compressed with LZMA, and counted. LogShrink\textquotesingle s official decoder additionally needed five fixes that change no archive byte (empty failed-log files, column-file ordering, header-file ordering, whole-line template matching, and delimiter recovery). LogShrink uses its shipped per-dataset header lengths; LogReducer uses its generic defaults. LogReducer+R failed the SHA check on 48 of Spark\textquotesingle s 333 blocks; LogShrink could not encode or decode 48 of Spark\textquotesingle s 333 blocks; LogShrink could not encode or decode 42 of Windows\textquotesingle s 1147 blocks; these files have no valid ratio for the affected tool. The official DeLog build (commit 64a074f) and DeLog-gen differ only in the per-dataset regular-expression map (emptied in DeLog-gen); the decoders are identical.
 
 \input{generated/supp_external.tex}
 
 \paragraph{Denum.} The released Denum compressor (commit a3a6975) replaces each match of its per-dataset regular expressions by a tag and stores the concatenated digits as one integer, without group widths or separator positions; its Python decoder also drops carriage returns and leading zeros. For each of the sixteen datasets we changed one line of block 0 by moving a digit across a group boundary; in all 16 cases the original and the modified block produce byte-identical archive members, so no decoder can restore both. Examples: \texttt{[Thu Jun 09 06:07:04 2005] [notice] LD} vs.\ \texttt{[Thu Jun 09 0:607:04 2005] [notice] LD}; \texttt{...3 R02-M1-N0-C:J12-U11 2005-06-03-15.42.50.363779 R} vs.\ \texttt{...3 R02-M1-N0-C:J12-U11 200-506-03-15.42.50.363779 R}; \texttt{...08999687919862906 src: /10.250.19.102:54106 dest: } vs.\ \texttt{...08999687919862906 src: /1.0250.19.102:54106 dest: }. Denum is therefore excluded from the lossless comparison.
 
-\paragraph{Published numbers without implementations.} LogFold and LogPrism provide no public implementation (checked 29 September 2026: the LogFold repository holds only a license and README; the LogPrism repository is empty). Their papers report the following ratios for 100,000-line chunks; input identities are not verified and these numbers are not matched observations.
+\paragraph{Published numbers without implementations.} LogFold and LogPrism provide no public implementation (checked before submission: the LogFold repository holds only a license and README; the LogPrism repository is empty). Their papers report the following ratios for 100,000-line chunks; input identities are not verified and these numbers are not matched observations.
 
 \begin{longtable}{lrrr}\caption{Published ratios (literature context only) next to \tool.}\label{tab:published}\\\toprule
 
@@ -47,6 +47,46 @@ Thunderbird & 67.69 & 75.86 & 64.86 \\
 Windows & 570.55 & 497.30 & 618.58 \\
 
 Zookeeper & 145.74 & 143.74 & 189.42 \\
+
+\bottomrule\end{longtable}
+
+\paragraph{DeLog: released implementation versus published ratios.} Running the released DeLog (commit 64a074f) on whole files with the command line of its own benchmark script (text mode, 100,000-line blocks, four threads, frequency threshold 0, LZMA, normal mode) gives 27.60$\times$ on Linux and 40.33$\times$ on BGL, identical to our block adapter, whereas the DeLog paper reports 30.63$\times$ and 45.68$\times$. All tables use the measured values; the published ratios are listed here.
+
+\begin{longtable}{lrrrr}\caption{DeLog: measured on our inputs versus published (literature only).}\label{tab:delog-published}\\\toprule
+
+Dataset & Measured & Published & Difference & \tool\ \\\midrule
+
+Android & 29.29 & 30.35 & +3.6\% & 34.55 \\
+
+Apache & 59.77 & 59.65 & $-$0.2\% & 73.74 \\
+
+BGL & 40.33 & 45.68 & +13.3\% & 52.32 \\
+
+Hadoop & 80.60 & 79.63 & $-$1.2\% & 85.03 \\
+
+HDFS & 29.83 & 29.01 & $-$2.7\% & 31.05 \\
+
+HealthApp & 51.40 & 55.93 & +8.8\% & 59.53 \\
+
+HPC & 44.70 & 46.84 & +4.8\% & 45.79 \\
+
+Linux & 27.60 & 30.63 & +11.0\% & 40.09 \\
+
+Mac & 44.22 & 43.69 & $-$1.2\% & 54.13 \\
+
+OpenSSH & 107.76 & 106.01 & $-$1.6\% & 117.78 \\
+
+OpenStack & 21.70 & 23.75 & +9.4\% & 25.24 \\
+
+Proxifier & 30.19 & 30.78 & +2.0\% & 36.13 \\
+
+Spark & 59.05 & 61.79 & +4.6\% & 62.35 \\
+
+Thunderbird & 67.68 & 68.65 & +1.4\% & 64.86 \\
+
+Windows & 536.18 & 541.57 & +1.0\% & 618.58 \\
+
+Zookeeper & 156.89 & 154.93 & $-$1.3\% & 189.42 \\
 
 \bottomrule\end{longtable}
 
@@ -172,4 +212,4 @@ Spark & 3 & 62.53 & 62.57 & $-$5.57\% & $-$5.52\% & \\
 
 \textbf{Audit.} The runtime executes \texttt{python\_exec} code with \texttt{exec(compile(...))} after an allow-list check of syntax nodes, in a namespace limited to \texttt{datetime}, \texttt{timedelta}, \texttt{int}, \texttt{str}, \texttt{len}, \texttt{float}, \texttt{round}, \texttt{abs}, \texttt{min}, \texttt{max}, and a restricted import shim; context programs also receive the \texttt{re} module. Names beginning with a double underscore are rejected. Code runs in the decoding worker process with the decoder\textquotesingle s privileges and no resource limits, and semantic archives are unpacked without member-path filtering. Four crafted archives derived from the Apache archive test this boundary: an injected import (rejected by the runtime), a format string reading \texttt{\{0.\_\_class\_\_\}} (accepted), a context program reading \texttt{re.enum.sys} (accepted, top level executed), and a tar member \texttt{../} path (not executed against the unprotected decoder).
 
-\textbf{Check.} The enforced check rejects imports, names and attributes beginning with an underscore outside the runtime\textquotesingle s fixed wrapper, reflective built-ins, format fields, and module attributes outside an allow-list, and preflights tar members. It rejects all four crafted archives. Over 89 distinct programs from all syntheses, deployments, and evolution runs, the only strict-rule findings (144 underscore names in 12 programs) come from the runtime\textquotesingle s own fixed wrapper, which the check recognizes exactly; LLM-written code has no violation. With the check enforced before any program is compiled, all sixteen archives (3,797 blocks) decode byte-exactly.
+\textbf{Check.} The enforced check rejects imports, names and attributes beginning with an underscore outside the runtime\textquotesingle s fixed wrapper, reflective built-ins, format fields, and module attributes outside an allow-list, and preflights tar members. It rejects all four crafted archives. Over 89 distinct programs from all syntheses, deployments, and evolution runs, the only strict-rule findings (144 underscore names in 12 programs) come from the runtime\textquotesingle s own fixed wrapper, which the check recognizes exactly; LLM-written code has no violation. A later pass with the same validator over the repeated greedy syntheses, the complete reruns, and the unseen-source runs adds 45 distinct LLM-written programs (134 in total) and again finds no violation outside the fixed wrapper; the eleven hand-written library programs also pass. With the check enforced before any program is compiled, all sixteen archives (3,797 blocks) decode byte-exactly.

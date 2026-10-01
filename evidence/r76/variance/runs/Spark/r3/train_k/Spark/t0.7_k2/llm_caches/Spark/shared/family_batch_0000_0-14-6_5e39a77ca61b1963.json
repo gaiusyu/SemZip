@@ -1,0 +1,317 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "16/04/07",
+              "10:46:42"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "6.1 KB",
+              "6214 bytes"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "mesos-slave-26:58204",
+              "10.10.34.25:55299"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "broadcast_6_piece0",
+              "broadcast_1_piece0"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no consistent prefix across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp",
+          "size_in_bytes"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "host_port",
+          "broadcast_name"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log record timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "datetime components",
+            "context_source": null,
+            "why_not_merge_raw": "datetime components can be merged into a single numeric value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        },
+        {
+          "tag": "size_in_bytes",
+          "meaning": "size of object in bytes",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "byte size",
+            "context_source": null,
+            "why_not_merge_raw": "multiple display formats represent the same size in bytes"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "size: (\\d+\\.\\d+) (B|KB|MB|GB)",
+          "replacement": "size: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    size = float(groups[0])\n    unit = groups[1]\n    multiplier = {'B': 1, 'KB': 1024, 'MB': 1024**2, 'GB': 1024**3}[unit]\n    return {'stored': [int(size * multiplier)], 'layout': [unit]}\n\ndef inverse(record):\n    size_in_bytes = record['stored'][0]\n    unit = record['layout'][0]\n    multiplier = {'B': 1, 'KB': 1024, 'MB': 1024**2, 'GB': 1024**3}[unit]\n    return f\"{size_in_bytes / multiplier:.1f} {unit}\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "host_port",
+          "meaning": "host and port combination",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "host:port",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsic structure of host:port format"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "on ([^ ]+:[0-9]+)",
+          "replacement": "on {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "broadcast_name",
+          "meaning": "broadcast identifier name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "broadcast name",
+            "context_source": null,
+            "why_not_merge_raw": "role-anchored plain variable"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "(broadcast_[0-9]+_piece[0-9]+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "15/09/01",
+              "18:16:44"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no consistent prefix across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log record timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "datetime components",
+            "context_source": null,
+            "why_not_merge_raw": "datetime components can be merged into a single numeric value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "15/09/01",
+              "18:16:43"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "1097.0 B",
+              "1.1 KB"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no consistent prefix across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp",
+          "estimated_size"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log record timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "datetime components",
+            "context_source": null,
+            "why_not_merge_raw": "datetime components can be merged into a single numeric value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%y/%m/%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        },
+        {
+          "tag": "estimated_size",
+          "meaning": "estimated block size in bytes",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "block size",
+            "context_source": null,
+            "why_not_merge_raw": "multiple display formats represent the same size in bytes"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "estimated size (\\d+\\.\\d+) (B|KB|MB)",
+          "replacement": "estimated size {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    size = float(groups[0])\n    unit = groups[1]\n    multiplier = {'B': 1, 'KB': 1024, 'MB': 1024**2}[unit]\n    return {'stored': [int(size * multiplier)], 'layout': [unit]}\n\ndef inverse(record):\n    size_in_bytes = record['stored'][0]\n    unit = record['layout'][0]\n    multiplier = {'B': 1, 'KB': 1024, 'MB': 1024**2}[unit]\n    return f\"{size_in_bytes / multiplier:.1f} {unit}\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

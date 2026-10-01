@@ -1,0 +1,240 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "fan_speed_readings",
+            "tokens": [
+              "3552",
+              "3534",
+              "3375",
+              "****",
+              "3515",
+              "3479"
+            ],
+            "reason": "multiple speed values in sequence represent a single coherent attribute",
+            "target_value": "list of integer-like values",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "node_id",
+            "tokens": [
+              "272839",
+              "269509",
+              "433893",
+              "225841"
+            ],
+            "reason": "the node ID is a structured identifier with numeric significance",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "node_id",
+          "reason": "structured numeric identifier"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "fan_speed_readings"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "fan_speeds",
+          "meaning": "fan_speed_readings",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "fan speeds as a single list",
+            "context_source": null,
+            "why_not_merge_raw": "all the fan speeds together represent a coherent attribute"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(\\s*(\\d{4})\\s+(\\d{4})\\s+(\\d{4})(?:\\s+\\*{4})?\\s+(\\d{4})\\s+(\\d{4})\\s*\\)",
+          "replacement": "({placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    speeds = [int(g) for g in groups if g.isdigit()]\n    return {'stored': speeds, 'layout': []}\n\ndef inverse(record):\n    speeds = [str(v) for v in record['stored']]\n    return '(' + ' '.join(speeds) + ')'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_id",
+          "meaning": "structured node identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "node ID as string",
+            "context_source": null,
+            "why_not_merge_raw": "node ID is a standalone structured identifier"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "^\\d{6}",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "component_id",
+            "tokens": [
+              "\\042alt0\\042",
+              "\\042SCSI-WWID:01000010:6005-08b4-0001-4048-0008-a000-0047-0000\\042",
+              "\\042SCSI-WWID:01000010:6005-08b4-0001-017f-0001-3000-003c-0000\\042"
+            ],
+            "reason": "explicitly structured component identifier with separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header structure"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "component_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "component_id",
+          "meaning": "structured component identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "component ID as string",
+            "context_source": null,
+            "why_not_merge_raw": "component ID is a standalone structured identifier"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\\\042([^\\\\]+)\\\\042",
+          "replacement": "\\\"{placeholder}\\\"",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'\\\"{record[\"stored\"][0]}\\\"'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header structure"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header structure"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header structure"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

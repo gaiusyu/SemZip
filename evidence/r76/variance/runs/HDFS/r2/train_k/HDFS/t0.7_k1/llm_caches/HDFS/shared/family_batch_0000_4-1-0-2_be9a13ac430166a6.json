@@ -1,0 +1,380 @@
+{
+  "families": [
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "10.250.11.100:50010",
+              "/10.250.19.102",
+              "blk_7854771516489510256",
+              "blk_-3544583377289625738"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id",
+          "ip_address_port"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block_id",
+            "context_source": null,
+            "why_not_merge_raw": "the block ID is a self-contained structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_(-?\\d{1,19})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'blk_{record['stored'][0]}'"
+          }
+        },
+        {
+          "tag": "ip_address_port",
+          "meaning": "source or destination endpoint",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "ip_address_port",
+            "context_source": null,
+            "why_not_merge_raw": "IP and port are captured together as one structured endpoint"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(\\d{1,3}(?:\\.\\d{1,3}){3}:\\d{1,5})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "blk_7503483334202473044",
+              "10.251.106.10:50010",
+              "233217"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id",
+          "ip_address_port",
+          "block_size"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block_id",
+            "context_source": null,
+            "why_not_merge_raw": "the block ID is a self-contained structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_(-?\\d{1,19})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'blk_{record['stored'][0]}'"
+          }
+        },
+        {
+          "tag": "ip_address_port",
+          "meaning": "source endpoint",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "ip_address_port",
+            "context_source": null,
+            "why_not_merge_raw": "IP and port are captured together as one structured endpoint"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(\\d{1,3}(?:\\.\\d{1,3}){3}:\\d{1,5})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "block_size",
+          "meaning": "size of the block in bytes",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block_size",
+            "context_source": null,
+            "why_not_merge_raw": "the block size is a self-contained numeric value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\bsize (\\d{1,9})",
+          "replacement": "size {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'size {record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "blk_7503483334202473044",
+              "/10.251.215.16:55695",
+              "/10.251.215.16:50010"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id",
+          "source_destination_endpoint"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block_id",
+            "context_source": null,
+            "why_not_merge_raw": "the block ID is a self-contained structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_(-?\\d{1,19})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'blk_{record['stored'][0]}'"
+          }
+        },
+        {
+          "tag": "source_destination_endpoint",
+          "meaning": "endpoint for source or destination",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "IP and port are captured together as one structured endpoint"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "/(\\d{1,3}(?:\\.\\d{1,3}){3}:\\d{1,5})",
+          "replacement": "/{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'/{record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "blk_7503483334202473044",
+              "/10.251.215.16",
+              "233217"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id",
+          "source_endpoint",
+          "block_size"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block_id",
+            "context_source": null,
+            "why_not_merge_raw": "the block ID is a self-contained structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_(-?\\d{1,19})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'blk_{record['stored'][0]}'"
+          }
+        },
+        {
+          "tag": "source_endpoint",
+          "meaning": "source IP endpoint",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "IP is captured as a structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "/(\\d{1,3}(?:\\.\\d{1,3}){3})",
+          "replacement": "/{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'/{record['stored'][0]}'"
+          }
+        },
+        {
+          "tag": "block_size",
+          "meaning": "size of the block in bytes",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block_size",
+            "context_source": null,
+            "why_not_merge_raw": "the block size is a self-contained numeric value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\bsize (\\d{1,9})",
+          "replacement": "size {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'size {record['stored'][0]}'"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

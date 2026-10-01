@@ -1,0 +1,100 @@
+{
+ "dataset": "HDFS",
+ "method": "logshrink_r",
+ "repeat": 3,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_087_HDFS_logshrink_r_r3_a1",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/HDFS.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 277338890,
+ "blocks": 20,
+ "started_unix": 1790849572.951717,
+ "encode": {
+  "command": [
+   "<WORKDIR>/r76_additional_20260929/baselines/logshrink/venv/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_ls.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_087_HDFS_logshrink_r_r3_a1/encode_request.json"
+  ],
+  "seconds": 226.52480330318213,
+  "returncode": 0,
+  "load_average": [
+   14.56,
+   14.21,
+   14.47
+  ],
+  "started_unix": 1790849572.959436,
+  "own_cpu_seconds": 287.92457000000104,
+  "other_cpu_seconds": 26.536781532998987,
+  "other_cores": 0.11714735492996765
+ },
+ "decode": {
+  "command": [
+   "<WORKDIR>/r76_additional_20260929/baselines/logshrink/venv/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_ls.py",
+   "decode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_087_HDFS_logshrink_r_r3_a1/decode_request.json"
+  ],
+  "seconds": 98.15991455316544,
+  "returncode": 0,
+  "load_average": [
+   14.04,
+   14.21,
+   14.45
+  ],
+  "started_unix": 1790849799.4890745,
+  "own_cpu_seconds": 66.17486300000019,
+  "other_cpu_seconds": 0.9295319369998083,
+  "other_cores": 0.009469567503508315
+ },
+ "archive_bytes": 21518871,
+ "native_archive_bytes": 12239215,
+ "block_failures": {
+  "encode": [],
+  "decode": []
+ },
+ "sha_pass": true,
+ "audit_seconds": 1.1258894503116608,
+ "encode_native": {
+  "command": [
+   "<WORKDIR>/r76_additional_20260929/baselines/logshrink/venv/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_ls.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_087_HDFS_logshrink_r_r3_a1/encode_native_request.json"
+  ],
+  "seconds": 122.83900762349367,
+  "returncode": 0,
+  "load_average": [
+   14.46,
+   14.61,
+   14.59
+  ],
+  "started_unix": 1790849898.8179555,
+  "own_cpu_seconds": 170.04590699999972,
+  "other_cpu_seconds": 1.1132113530002812,
+  "other_cores": 0.009062360357162094
+ },
+ "native_encode_consistency": {
+  "blocks": 20,
+  "blocks_compared": 20,
+  "encode_fail_pattern_equal": true,
+  "structure_equal_all": true,
+  "native_bytes_adapted_run": 12239215,
+  "native_bytes_native_run": 12239220,
+  "max_abs_block_native_byte_diff": 14
+ },
+ "encode_MB_per_s": 1.2243201890294018,
+ "decode_MB_per_s": 2.8253782744461082,
+ "encode_native_MB_per_s": 2.2577428405320115,
+ "finished_unix": 1790850021.6633399,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.006461448058943206
+ },
+ "max_other_cores": 0.11714735492996765,
+ "contaminated": false
+}

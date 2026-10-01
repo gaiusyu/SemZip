@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "byte_size",
+      "meaning": "byte size in KB",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "estimated size\\s*(\\d+\\.\\d+)\\s*KB",
+      "replacement": "estimated size {placeholder} KB",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value_kb = float(groups[0])\n    canonical_bytes = int(round(value_kb * 1024))\n    return {'stored': [canonical_bytes], 'layout': []}\n\ndef inverse(record):\n    canonical_bytes = int(record['stored'][0])\n    value_kb = canonical_bytes / 1024\n    return f'{value_kb:.1f} KB'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

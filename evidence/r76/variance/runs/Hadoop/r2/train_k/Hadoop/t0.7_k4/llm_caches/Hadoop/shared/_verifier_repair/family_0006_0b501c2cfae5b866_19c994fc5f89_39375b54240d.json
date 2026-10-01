@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "spill_index",
+      "meaning": "spill index number",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "spill (\\d+)",
+      "replacement": "spill {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"spill {record['stored'][0]}\".strip()"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

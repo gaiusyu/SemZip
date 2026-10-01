@@ -1,0 +1,82 @@
+You are a verifier-repair agent for HPC log compression.
+Repair exactly one rejected reversible extraction function.
+Return exact JSON only: {"functions": [ ... ]}.
+
+Goal:
+- Keep the original semantic intent when possible.
+- Make the function pass a strict byte-exact verifier.
+- Do not add dataset-specific constants beyond what appears in the examples and failed regex.
+- Prefer the smallest safe repair: fix class/value_type, regex boundary, replacement, or python_exec code.
+Repair category: context_projector.
+Keep the target regex, replacement, and reversible target program unless the verifier
+explicitly says they are invalid. Repair context.code so it defines deterministic
+project_context(line, groups), uses only literal safe re.search/re.match/re.fullmatch,
+and returns the actual per-line context value as str/int or None. Context is routing
+metadata and must not be required by inverse(record).
+
+Required function schema:
+{
+  "tag": "short_name",
+  "meaning": "short meaning",
+  "class": "class_1_composed_numeric | class_2_formatted_numeric | class_3_common_variable",
+  "value_type": "numeric | string",
+  "target_role": "log_timestamp | ordinary_value",
+  "context": null,
+  "regex": "Python regex with explicit capture groups",
+  "replacement": "template containing {placeholder} and any needed {groupN}",
+  "program": {
+    "op": "python_exec",
+    "code": "def forward(groups):\n    ...\n\ndef inverse(record):\n    ..."
+  }
+}
+
+Python execution contract:
+- forward(groups) receives the captured value groups selected by the compiler.
+- It returns {'stored': [...], 'layout': [...]}.
+- inverse(record) reconstructs exactly the placeholder text from record['stored'] and record['layout'].
+- For raw variables, use this executable pattern:
+  def forward(groups):
+      return {'stored': [groups[0]], 'layout': []}
+  def inverse(record):
+      return str(record['stored'][0])
+- For numeric variables, store int values, not strings.
+- Preserve exact spaces by capturing them as ( +) and either keeping them as {groupN} in replacement or storing layout.
+- When repairing context, replace null with {"code": "def project_context(line, groups): ..."}; the function returns the actual context value or None.
+
+Verifier failure:
+{
+  "status": "rejected_context_projector_validation",
+  "reasons": [
+    "context projector returned no context value"
+  ]
+}
+
+Failed function:
+{
+  "tag": "domain_name",
+  "meaning": "variable domain name",
+  "class": "class_3_common_variable",
+  "value_type": "string",
+  "target_role": "ordinary_value",
+  "context": {
+    "code": "def project_context(line, groups):\n    m = re.search(r'node( +-)([A-Za-z0-9-]+)', line)\n    if m:\n        return m.group(2)\n    return None"
+  },
+  "general": true,
+  "order_hint": "family_structured",
+  "regex": "domain( +)([A-Za-z0-9_]+)",
+  "replacement": "domain{group1}{placeholder}",
+  "program": {
+    "intent": "Stores the exact domain name.",
+    "op": "python_exec",
+    "parameters": {},
+    "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+  }
+}
+
+Family examples:
+- 2550530 node-D4 clusterfilesystem clusterfilesystem.not_served 1072479557 1 ClusterFileSystem: ServerFileSystem domain root13_domain is no longer served by node node-140
+- 2550528 node-D4 clusterfilesystem clusterfilesystem.not_served 1072479539 1 ClusterFileSystem: ServerFileSystem domain root13_local is no longer served by node node-140
+- 155963 node-D0 clusterfilesystem clusterfilesystem.not_served 1077864642 1 ClusterFileSystem: ServerFileSystem domain storage314 is no longer served by node node-8
+- 155968 node-D0 clusterfilesystem clusterfilesystem.not_served 1077864646 1 ClusterFileSystem: ServerFileSystem domain storage324 is no longer served by node node-9
+- 2559864 node-D7 clusterfilesystem clusterfilesystem.not_served 1073132978 1 ClusterFileSystem: ServerFileSystem domain cluster_var_backup is no longer served by node node-224
+- 2559853 node-D1 clusterfilesystem clusterfilesystem.not_served 1073132210 1 ClusterFileSystem: ServerFileSystem domain cluster_var_backup is no longer served by node node-32

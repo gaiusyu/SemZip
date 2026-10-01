@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "duration_value",
+      "meaning": "snapshot duration",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "at ([0-9]+) second\\(s\\)",
+      "replacement": "at {placeholder} second(s)",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': [' second(s)']}\n\ndef inverse(record):\n    return f'{record[\"stored\"][0]}{record[\"layout\"][0]}'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

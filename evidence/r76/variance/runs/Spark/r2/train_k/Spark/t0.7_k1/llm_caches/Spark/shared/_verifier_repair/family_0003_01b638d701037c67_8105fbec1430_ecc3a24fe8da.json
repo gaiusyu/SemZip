@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "task_stage_tid_running",
+      "meaning": "task identification",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "task (\\d+\\.\\d+) in stage (\\d+\\.\\d+) \\(TID (\\d+)\\)",
+      "replacement": "task {placeholder} in stage {group2} (TID {group3})",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    task_id = int(float(groups[0]) * 1000)\n    stage_id = int(float(groups[1]) * 1000)\n    tid = int(groups[2])\n    compact_value = task_id * 10**12 + stage_id * 10**6 + tid\n    return {'stored': [compact_value], 'layout': []}\n\ndef inverse(record):\n    compact_value = int(record['stored'][0])\n    task_id = compact_value // 10**12\n    stage_id = (compact_value % 10**12) // 10**6\n    tid = compact_value % 10**6\n    task_id_str = f\"{task_id / 1000:.1f}\"\n    stage_id_str = f\"{stage_id / 1000:.1f}\"\n    return f\"{task_id_str} in stage {stage_id_str} (TID {tid})\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

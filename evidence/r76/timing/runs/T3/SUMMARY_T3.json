@@ -1,0 +1,1107 @@
+{
+ "session": "T3",
+ "formal": true,
+ "repeats_required": 3,
+ "scope": "R68-FORMAL-R71-OUTER-CLI-V3 timing scope (as R73 timing_campaign.py); same host, one serialized session per table; 4 block workers for every method",
+ "note": null,
+ "label": "MB/s on the pre-registered 20 sampled 100k-line blocks per dataset (NOT whole files)",
+ "statistic": "per dataset: median over repeats of the latest clean (other_cores <= 0.5) terminal result per repeat; geometric mean over datasets; byte-weighted = total bytes / total median seconds",
+ "methods": {
+  "semzip": {
+   "per_dataset": {
+    "HDFS": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 277338890,
+     "blocks": 20,
+     "archive_bytes_median": 10051875,
+     "trial_dirs": [
+      "20261001053412_000_HDFS_semzip_r1_a1",
+      "20261001053412_049_HDFS_semzip_r2_a1",
+      "20261001053412_088_HDFS_semzip_r3_a1"
+     ],
+     "encode_MB_per_s": 7.667348761491535,
+     "encode_seconds": 36.17141969501972,
+     "decode_MB_per_s": 49.83027767264997,
+     "decode_seconds": 5.565670169889927
+    },
+    "Spark": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 170382248,
+     "blocks": 20,
+     "archive_bytes_median": 2875976,
+     "trial_dirs": [
+      "20261001053412_019_Spark_semzip_r1_a1",
+      "20261001053412_058_Spark_semzip_r2_a1",
+      "20261001053412_097_Spark_semzip_r3_a1"
+     ],
+     "encode_MB_per_s": 5.463009920826652,
+     "encode_seconds": 31.188346803188324,
+     "decode_MB_per_s": 24.233563696345986,
+     "decode_seconds": 7.03083748370409
+    },
+    "Windows": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 465577918,
+     "blocks": 20,
+     "archive_bytes_median": 773110,
+     "trial_dirs": [
+      "20261001053412_028_Windows_semzip_r1_a1",
+      "20261001053412_067_Windows_semzip_r2_a1",
+      "20261001053412_106_Windows_semzip_r3_a1"
+     ],
+     "encode_MB_per_s": 9.579131079659193,
+     "encode_seconds": 48.60335599631071,
+     "decode_MB_per_s": 57.20117608674432,
+     "decode_seconds": 8.139306738972664
+    },
+    "Thunderbird": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 268957222,
+     "blocks": 20,
+     "archive_bytes_median": 3911842,
+     "trial_dirs": [
+      "20261001053412_037_Thunderbird_semzip_r1_a1",
+      "20261001053412_076_Thunderbird_semzip_r2_a1",
+      "20261001053412_115_Thunderbird_semzip_r3_a1"
+     ],
+     "encode_MB_per_s": 11.863981642139171,
+     "encode_seconds": 22.67006390541792,
+     "decode_MB_per_s": 55.77391691492562,
+     "decode_seconds": 4.822276018559933
+    }
+   },
+   "incomplete": [],
+   "not_lossless_timed_only": [],
+   "aggregate_datasets": [
+    "HDFS",
+    "Spark",
+    "Windows",
+    "Thunderbird"
+   ],
+   "aggregate_complete": true,
+   "encode_gmean": 8.306315967543343,
+   "encode_byte_weighted_MB_per_s": 8.527945643472131,
+   "decode_gmean": 44.303360933389975,
+   "decode_byte_weighted_MB_per_s": 46.2576138898589
+  },
+  "delog": {
+   "per_dataset": {
+    "HDFS": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 277338890,
+     "blocks": 20,
+     "archive_bytes_median": 10422680,
+     "trial_dirs": [
+      "20261001053412_001_HDFS_delog_r1_a1",
+      "20261001053412_040_HDFS_delog_r2_a1",
+      "20261001053412_089_HDFS_delog_r3_a1"
+     ],
+     "encode_MB_per_s": 26.768738480888636,
+     "encode_seconds": 10.360551364719868,
+     "decode_MB_per_s": 75.6640288296369,
+     "decode_seconds": 3.665399454534054
+    },
+    "Spark": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 170382248,
+     "blocks": 20,
+     "archive_bytes_median": 3044020,
+     "trial_dirs": [
+      "20261001053412_010_Spark_delog_r1_a1",
+      "20261001053412_059_Spark_delog_r2_a1",
+      "20261001053412_098_Spark_delog_r3_a1"
+     ],
+     "encode_MB_per_s": 24.29229891715126,
+     "encode_seconds": 7.013837948441505,
+     "decode_MB_per_s": 56.54365404598422,
+     "decode_seconds": 3.013286828994751
+    },
+    "Windows": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 465577918,
+     "blocks": 20,
+     "archive_bytes_median": 883716,
+     "trial_dirs": [
+      "20261001053412_029_Windows_delog_r1_a1",
+      "20261001053412_068_Windows_delog_r2_a1",
+      "20261001053412_107_Windows_delog_r3_a1"
+     ],
+     "encode_MB_per_s": 43.828086979718556,
+     "encode_seconds": 10.622820891439915,
+     "decode_MB_per_s": 124.6399867025218,
+     "decode_seconds": 3.73538164049387
+    },
+    "Thunderbird": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 268957222,
+     "blocks": 20,
+     "archive_bytes_median": 3756352,
+     "trial_dirs": [
+      "20261001053412_038_Thunderbird_delog_r1_a1",
+      "20261001053412_077_Thunderbird_delog_r2_a1",
+      "20261001053412_116_Thunderbird_delog_r3_a1"
+     ],
+     "encode_MB_per_s": 20.080302518078437,
+     "encode_seconds": 13.394082173705101,
+     "decode_MB_per_s": 66.5282226496607,
+     "decode_seconds": 4.042753756046295
+    }
+   },
+   "incomplete": [],
+   "not_lossless_timed_only": [],
+   "aggregate_datasets": [
+    "HDFS",
+    "Spark",
+    "Windows",
+    "Thunderbird"
+   ],
+   "aggregate_complete": true,
+   "encode_gmean": 27.504567606526315,
+   "encode_byte_weighted_MB_per_s": 28.562922539225497,
+   "decode_gmean": 77.17633701028873,
+   "decode_byte_weighted_MB_per_s": 81.77843679360925
+  },
+  "loglite": {
+   "per_dataset": {
+    "HDFS": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 277338890,
+     "blocks": 20,
+     "archive_bytes_median": 24085176,
+     "trial_dirs": [
+      "20261001053412_002_HDFS_loglite_r1_a1",
+      "20261001053412_041_HDFS_loglite_r2_a1",
+      "20261001053412_080_HDFS_loglite_r3_a1"
+     ],
+     "encode_MB_per_s": 19.798851501404908,
+     "encode_seconds": 14.007827170193195,
+     "decode_MB_per_s": 85.95612256195245,
+     "decode_seconds": 3.226516991853714
+    },
+    "Spark": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 170382248,
+     "blocks": 20,
+     "archive_bytes_median": 4929444,
+     "trial_dirs": [
+      "20261001053412_011_Spark_loglite_r1_a1",
+      "20261001053412_050_Spark_loglite_r2_a1",
+      "20261001053412_099_Spark_loglite_r3_a1"
+     ],
+     "encode_MB_per_s": 27.768402262685957,
+     "encode_seconds": 6.135831885039806,
+     "decode_MB_per_s": 76.74045492997456,
+     "decode_seconds": 2.2202402651309967
+    },
+    "Windows": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 465577918,
+     "blocks": 20,
+     "archive_bytes_median": 1545872,
+     "trial_dirs": [
+      "20261001053412_020_Windows_loglite_r1_a1",
+      "20261001053412_069_Windows_loglite_r2_a1",
+      "20261001053412_108_Windows_loglite_r3_a1"
+     ],
+     "encode_MB_per_s": 71.60224303897253,
+     "encode_seconds": 6.502281188964844,
+     "decode_MB_per_s": 153.53787938188455,
+     "decode_seconds": 3.032332606613636
+    },
+    "Thunderbird": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 268957222,
+     "blocks": 20,
+     "archive_bytes_median": 6883652,
+     "trial_dirs": [
+      "20261001053412_039_Thunderbird_loglite_r1_a1",
+      "20261001053412_078_Thunderbird_loglite_r2_a1",
+      "20261001053412_117_Thunderbird_loglite_r3_a1"
+     ],
+     "encode_MB_per_s": 30.15789096637212,
+     "encode_seconds": 8.918303415179253,
+     "decode_MB_per_s": 102.5751214510611,
+     "decode_seconds": 2.62205121666193
+    }
+   },
+   "incomplete": [],
+   "not_lossless_timed_only": [],
+   "aggregate_datasets": [
+    "HDFS",
+    "Spark",
+    "Windows",
+    "Thunderbird"
+   ],
+   "aggregate_complete": true,
+   "encode_gmean": 33.00879124502186,
+   "encode_byte_weighted_MB_per_s": 33.24283483498963,
+   "decode_gmean": 100.95775647332043,
+   "decode_byte_weighted_MB_per_s": 106.49862653328977
+  },
+  "gzip6": {
+   "per_dataset": {
+    "HDFS": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 277338890,
+     "blocks": 20,
+     "archive_bytes_median": 30443643,
+     "trial_dirs": [
+      "20261001053412_003_HDFS_gzip6_r1_a1",
+      "20261001053412_042_HDFS_gzip6_r2_a1",
+      "20261001053412_081_HDFS_gzip6_r3_a1"
+     ],
+     "encode_MB_per_s": 87.25831641871827,
+     "encode_seconds": 3.1783662736415863,
+     "decode_MB_per_s": 182.58537902000919,
+     "decode_seconds": 1.5189545378088951
+    },
+    "Spark": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 170382248,
+     "blocks": 20,
+     "archive_bytes_median": 11020325,
+     "trial_dirs": [
+      "20261001053412_012_Spark_gzip6_r1_a1",
+      "20261001053412_051_Spark_gzip6_r2_a1",
+      "20261001053412_090_Spark_gzip6_r3_a1"
+     ],
+     "encode_MB_per_s": 65.89312348665017,
+     "encode_seconds": 2.5857364013791084,
+     "decode_MB_per_s": 126.67721637045778,
+     "decode_seconds": 1.3450109884142876
+    },
+    "Windows": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 465577918,
+     "blocks": 20,
+     "archive_bytes_median": 28371610,
+     "trial_dirs": [
+      "20261001053412_021_Windows_gzip6_r1_a1",
+      "20261001053412_060_Windows_gzip6_r2_a1",
+      "20261001053412_109_Windows_gzip6_r3_a1"
+     ],
+     "encode_MB_per_s": 131.0670394114414,
+     "encode_seconds": 3.5522120594978333,
+     "decode_MB_per_s": 220.26480712067007,
+     "decode_seconds": 2.1137190461158752
+    },
+    "Thunderbird": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 268957222,
+     "blocks": 20,
+     "archive_bytes_median": 18089319,
+     "trial_dirs": [
+      "20261001053412_030_Thunderbird_gzip6_r1_a1",
+      "20261001053412_079_Thunderbird_gzip6_r2_a1",
+      "20261001053412_118_Thunderbird_gzip6_r3_a1"
+     ],
+     "encode_MB_per_s": 85.84291807038555,
+     "encode_seconds": 3.133132331073284,
+     "decode_MB_per_s": 156.44707086933502,
+     "decode_seconds": 1.7191579267382622
+    }
+   },
+   "incomplete": [],
+   "not_lossless_timed_only": [],
+   "aggregate_datasets": [
+    "HDFS",
+    "Spark",
+    "Windows",
+    "Thunderbird"
+   ],
+   "aggregate_complete": true,
+   "encode_gmean": 89.68322590465412,
+   "encode_byte_weighted_MB_per_s": 94.9645612187515,
+   "decode_gmean": 168.02320503582746,
+   "decode_byte_weighted_MB_per_s": 176.53935838611844
+  },
+  "xz6": {
+   "per_dataset": {
+    "HDFS": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 277338890,
+     "blocks": 20,
+     "archive_bytes_median": 19075964,
+     "trial_dirs": [
+      "20261001053412_004_HDFS_xz6_r1_a1",
+      "20261001053412_043_HDFS_xz6_r2_a1",
+      "20261001053412_082_HDFS_xz6_r3_a1"
+     ],
+     "encode_MB_per_s": 9.952937574736376,
+     "encode_seconds": 27.865028582513332,
+     "decode_MB_per_s": 129.56594034207512,
+     "decode_seconds": 2.140523113310337
+    },
+    "Spark": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 170382248,
+     "blocks": 20,
+     "archive_bytes_median": 7630596,
+     "trial_dirs": [
+      "20261001053412_013_Spark_xz6_r1_a1",
+      "20261001053412_052_Spark_xz6_r2_a1",
+      "20261001053412_091_Spark_xz6_r3_a1"
+     ],
+     "encode_MB_per_s": 12.021952394725895,
+     "encode_seconds": 14.172593802213669,
+     "decode_MB_per_s": 101.84621358297005,
+     "decode_seconds": 1.672936499118805
+    },
+    "Windows": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 465577918,
+     "blocks": 20,
+     "archive_bytes_median": 2021532,
+     "trial_dirs": [
+      "20261001053412_022_Windows_xz6_r1_a1",
+      "20261001053412_061_Windows_xz6_r2_a1",
+      "20261001053412_100_Windows_xz6_r3_a1"
+     ],
+     "encode_MB_per_s": 40.938625526330654,
+     "encode_seconds": 11.372583031654358,
+     "decode_MB_per_s": 218.62859310567305,
+     "decode_seconds": 2.129538096487522
+    },
+    "Thunderbird": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 268957222,
+     "blocks": 20,
+     "archive_bytes_median": 9403704,
+     "trial_dirs": [
+      "20261001053412_031_Thunderbird_xz6_r1_a1",
+      "20261001053412_070_Thunderbird_xz6_r2_a1",
+      "20261001053412_119_Thunderbird_xz6_r3_a1"
+     ],
+     "encode_MB_per_s": 14.764078131814648,
+     "encode_seconds": 18.217000722885132,
+     "decode_MB_per_s": 136.91055678793157,
+     "decode_seconds": 1.9644739478826523
+    }
+   },
+   "incomplete": [],
+   "not_lossless_timed_only": [],
+   "aggregate_datasets": [
+    "HDFS",
+    "Spark",
+    "Windows",
+    "Thunderbird"
+   ],
+   "aggregate_complete": true,
+   "encode_gmean": 16.398966138356318,
+   "encode_byte_weighted_MB_per_s": 16.50568745765835,
+   "decode_gmean": 140.97591073152986,
+   "decode_byte_weighted_MB_per_s": 149.51128872949238
+  },
+  "zstd3": {
+   "per_dataset": {
+    "HDFS": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 277338890,
+     "blocks": 20,
+     "archive_bytes_median": 29213877,
+     "trial_dirs": [
+      "20261001053412_005_HDFS_zstd3_r1_a1",
+      "20261001053412_044_HDFS_zstd3_r2_a1",
+      "20261001053412_083_HDFS_zstd3_r3_a1"
+     ],
+     "encode_MB_per_s": 142.08806257501132,
+     "encode_seconds": 1.9518802985548973,
+     "decode_MB_per_s": 196.49905483584706,
+     "decode_seconds": 1.411400631070137
+    },
+    "Spark": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 170382248,
+     "blocks": 20,
+     "archive_bytes_median": 11494514,
+     "trial_dirs": [
+      "20261001053412_014_Spark_zstd3_r1_a1",
+      "20261001053412_053_Spark_zstd3_r2_a1",
+      "20261001053412_092_Spark_zstd3_r3_a1"
+     ],
+     "encode_MB_per_s": 91.14251813234819,
+     "encode_seconds": 1.8694046586751938,
+     "decode_MB_per_s": 137.8030303632082,
+     "decode_seconds": 1.2364187315106392
+    },
+    "Windows": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 465577918,
+     "blocks": 20,
+     "archive_bytes_median": 3112820,
+     "trial_dirs": [
+      "20261001053412_023_Windows_zstd3_r1_a1",
+      "20261001053412_062_Windows_zstd3_r2_a1",
+      "20261001053412_101_Windows_zstd3_r3_a1"
+     ],
+     "encode_MB_per_s": 175.82142571176368,
+     "encode_seconds": 2.6480158269405365,
+     "decode_MB_per_s": 279.5016942353304,
+     "decode_seconds": 1.665742740035057
+    },
+    "Thunderbird": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 268957222,
+     "blocks": 20,
+     "archive_bytes_median": 14220860,
+     "trial_dirs": [
+      "20261001053412_032_Thunderbird_zstd3_r1_a1",
+      "20261001053412_071_Thunderbird_zstd3_r2_a1",
+      "20261001053412_110_Thunderbird_zstd3_r3_a1"
+     ],
+     "encode_MB_per_s": 121.8797126327109,
+     "encode_seconds": 2.2067431584000587,
+     "decode_MB_per_s": 172.49874118911535,
+     "decode_seconds": 1.5591836795210838
+    }
+   },
+   "incomplete": [],
+   "not_lossless_timed_only": [],
+   "aggregate_datasets": [
+    "HDFS",
+    "Spark",
+    "Windows",
+    "Thunderbird"
+   ],
+   "aggregate_complete": true,
+   "encode_gmean": 129.0685582106003,
+   "encode_byte_weighted_MB_per_s": 136.26674620664735,
+   "decode_gmean": 190.0848052450961,
+   "decode_byte_weighted_MB_per_s": 201.31235402629878
+  },
+  "xz9e": {
+   "per_dataset": {
+    "HDFS": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 277338890,
+     "blocks": 20,
+     "archive_bytes_median": 17601880,
+     "trial_dirs": [
+      "20261001053412_006_HDFS_xz9e_r1_a4",
+      "20261001053412_045_HDFS_xz9e_r2_a1",
+      "20261001053412_084_HDFS_xz9e_r3_a2"
+     ],
+     "encode_MB_per_s": 3.771857309770727,
+     "encode_seconds": 73.52846813201904,
+     "decode_MB_per_s": 108.11887736345105,
+     "decode_seconds": 2.565129205584526
+    },
+    "Spark": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 170382248,
+     "blocks": 20,
+     "archive_bytes_median": 6231136,
+     "trial_dirs": [
+      "20261001053412_015_Spark_xz9e_r1_a1",
+      "20261001053412_054_Spark_xz9e_r2_a1",
+      "20261001053412_093_Spark_xz9e_r3_a1"
+     ],
+     "encode_MB_per_s": 2.3578593593924397,
+     "encode_seconds": 72.26141259074211,
+     "decode_MB_per_s": 91.59908568213996,
+     "decode_seconds": 1.860086776316166
+    },
+    "Windows": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 465577918,
+     "blocks": 20,
+     "archive_bytes_median": 1415408,
+     "trial_dirs": [
+      "20261001053412_024_Windows_xz9e_r1_a1",
+      "20261001053412_063_Windows_xz9e_r2_a2",
+      "20261001053412_102_Windows_xz9e_r3_a1"
+     ],
+     "encode_MB_per_s": 7.811694884328387,
+     "encode_seconds": 59.600115582346916,
+     "decode_MB_per_s": 200.31653551816288,
+     "decode_seconds": 2.324211113154888
+    },
+    "Thunderbird": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 268957222,
+     "blocks": 20,
+     "archive_bytes_median": 7607616,
+     "trial_dirs": [
+      "20261001053412_033_Thunderbird_xz9e_r1_a1",
+      "20261001053412_072_Thunderbird_xz9e_r2_a1",
+      "20261001053412_111_Thunderbird_xz9e_r3_a1"
+     ],
+     "encode_MB_per_s": 1.705856659288297,
+     "encode_seconds": 157.66695316135883,
+     "decode_MB_per_s": 132.64518669594054,
+     "decode_seconds": 2.0276440382003784
+    }
+   },
+   "incomplete": [],
+   "not_lossless_timed_only": [],
+   "aggregate_datasets": [
+    "HDFS",
+    "Spark",
+    "Windows",
+    "Thunderbird"
+   ],
+   "aggregate_complete": true,
+   "encode_gmean": 3.2994400347478186,
+   "encode_byte_weighted_MB_per_s": 3.256393465921514,
+   "decode_gmean": 127.36504122901252,
+   "decode_byte_weighted_MB_per_s": 134.69826779920697
+  },
+  "zstd19": {
+   "per_dataset": {
+    "HDFS": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 277338890,
+     "blocks": 20,
+     "archive_bytes_median": 19000336,
+     "trial_dirs": [
+      "20261001053412_007_HDFS_zstd19_r1_a1",
+      "20261001053412_046_HDFS_zstd19_r2_a1",
+      "20261001053412_085_HDFS_zstd19_r3_a2"
+     ],
+     "encode_MB_per_s": 5.2688627350326795,
+     "encode_seconds": 52.63733445852995,
+     "decode_MB_per_s": 157.3634308378913,
+     "decode_seconds": 1.7624100372195244
+    },
+    "Spark": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 170382248,
+     "blocks": 20,
+     "archive_bytes_median": 7036559,
+     "trial_dirs": [
+      "20261001053412_016_Spark_zstd19_r1_a1",
+      "20261001053412_055_Spark_zstd19_r2_a1",
+      "20261001053412_094_Spark_zstd19_r3_a1"
+     ],
+     "encode_MB_per_s": 4.608343312781272,
+     "encode_seconds": 36.97255964577198,
+     "decode_MB_per_s": 100.56011272888819,
+     "decode_seconds": 1.6943323090672493
+    },
+    "Windows": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 465577918,
+     "blocks": 20,
+     "archive_bytes_median": 1749858,
+     "trial_dirs": [
+      "20261001053412_025_Windows_zstd19_r1_a1",
+      "20261001053412_064_Windows_zstd19_r2_a1",
+      "20261001053412_103_Windows_zstd19_r3_a1"
+     ],
+     "encode_MB_per_s": 22.511829582265683,
+     "encode_seconds": 20.681478433310986,
+     "decode_MB_per_s": 241.82283338426765,
+     "decode_seconds": 1.9252851828932762
+    },
+    "Thunderbird": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 268957222,
+     "blocks": 20,
+     "archive_bytes_median": 9047461,
+     "trial_dirs": [
+      "20261001053412_034_Thunderbird_zstd19_r1_a1",
+      "20261001053412_073_Thunderbird_zstd19_r2_a1",
+      "20261001053412_112_Thunderbird_zstd19_r3_a1"
+     ],
+     "encode_MB_per_s": 4.068364495468291,
+     "encode_seconds": 66.1094211935997,
+     "decode_MB_per_s": 129.7263397425496,
+     "decode_seconds": 2.0732660964131355
+    }
+   },
+   "incomplete": [],
+   "not_lossless_timed_only": [],
+   "aggregate_datasets": [
+    "HDFS",
+    "Spark",
+    "Windows",
+    "Thunderbird"
+   ],
+   "aggregate_complete": true,
+   "encode_gmean": 6.867095538239192,
+   "encode_byte_weighted_MB_per_s": 6.702102938388365,
+   "decode_gmean": 149.26698449224762,
+   "decode_byte_weighted_MB_per_s": 158.57943863424066
+  },
+  "logreducer_r": {
+   "per_dataset": {
+    "HDFS": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 277338890,
+     "blocks": 20,
+     "archive_bytes_median": 13572233,
+     "trial_dirs": [
+      "20261001053412_008_HDFS_logreducer_r_r1_a1",
+      "20261001053412_047_HDFS_logreducer_r_r2_a1",
+      "20261001053412_086_HDFS_logreducer_r_r3_a1"
+     ],
+     "encode_MB_per_s": 3.3611938455606882,
+     "encode_seconds": 82.51201886683702,
+     "decode_MB_per_s": 11.376721224127447,
+     "decode_seconds": 24.377752125263214,
+     "encode_native_MB_per_s": 8.427101509296621,
+     "encode_native_seconds": 32.91035354137421,
+     "native_encode_consistency": [
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 13568529,
+       "native_bytes_native_run": 13568610,
+       "max_abs_block_native_byte_diff": 20
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 13568585,
+       "native_bytes_native_run": 13568557,
+       "max_abs_block_native_byte_diff": 14
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 13568570,
+       "native_bytes_native_run": 13568548,
+       "max_abs_block_native_byte_diff": 13
+      }
+     ]
+    },
+    "Spark": {
+     "repeats": 3,
+     "lossless_all_repeats": false,
+     "raw_bytes": 170382248,
+     "blocks": 20,
+     "archive_bytes_median": 2982224,
+     "trial_dirs": [
+      "20261001053412_017_Spark_logreducer_r_r1_a1",
+      "20261001053412_056_Spark_logreducer_r_r2_a1",
+      "20261001053412_095_Spark_logreducer_r_r3_a1"
+     ],
+     "block_failures": {
+      "encode": [
+       2,
+       3,
+       4
+      ],
+      "decode": [
+       2,
+       3,
+       4
+      ]
+     },
+     "encode_MB_per_s": 2.0471740048767466,
+     "encode_seconds": 83.2280243858695,
+     "decode_MB_per_s": 5.06547238464582,
+     "decode_seconds": 33.636003725230694,
+     "encode_native_MB_per_s": 4.466691186918154,
+     "encode_native_seconds": 38.145070001482964,
+     "native_encode_consistency": [
+      {
+       "blocks": 20,
+       "blocks_compared": 17,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 2977362,
+       "native_bytes_native_run": 2977427,
+       "max_abs_block_native_byte_diff": 17
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 17,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 2977440,
+       "native_bytes_native_run": 2977438,
+       "max_abs_block_native_byte_diff": 17
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 17,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 2977459,
+       "native_bytes_native_run": 2977377,
+       "max_abs_block_native_byte_diff": 15
+      }
+     ]
+    },
+    "Windows": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 465577918,
+     "blocks": 20,
+     "archive_bytes_median": 1399794,
+     "trial_dirs": [
+      "20261001053412_026_Windows_logreducer_r_r1_a2",
+      "20261001053412_065_Windows_logreducer_r_r2_a1",
+      "20261001053412_104_Windows_logreducer_r_r3_a1"
+     ],
+     "encode_MB_per_s": 4.402530723085641,
+     "encode_seconds": 105.75233820825815,
+     "decode_MB_per_s": 14.471681585253961,
+     "decode_seconds": 32.17165298014879,
+     "encode_native_MB_per_s": 12.844223603353655,
+     "encode_native_seconds": 36.24803899228573,
+     "native_encode_consistency": [
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 1394752,
+       "native_bytes_native_run": 1394793,
+       "max_abs_block_native_byte_diff": 18
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 1394825,
+       "native_bytes_native_run": 1394771,
+       "max_abs_block_native_byte_diff": 18
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 1394778,
+       "native_bytes_native_run": 1394779,
+       "max_abs_block_native_byte_diff": 18
+      }
+     ]
+    },
+    "Thunderbird": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 268957222,
+     "blocks": 20,
+     "archive_bytes_median": 5921966,
+     "trial_dirs": [
+      "20261001053412_035_Thunderbird_logreducer_r_r1_a1",
+      "20261001053412_074_Thunderbird_logreducer_r_r2_a1",
+      "20261001053412_113_Thunderbird_logreducer_r_r3_a1"
+     ],
+     "encode_MB_per_s": 0.5175515662495429,
+     "encode_seconds": 519.6723177731037,
+     "decode_MB_per_s": 0.6279352800611876,
+     "decode_seconds": 428.319972679019,
+     "encode_native_MB_per_s": 3.4681959790475743,
+     "encode_native_seconds": 77.54960320144892,
+     "native_encode_consistency": [
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 5409742,
+       "native_bytes_native_run": 5409754,
+       "max_abs_block_native_byte_diff": 22
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 5409726,
+       "native_bytes_native_run": 5409797,
+       "max_abs_block_native_byte_diff": 19
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 5409758,
+       "native_bytes_native_run": 5409740,
+       "max_abs_block_native_byte_diff": 33
+      }
+     ]
+    }
+   },
+   "incomplete": [],
+   "not_lossless_timed_only": [
+    "Spark"
+   ],
+   "aggregate_datasets": [
+    "HDFS",
+    "Windows",
+    "Thunderbird"
+   ],
+   "aggregate_complete": false,
+   "encode_gmean": 1.971135716939202,
+   "encode_byte_weighted_MB_per_s": 1.4293284497755023,
+   "decode_gmean": 4.693357823657379,
+   "decode_byte_weighted_MB_per_s": 2.086900258836043,
+   "encode_native_gmean": 7.213785719111672,
+   "encode_native_byte_weighted_MB_per_s": 6.897197558523031
+  },
+  "logshrink_r": {
+   "per_dataset": {
+    "HDFS": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 277338890,
+     "blocks": 20,
+     "archive_bytes_median": 21518871,
+     "trial_dirs": [
+      "20261001053412_009_HDFS_logshrink_r_r1_a1",
+      "20261001053412_048_HDFS_logshrink_r_r2_a1",
+      "20261001053412_087_HDFS_logshrink_r_r3_a1"
+     ],
+     "encode_MB_per_s": 1.2235157475150633,
+     "encode_seconds": 226.67373964190483,
+     "decode_MB_per_s": 2.932932131647319,
+     "decode_seconds": 94.56028218567371,
+     "encode_native_MB_per_s": 2.2365290792823056,
+     "encode_native_seconds": 124.00415115058422,
+     "native_encode_consistency": [
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 12239237,
+       "native_bytes_native_run": 12239206,
+       "max_abs_block_native_byte_diff": 7
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 12239195,
+       "native_bytes_native_run": 12239238,
+       "max_abs_block_native_byte_diff": 13
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 12239215,
+       "native_bytes_native_run": 12239220,
+       "max_abs_block_native_byte_diff": 14
+      }
+     ]
+    },
+    "Spark": {
+     "repeats": 3,
+     "lossless_all_repeats": false,
+     "raw_bytes": 170382248,
+     "blocks": 20,
+     "archive_bytes_median": 2339662,
+     "trial_dirs": [
+      "20261001053412_018_Spark_logshrink_r_r1_a1",
+      "20261001053412_057_Spark_logshrink_r_r2_a1",
+      "20261001053412_096_Spark_logshrink_r_r3_a1"
+     ],
+     "block_failures": {
+      "encode": [
+       2,
+       3,
+       4
+      ],
+      "decode": [
+       2,
+       3,
+       4
+      ]
+     },
+     "encode_MB_per_s": 0.6619470180915459,
+     "encode_seconds": 257.39559714496136,
+     "decode_MB_per_s": 1.5239146246277193,
+     "decode_seconds": 111.80563874542713,
+     "encode_native_MB_per_s": 1.153640216039156,
+     "encode_native_seconds": 147.69097473472357,
+     "native_encode_consistency": [
+      {
+       "blocks": 20,
+       "blocks_compared": 17,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 2018169,
+       "native_bytes_native_run": 2018155,
+       "max_abs_block_native_byte_diff": 7
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 17,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 2018134,
+       "native_bytes_native_run": 2018131,
+       "max_abs_block_native_byte_diff": 9
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 17,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 2018138,
+       "native_bytes_native_run": 2018139,
+       "max_abs_block_native_byte_diff": 5
+      }
+     ]
+    },
+    "Windows": {
+     "repeats": 3,
+     "lossless_all_repeats": false,
+     "raw_bytes": 465577918,
+     "blocks": 20,
+     "archive_bytes_median": 1084337,
+     "trial_dirs": [
+      "20261001053412_027_Windows_logshrink_r_r1_a1",
+      "20261001053412_066_Windows_logshrink_r_r2_a1",
+      "20261001053412_105_Windows_logshrink_r_r3_a1"
+     ],
+     "block_failures": {
+      "encode": [
+       5
+      ],
+      "decode": [
+       5
+      ]
+     },
+     "encode_MB_per_s": 1.9631096752345127,
+     "encode_seconds": 237.16347786039114,
+     "decode_MB_per_s": 4.860743159659075,
+     "decode_seconds": 95.78327895700932,
+     "encode_native_MB_per_s": 3.353096838424831,
+     "encode_native_seconds": 138.85012584924698,
+     "native_encode_consistency": [
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 1048281,
+       "native_bytes_native_run": 1048282,
+       "max_abs_block_native_byte_diff": 9
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 1048318,
+       "native_bytes_native_run": 1048286,
+       "max_abs_block_native_byte_diff": 10
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 1048271,
+       "native_bytes_native_run": 1048244,
+       "max_abs_block_native_byte_diff": 12
+      }
+     ]
+    },
+    "Thunderbird": {
+     "repeats": 3,
+     "lossless_all_repeats": true,
+     "raw_bytes": 268957222,
+     "blocks": 20,
+     "archive_bytes_median": 4700191,
+     "trial_dirs": [
+      "20261001053412_036_Thunderbird_logshrink_r_r1_a1",
+      "20261001053412_075_Thunderbird_logshrink_r_r2_a1",
+      "20261001053412_114_Thunderbird_logshrink_r_r3_a2"
+     ],
+     "encode_MB_per_s": 0.5448206757228579,
+     "encode_seconds": 493.6619221419096,
+     "decode_MB_per_s": 1.262077203980763,
+     "decode_seconds": 213.10679025948048,
+     "encode_native_MB_per_s": 1.0141858045569612,
+     "encode_native_seconds": 265.19521451741457,
+     "native_encode_consistency": [
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 4622363,
+       "native_bytes_native_run": 4622367,
+       "max_abs_block_native_byte_diff": 15
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 4622367,
+       "native_bytes_native_run": 4622296,
+       "max_abs_block_native_byte_diff": 16
+      },
+      {
+       "blocks": 20,
+       "blocks_compared": 20,
+       "encode_fail_pattern_equal": true,
+       "structure_equal_all": true,
+       "native_bytes_adapted_run": 4622484,
+       "native_bytes_native_run": 4622353,
+       "max_abs_block_native_byte_diff": 21
+      }
+     ]
+    }
+   },
+   "incomplete": [],
+   "not_lossless_timed_only": [
+    "Spark",
+    "Windows"
+   ],
+   "aggregate_datasets": [
+    "HDFS",
+    "Thunderbird"
+   ],
+   "aggregate_complete": false,
+   "encode_gmean": 0.8164537196428922,
+   "encode_byte_weighted_MB_per_s": 0.7583910404313056,
+   "decode_gmean": 1.9239508268598726,
+   "decode_byte_weighted_MB_per_s": 1.77560798969602,
+   "encode_native_gmean": 1.5060730539010931,
+   "encode_native_byte_weighted_MB_per_s": 1.4036408077448164
+  }
+ }
+}

@@ -1,0 +1,134 @@
+{
+  "header": {
+    "has_unified_header": false,
+    "reason": "The sampled lines do not share a consistent prefix or header that can be treated as a unified field. Changing fields should be extracted as separate side streams.",
+    "functions": []
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "log sequence number",
+      "reason": "This is a high-entropy identifier with no evident semantic transformation."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "source node identifier",
+      "reason": "This appears to be a stable node identifier and matches a predictable pattern."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "event type",
+      "reason": "This appears to be a stable constant structure across all examples."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "event timestamp (epoch seconds)",
+      "reason": "This is a semantically meaningful timestamp that changes incrementally and can benefit from delta compression."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "constant event count",
+      "reason": "This is a stable constant across all examples and does not vary."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "ClusterFileSystem label",
+      "reason": "This appears to be a stable structural constant across all examples."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain name",
+      "reason": "This is a variable domain name with a structured pattern, but no clear numeric transformation."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "target node identifier",
+      "reason": "This appears to be a stable node identifier and matches a predictable pattern."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "event_timestamp",
+      "meaning": "event log timestamp in epoch seconds",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{10})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Reversibly transform epoch timestamp to compact numeric representation.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    },
+    {
+      "tag": "source_node_identifier",
+      "meaning": "source node identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(node-[A-Z]\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Stores the exact source node identifier as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "domain_name",
+      "meaning": "variable domain name",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": {
+        "code": "def project_context(line, groups):\n    m = re.search(r'node( +-)([A-Za-z0-9-]+)', line)\n    if m:\n        return m.group(2)\n    return None"
+      },
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "domain( +)([A-Za-z0-9_]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "Stores the exact domain name.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "target_node_identifier",
+      "meaning": "target node identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node( +-)(node-[A-Za-z0-9-]+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "Stores the exact target node identifier as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

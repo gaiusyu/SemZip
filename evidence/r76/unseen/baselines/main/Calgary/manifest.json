@@ -1,0 +1,154 @@
+{
+  "created_at": "2026-10-01T12:32:23.591767+00:00",
+  "protocol": {
+    "schema": "semzip.external-cli.r76.v1",
+    "block_records": 100000,
+    "workers": 1,
+    "trials": 1,
+    "order": "rotate",
+    "timeout_per_block_seconds": 3600,
+    "codecs": {
+      "delog": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "encoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/Delog_compress",
+        "decoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/decompress",
+        "encoder_sha256": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "d2f82b0b774a73096fe3bc60871a9b78e623f9253e516e764a5ae1fd7c4b0879"
+      },
+      "loglite": {
+        "suffix": ".lite.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "executable": "<WORKDIR>/r68_external_20260923/artifacts/LogLite-B-wide/build/loglite-B-wide",
+        "executable_sha256": "2e207d6977a75ee3f59f6e9afc1c14dc44185c291fcf822deb7ee7db336c64b4",
+        "adapter_sha256": "73fbc851b33ce3d15a47e6fadadcd47d91250eeb9e1adbdbdb563bcfc9a07b77",
+        "xz_executable": "/usr/bin/xz",
+        "xz_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+        "wrapper": "one-byte-terminal-LF-flag-plus-XZ6-T1-CRC64-official-lite"
+      },
+      "gzip6": {
+        "exe": "gzip",
+        "encode": [
+          "-6",
+          "-n",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-c"
+        ],
+        "suffix": ".gz",
+        "executable": "/bin/gzip",
+        "executable_sha256": "ba757f55ac46ded64366c7385fdc295e6e54abb2e138eebf960a7bdedcdf937e",
+        "version": "gzip 1.10\nCopyright (C) 2018 Free Software Foundation, Inc.\nCopyright (C) 1993 Jean-loup Gailly.\nThis is free software.  You may redistribute copies of it under the terms of\nthe GNU General Public License <https://www.gnu.org/licenses/gpl.html>.\nThere is NO WARRANTY, to the extent permitted by law.\n\nWritten by Jean-loup Gailly.\n"
+      },
+      "xz6": {
+        "exe": "xz",
+        "encode": [
+          "-6",
+          "-T1",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-c"
+        ],
+        "suffix": ".xz",
+        "executable": "/usr/bin/xz",
+        "executable_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+        "version": "xz (XZ Utils) 5.2.5\nliblzma 5.2.5\n"
+      },
+      "xz9e": {
+        "exe": "xz",
+        "encode": [
+          "-9e",
+          "-T1",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-c"
+        ],
+        "suffix": ".xz",
+        "executable": "/usr/bin/xz",
+        "executable_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+        "version": "xz (XZ Utils) 5.2.5\nliblzma 5.2.5\n"
+      },
+      "zstd3": {
+        "exe": "zstd",
+        "encode": [
+          "-3",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "zstd19": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      }
+    },
+    "inputs": [
+      {
+        "dataset": "Calgary",
+        "source": {
+          "path": "<WORKDIR>/r76_additional_20260929/unseen/raw/Calgary.log",
+          "bytes": 52276884,
+          "mtime_ns": 1790857712362528000,
+          "device": 3145846,
+          "inode": 199002808574197056
+        }
+      }
+    ],
+    "script_sha256": "withheld: file contained a machine-specific path",
+    "decode_output": "materialized-file",
+    "keep_decoded": false
+  },
+  "host": "<DEV_HOST>",
+  "platform": "Linux-<KERNEL>-x86_64-with-glibc2.31",
+  "python": "3.9.2 (default, Feb 28 2021, 17:03:44) \n[GCC 10.2.1 20210110]",
+  "logical_cpus": 128,
+  "timing_notes": "Full streaming split and CLI process wall, all archive writes; decode all CLI outputs and ordered full-file assembly. SHA/inventory audits excluded. OS buffered I/O; no fsync or cache drop. Historical R59 internal timers are not directly comparable."
+}

@@ -1,0 +1,104 @@
+{
+ "dataset": "Windows",
+ "method": "logshrink_r",
+ "repeat": 3,
+ "status": "SHA_FAIL",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_105_Windows_logshrink_r_r3_a1",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/Windows.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 465577918,
+ "blocks": 20,
+ "started_unix": 1790851351.8457797,
+ "encode": {
+  "command": [
+   "<WORKDIR>/r76_additional_20260929/baselines/logshrink/venv/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_ls.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_105_Windows_logshrink_r_r3_a1/encode_request.json"
+  ],
+  "seconds": 238.95581417530775,
+  "returncode": 0,
+  "load_average": [
+   48.2,
+   24.91,
+   17.47
+  ],
+  "started_unix": 1790851351.8533554,
+  "own_cpu_seconds": 247.36493300000075,
+  "other_cpu_seconds": 10.493022592999239,
+  "other_cores": 0.04391197857734957
+ },
+ "decode": {
+  "command": [
+   "<WORKDIR>/r76_additional_20260929/baselines/logshrink/venv/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_ls.py",
+   "decode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_105_Windows_logshrink_r_r3_a1/decode_request.json"
+  ],
+  "seconds": 94.83960897475481,
+  "returncode": 0,
+  "load_average": [
+   21.82,
+   22.44,
+   17.33
+  ],
+  "started_unix": 1790851590.8156621,
+  "own_cpu_seconds": 69.5104220000012,
+  "other_cpu_seconds": 20.561954440998804,
+  "other_cores": 0.21680766784342345
+ },
+ "archive_bytes": 1084327,
+ "native_archive_bytes": 1048271,
+ "block_failures": {
+  "encode": [
+   5
+  ],
+  "decode": [
+   5
+  ]
+ },
+ "sha_pass": false,
+ "audit_seconds": 1.4565360844135284,
+ "encode_native": {
+  "command": [
+   "<WORKDIR>/r76_additional_20260929/baselines/logshrink/venv/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_ls.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_105_Windows_logshrink_r_r3_a1/encode_native_request.json"
+  ],
+  "seconds": 135.12584323436022,
+  "returncode": 0,
+  "load_average": [
+   13.31,
+   18.83,
+   16.68
+  ],
+  "started_unix": 1790851687.160935,
+  "own_cpu_seconds": 175.07158700000036,
+  "other_cpu_seconds": 1.1318406489996278,
+  "other_cores": 0.00837619675043641
+ },
+ "native_encode_consistency": {
+  "blocks": 20,
+  "blocks_compared": 20,
+  "encode_fail_pattern_equal": true,
+  "structure_equal_all": true,
+  "native_bytes_adapted_run": 1048271,
+  "native_bytes_native_run": 1048244,
+  "max_abs_block_native_byte_diff": 12
+ },
+ "encode_MB_per_s": 1.9483849748825657,
+ "decode_MB_per_s": 4.909108367622344,
+ "encode_native_MB_per_s": 3.445513506935226,
+ "finished_unix": 1790851822.2932084,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.009425228666220479
+ },
+ "max_other_cores": 0.21680766784342345,
+ "contaminated": false
+}

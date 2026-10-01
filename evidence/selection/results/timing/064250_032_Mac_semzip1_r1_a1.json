@@ -1,0 +1,78 @@
+{
+ "dataset": "Mac",
+ "method": "semzip1",
+ "repeat": 1,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/064250_032_Mac_semzip1_r1_a1",
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "encode",
+   "--input",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/raw/Mac.log",
+   "--plan",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/deployments/Mac/program.json",
+   "--dataset",
+   "Mac",
+   "--semzip-source",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/064250_032_Mac_semzip1_r1_a1/work",
+   "--block-size",
+   "100000",
+   "--workers",
+   "4"
+  ],
+  "seconds": 14.173107728362083,
+  "returncode": 0,
+  "load_average": [
+   24.43,
+   25.47,
+   31.45
+  ],
+  "own_cpu_seconds": 13.916591000000004,
+  "other_cpu_seconds": 0.30789452199999623,
+  "other_cores": 0.02172385392822934
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "decode",
+   "--archive",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/064250_032_Mac_semzip1_r1_a1/work/archive",
+   "--output",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/064250_032_Mac_semzip1_r1_a1/restored.owned.log",
+   "--semzip-source",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/064250_032_Mac_semzip1_r1_a1/decode",
+   "--workers",
+   "4"
+  ],
+  "seconds": 3.4984207451343536,
+  "returncode": 0,
+  "load_average": [
+   24.63,
+   25.49,
+   31.43
+  ],
+  "own_cpu_seconds": 2.723114999999993,
+  "other_cpu_seconds": 2.767300301000007,
+  "other_cores": 0.7910141468400569
+ },
+ "archive_bytes": 344257,
+ "fallback_blocks": 0,
+ "sha_pass": true,
+ "raw_bytes": 16879552,
+ "encode_MB_per_s": 1.1909563042565463,
+ "decode_MB_per_s": 4.8249062161766245,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.013217668910501652
+ },
+ "max_other_cores": 0.7910141468400569,
+ "contaminated": true
+}

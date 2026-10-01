@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "snapshot_period",
+      "meaning": "snapshot_period_seconds",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "Scheduled snapshot period at ([0-9]+) second\\(s\\)\\.",
+      "replacement": "Scheduled snapshot period at {placeholder} second(s).",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"Scheduled snapshot period at {record['stored'][0]} second(s).\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

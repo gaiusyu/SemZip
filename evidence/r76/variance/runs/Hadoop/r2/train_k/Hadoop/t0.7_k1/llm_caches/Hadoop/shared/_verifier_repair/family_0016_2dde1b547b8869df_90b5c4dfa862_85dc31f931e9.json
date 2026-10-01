@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "snapshot_duration",
+      "meaning": "snapshot period",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "([0-9]+) second\\(s\\)",
+      "replacement": "{placeholder} second(s)",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"{record['stored'][0]} second(s)\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

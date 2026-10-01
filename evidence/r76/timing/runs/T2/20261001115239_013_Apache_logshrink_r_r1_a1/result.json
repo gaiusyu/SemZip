@@ -1,0 +1,100 @@
+{
+ "dataset": "Apache",
+ "method": "logshrink_r",
+ "repeat": 1,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_013_Apache_logshrink_r_r1_a1",
+ "session": "T2",
+ "formal": true,
+ "input": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Apache.log",
+ "input_kind": "full",
+ "sampled_blocks": false,
+ "raw_bytes": 5135876,
+ "blocks": 1,
+ "started_unix": 1790856049.1188598,
+ "encode": {
+  "command": [
+   "<WORKDIR>/r76_additional_20260929/baselines/logshrink/venv/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_ls.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_013_Apache_logshrink_r_r1_a1/encode_request.json"
+  ],
+  "seconds": 24.853798791766167,
+  "returncode": 0,
+  "load_average": [
+   12.83,
+   13.74,
+   17.85
+  ],
+  "started_unix": 1790856049.126612,
+  "own_cpu_seconds": 5.878644999999992,
+  "other_cpu_seconds": 0.30656666700000823,
+  "other_cores": 0.012334801193512959
+ },
+ "decode": {
+  "command": [
+   "<WORKDIR>/r76_additional_20260929/baselines/logshrink/venv/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_ls.py",
+   "decode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_013_Apache_logshrink_r_r1_a1/decode_request.json"
+  ],
+  "seconds": 13.524434797465801,
+  "returncode": 0,
+  "load_average": [
+   13.22,
+   13.77,
+   17.8
+  ],
+  "started_unix": 1790856073.9856021,
+  "own_cpu_seconds": 1.2998580000000004,
+  "other_cpu_seconds": 0.7275527949999998,
+  "other_cores": 0.05379543070711747
+ },
+ "archive_bytes": 116526,
+ "native_archive_bytes": 116526,
+ "block_failures": {
+  "encode": [],
+  "decode": []
+ },
+ "sha_pass": true,
+ "audit_seconds": 0.02932559698820114,
+ "encode_native": {
+  "command": [
+   "<WORKDIR>/r76_additional_20260929/baselines/logshrink/venv/bin/python3",
+   "<WORKDIR>/r76_additional_20260929/timing/phase_ls.py",
+   "encode",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_013_Apache_logshrink_r_r1_a1/encode_native_request.json"
+  ],
+  "seconds": 16.700557693839073,
+  "returncode": 0,
+  "load_average": [
+   12.73,
+   13.63,
+   17.69
+  ],
+  "started_unix": 1790856087.5593102,
+  "own_cpu_seconds": 4.918353999999994,
+  "other_cpu_seconds": 1.2078844790000067,
+  "other_cores": 0.07232599660103578
+ },
+ "native_encode_consistency": {
+  "blocks": 1,
+  "blocks_compared": 1,
+  "encode_fail_pattern_equal": true,
+  "structure_equal_all": true,
+  "native_bytes_adapted_run": 116526,
+  "native_bytes_native_run": 116524,
+  "max_abs_block_native_byte_diff": 2
+ },
+ "encode_MB_per_s": 0.2066435011818583,
+ "decode_MB_per_s": 0.3797479212190336,
+ "encode_native_MB_per_s": 0.3075272152075887,
+ "finished_unix": 1790856104.2660291,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.006492586331146863
+ },
+ "max_other_cores": 0.07232599660103578,
+ "contaminated": false
+}

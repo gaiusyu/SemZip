@@ -1,0 +1,89 @@
+{
+ "dataset": "Linux",
+ "method": "semzip",
+ "repeat": 1,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_000_Linux_semzip_r1_a1",
+ "session": "T2",
+ "formal": true,
+ "input": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Linux.log",
+ "input_kind": "full",
+ "sampled_blocks": false,
+ "raw_bytes": 2349686,
+ "blocks": 1,
+ "started_unix": 1790855564.5887692,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "encode",
+   "--input",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Linux.log",
+   "--plan",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Linux/program.json",
+   "--dataset",
+   "Linux",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_000_Linux_semzip_r1_a1/work",
+   "--block-size",
+   "100000",
+   "--workers",
+   "4"
+  ],
+  "seconds": 4.012728475034237,
+  "returncode": 0,
+  "load_average": [
+   18.86,
+   19.37,
+   21.64
+  ],
+  "started_unix": 1790855564.5930228,
+  "own_cpu_seconds": 2.881461,
+  "other_cpu_seconds": 0.02830185800000029,
+  "other_cores": 0.007053020949731421
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "decode",
+   "--archive",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_000_Linux_semzip_r1_a1/work/archive",
+   "--output",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_000_Linux_semzip_r1_a1/restored.owned.log",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_000_Linux_semzip_r1_a1/decode",
+   "--workers",
+   "4"
+  ],
+  "seconds": 1.393159732222557,
+  "returncode": 0,
+  "load_average": [
+   18.07,
+   19.2,
+   21.58
+  ],
+  "started_unix": 1790855568.6138651,
+  "own_cpu_seconds": 0.4450050000000001,
+  "other_cpu_seconds": 0.10143103599999992,
+  "other_cores": 0.07280646551431931
+ },
+ "archive_bytes": 58613,
+ "fallback_blocks": 0,
+ "sha_pass": true,
+ "audit_seconds": 0.012600235641002655,
+ "encode_MB_per_s": 0.5855581843174555,
+ "decode_MB_per_s": 1.6865876508298605,
+ "finished_unix": 1790855570.02118,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.006519890742886561
+ },
+ "max_other_cores": 0.07280646551431931,
+ "contaminated": false
+}

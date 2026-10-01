@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "node_identifier",
+      "meaning": "explicit node identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "raw_single_source",
+        "stored_source": "node identifier",
+        "context_source": null,
+        "why_not_merge_raw": "exact role-anchored variable"
+      },
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node-([A-Za-z0-9]+)",
+      "replacement": "node-{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': ['node-']}\n\ndef inverse(record):\n    return f\"{record['layout'][0]}{record['stored'][0]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

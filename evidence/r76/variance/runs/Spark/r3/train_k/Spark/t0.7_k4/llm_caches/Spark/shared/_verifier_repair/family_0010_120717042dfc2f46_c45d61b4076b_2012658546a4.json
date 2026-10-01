@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "total_time",
+      "meaning": "total execution time",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "total = (-?\\d+),",
+      "replacement": "total = {placeholder},",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': ['total = ', ',']}\n\ndef inverse(record):\n    return f\"{record['layout'][0]}{record['stored'][0]}{record['layout'][1]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

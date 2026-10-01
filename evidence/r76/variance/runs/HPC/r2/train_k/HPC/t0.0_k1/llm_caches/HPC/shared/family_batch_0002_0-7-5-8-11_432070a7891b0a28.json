@@ -1,0 +1,320 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "fan_speeds",
+            "tokens": [
+              "S9",
+              "S10",
+              "S11",
+              "S12",
+              "S13",
+              "S14"
+            ],
+            "reason": "multiple numeric tokens represent fan speeds",
+            "target_value": "list of integers",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "switch_module_id",
+            "tokens": [
+              "S1"
+            ],
+            "reason": "intrinsically structured variable with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix with consistent structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S9-S14",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "fan speeds",
+          "reason": "represents fan speed values"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "fan_speeds"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "switch_module_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "fan_speeds",
+          "meaning": "fan speed values",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "fan speeds as a list of integers",
+            "context_source": null,
+            "why_not_merge_raw": "fan speeds are semantically related and should be stored as a list"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(\\s*(\\d{4})\\s+(\\d{4})\\s+(\\d{4})\\s+(\\*{4}|\\d{4})\\s+(\\d{4})\\s+(\\d{4})\\s*\\)",
+          "replacement": "({placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    speeds = [int(g) if g != '****' else -1 for g in groups]\n    return {'stored': speeds, 'layout': []}\n\ndef inverse(record):\n    speeds = record['stored']\n    return f\"({ ' '.join(str(s) if s != -1 else '****' for s in speeds) })\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "switch_module_id",
+          "meaning": "switch module identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "switch module identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "Interconnect-([0-9A-Za-z-]+)",
+          "replacement": "Interconnect-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"Interconnect-{record['stored'][0]}\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "component_id",
+            "tokens": [
+              "S10"
+            ],
+            "reason": "intrinsically structured variable with explicit separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "hardware_id",
+            "tokens": [
+              "S16"
+            ],
+            "reason": "intrinsically structured variable with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "component identifier",
+          "reason": "structured variable with separators"
+        },
+        {
+          "slot": "S16",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "hardware identifier",
+          "reason": "structured variable with separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "component_id",
+          "hardware_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "component_id",
+          "meaning": "component identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "component identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Component \\\\042(.+?)\\\\042",
+          "replacement": "Component \\\"{placeholder}\\\"",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'Component \\\"{record['stored'][0]}\\\"'"
+          }
+        },
+        {
+          "tag": "hardware_id",
+          "meaning": "hardware identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hardware identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(HWID=(\\d+)\\)",
+          "replacement": "(HWID={placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'(HWID={record['stored'][0]})'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix structure"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "domain_name",
+            "tokens": [
+              "S9"
+            ],
+            "reason": "intrinsically structured variable with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "domain name",
+          "reason": "structured variable with separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "domain_name"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "domain_name",
+          "meaning": "domain name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "domain name",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "domain ([A-Za-z0-9_]+)",
+          "replacement": "domain {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'domain {record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix structure"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

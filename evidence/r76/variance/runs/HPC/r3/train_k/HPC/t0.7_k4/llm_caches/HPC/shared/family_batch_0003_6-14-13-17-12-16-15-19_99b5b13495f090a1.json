@@ -1,0 +1,763 @@
+{
+  "families": [
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "S0",
+              "S4"
+            ],
+            "reason": "S0 and S4 together describe the timestamp-like and integer-like values",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "node_identifier",
+            "tokens": [
+              "S1"
+            ],
+            "reason": "explicitly role-anchored plain variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "primary timestamp or identifier value",
+          "reason": "critical composable value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_and_identifier"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_and_identifier",
+          "meaning": "composed primary timestamp and identifier",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed integer value",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy sources merge safely for integer timestamp representation"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6,7}) .+ (\\d{10})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    id_part = int(groups[0])\n    timestamp_part = int(groups[1])\n    combined = id_part * 10000000000 + timestamp_part\n    return {'stored': [combined], 'layout': []}\n\ndef inverse(record):\n    combined = int(record['stored'][0])\n    id_part = combined // 10000000000\n    timestamp_part = combined % 10000000000\n    return f'{id_part} <node> {timestamp_part}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_identifier",
+          "meaning": "node identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "exact node identifier",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy source for node identification"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "node-([A-Za-z0-9]+)",
+          "replacement": "node-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'node-{record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "network_identifier_and_interface",
+            "tokens": [
+              "S16",
+              "S19"
+            ],
+            "reason": "network address and interface together compose one endpoint value",
+            "target_value": "one endpoint-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "node_identifier",
+            "tokens": [
+              "S1"
+            ],
+            "reason": "explicitly role-anchored plain variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S16+S19",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "network endpoint value",
+          "reason": "critical composable network field"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "network_endpoint"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "network_endpoint",
+          "meaning": "composed network endpoint address and interface",
+          "class": "class_1_composed_numeric",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "network and interface details",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy sources merge safely for endpoint representation"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "network (\\d+\\.\\d+\\.\\d+\\.\\d+) via interface ([A-Za-z0-9]+)",
+          "replacement": "network {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    network = groups[0]\n    interface = groups[1]\n    return {'stored': [f'{network}:{interface}'], 'layout': []}\n\ndef inverse(record):\n    endpoint = record['stored'][0]\n    return f'network {endpoint.replace(':', ' via interface ')}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_identifier",
+          "meaning": "node identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "exact node identifier",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy source for node identification"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "node-([A-Za-z0-9]+)",
+          "replacement": "node-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'node-{record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "domain_and_range_node",
+            "tokens": [
+              "S7",
+              "S9"
+            ],
+            "reason": "domains and range nodes together describe targeting",
+            "target_value": "one targeting range value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "command_target",
+            "tokens": [
+              "S13"
+            ],
+            "reason": "explicitly role-anchored plain variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S7+S9",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "targeting range",
+          "reason": "critical targeting range field"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "targeting_range"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "command_target"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "targeting_range",
+          "meaning": "composed targeting range",
+          "class": "class_1_composed_numeric",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "domain and range nodes",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy sources merge safely for targeting range representation"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "domains:([A-Za-z0-9_-]+) and nodes:([A-Za-z0-9]+)",
+          "replacement": "domains:{placeholder} nodes",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    domain = groups[0]\n    nodes = groups[1]\n    return {'stored': [f'{domain}:{nodes}'], 'layout': []}\n\ndef inverse(record):\n    targeting = record['stored'][0]\n    domain, nodes = targeting.split(':')\n    return f'domains:{domain} and nodes:{nodes}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "command_target",
+          "meaning": "command target",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "exact command target",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy source for command target identification"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "command (\\d+)",
+          "replacement": "command {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'command {record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "domain_and_target_node",
+            "tokens": [
+              "S7",
+              "S9"
+            ],
+            "reason": "domain and range nodes together describe targeting",
+            "target_value": "one targeting range value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "command_target",
+            "tokens": [
+              "S13"
+            ],
+            "reason": "explicitly role-anchored plain variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S7+S9",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "targeting range",
+          "reason": "critical targeting range field"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "targeting_range"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "command_target"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "targeting_range",
+          "meaning": "composed targeting range",
+          "class": "class_1_composed_numeric",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "domain and range nodes",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy sources merge safely for targeting range representation"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "domains:([A-Za-z0-9_-]+) and nodes:([A-Za-z0-9]+)",
+          "replacement": "domains:{placeholder} nodes",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    domain = groups[0]\n    nodes = groups[1]\n    return {'stored': [f'{domain}:{nodes}'], 'layout': []}\n\ndef inverse(record):\n    targeting = record['stored'][0]\n    domain, nodes = targeting.split(':')\n    return f'domains:{domain} and nodes:{nodes}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "command_target",
+          "meaning": "command target",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "exact command target",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy source for command target identification"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "command (\\d+)",
+          "replacement": "command {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'command {record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "interconnect_identifier",
+            "tokens": [
+              "S1",
+              "S11"
+            ],
+            "reason": "interconnect and expanded details form one structured identifier",
+            "target_value": "one interconnect identifier",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "module_identifier",
+            "tokens": [
+              "S2"
+            ],
+            "reason": "explicitly role-anchored plain variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S11",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "interconnect structure",
+          "reason": "critical interconnect field"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "interconnect_structure"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "module_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "interconnect_structure",
+          "meaning": "composed interconnect identifier",
+          "class": "class_1_composed_numeric",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "interconnect details",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy sources merge safely for interconnect representation"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "Interconnect-([A-Za-z0-9]+):(\\d+:\\d+:\\d+)",
+          "replacement": "Interconnect-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    interconnect = groups[0]\n    expanded = groups[1]\n    return {'stored': [f'{interconnect}:{expanded}'], 'layout': []}\n\ndef inverse(record):\n    identifier = record['stored'][0]\n    return f'Interconnect-{identifier}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "module_identifier",
+          "meaning": "module identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "exact module identifier",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy source for module identification"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "switch_module",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "ambient_temperature",
+            "tokens": [
+              "S8"
+            ],
+            "reason": "ambient temperature value extracted",
+            "target_value": "one ambient temperature value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "failure_indicator",
+            "tokens": [
+              "S7"
+            ],
+            "reason": "explicitly role-anchored plain variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "temperature indicator",
+          "reason": "critical temperature field"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "ambient_temperature"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "failure_indicator"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "ambient_temperature",
+          "meaning": "ambient temperature",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "temperature value",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy source for ambient temperature"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "ambient=(\\d+)",
+          "replacement": "ambient={placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f'ambient={record['stored'][0]}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "failure_indicator",
+          "meaning": "failure indicator",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "exact failure indicator",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy source for failure identification"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "failure\\\\",
+          "replacement": "failure\\{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'failure\\{record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "temperature_value",
+            "tokens": [
+              "S7"
+            ],
+            "reason": "temperature value extracted",
+            "target_value": "one temperature value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "module_identifier",
+            "tokens": [
+              "S2"
+            ],
+            "reason": "explicitly role-anchored plain variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "temperature indicator",
+          "reason": "critical temperature field"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "temperature_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "module_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "temperature_value",
+          "meaning": "temperature value",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "temperature value",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy source for temperature identification"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\((\\d+)C\\)",
+          "replacement": "({placeholder}C)",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f'({record['stored'][0]}C)'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "module_identifier",
+          "meaning": "module identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "exact module identifier",
+            "context_source": null,
+            "why_not_merge_raw": "independent entropy source for module identification"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "switch_module",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 19,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": null,
+          "action": null,
+          "meaning": null,
+          "reason": null
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": null,
+          "action": null,
+          "meaning": null,
+          "reason": null
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

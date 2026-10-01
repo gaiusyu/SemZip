@@ -1,0 +1,73 @@
+{
+  "schema": "semzip.r76.logshrink.v1",
+  "dataset": "USask",
+  "started_at": "2026-10-01T13:18:46.062269+00:00",
+  "finished_at": "2026-10-01T13:26:01.420662+00:00",
+  "partial_first_blocks_only": false,
+  "upstream": "github.com/IntelligentDDS/LogShrink",
+  "upstream_commit": "59ce49434eec06c709c7e16027a46214a6c37961",
+  "header_length_L": 5,
+  "L_mode": "generic",
+  "params": "-E E -C -K lzma -V -S -P -wh 20 -th 4 -NC 16 -mt 0.5 (sample_rate 0.1), seed 0",
+  "workers": 2,
+  "source": {
+    "path": "<WORKDIR>/r76_additional_20260929/unseen/raw/USask.log",
+    "bytes": 233440918,
+    "mtime_ns": 1790857705290722000,
+    "device": 3145846,
+    "inode": 199002808574193713
+  },
+  "raw_bytes": 233440918,
+  "raw_sha256": "a68620b67a22faa41893737e23b8396bca1162029f26e0f7175bcd1547397f8d",
+  "stream_full_sha256": "a68620b67a22faa41893737e23b8396bca1162029f26e0f7175bcd1547397f8d",
+  "input_matches_r68_inventory": true,
+  "blocks": 25,
+  "blocks_status_ok": 24,
+  "failed_blocks": [
+    {
+      "index": 2,
+      "status": "encode_failed",
+      "error": "RuntimeError: 4_logshrink_seg0 exit 1; see <WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink/USask/diagnostics/block_000002/4_logshrink_seg0.stderr"
+    }
+  ],
+  "native": {
+    "archive_bytes": 13066977,
+    "ratio": 17.864952084939002,
+    "suffix_raw_bytes": 223762365,
+    "suffix_archive_bytes": 12510797,
+    "suffix_ratio": 17.885540385636503,
+    "lossless_blocks": 19,
+    "full_sha256_match": false,
+    "lossless": false,
+    "payload_7z_bytes": 13055760,
+    "model_7z_bytes": 10977,
+    "model_raw_bytes": 14638,
+    "header_bytes": 240
+  },
+  "repaired": {
+    "archive_bytes": 13249809,
+    "ratio": 17.618436461989752,
+    "suffix_archive_bytes": 12693629,
+    "suffix_ratio": 17.627926970293522,
+    "residual_bytes": 182832,
+    "lossless_blocks": 24,
+    "full_sha256_match": false,
+    "lossless": false,
+    "fallback_blocks": 0,
+    "differing_lines": 191863
+  },
+  "timing": {
+    "wall_seconds_encode_decode_audit": 435.358301974833,
+    "sum_block_encode_seconds": 535.9425914138556,
+    "sum_block_decode_seconds": 298.2438423037529,
+    "sum_residual_seconds": 4.210085213184357,
+    "sum_patch_seconds": 0.6011199355125427,
+    "encode_MB_per_s_single_worker": 0.4355707528005301,
+    "decode_MB_per_s_single_worker": 0.782718315982018,
+    "resumed_blocks": 0
+  },
+  "host": {
+    "node": "<DEV_HOST>",
+    "python": "3.9.2"
+  }
+}

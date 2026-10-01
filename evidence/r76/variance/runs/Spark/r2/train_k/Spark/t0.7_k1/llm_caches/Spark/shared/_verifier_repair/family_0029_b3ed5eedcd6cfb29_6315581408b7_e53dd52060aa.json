@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "result_stage_tasks",
+      "meaning": "result stage and task count",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "merge_equivalent",
+        "stored_source": "result stage id + missing tasks",
+        "context_source": null,
+        "why_not_merge_raw": "fields form one compact numeric value"
+      },
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "Submitting (\\d+) missing tasks from ResultStage (\\d+)",
+      "replacement": "Submitting {group1} missing tasks from ResultStage {group2}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    task_count = int(groups[0])\n    stage_id = int(groups[1])\n    compact_value = stage_id * int(1e5) + task_count\n    return {'stored': [compact_value], 'layout': [groups[0], groups[1]]}\n\ndef inverse(record):\n    compact_value = int(record['stored'][0])\n    task_count = compact_value % int(1e5)\n    stage_id = compact_value // int(1e5)\n    return f\"Submitting {task_count} missing tasks from ResultStage {stage_id}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

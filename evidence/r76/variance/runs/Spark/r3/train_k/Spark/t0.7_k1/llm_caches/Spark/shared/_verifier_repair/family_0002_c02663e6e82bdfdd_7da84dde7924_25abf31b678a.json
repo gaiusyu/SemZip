@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "task_duration",
+      "meaning": "task duration in milliseconds",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "in (\\d+) ms",
+      "replacement": "in {placeholder} ms",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    duration = int(groups[0])\n    return {'stored': [duration], 'layout': ['in ', ' ms']}\n\ndef inverse(record):\n    duration = record['stored'][0]\n    return f\"{record['layout'][0]}{duration}{record['layout'][1]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,133 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure including timestamp, node identifier, and filesystem context.",
+    "functions": [
+      {
+        "tag": "H0_timestamp",
+        "meaning": "file_system_event_epoch",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "convert integer timestamp to epoch microseconds",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    timestamp = int(groups[0])\n    return {'stored': [timestamp], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "H1_node_id",
+        "meaning": "node_identifier_prefix",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "(node-[A-Z]\\d+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "capture and preserve node identifier",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "UINT_DELTA",
+      "meaning": "integer_timestamp_epoch",
+      "reason": "Timestamp is a high-entropy numeric field suitable for delta coding."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "node_identifier",
+      "reason": "Node identifier is a structured string with a stable prefix that makes it suitable for direct raw stream handling."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "clusterfilesystem_event_type",
+      "reason": "The event type is stable and invariant across examples; keeping it in the main template reduces residual complexity."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "filesystem_event_epoch",
+      "reason": "Filesystem event timestamp is numeric and suitable for delta coding."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "event_constant",
+      "reason": "The value '1' is invariant and should remain in the main template."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "filesystem_class",
+      "reason": "The filesystem class is stable across examples and does not vary; keeping it reduces residual complexity."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain_name",
+      "reason": "Domain names are structured, vary across examples, and should be preserved exactly as raw streams."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "node_identifier_suffix",
+      "reason": "The node suffix is structured and varies across examples, making it suitable for raw stream handling."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "domain_name",
+      "meaning": "filesystem_domain_name",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "domain( +)([A-Za-z0-9_]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "capture and preserve domain names exactly",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "node_suffix",
+      "meaning": "node_identifier_suffix",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node( +-)([A-Za-z0-9]+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "capture and preserve node suffixes exactly",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

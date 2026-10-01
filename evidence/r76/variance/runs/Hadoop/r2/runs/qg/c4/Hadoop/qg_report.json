@@ -1,0 +1,147 @@
+{
+  "version": "QG-V1",
+  "implementation": "qg_select2 (parallel evaluation, same decisions)",
+  "dataset": "Hadoop",
+  "input_plan": "<WORKDIR>/r76_additional_20260929/variance/runs/Hadoop/r2/train_k/Hadoop/t0.7_k4/training_work/Hadoop/replay_plan.json",
+  "input_plan_sha256": "62b04c95f4ef944c3e60a09bb118c2170cfcbda5d29c9db38ea266ab0e6bfe95",
+  "training_block_sha256": "8d13beb9b0ff65a4dd7136f18dd2713f58e0c1ff408e1b9f811f842fd0f72d19",
+  "selected_plan_sha256": "9e31496a1e273e880d9b2f520bba78e39b5c88f9fefa8699f2a94beb3200230e",
+  "original_train_archive_bytes": 311458,
+  "empty_train_archive_bytes": 495478,
+  "selected_train_archive_bytes": 311458,
+  "removed_tags": [],
+  "kept_tags": [
+    "TS0",
+    "D",
+    "B"
+  ],
+  "evaluations": 5,
+  "decisions": [
+    {
+      "stage": "B",
+      "tag": "D",
+      "before": 311458,
+      "after": 321674,
+      "accepted": false,
+      "all": {
+        "B": 376326,
+        "D": 321674,
+        "TS0": 412518
+      }
+    }
+  ],
+  "eval_log": [
+    {
+      "eval": 1,
+      "key": "f15f12a10651",
+      "label": "original",
+      "tags": [
+        "TS0",
+        "D",
+        "B"
+      ],
+      "archive_bytes": 311458,
+      "seconds": 77.02
+    },
+    {
+      "eval": 2,
+      "key": "ba54ed52985f",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 495478,
+      "seconds": 9.95
+    },
+    {
+      "eval": 1,
+      "key": "f15f12a10651",
+      "label": "original",
+      "tags": [
+        "TS0",
+        "D",
+        "B"
+      ],
+      "archive_bytes": 311458,
+      "seconds": 77.02,
+      "cached": true
+    },
+    {
+      "eval": 2,
+      "key": "ba54ed52985f",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 495478,
+      "seconds": 9.95,
+      "cached": true
+    },
+    {
+      "eval": 3,
+      "key": "754ba8bb72e8",
+      "label": "B:-B",
+      "tags": [
+        "TS0",
+        "D"
+      ],
+      "archive_bytes": 376326,
+      "seconds": 70.77
+    },
+    {
+      "eval": 4,
+      "key": "104b9f7569fc",
+      "label": "B:-D",
+      "tags": [
+        "TS0",
+        "B"
+      ],
+      "archive_bytes": 321674,
+      "seconds": 78.09
+    },
+    {
+      "eval": 5,
+      "key": "a11f36f91ec9",
+      "label": "B:-TS0",
+      "tags": [
+        "D",
+        "B"
+      ],
+      "archive_bytes": 412518,
+      "seconds": 21.33
+    },
+    {
+      "eval": 3,
+      "key": "754ba8bb72e8",
+      "label": "B:-B",
+      "tags": [
+        "TS0",
+        "D"
+      ],
+      "archive_bytes": 376326,
+      "seconds": 70.77,
+      "cached": true
+    },
+    {
+      "eval": 4,
+      "key": "104b9f7569fc",
+      "label": "B:-D",
+      "tags": [
+        "TS0",
+        "B"
+      ],
+      "archive_bytes": 321674,
+      "seconds": 78.09,
+      "cached": true
+    },
+    {
+      "eval": 5,
+      "key": "a11f36f91ec9",
+      "label": "B:-TS0",
+      "tags": [
+        "D",
+        "B"
+      ],
+      "archive_bytes": 412518,
+      "seconds": 21.33,
+      "cached": true
+    }
+  ],
+  "llm_calls": 0
+}

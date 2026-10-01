@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "size_value",
+      "meaning": "size in bytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\(size: ([\\d.]+) (B|KB|MB|GB)",
+      "replacement": "(size: {placeholder})",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    value, unit = groups\n    unit_multipliers = {'B': 1, 'KB': 1024, 'MB': 1024**2, 'GB': 1024**3}\n    bytes_value = float(value) * unit_multipliers[unit]\n    return {'stored': [int(round(bytes_value))], 'layout': [unit]}\n\ndef inverse(record):\n    bytes_value = record['stored'][0]\n    unit = record['layout'][0]\n    unit_multipliers = {'B': 1, 'KB': 1024, 'MB': 1024**2, 'GB': 1024**3}\n    for u, m in unit_multipliers.items():\n        if m == unit_multipliers[unit]:\n            return f'(size: {bytes_value / m:.1f} {u})'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

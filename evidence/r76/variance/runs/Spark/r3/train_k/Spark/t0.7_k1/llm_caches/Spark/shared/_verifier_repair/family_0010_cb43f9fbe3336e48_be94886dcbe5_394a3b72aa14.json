@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "metrics",
+      "meaning": "total_boot_init_finish",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "total = (-?\\d+), boot = (-?\\d+), init = (-?\\d+), finish = (-?\\d+)",
+      "replacement": "total = {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    total, boot, init, finish = [int(v) for v in groups]\n    return {'stored': [total, boot, init, finish], 'layout': []}\n\ndef inverse(record):\n    total, boot, init, finish = record['stored']\n    return f\"total = {total}, boot = {boot}, init = {init}, finish = {finish}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "buffer_metrics",
+      "meaning": "buffer metrics",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "bufstart = (\\d+); bufend = (\\d+); bufvoid = (\\d+)",
+      "replacement": "bufstart = {group1}; bufend = {group2}; bufvoid = {group3}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    total = int(groups[0]) + int(groups[1]) + int(groups[2])\n    return {'stored': [total], 'layout': [int(groups[0]), int(groups[1]), int(groups[2])]}\n\ndef inverse(record):\n    return f\"bufstart = {record['layout'][0]}; bufend = {record['layout'][1]}; bufvoid = {record['layout'][2]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "task_id",
+      "meaning": "task identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "task_([0-9]+_[0-9]+_[a-z]+_[0-9]+)",
+      "replacement": "task_{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"task_{record['stored'][0]}\" if record['stored'] else \"\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

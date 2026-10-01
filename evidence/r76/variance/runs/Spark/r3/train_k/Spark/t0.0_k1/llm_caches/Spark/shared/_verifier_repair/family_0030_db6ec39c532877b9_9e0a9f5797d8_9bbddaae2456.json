@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "acls_list",
+      "meaning": "ACLs list",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "raw_single_source",
+        "stored_source": "acls_list",
+        "context_source": null,
+        "why_not_merge_raw": "stable field-name literal introduces the value"
+      },
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "to: ([A-Za-z,]+)",
+      "replacement": "to: {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': ['to: ']}\n\ndef inverse(record):\n    return f\"{record['layout'][0]}{record['stored'][0]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

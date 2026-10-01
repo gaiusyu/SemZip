@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "domain_storage",
+      "meaning": "storage domain identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "domain (root1_local|storage\\d+)",
+      "replacement": "domain {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'domain {record[\"stored\"][0]}'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

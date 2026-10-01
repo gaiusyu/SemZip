@@ -1,10 +1,15 @@
 # R76 track B2 — no-LLM rule-library control (LIBRARY-V1)
 
-> **This copy.** Only the formal result records (`runs/formal/lib/<D>/result.json`; Thunderbird compacted, see the main
-> README), the gate evaluation records (`runs/qg/lib/<D>/eval_*/`), the training summaries (`train_lib/`) and
-> `library_report.json` are included. The published library plans and policies (`runs/publish/lib/<D>/`), the gate
-> reports and selected plans, `FROZEN_SHA256.txt`, `scratch_trace/`, `runs/status/`, `full_chain.sh` and the logs stayed on
-> the execution host, so the library row of the attribution ladder cannot be replayed from this copy.
+> **This copy.** Included: the formal result records (`runs/formal/lib/<D>/result.json`; Thunderbird compacted, see the
+> main README), the gate reports, selected plans and evaluation caches (`runs/qg/lib/<D>/{qg_report,selected_plan,eval_cache}.json`)
+> with the per-evaluation records (`runs/qg/lib/<D>/eval_*/`), the published library plans and storage policies
+> (`runs/publish/lib/<D>/`), the per-dataset status records (`runs/status/<D>.json`), the proposer outputs written where
+> the model responses would be cached (`train_lib/<D>/llm_caches/<D>/shared/`) with `train_lib/<D>/training.json`,
+> `replay_plan.json` and the training summaries, `library_report.json`, `FROZEN_SHA256.txt` (hashes of files that
+> contained machine-specific paths withheld) and `full_chain.sh`. The track's copies of `lib.py`, `publish.py`,
+> `qg_select.py`, `qg_select2.py` and `fit_storage_v2.py` are the unchanged R73 drivers in `evidence/selection/code/` and
+> are not repeated. Not included: `scratch_trace/` (a pre-gate compile-trace check, described below), the training
+> samples, archives, per-evaluation work files and the logs.
 
 Pre-registered design: `../DEV_DESIGN_R76_zh.md`, section B2 (written 2026-09-29 01:30 UTC, before any R76 result).
 Question: if the LLM in the SemZip trainer is replaced by a fixed, hand-written, dataset-agnostic rule

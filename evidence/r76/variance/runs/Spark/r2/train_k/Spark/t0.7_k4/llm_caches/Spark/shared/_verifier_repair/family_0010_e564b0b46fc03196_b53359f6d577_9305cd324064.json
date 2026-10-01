@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "timestamp",
+      "meaning": "log timestamp",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "regex": "(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

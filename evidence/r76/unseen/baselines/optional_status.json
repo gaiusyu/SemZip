@@ -1,0 +1,51 @@
+{
+ "waiting_since": "2026-10-01T12:37:42+00:00",
+ "logreducer_R": {
+  "cmd": [
+   "python3",
+   "-u",
+   "<WORKDIR>/r76_additional_20260929/baselines/logreducer/lr_run2.py",
+   "--output",
+   "<WORKDIR>/r76_additional_20260929/unseen/baselines/logreducer",
+   "--workers",
+   "2",
+   "--input",
+   "Calgary=<WORKDIR>/r76_additional_20260929/unseen/raw/Calgary.log",
+   "--input",
+   "ClarkNet=<WORKDIR>/r76_additional_20260929/unseen/raw/ClarkNet.log",
+   "--input",
+   "NASA=<WORKDIR>/r76_additional_20260929/unseen/raw/NASA.log",
+   "--input",
+   "USask=<WORKDIR>/r76_additional_20260929/unseen/raw/USask.log"
+  ],
+  "started": "2026-10-01T13:07:43+00:00",
+  "rc": 0,
+  "finished": "2026-10-01T13:18:57+00:00",
+  "seconds": 674
+ },
+ "logshrink_R_L5": {
+  "cmd": [
+   "<WORKDIR>/r76_additional_20260929/baselines/logshrink/venv/bin/python",
+   "-u",
+   "<WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink_adapter/ls_run_unseen.py",
+   "--datasets",
+   "Calgary",
+   "ClarkNet",
+   "NASA",
+   "USask",
+   "--output",
+   "<WORKDIR>/r76_additional_20260929/unseen/baselines/logshrink",
+   "--workers",
+   "2",
+   "--L-mode",
+   "generic",
+   "--resume"
+  ],
+  "started": "2026-10-01T13:07:43+00:00",
+  "rc": 0,
+  "finished": "2026-10-01T13:26:01+00:00",
+  "seconds": 1098
+ },
+ "status": "FINISHED",
+ "finished": "2026-10-01T13:26:01+00:00"
+}

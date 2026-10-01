@@ -1,0 +1,267 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "fan_speeds_with_asterisk",
+            "tokens": [
+              "3552",
+              "3534",
+              "3375",
+              "****",
+              "3515",
+              "3479"
+            ],
+            "reason": "Fan speeds are a list of integers with a possible wildcard, representing a single structured value.",
+            "target_value": "list of integers with optional wildcard",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines start with a common repeated prefix pattern."
+      },
+      "slot_actions": [
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW",
+          "meaning": "Timestamp in seconds since epoch",
+          "reason": "This slot contains a 10-digit numeric timestamp value."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "fan_speeds"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "fan_speeds",
+          "meaning": "Fan speeds with possible wildcard",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "Complete fan speed list",
+            "context_source": null,
+            "why_not_merge_raw": "The wildcard prevents simple numeric merging."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\((\\d{4}) (\\d{4}) (\\d{4}) (\\d{4}|\\*\\*\\*\\*) (\\d{4}) (\\d{4})\\)",
+          "replacement": "({placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    speeds = [int(g) if g.isdigit() else g for g in groups]\n    return {'stored': [speeds], 'layout': []}\n\ndef inverse(record):\n    speeds = record['stored'][0]\n    return ' '.join(str(s) for s in speeds)"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "hwid_equivalents",
+            "tokens": [
+              "(HWID=1328)",
+              "(HWID=2770)"
+            ],
+            "reason": "HWID appears as text but represents an integer value.",
+            "target_value": "integer",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines start with a common repeated prefix pattern."
+      },
+      "slot_actions": [
+        {
+          "slot": "S16",
+          "action": "STREAM_RAW",
+          "meaning": "Hardware ID",
+          "reason": "This slot contains a hardware ID in a structured format."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "hwid"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "hwid",
+          "meaning": "Hardware ID",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "Canonical HWID integer",
+            "context_source": null,
+            "why_not_merge_raw": "Both formats represent the same numeric value."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\(HWID=(\\d+)\\)",
+          "replacement": "(HWID={placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f'(HWID={record[\"stored\"][0]})'"
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines start with a common repeated prefix pattern."
+      },
+      "slot_actions": [
+        {
+          "slot": "S14",
+          "action": "STREAM_RAW",
+          "meaning": "Storage domain",
+          "reason": "This slot contains a raw storage domain value."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "domain_name",
+            "tokens": [
+              "root1_local",
+              "storage232",
+              "storage842"
+            ],
+            "reason": "Domain names contain structural separators explicitly encoded by the regex.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines start with a common repeated prefix pattern."
+      },
+      "slot_actions": [
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW",
+          "meaning": "Domain name",
+          "reason": "This slot contains structured domain names."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "domain_name"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "domain_name",
+          "meaning": "Structured domain names",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "Complete domain name",
+            "context_source": null,
+            "why_not_merge_raw": "Domain names are captured as single structured entities."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "domain ([A-Za-z0-9_-]+)",
+          "replacement": "domain {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines start with a common repeated prefix pattern."
+      },
+      "slot_actions": [
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW",
+          "meaning": "Timestamp in seconds since epoch",
+          "reason": "This slot contains a 10-digit numeric timestamp value."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

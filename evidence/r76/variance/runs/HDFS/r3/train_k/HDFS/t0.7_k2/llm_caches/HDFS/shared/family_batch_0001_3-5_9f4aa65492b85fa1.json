@@ -1,0 +1,195 @@
+{
+  "families": [
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "log_timestamp",
+            "tokens": [
+              "081109",
+              "203521"
+            ],
+            "reason": "S0 and S1 together form a timestamp-like value (date and time)",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_identifier",
+            "tokens": [
+              "blk_7503483334202473044",
+              "blk_-1608999687919862906"
+            ],
+            "reason": "the captured block ID contains explicit structural separators ('blk_' prefix and digits) encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix structure with INFO and class name"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "combined date and time as a single timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp is formed by combining S0 (date) and S1 (time); storing as one integer preserves semantic meaning"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6})\\s+(\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]  # '081109'\n    time_part = groups[1]  # '203521'\n    dt_str = f\"{date_part} {time_part}\"\n    dt = datetime.strptime(dt_str, '%y%m%d %H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block identifier",
+            "context_source": null,
+            "why_not_merge_raw": "block identifier is a single, structured variable and should be stored as-is"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\bblk_[-\\d]+\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "log_timestamp",
+            "tokens": [
+              "081109",
+              "203552"
+            ],
+            "reason": "S0 and S1 together form a timestamp-like value (date and time)",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_identifier",
+            "tokens": [
+              "blk_-9073992586687739851",
+              "blk_-2917825689581470793",
+              "blk_38865049064139660",
+              "blk_3947106522258141922"
+            ],
+            "reason": "the captured block ID contains explicit structural separators ('blk_' prefix and digits) encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix structure with INFO and class name"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "combined date and time as a single timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp is formed by combining S0 (date) and S1 (time); storing as one integer preserves semantic meaning"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6})\\s+(\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]  # '081109'\n    time_part = groups[1]  # '203552'\n    dt_str = f\"{date_part} {time_part}\"\n    dt = datetime.strptime(dt_str, '%y%m%d %H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block identifier",
+            "context_source": null,
+            "why_not_merge_raw": "block identifier is a single, structured variable and should be stored as-is"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\bblk_[-\\d]+\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

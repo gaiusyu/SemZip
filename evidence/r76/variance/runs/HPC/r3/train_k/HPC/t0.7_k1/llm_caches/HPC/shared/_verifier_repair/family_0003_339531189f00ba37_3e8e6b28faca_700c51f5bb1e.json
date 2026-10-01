@@ -1,0 +1,25 @@
+{
+  "functions": [
+    {
+      "tag": "domain_name",
+      "meaning": "variable domain name",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": {
+        "code": "def project_context(line, groups):\n    m = re.search(r'domain( +)([A-Za-z0-9_]+)', line)\n    if m:\n        return m.group(2)\n    return None"
+      },
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "domain( +)([A-Za-z0-9_]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "Stores the exact domain name.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "task_submission_info",
+      "meaning": "structured task submission",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "Submitting (\\d+) missing tasks from ResultStage (\\d+) \\(PythonRDD\\[\\d+\\] at .*:.*\\)",
+      "replacement": "Submitting {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    num_tasks = int(groups[0])\n    stage_id = int(groups[1])\n    return {'stored': [num_tasks, stage_id], 'layout': []}\n\ndef inverse(record):\n    num_tasks, stage_id = record['stored']\n    return f\"Submitting {num_tasks} missing tasks from ResultStage {stage_id}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

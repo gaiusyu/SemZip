@@ -1,0 +1,72 @@
+{
+ "dataset": "HPC",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS",
+   "DN"
+  ],
+  "local_families": [],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "DN": "<DN>",
+  "TS": "<TS>"
+ },
+ "spec_count": 2,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "(\\d+)",
+   "program": {
+    "_space_layout_repair": true,
+    "_timestamp_width_generalized": true,
+    "code": "def _orig_forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef _orig_inverse(record):\n    return str(record['stored'][0])\n\ndef _space_lengths(text):\n    result = []\n    i = 0\n    while i < len(text):\n        if text[i] == ' ':\n            start = i\n            while i < len(text) and text[i] == ' ':\n                i = i + 1\n            result.append(i - start)\n        else:\n            i = i + 1\n    return result\n\ndef _digit_widths(text):\n    result = []\n    i = 0\n    while i < len(text):\n        if text[i].isdigit():\n            start = i\n            while i < len(text) and text[i].isdigit():\n                i = i + 1\n            result.append(i - start)\n        else:\n            i = i + 1\n    return result\n\ndef _apply_space_lengths(text, lengths):\n    out = ''\n    i = 0\n    j = 0\n    while i < len(text):\n        if text[i] == ' ':\n            start = i\n            while i < len(text) and text[i] == ' ':\n                i = i + 1\n            count = i - start\n            if j < len(lengths):\n                count = int(lengths[j])\n            out = out + (' ' * count)\n            j = j + 1\n        else:\n            out = out + text[i]\n            i = i + 1\n    return out\n\ndef _apply_digit_widths(text, widths):\n    out = ''\n    i = 0\n    j = 0\n    while i < len(text):\n        if text[i].isdigit():\n            start = i\n            while i < len(text) and text[i].isdigit():\n                i = i + 1\n            raw = text[start:i]\n            width = len(raw)\n            if j < len(widths):\n                width = int(widths[j])\n            value = int(raw)\n            out = out + str(value).zfill(width)\n            j = j + 1\n        else:\n            out = out + text[i]\n            i = i + 1\n    return out\n\ndef forward(groups):\n    raw = groups[0]\n    base = _orig_forward([raw])\n    base_layout = base.get('layout', [])\n    spaces = _space_lengths(raw)\n    widths = _digit_widths(raw)\n    layout = [len(base_layout)]\n    for item in base_layout:\n        layout.append(int(item))\n    layout.append(len(spaces))\n    for item in spaces:\n        layout.append(int(item))\n    layout.append(len(widths))\n    for item in widths:\n        layout.append(int(item))\n    return {'stored': base.get('stored', []), 'layout': layout}\n\ndef inverse(record):\n    layout = record.get('layout', [])\n    index = 0\n    base_count = int(layout[index])\n    index = index + 1\n    base_layout = layout[index:index + base_count]\n    index = index + base_count\n    space_count = int(layout[index])\n    index = index + 1\n    spaces = layout[index:index + space_count]\n    index = index + space_count\n    width_count = int(layout[index])\n    index = index + 1\n    widths = layout[index:index + width_count]\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\n    text = _apply_space_lengths(text, spaces)\n    text = _apply_digit_widths(text, widths)\n    return text\n",
+    "group_regex": "^((\\d+))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "log_timestamp",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    return {'stored': [int(groups[0])], 'layout': []}\\n\\ndef inverse(record):\\n    return str(record['stored'][0])\",\"intent\":\"converts the timestamp to an integer for compression and reconstructs original format\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_atomic",
+   "pattern": "domain( +)([A-Za-z0-9_.-]+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "group_regex": "^(?:domain( +)([A-Za-z0-9_.-]+))$",
+    "intent": "captures the domain as a raw string",
+    "op": "python_exec"
+   },
+   "proposal_tag": "domain_name",
+   "replacement": "domain{group1}{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "domain:auto",
+   "store_group": 0,
+   "tag": "DN",
+   "value_type": "string"
+  }
+ ],
+ "version": 1
+}

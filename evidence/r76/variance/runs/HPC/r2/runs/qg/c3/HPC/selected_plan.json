@@ -1,0 +1,153 @@
+{
+ "dataset": "HPC",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "clusterfilesystem",
+     "clusterfilesystem",
+     "serverfilesystem",
+     "domain",
+     "is",
+     "no",
+     "longer",
+     "served",
+     "by",
+     "node",
+     "node"
+    ],
+    "tags": [
+     "A"
+    ]
+   },
+   {
+    "key": [
+     "node",
+     "node",
+     "status",
+     "not",
+     "responding"
+    ],
+    "tags": [
+     "H"
+    ]
+   },
+   {
+    "key": [
+     "full",
+     "partition",
+     "status",
+     "running"
+    ],
+    "tags": [
+     "C"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "A": "<A>",
+  "C": "<C>",
+  "H": "<H>",
+  "TS": "<TS>"
+ },
+ "spec_count": 4,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "\\b([0-9]{10})\\b",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "timestamp_variable",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    return {'stored': [groups[0]], 'layout': []}\\n\\ndef inverse(record):\\n    return str(record['stored'][0])\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "(\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    timestamp = int(groups[0])\n    return {'stored': [timestamp], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "intent": "convert integer timestamp to epoch microseconds",
+    "op": "python_exec"
+   },
+   "proposal_tag": "h0_timestamp",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "A",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "node-([0-9A-Za-z]+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "node_identifier",
+   "replacement": "node-{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "H",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "\\b([0-9]{7})\\b",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "partition_id",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "C",
+   "value_type": "string"
+  }
+ ],
+ "version": 1
+}

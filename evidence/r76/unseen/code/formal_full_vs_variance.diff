@@ -1,0 +1,11 @@
+--- variance/code/formal_full.py
++++ unseen/code/formal_full.py
+@@ -8,7 +8,7 @@
+ FROZEN = lib.ART/'frozen'; SOURCE = lib.ART/'source'
+ sys.path.insert(0, str(FROZEN))
+ WORKERS = int(os.environ.get('FORMAL_WORKERS', '4'))  # R76 variance: worker count only (blocks are independent)
+-REF = Path('<WORKDIR>/r71_strict_main_20260923/reference.json')
++REF = Path(os.environ.get('FORMAL_REF', '<WORKDIR>/r71_strict_main_20260923/reference.json'))  # R76-G: unseen/reference.json (from inputs.json)
+ def sha(path): return lib.sha(path)
+ def save(path, value):
+     path.parent.mkdir(parents=True, exist_ok=True)

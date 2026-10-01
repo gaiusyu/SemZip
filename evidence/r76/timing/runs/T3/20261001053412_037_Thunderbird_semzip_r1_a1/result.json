@@ -1,0 +1,89 @@
+{
+ "dataset": "Thunderbird",
+ "method": "semzip",
+ "repeat": 1,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_037_Thunderbird_semzip_r1_a1",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/Thunderbird.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 268957222,
+ "blocks": 20,
+ "started_unix": 1790843709.126724,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "encode",
+   "--input",
+   "<WORKDIR>/r76_additional_20260929/timing/samples/Thunderbird.sample20.log",
+   "--plan",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Thunderbird/program.json",
+   "--dataset",
+   "Thunderbird",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_037_Thunderbird_semzip_r1_a1/work",
+   "--block-size",
+   "100000",
+   "--workers",
+   "4"
+  ],
+  "seconds": 22.67006390541792,
+  "returncode": 0,
+  "load_average": [
+   17.97,
+   20.81,
+   16.47
+  ],
+  "started_unix": 1790843709.1306384,
+  "own_cpu_seconds": 65.74500499999976,
+  "other_cpu_seconds": 0.2536617280002389,
+  "other_cores": 0.011189281559087987
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "decode",
+   "--archive",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_037_Thunderbird_semzip_r1_a1/work/archive",
+   "--output",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_037_Thunderbird_semzip_r1_a1/restored.owned.log",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_037_Thunderbird_semzip_r1_a1/decode",
+   "--workers",
+   "4"
+  ],
+  "seconds": 4.88104871660471,
+  "returncode": 0,
+  "load_average": [
+   17.89,
+   20.74,
+   16.47
+  ],
+  "started_unix": 1790843731.8161783,
+  "own_cpu_seconds": 8.935236000000259,
+  "other_cpu_seconds": 0.04629333599974039,
+  "other_cores": 0.009484301158940767
+ },
+ "archive_bytes": 3911842,
+ "fallback_blocks": 0,
+ "sha_pass": true,
+ "audit_seconds": 1.098311960697174,
+ "encode_MB_per_s": 11.863981642139171,
+ "decode_MB_per_s": 55.10234329049853,
+ "finished_unix": 1790843737.8133595,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.007943591922512904
+ },
+ "max_other_cores": 0.011189281559087987,
+ "contaminated": false
+}

@@ -1,0 +1,29 @@
+\subsection{Large-file throughput}
+
+The four larger files were timed on twenty systematically spaced original blocks each (block indices $\mathrm{round}(i(N-1)/19)$, byte-identical to the originals), three clean serialized trials per method and file with four block workers, in a session separate from the twelve-file session. MB/s of original input; medians. --: not losslessly restored in all repeats (timed only).
+
+\begin{longtable}{lrrrrrrrr}\caption{Large-file throughput per sampled file (encode/decode MB/s).}\label{tab:t3-perfile}\\\toprule
+
+Method & \multicolumn{2}{c}{HDFS} & \multicolumn{2}{c}{Spark} & \multicolumn{2}{c}{Windows} & \multicolumn{2}{c}{Thunderbird} \\\midrule
+
+\tool & 7.67 & 49.83 & 5.46 & 24.23 & 9.58 & 57.20 & 11.86 & 55.77 \\
+
+DeLog & 26.77 & 75.66 & 24.29 & 56.54 & 43.83 & 124.64 & 20.08 & 66.53 \\
+
+LogLite-BL* & 19.80 & 85.96 & 27.77 & 76.74 & 71.60 & 153.54 & 30.16 & 102.58 \\
+
+gzip6 & 87.26 & 182.59 & 65.89 & 126.68 & 131.07 & 220.26 & 85.84 & 156.45 \\
+
+XZ6 & 9.95 & 129.57 & 12.02 & 101.85 & 40.94 & 218.63 & 14.76 & 136.91 \\
+
+Zstd3 & 142.09 & 196.50 & 91.14 & 137.80 & 175.82 & 279.50 & 121.88 & 172.50 \\
+
+XZ9e & 3.77 & 108.12 & 2.36 & 91.60 & 7.81 & 200.32 & 1.71 & 132.65 \\
+
+Zstd19 & 5.27 & 157.36 & 4.61 & 100.56 & 22.51 & 241.82 & 4.07 & 129.73 \\
+
+LogShrink+R* & 1.22 & 2.93 & -- & -- & -- & -- & 0.54 & 1.26 \\
+
+LogReducer+R* & 3.36 & 11.38 & -- & -- & 4.40 & 14.47 & 0.52 & 0.63 \\
+
+\bottomrule\end{longtable}

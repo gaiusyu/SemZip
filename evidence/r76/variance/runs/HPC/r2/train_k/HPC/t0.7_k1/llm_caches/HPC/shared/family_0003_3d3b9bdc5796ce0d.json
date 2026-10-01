@@ -1,0 +1,169 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated structure with varying fields that can be extracted into side streams for compression.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "timestamp_epoch_seconds",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Convert a Unix timestamp in seconds to a numeric value and reconstruct the exact original string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "node_identifier",
+        "meaning": "node_identifier_with_prefix",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "(node-[A-Za-z0-9-]+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Store the node identifier with its exact prefix and suffix for reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "domain_name",
+        "meaning": "domain_identifier",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "domain( +)([A-Za-z0-9_]+)",
+        "replacement": "domain{group1}{placeholder}",
+        "program": {
+          "intent": "Store the domain identifier value while preserving the exact formatting.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "log event timestamp in seconds",
+      "reason": "This is the main timestamp of the log entry; it is better stored as a numeric value for space optimization."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "node identifier with prefix",
+      "reason": "Variable node identifiers with a consistent prefix can be stored as raw strings for efficient recovery."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "clusterfilesystem state",
+      "reason": "This is a stable literal indicating the state of the cluster filesystem; it does not vary across examples."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "epoch timestamp in seconds",
+      "reason": "This timestamp can be stored as a numeric value for compression."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "numeric constant indicating a fixed value",
+      "reason": "This field does not vary and does not provide additional compression benefit if extracted."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "ClusterFileSystem header",
+      "reason": "This field is a constant literal and does not vary; keeping it in the main template is optimal."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain identifier",
+      "reason": "Variable domain identifiers are better stored in a side stream for exact recovery and compression."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "node identifier with numeric suffix",
+      "reason": "This node identifier varies across examples and is better stored as a side stream for compression."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "node_identifier",
+      "meaning": "node_identifier_with_prefix_and_suffix",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "node( +)([A-Za-z0-9-]+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "Store the node identifier with its prefix and suffix while preserving the formatting.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "log_event_timestamp",
+      "meaning": "log_event_epoch_seconds",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "(\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Convert a Unix timestamp in seconds to a numeric value and reconstruct the exact original string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "domain_identifier",
+      "meaning": "domain name or identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "domain( +)([A-Za-z0-9_]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "Store the domain name or identifier while preserving the exact formatting.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

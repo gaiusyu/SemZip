@@ -1,0 +1,42 @@
+# DeLog-generic verification (2026-09-29 02:50:29 +0000)
+## 1. official sources copied from r68 artifacts, checked against r68 SHA256SUMS (official commit 64a074f6b6559fbfcd809f201fc3540442151749 per r68 DESIGN.md)
+compressor.cpp: OK
+decompressor.cpp: OK
+BS_thread_pool.hpp: OK
+## 2. source diff generic vs official (diffstat: only compressor.cpp regex_map lines)
+compressor.cpp: differs: -16 +1 lines
+decompressor.cpp: identical
+BS_thread_pool.hpp: identical
+<         regex_map["Android"] = { { R"(
+<         regex_map["Apache"] = { {R"((\
+<         regex_map["BGL"] = { {R"((\d{4
+<         regex_map["Hadoop"] = { {R"((\
+<         regex_map["HDFS"] = { { R"((\d
+<         regex_map["HealthApp"] = { { R
+<         regex_map["HPC"] = { {R"(\d{10
+<         regex_map["Linux"] = { { R"(rh
+<         regex_map["Mac"] = { {R"((\d+)
+<         regex_map["OpenSSH"] = { {R"((
+<         regex_map["OpenStack"] = { { R
+<         regex_map["Proxifier"] = { { R
+<         regex_map["Spark"] = { {  R"((
+<         regex_map["Thunderbird"] = { {
+<         regex_map["Windows"] = { { R"(
+<         regex_map["Zookeeper"] = { { R
+>         // R76 DeLog-generic: the 16 dataset-name regex_map entries of the official source are removed (map left empty).
+## 3. binaries (README build commands, g++ 10.2.1, libpcre2 10.36, libarchive 3.4.3)
+f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739  official_rebuild/Delog_compress
+b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831  official_rebuild/decompress
+bc357a51b83d0ea03310b0b0332f67bb989ccda7f3336879a9c9552491713a8a  generic/Delog_compress
+b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831  generic/decompress
+f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739  <WORKDIR>/r68_external_20260923/artifacts/DeLog/Delog_compress
+b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831  <WORKDIR>/r68_external_20260923/artifacts/DeLog/decompress
+official_rebuild binaries are bit-identical to r68 artifacts: YES
+## 4. Apache smoke (codecs/smoke, same adapter, text 100000 1 0 lzma normal)
+delog r68 first_pass PASS archive_bytes=85932 ratio=59.767 encoder_sha256=f4c624240ebf2e54 decoded_sha256_ok=True
+delog r76 smoke (r68 binary) PASS archive_bytes=85932 ratio=59.767 encoder_sha256=f4c624240ebf2e54 decoded_sha256_ok=True
+delog_generic r76 smoke PASS archive_bytes=111504 ratio=46.060 encoder_sha256=bc357a51b83d0ea0 decoded_sha256_ok=True
+delog: bare single-letter regex tags in tags_mapping.txt: 2 [za:<T> zw:<I> ]
+delog_generic: bare single-letter regex tags in tags_mapping.txt: 0 []
+delog_generic encode stderr: Warning: No predefined patterns for logname 'Apache'.
+=> decompressor name-keyed special handlers (<T>,<P>,<O>,<Q>,<R>,...) are only reached for these regex tags, which the generic build never emits.

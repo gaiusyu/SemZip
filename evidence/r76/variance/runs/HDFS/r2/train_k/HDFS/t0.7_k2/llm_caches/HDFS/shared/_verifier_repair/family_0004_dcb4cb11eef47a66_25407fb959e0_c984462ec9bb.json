@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "timestamp",
+      "meaning": "log_timestamp",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "regex": "^([0-9]{6})( +)([0-9]{6})",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    date_part = groups[0]\n    separator = groups[1]\n    time_part = groups[2]\n    combined = int(f\"{date_part}{time_part}\")\n    layout = [len(separator)]\n    return {'stored': [combined], 'layout': layout}\n\ndef inverse(record):\n    combined = str(record['stored'][0]).zfill(12)\n    separator_length = record['layout'][0]\n    return f\"{combined[:6]}{' ' * separator_length}{combined[6:]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

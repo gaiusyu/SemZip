@@ -1,0 +1,135 @@
+{
+  "families": [
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "node-127",
+              "node-230",
+              "node-240",
+              "node-136",
+              "node-155"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          },
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "(command 1894)",
+              "(command 1893)",
+              "(command 1889)"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header pattern is observed across the examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "identifier for a node",
+          "reason": "S1 is an anchored variable with a stable prefix ('node-'), making it suitable for extraction"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "command ID with explicit structure",
+          "reason": "S8 contains a structured command ID prefixed with '(command ', making it suitable for extraction"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node_identifier",
+          "command_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_identifier",
+          "meaning": "identifier for a node",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "node identifier",
+            "context_source": null,
+            "why_not_merge_raw": "the value is a standalone, structured identifier with no additional composable parts"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "node-([0-9]+)",
+          "replacement": "node-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'node-{record[\"stored\"][0]}'"
+          }
+        },
+        {
+          "tag": "command_id",
+          "meaning": "command ID with explicit structure",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "command ID",
+            "context_source": null,
+            "why_not_merge_raw": "the value contains structured delimiters and is captured as a single entity"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(command ([0-9]+)\\)",
+          "replacement": "(command {placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'(command {record[\"stored\"][0]})'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "examples contain a repeated prefix/header pattern for 'full partition status'"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

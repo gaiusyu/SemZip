@@ -1,0 +1,27 @@
+{
+  "functions": [
+    {
+      "tag": "properties_file",
+      "meaning": "properties file name",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "source_separation": {
+        "decision": "raw_single_source",
+        "stored_source": "properties_file",
+        "context_source": null,
+        "why_not_merge_raw": "structured variable with multiple separators"
+      },
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "loaded properties from ([A-Za-z0-9._-]+)",
+      "replacement": "loaded properties from {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': ['loaded properties from ']}\n\ndef inverse(record):\n    return f\"{record['layout'][0]}{record['stored'][0]}\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

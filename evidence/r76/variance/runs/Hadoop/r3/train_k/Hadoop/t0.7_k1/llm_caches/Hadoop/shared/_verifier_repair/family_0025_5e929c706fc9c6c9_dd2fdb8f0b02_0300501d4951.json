@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "job_token_identifier",
+      "meaning": "job token identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "\\(org\\.apache\\.hadoop\\.mapreduce\\.security\\.token\\.JobTokenIdentifier@([0-9a-fA-F]+)\\)",
+      "replacement": "(org.apache.hadoop.mapreduce.security.token.JobTokenIdentifier@{placeholder})",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"(org.apache.hadoop.mapreduce.security.token.JobTokenIdentifier@{record['stored'][0]})\" if len(record['stored']) == 1 else ''"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

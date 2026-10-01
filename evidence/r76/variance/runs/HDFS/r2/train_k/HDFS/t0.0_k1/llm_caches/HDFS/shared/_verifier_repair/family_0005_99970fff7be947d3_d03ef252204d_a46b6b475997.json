@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "timestamp_composed",
+      "meaning": "timestamp composed from date and time",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "regex": "^(\\d{6})( +)(\\d{6})",
+      "replacement": "{placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    date = groups[0]\n    spaces = groups[1]\n    time = groups[2]\n    dt = datetime.strptime(date + time, '%y%m%d%H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(spaces)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    space_count = record['layout'][0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y%m%d') + (' ' * space_count) + dt.strftime('%H%M%S')\n"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

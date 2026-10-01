@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "task_id",
+      "meaning": "task identifier",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "task ([0-9]+\\.[0-9]+)",
+      "replacement": "task {placeholder}",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [int(float(groups[0]))], 'layout': []}\n\ndef inverse(record):\n    return f\"task {record['stored'][0]}.0\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

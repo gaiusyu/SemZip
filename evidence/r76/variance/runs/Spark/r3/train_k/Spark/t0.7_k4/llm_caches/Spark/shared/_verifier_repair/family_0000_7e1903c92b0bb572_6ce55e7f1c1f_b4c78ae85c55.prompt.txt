@@ -1,0 +1,84 @@
+You are a verifier-repair agent for Spark log compression.
+Repair exactly one rejected reversible extraction function.
+Return exact JSON only: {"functions": [ ... ]}.
+
+Goal:
+- Keep the original semantic intent when possible.
+- Make the function pass a strict byte-exact verifier.
+- Do not add dataset-specific constants beyond what appears in the examples and failed regex.
+- Prefer the smallest safe repair: fix class/value_type, regex boundary, replacement, or python_exec code.
+Repair category: semantic_equivalent_display.
+The failed item probably contains multiple textual displays of the same semantic
+value, for example '1228 bytes (1.19 KB) sent'. Capture the whole display span
+that belongs to one value, store one canonical integer plus only the layout needed
+for byte-exact reconstruction, and make inverse(record) rebuild the captured text.
+Do not split the equivalent displays into unrelated small numeric streams.
+
+Required function schema:
+{
+  "tag": "short_name",
+  "meaning": "short meaning",
+  "class": "class_1_composed_numeric | class_2_formatted_numeric | class_3_common_variable",
+  "value_type": "numeric | string",
+  "target_role": "log_timestamp | ordinary_value",
+  "context": null,
+  "regex": "Python regex with explicit capture groups",
+  "replacement": "template containing {placeholder} and any needed {groupN}",
+  "program": {
+    "op": "python_exec",
+    "code": "def forward(groups):\n    ...\n\ndef inverse(record):\n    ..."
+  }
+}
+
+Python execution contract:
+- forward(groups) receives the captured value groups selected by the compiler.
+- It returns {'stored': [...], 'layout': [...]}.
+- inverse(record) reconstructs exactly the placeholder text from record['stored'] and record['layout'].
+- For raw variables, use this executable pattern:
+  def forward(groups):
+      return {'stored': [groups[0]], 'layout': []}
+  def inverse(record):
+      return str(record['stored'][0])
+- For numeric variables, store int values, not strings.
+- Preserve exact spaces by capturing them as ( +) and either keeping them as {groupN} in replacement or storing layout.
+- When repairing context, replace null with {"code": "def project_context(line, groups): ..."}; the function returns the actual context value or None.
+
+Verifier failure:
+{
+  "status": "rejected_no_verified_program",
+  "reasons": [
+    "B:no surviving matches for tag B"
+  ]
+}
+
+Failed function:
+{
+  "tag": "size_value",
+  "meaning": "size in bytes or KB",
+  "class": "class_2_formatted_numeric",
+  "value_type": "numeric",
+  "target_role": "ordinary_value",
+  "context": null,
+  "source_separation": {
+    "decision": "merge_equivalent",
+    "stored_source": "size",
+    "context_source": null,
+    "why_not_merge_raw": "size is represented with unit suffix"
+  },
+  "general": true,
+  "order_hint": "family_structured",
+  "regex": "\\(size: (\\d+\\.\\d+) (KB|MB)\\)",
+  "replacement": "{placeholder}",
+  "program": {
+    "op": "python_exec",
+    "code": "def forward(groups):\n    value = float(groups[0])\n    unit = groups[1].lower()\n    multiplier = 1024 if unit == 'kb' else (1024 * 1024 if unit == 'mb' else 1)\n    return {'stored': [int(value * multiplier)], 'layout': [unit]}\n\ndef inverse(record):\n    value = record['stored'][0]\n    unit = record['layout'][0]\n    if unit == 'kb':\n        display_value = value / 1024\n        unit = 'KB'\n    elif unit == 'mb':\n        display_value = value / (1024 * 1024)\n        unit = 'MB'\n    else:\n        display_value = value\n        unit = 'B'\n    return f'(size: {display_value:.1f} {unit})'"
+  }
+}
+
+Family examples:
+- 16/04/07 10:46:42 INFO storage.BlockManagerInfo: Added broadcast_6_piece0 in memory on mesos-slave-26:58204 (size: 6.1 KB, free: 27.8 GB)
+- 16/04/07 10:46:42 INFO storage.BlockManagerInfo: Added broadcast_6_piece0 in memory on mesos-slave-28:47083 (size: 6.1 KB, free: 27.8 GB)
+- 16/04/07 10:47:36 INFO storage.BlockManagerInfo: Removed broadcast_7_piece0 on mesos-slave-19:41034 in memory (size: 3.5 KB, free: 27.8 GB)
+- 16/04/07 10:47:36 INFO storage.BlockManagerInfo: Removed broadcast_7_piece0 on mesos-slave-21:50841 in memory (size: 3.5 KB, free: 27.8 GB)
+- 16/04/07 10:46:42 INFO storage.BlockManagerInfo: Added broadcast_1_piece0 in memory on mesos-slave-25:49920 (size: 105.0 B, free: 27.8 GB)
+- 16/04/07 10:46:42 INFO storage.BlockManagerInfo: Added broadcast_1_piece0 in memory on mesos-slave-28:47083 (size: 105.0 B, free: 27.8 GB)

@@ -1,0 +1,89 @@
+{
+ "dataset": "HDFS",
+ "method": "semzip",
+ "repeat": 1,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_000_HDFS_semzip_r1_a1",
+ "session": "T3",
+ "formal": true,
+ "input": "<WORKDIR>/r76_additional_20260929/timing/samples/HDFS.sample20.log",
+ "input_kind": "sample20",
+ "sampled_blocks": true,
+ "raw_bytes": 277338890,
+ "blocks": 20,
+ "started_unix": 1790832859.8065765,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "encode",
+   "--input",
+   "<WORKDIR>/r76_additional_20260929/timing/samples/HDFS.sample20.log",
+   "--plan",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/HDFS/program.json",
+   "--dataset",
+   "HDFS",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_000_HDFS_semzip_r1_a1/work",
+   "--block-size",
+   "100000",
+   "--workers",
+   "4"
+  ],
+  "seconds": 33.607375897467136,
+  "returncode": 0,
+  "load_average": [
+   13.02,
+   10.84,
+   10.02
+  ],
+  "started_unix": 1790832859.80947,
+  "own_cpu_seconds": 118.63563400000001,
+  "other_cpu_seconds": 1.0519669279999846,
+  "other_cores": 0.03130166815788993
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "decode",
+   "--archive",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_000_HDFS_semzip_r1_a1/work/archive",
+   "--output",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_000_HDFS_semzip_r1_a1/restored.owned.log",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T3/20261001053412_000_HDFS_semzip_r1_a1/decode",
+   "--workers",
+   "4"
+  ],
+  "seconds": 5.565670169889927,
+  "returncode": 0,
+  "load_average": [
+   12.69,
+   10.81,
+   10.01
+  ],
+  "started_unix": 1790832893.4270384,
+  "own_cpu_seconds": 13.553184000000002,
+  "other_cpu_seconds": 0.12213221799999907,
+  "other_cores": 0.021943847600012292
+ },
+ "archive_bytes": 10051875,
+ "fallback_blocks": 0,
+ "sha_pass": true,
+ "audit_seconds": 1.1762385964393616,
+ "encode_MB_per_s": 8.252322074955634,
+ "decode_MB_per_s": 49.83027767264997,
+ "finished_unix": 1790832900.1878703,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.049284774558362554
+ },
+ "max_other_cores": 0.03130166815788993,
+ "contaminated": false
+}

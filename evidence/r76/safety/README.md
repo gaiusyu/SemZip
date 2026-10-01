@@ -5,7 +5,7 @@ Design: `../DEV_DESIGN_R76_zh.md` section E. Everything outside this directory w
 archive, plan or runtime file was modified; nothing was re-encoded; no LLM/API call was made.
 
 Provenance: the V1 files (validator, static check, archive scan, enforcing decoder, tests, negative
-controls NC1-NC3, smoke run, full run `full_20260929/`) were produced 10:46-10:56 on 2026-09-29 by an
+controls NC1-NC3, smoke run, full run `full_20260929/`) were produced 02:46-02:56 UTC on 2026-09-29 by an
 earlier run of this track. A later run re-audited that work, found two escapes that V1 accepts (section 2.3),
 and added `v2/` (V2 validator, rerun of every check, NC4, second full run). V1 outputs were left untouched.
 
@@ -24,6 +24,10 @@ all 16 archives decode from the archive alone with per-block and full-file SHA-2
 The re-audit found that V1 (and the frozen runtime) let a **context projector reach `sys` via `re.enum.sys`**
 and did not parse nested format-spec fields. V2 closes both. No real program changes verdict. NC4 shows
 the frozen and V1 decoders executing such code from a tampered archive, while V2 fails closed.
+A later coverage pass (`coverage_20261002/`, section 3.1) applies the unchanged V2 check to the syntheses this scope
+did not include (the 16 repeated greedy syntheses, the complete reruns, the unseen-source runs) and to the
+hand-written rule library. It adds 45 distinct LLM-written programs (**134 in total**) and again finds no violation
+outside the runtime's fixed wrapper (0 in LLM-written code); the 11 hand-written library programs pass both policies.
 
 ## 1. Audit: how `python_exec` code is executed (file:line)
 
@@ -262,6 +266,52 @@ in memory; nothing extracted or run):
 - 0 tar member problems over 3,797 blocks.
 - The V1 scan and the V2 scan are identical.
 
+### 3.1 Coverage extension (`coverage_20261002/`)
+
+A later pass checked, with the **unchanged** V2 validator and the unchanged V2 extraction and verdict code (both
+imported from `v2/`; the scripts check their SHA-256 before running), every program that the scope above did not
+include. Scripts: `coverage_check.py` (static check of plans and publications, both policies; stdout in
+`coverage_check.log`) and `scan_new_archives.py` (the code embedded in the formal archives of the new publications,
+through the unchanged `v2/scan_archives.py`: tar index and `metadata.json` read in memory, nothing extracted or run;
+stdout in `scan_new_archives.log`). Nothing was re-encoded, no program or plan was modified, and no model was called.
+Each violation is classified by origin: inside the runtime's fixed space/digit-layout wrapper (pinned template),
+the runtime's deterministic renaming of the LLM's `forward`/`inverse` to `_orig_forward`/`_orig_inverse`
+(`def` lines of the prefix), or the program body.
+
+Scope (main): R73 `g1`, the 16 repeated greedy (T=0.0) syntheses `train_k/<D>/t0.0_k1`; R76-C (`../variance/`),
+the 40 syntheses of the complete reruns (HPC, Hadoop, HDFS, Spark x r2, r3 x c0-c4), their 40 gated candidate
+plans, 8 pool-selected plans, 8 publications and 8 storage policies; R76-G (`../unseen/`), 20 syntheses, 20 gated
+plans, 4 pool plans, 4 publications and 4 storage policies; R76-B2 (`../library/`, hand-written, no LLM), 16 replay
+plans, 16 gated plans, 16 publications and 16 storage policies, reported separately. Supplementary scope: the
+code embedded in each synthesis' training-archive metadata and every gate/pool evaluation plan (3,495 files). 3,731
+files were read; none was missing. The supplementary scope contains no code that is not also in the main scope.
+
+| source (main scope) | unique codes | already among the 89 | strict: unique rejected / violations | violations by origin | template: rejected | warnings |
+|---|---:|---:|---|---|---:|---|
+| R73 g1 (greedy repeats) | 30 (28 python_exec, 2 context) | 16 | 5 / 60 | wrapper 50, entry-point rename 10, body 0 | 0 | `W_WHILE` 40, all in the wrapper |
+| R76-C complete reruns | 33 (31, 2) | 9 | 4 / 48 | wrapper 40, rename 8, body 0 | 0 | `W_WHILE` 32, all in the wrapper |
+| R76-G unseen sources | 12 (11, 1) | 5 | 0 / 0 | - | 0 | none |
+| **LLM-written, union** | **64 (59, 5)** | **19** | **7 / 84, all `E_UNDERSCORE`** | **wrapper 70, rename 14, body 0** | **0** | `W_WHILE` 56, all in the wrapper |
+| R76-B2 library (hand-written) | 11 (11, 0) | 0 | 0 / 0 | - | 0 | `W_WHILE` 2, in program bodies (report-only) |
+
+The 64 LLM-written codes add 45 to the 89 of section 3, so **134 distinct LLM-written programs** have been checked,
+with no violation in LLM-written code under either policy; all 145 distinct codes (134 LLM-written, 11 hand-written)
+pass the post-hoc `template` policy, and the library codes pass the strict policy too. The two library warnings are
+bounded loops (`while i < 12`, `while i < 4`). Every violation, verbatim with its origin and source line, is in
+`violations_verbatim.txt`; per-code verdicts (with the code) and per-group summaries are in
+`coverage_check_result.json` (compacted in this copy; see the repository README, "Notes on this copy").
+
+Archive scan of the 28 new publications (`archive_scan_summary.json`, per set `archive_scan/<label>.json`):
+
+| track | archive sets | blocks | blocks rejected (strict) | blocks rejected (template) | tar member problems |
+|---|---:|---:|---:|---:|---:|
+| R76-C complete reruns | 8 | 908 | 586 (Hadoop r2, r3: 4/4 each; Spark r2, r3: 289/333 each; the wrapper case) | 0 | 0 |
+| R76-G unseen sources | 4 | 69 | 0 | 0 | 0 |
+| R76-B2 library | 16 | 3,797 | 0 | 0 | 0 |
+
+Every code embedded in these archives is in the corresponding publication and among the codes checked above
+(`archive_codes_not_in_plan_check` is empty for every set); some publication programs never reach an archive.
+
 ## 4. Validator-enforcing decode path (`enforced_decode.py`, driver `run_verify.py`)
 
 It imports the frozen guard `guarded_backend_v2` and the runtime unchanged. Their sha256 values are checked at start
@@ -323,11 +373,11 @@ records the policy, validator version, every validated code sha, `exec_calls`, t
 
 V1 run: `cd safety && AGNICE=5 ../launch.sh logs/full_verify_20260929.log python3 run_verify.py all --root full_20260929 --workers 3`
 
-- pid 1258137, started 10:55. Log `logs/full_verify_20260929.log`, status `full_20260929/status.json`.
+- pid 1258137, started 02:55 UTC. Log `logs/full_verify_20260929.log`, status `full_20260929/status.json`.
 - Summary written at the end: `full_20260929/VERIFY_SUMMARY.json`.
 - Table: `python3 summarize.py` (writes `SAFETY_SUMMARY.json`).
 
-**V1 result, finished 11:45 (elapsed 2,941 s): all 16 archives decode from the archive alone with full-file and
+**V1 result, finished 03:45 UTC (elapsed 2,941 s): all 16 archives decode from the archive alone with full-file and
 per-block SHA-256 equal to the originals, and every audit check passes.**
 
 - 11/16 pass under the pre-registered strict policy.
@@ -371,7 +421,7 @@ V2 run (chained after V1): `cd safety/v2 && AGNICE=5 ../../launch.sh logs/full_v
 
 - Launched as pid 1357486 (waited read-only on pid 1258137), then ran `python3 -u run_verify.py all --root full_v2_20260929 --workers 3`.
 - Log `v2/logs/full_verify_v2_20260929.log`, status `v2/full_v2_20260929/status.json`, final `v2/full_v2_20260929/VERIFY_SUMMARY.json`.
-- Started 11:45:10, **finished 12:32 (elapsed 2,818 s)**. No process of this track is still running.
+- Started 03:45:10 UTC, **finished 04:32 UTC (elapsed 2,818 s)**. No process of this track is still running.
 
 **V2 result: identical verdicts to V1.** strict PASS 11/16 (Linux, Proxifier, Apache, HealthApp, HPC, OpenStack, Android,
 HDFS, Spark, Windows, Thunderbird); strict FAIL closed 5/16 (Zookeeper, Mac, Hadoop, OpenSSH, BGL; same wrapper
@@ -435,4 +485,8 @@ decode seconds differ only by machine load (V2: BGL 105.0, HDFS 73.7, Spark 273.
 | v2/enforced_decode.py, v2/run_verify.py | (not listed) | V2 copies (docstring only) |
 | v2/static_check.py, v2/scan_archives.py | (not listed) | byte-identical copies (import the V2 validator) |
 | v2/test_validator.py, v2/test_enforcement.py, v2/negative_controls.py | bec8a8d2, ae8aacb3, (not listed) | V2 tests + NC1-NC4 |
-| v2/chain_after_v1.sh | c96af20b | waits for the V1 pid, then starts the V2 full run |
+| v2/chain_after_v1.sh | (not listed) | waits for the V1 pid, then starts the V2 full run |
+| coverage_20261002/coverage_check.py | (not listed) | 3.1 static check of the programs outside the section 3 scope (unchanged V2) |
+| coverage_20261002/scan_new_archives.py | (not listed) | 3.1 scan of the code embedded in the 28 new publications' archives |
+| coverage_20261002/coverage_check_result.json, violations_verbatim.txt, coverage_check.log | - | 3.1 per-code verdicts, per-group summaries, every violation verbatim |
+| coverage_20261002/archive_scan_summary.json, archive_scan/*.json, scan_new_archives.log | - | 3.1 archive scan records |

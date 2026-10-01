@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "tag": "modify_permissions",
+      "meaning": "modify permissions list",
+      "class": "class_1_composed_numeric",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "regex": "modify permissions: Set\\(([^)]+)\\)",
+      "replacement": "modify permissions: Set({placeholder})",
+      "program": {
+        "op": "python_exec",
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"modify permissions: Set({record['stored'][0]})\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,345 @@
+You are generating reversible extraction programs for several HPC log-line families in one batch.
+Return JSON only. The top-level object must be {"families": [...]}.
+Return exactly 5 family objects, one for each input family_id in this exact set: [0, 7, 5, 8, 11].
+Do not omit a family. If a family has no safe function, still return it with all three class function arrays empty.
+Each output family must preserve its input family_id exactly and follow this schema:
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "1234 bytes",
+              "1.20 KB"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "10.0.0.5",
+              "/var/log/app",
+              "api.example.net",
+              "550e8400-e29b-41d4-a716-446655440000"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "user Alice",
+              "username=Alice"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "semantic role if known",
+          "reason": "why this slot is extracted, composed, or kept"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_2_formatted_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_3_common_variable": [
+          "semantic names found in this family, or an empty list"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+Class-wise completion contract:
+- Inspect Class 1, Class 2, and Class 3 independently for every family before emitting JSON.
+- class_inventory must contain all three class keys and briefly name every candidate category found; use [] when none is present.
+- Put executable proposals only in class_1_functions, class_2_functions, or class_3_functions. Always emit all three arrays, even when empty.
+- Do not emit a flat functions array or header.functions. A changing header field belongs in the class array matching its semantics.
+- The class bucket is authoritative: Class 1 and Class 2 store numeric values; Class 3 stores exact strings.
+
+For every family, fill family_analysis before writing functions. This is a short machine-readable plan, not chain-of-thought.
+- has_composable_tokens means several tokens/pieces jointly represent one value, such as weekday + month + day + time + year forming one timestamp-like value.
+- has_semantic_equivalent_tokens means two displays represent the same value, such as '1234 bytes' and '(1.20 KB)' describing the same byte count.
+- If has_composable_tokens=true, at least one function should implement the best composable_group unless exact reconstruction is impossible.
+- If has_semantic_equivalent_tokens=true, at least one function should implement the best semantic_equivalent_group unless exact reconstruction is impossible.
+- raw_variable_groups are Class 3 candidates through either of two evidence routes: (A) the captured value itself contains at least two non-alphanumeric separator occurrences explicitly encoded by the regex; or (B) a plain value is immediately introduced by a stable, unambiguous field-name literal explicitly present in the regex, such as user( +)([A-Za-z0-9]+) or username=([A-Za-z0-9]+). Whitespace alone and generic words such as for, from, to, or by do not qualify. Unanchored broad captures such as ([A-Za-z0-9]+), (\w+), or ([^ ]+) must be left to residual.
+- This planning step is meant to prevent skipping high-value fusion opportunities before regex writing.
+
+Direct per-line context schema:
+- Every function must include tag, class, value_type, target_role, context, regex, replacement, and program.
+- class must be one of class_1_composed_numeric, class_2_formatted_numeric, class_3_common_variable.
+- value_type must be numeric for class_1_composed_numeric and class_2_formatted_numeric. Use string for class_3_common_variable.
+- target_role must be log_timestamp only when the stored target itself is the primary timestamp of the log record. Use ordinary_value for every other stored target.
+- Use context=null when no other field in the same physical line should partition the target's distribution. A log_timestamp normally uses context=null.
+- Otherwise context must contain code defining project_context(line, groups). It returns the actual per-line context value as str/int, or None when absent; it must not return a semantic label.
+- line is the complete original physical log line and groups are the target regex groups. The target regex does not need to capture the context, and the context may be adjacent or non-adjacent.
+- Context only routes an already reversible target. forward(groups) and inverse(record) must reconstruct the target without context. Numeric streams use delta within each returned context; string streams use dictionary ranks within each returned context.
+- project_context must be deterministic, must not import modules, and may use provided re.search/re.match/re.fullmatch with literal safe regexes.
+- Direct projector example for 'Failed password from 173.234.31.186 port 38926 ssh2': the source_port target regex is 'port( +)(\\d+)', its target program stores int(groups[1]), and context.code is: def project_context(line, groups): m = re.search(r'from( +)((?:\\d{1,3}\\.){3}\\d{1,3})', line); return m.group(2) if m else None.
+- The example returns the concrete IP bytes, not the words source_ip and not another function tag.
+- Before writing each function, fill source_separation. This is a machine-readable audit, not a long chain-of-thought. Use decision=merge_equivalent only when the captured pieces are one semantic quantity or one piece is exactly derivable from another. Use decision=split_context_value when a textual span contains independent sources and one source predicts/groups the other. Use decision=raw_single_source only for one bounded opaque variable. Use decision=leave_to_residual when the LLM should not create a function.
+- If a target's distribution depends on another field anywhere in the same line, attach a projector to the target. Example: source_port stores only the port and project_context returns the concrete source IP from the complete line.
+- Contrastive source-separation example. Bad: store '10.10.34.12:3888' as one raw endpoint string; this repeats the IP many times and mixes address entropy with port entropy. Good: capture IP as context and store only the port as numeric value, with source_separation.decision='split_context_value', stored_source='port', context_source='ip'.
+- Contrastive source-separation example. Good merge: '1234 bytes (1.20 KB)' has two displays of one byte-size value, so use source_separation.decision='merge_equivalent' and store one canonical integer plus layout/display flags.
+
+Executable program forms:
+- Raw python_exec: store the captured raw value exactly as a string; downstream codec chooses rank/delta/raw.
+- {"op":"python_exec", "code":"..."}: real Python code defining forward(groups) and inverse(record). Use this for exact date/time, unit, duration, tuple, and compound numeric transforms.
+- python_exec code must not import modules. The verifier already provides datetime, re, math, and calendar-like helpers. Any import/from-import statement is rejected.
+- Use only the verifier-aligned Python subset: ordinary assignments, arithmetic, indexing/slicing, simple if/for/while, int/str/len/float/round/abs/min/max, datetime/timedelta/re helpers, f-strings, lists, tuples, and dicts.
+- Do not use augmented assignment such as +=, -=, *=, //=, or %=; write ordinary assignment instead. Example: write `v = v // 1000`, not `v //= 1000`.
+- Do not use comprehensions, lambda, try/except, with, class definitions, file/network/system calls, eval/exec/compile, globals/locals/vars, or double-underscore names.
+- python_exec forward(groups) must return a dict exactly shaped like {'stored': [one_value], 'layout': [optional_small_integers]}. Use layout for variable spaces or widths needed by inverse(record).
+- python_exec inverse(record) must read record['stored'] and return the exact original captured bytes as a string.
+- Do not return datetime objects, ISO strings, tuples, or plain integers from forward(). Do not make inverse(record) expect a datetime object directly.
+
+Placeholder routing contract:
+- Use exactly one {placeholder} in every replacement. The decoder uses that route to choose this function's side stream.
+- If a function consumes several capture groups that together describe one attribute, they still map to one {placeholder}, not multiple placeholders.
+- If a span contains independent attributes, emit separate functions with separate tags.
+- Do not duplicate storage: bytes consumed into {placeholder} must not also remain as {groupN}.
+
+For each family:
+- Every function must include class and target_role. Use class_1_composed_numeric for multi-piece values that become one compressible semantic integer, class_2_formatted_numeric for text or formatted tokens that express numeric meaning and can be converted into one compressible integer, and class_3_common_variable for an exact string supported by either intrinsic structure or an explicit adjacent field-name anchor. Use target_role=log_timestamp only for the primary log timestamp; otherwise use ordinary_value.
+- If a date/time-like span is present, prefer class_1_composed_numeric and write python_exec that stores one integer timestamp-like value. Do not use class_3_common_variable or raw identity for a timestamp merely because spaces or display widths vary; store those reversible display details in layout.
+- Choose class_2 not only for visibly numeric tokens, but for non-numeric or formatted text that carries numeric meaning and has a deterministic numeric representation: units, durations, byte-size displays, ordinal/state counters, severity-like levels, port-like roles, process/thread ids, slots, or structured subfields. Do not classify random-looking session ids, hashes, request ids, or opaque hex strings as class_1/class_2 merely because they can be parsed as integers.
+- Strategy switch for numbers: leave anonymous/simple numbers to deterministic residual coders, but extract semantically stable numbers whose surrounding words vary across templates. A port near an IP/host should be a class_2 target whose context projector returns the concrete IP/host when that field predicts the port distribution.
+- For every ordinary_value target, ask whether another field anywhere in the same physical line predicts or partitions its distribution. If yes, provide context.code defining project_context(line, groups); otherwise use context=null.
+- project_context returns the actual value found on this line, not a field name or another function tag. A log_timestamp normally uses context=null.
+- Context routing is available to every class. Numeric targets use context-local delta and string targets use context-local dictionary ranks, while target reconstruction remains independent of context.
+- Prefer class_3_common_variable only after one evidence route passes. Intrinsic route: the captured value has at least two separator occurrences explicit in the regex. Role-anchor route: a plain value is immediately introduced by a stable, unambiguous field-name literal explicit in the regex, such as user or username=. A semantic explanation, whitespace, or a generic word such as for/from/to/by is insufficient. Numeric-looking opaque identifiers may use class_3 only when they satisfy one route and lack semantic magnitude/order.
+- First decide whether there is a unified log header. Headers can use brackets, punctuation, or component fields, not just whitespace.
+- Put changing header fields in header.functions.
+- Then propose normal value functions for hard formats such as session ids, stable-affix ids, derived date/time text, unit-bearing values, and compound numeric fields.
+- Prefer one reversible function for a complete real-world attribute over several substring functions. If adjacent tokens or neighboring pieces describe the same underlying value, capture the complete span and store one compact value when exact rendering is possible.
+- Do not split one attribute into independent streams just because it appears as several tokens or contains punctuation. A date/time-like attribute, unit-bearing display, bracketed identifier, endpoint-like text, or stable-affix id should be considered as a complete reversible span first.
+- If one displayed piece is derivable from another captured value, store the source value and render the derived text instead of creating a separate stream. If exact derivation is not safe, store the complete formatted span with raw python_exec.
+- Prefer executable python_exec for complete composed attributes when a deterministic parse/render relation is clear. Use raw python_exec when the exact bytes are opaque or when a compact inverse renderer is not safe.
+- Set general=true when the function likely applies across many families/templates, such as a repeated header attribute, address-like value, endpoint-like value, bracketed process/context id, port-like number, user/domain-like token, or other recurring value format. Set general=false for message-specific variables.
+- Set order_hint=global_composed for a global function that consumes a complete multi-piece attribute or starts at a repeated line prefix; set family_structured for context-scoped message variables; set global_atomic for simple intrinsic global values.
+- Constants remain literal. Store changing bytes once: either as {placeholder} or as preserved {groupN}, never both.
+- Unit-bearing variants must be byte-exact. If examples include both plain and displayed forms such as '123 bytes' and '123 bytes (1.20 KB)', do not consume the optional display and drop it from replacement. Store the complete formatted value span or render all captured pieces exactly.
+- Use numeric scalar programs only after checking that the scalar render reconstructs the whole matched value, including optional unit displays and alternate units.
+- Regexes must be Python re compatible, local to the matched substring, and under 220 characters.
+- Avoid broad tail captures like (.+) or (.*). Avoid bare all-number regexes unless tightly scoped by literals. For Class 3, forbid unanchored plain-token captures such as ([A-Za-z0-9]+), (\w+), and ([^ ]+). A narrow plain-token capture is allowed only when a stable, unambiguous field-name literal immediately introduces it in the same regex; whitespace or generic for/from/to/by does not qualify.
+- If functions overlap, order most specific first.
+
+Executable examples, for style only and not a closed type list:
+Example exact raw value:
+{"tag": "dot_value", "meaning": "recurring dotted value", "class": "class_3_common_variable", "general": true, "order_hint": "global_atomic", "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})", "replacement": "from {placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example exact raw plain value with an explicit role anchor:
+{"tag": "user_name", "meaning": "user_field_value", "class": "class_3_common_variable", "general": false, "order_hint": "family_structured", "regex": "user( +)([A-Za-z][A-Za-z0-9._-]*)", "replacement": "user{group1}{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example fixed-width integer:
+{"tag": "bracket_number", "meaning": "recurring bracketed numeric id", "class": "class_2_formatted_numeric", "general": true, "order_hint": "global_composed", "regex": "worker\\[(\\d{5})\\]", "replacement": "worker[{placeholder}]", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    return {'stored': [int(text)], 'layout': []}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    return str(value).zfill(5)"}}
+Example composed date/time-like attribute with a fixed exact layout:
+{"tag": "composed_time", "meaning": "complete repeated date/time-like prefix", "class": "class_1_composed_numeric", "general": true, "order_hint": "global_composed", "regex": "^([A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2})", "replacement": "{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"}}
+If exact reconstruction needs variable width, variable spaces, optional text, or any other layout bytes, either capture the complete span with raw python_exec, or emit a python_exec that stores the required layout bytes and inverse reconstructs exactly.
+
+Open executable transducer mode:
+- Prefer LLM-generated executable Python transforms for structured numeric fields, including timestamps, dates, durations, sizes, tuple-like IDs, and compound numeric tokens.
+- The transform must define forward(groups) and inverse(record). forward receives the captured value bytes; inverse reconstructs exactly the captured bytes from the stored integer.
+- A timestamp does not need true Unix time. A monotonic packed integer is acceptable if inverse renders the exact original bytes and deltas are locally small.
+- For YYYY-MM-DD HH:MM:SS,mmm, write Python that parses the seven numeric fields, packs them into one integer, and inverse-unpacks with the same zero padding and punctuation.
+- For bracketed or prefixed fields, capture only the value span and preserve stable punctuation in replacement groups.
+- Stable text is an anchor, not a side-stream value. Never store the same bytes twice: if a captured group is represented by {placeholder}, do not also keep that group as {groupN} in replacement.
+
+
+Focus function budget on complete formatted spans and semantic dependencies. Plain leftover numbers can be handled by generic residual coders unless local context gives them a stable role.
+
+### FAMILY 0
+support=4
+template_anchor_key=fan fan speeds
+examples_and_shapes:
+Example 0: 272839 Interconnect-0N00 switch_module fan 1119703504 1 Fan speeds ( 3552 3534 3375 **** 3515 3479 )
+Tokens: S0='272839':D6 | S1='Interconnect-0N00':A12-D1A1D2 | S2='switch_module':A6_A6 | S3='fan':A3 | S4='1119703504':D10 | S5='1':D1 | S6='Fan':A3 | S7='speeds':A6 | S8='(':( | S9='3552':D4 | S10='3534':D4 | S11='3375':D4 | S12='****':* | S13='3515':D4 | S14='3479':D4 | S15=')':)
+Example 1: 269509 Interconnect-0N00 switch_module fan 1119671196 1 Fan speeds ( 3552 3534 3375 **** 3515 3479 )
+Tokens: S0='269509':D6 | S1='Interconnect-0N00':A12-D1A1D2 | S2='switch_module':A6_A6 | S3='fan':A3 | S4='1119671196':D10 | S5='1':D1 | S6='Fan':A3 | S7='speeds':A6 | S8='(':( | S9='3552':D4 | S10='3534':D4 | S11='3375':D4 | S12='****':* | S13='3515':D4 | S14='3479':D4 | S15=')':)
+Example 2: 433893 Interconnect-0N00 switch_module fan 1095568960 1 Fan speeds ( 3552 3552 3391 4245 3515 3497 )
+Tokens: S0='433893':D6 | S1='Interconnect-0N00':A12-D1A1D2 | S2='switch_module':A6_A6 | S3='fan':A3 | S4='1095568960':D10 | S5='1':D1 | S6='Fan':A3 | S7='speeds':A6 | S8='(':( | S9='3552':D4 | S10='3552':D4 | S11='3391':D4 | S12='4245':D4 | S13='3515':D4 | S14='3497':D4 | S15=')':)
+Example 3: 225841 Interconnect-0N00 switch_module fan 1117359278 1 Fan speeds ( 3552 3534 3375 4787 3515 3479 )
+Tokens: S0='225841':D6 | S1='Interconnect-0N00':A12-D1A1D2 | S2='switch_module':A6_A6 | S3='fan':A3 | S4='1117359278':D10 | S5='1':D1 | S6='Fan':A3 | S7='speeds':A6 | S8='(':( | S9='3552':D4 | S10='3534':D4 | S11='3375':D4 | S12='4787':D4 | S13='3515':D4 | S14='3479':D4 | S15=')':)
+required_value_like_slots (42 sampled occurrences):
+Example 0: S0='272839':D6 | S1='Interconnect-0N00':A12-D1A1D2 | S2='switch_module':A6_A6 | S4='1119703504':D10 | S5='1':D1 | S9='3552':D4 | S10='3534':D4 | S11='3375':D4 | S13='3515':D4 | S14='3479':D4
+Example 1: S0='269509':D6 | S1='Interconnect-0N00':A12-D1A1D2 | S2='switch_module':A6_A6 | S4='1119671196':D10 | S5='1':D1 | S9='3552':D4 | S10='3534':D4 | S11='3375':D4 | S13='3515':D4 | S14='3479':D4
+Example 2: S0='433893':D6 | S1='Interconnect-0N00':A12-D1A1D2 | S2='switch_module':A6_A6 | S4='1095568960':D10 | S5='1':D1 | S9='3552':D4 | S10='3552':D4 | S11='3391':D4 | S12='4245':D4 | S13='3515':D4 | S14='3497':D4
+Example 3: S0='225841':D6 | S1='Interconnect-0N00':A12-D1A1D2 | S2='switch_module':A6_A6 | S4='1117359278':D10 | S5='1':D1 | S9='3552':D4 | S10='3534':D4 | S11='3375':D4 | S12='4787':D4 | S13='3515':D4 | S14='3479':D4
+
+### FAMILY 7
+support=4
+template_anchor_key=node component state change component alt is in the unavailable state hwid
+examples_and_shapes:
+Example 0: 2557285 node-233 unix.hw state_change.unavailable 1072945921 1 Component State Change: Component \042alt0\042 is in the unavailable state (HWID=1328)
+Tokens: S0='2557285':D7 | S1='node-233':A4-D3 | S2='unix.hw':A4.A2 | S3='state_change.unavailable':A5_A6.A11 | S4='1072945921':D10 | S5='1':D1 | S6='Component':A9 | S7='State':A5 | S8='Change:':A6: | S9='Component':A9 | S10='\\042alt0\\042':\D3A3D1\D3 | S11='is':A2 | S12='in':A2 | S13='the':A3 | S14='unavailable':A11 | S15='state':A5 | S16='(HWID=1328)':(A4=D4)
+Example 1: 2562603 node-233 unix.hw state_change.unavailable 1073550845 1 Component State Change: Component \042alt0\042 is in the unavailable state (HWID=1328)
+Tokens: S0='2562603':D7 | S1='node-233':A4-D3 | S2='unix.hw':A4.A2 | S3='state_change.unavailable':A5_A6.A11 | S4='1073550845':D10 | S5='1':D1 | S6='Component':A9 | S7='State':A5 | S8='Change:':A6: | S9='Component':A9 | S10='\\042alt0\\042':\D3A3D1\D3 | S11='is':A2 | S12='in':A2 | S13='the':A3 | S14='unavailable':A11 | S15='state':A5 | S16='(HWID=1328)':(A4=D4)
+Example 2: 119040 node-10 unix.hw state_change.unavailable 1077804059 1 Component State Change: Component \042SCSI-WWID:01000010:6005-08b4-0001-4048-0008-a000-0047-0000\042 is in the unavailable state (HWID=2770)
+Tokens: S0='119040':D6 | S1='node-10':A4-D2 | S2='unix.hw':A4.A2 | S3='state_change.unavailable':A5_A6.A11 | S4='1077804059':D10 | S5='1':D1 | S6='Component':A9 | S7='State':A5 | S8='Change:':A6: | S9='Component':A9 | S10='\\042SCSI-WWID:01000010:6005-08b4-0001-4048-0008-a000-0047-0000\\042':\D3A4-A4:D8:D4-D2A1D1-D4-D4-D4-A1D3-D4-D4\D3 | S11='is':A2 | S12='in':A2 | S13='the':A3 | S14='unavailable':A11 | S15='state':A5 | S16='(HWID=2770)':(A4=D4)
+Example 3: 118765 node-250 unix.hw state_change.unavailable 1077804057 1 Component State Change: Component \042SCSI-WWID:01000010:6005-08b4-0001-017f-0001-3000-003c-0000\042 is in the unavailable state (HWID=921)
+Tokens: S0='118765':D6 | S1='node-250':A4-D3 | S2='unix.hw':A4.A2 | S3='state_change.unavailable':A5_A6.A11 | S4='1077804057':D10 | S5='1':D1 | S6='Component':A9 | S7='State':A5 | S8='Change:':A6: | S9='Component':A9 | S10='\\042SCSI-WWID:01000010:6005-08b4-0001-017f-0001-3000-003c-0000\\042':\D3A4-A4:D8:D4-D2A1D1-D4-D3A1-D4-D4-D3A1-D4\D3 | S11='is':A2 | S12='in':A2 | S13='the':A3 | S14='unavailable':A11 | S15='state':A5 | S16='(HWID=921)':(A4=D3)
+required_value_like_slots (36 sampled occurrences):
+Example 0: S0='2557285':D7 | S1='node-233':A4-D3 | S2='unix.hw':A4.A2 | S3='state_change.unavailable':A5_A6.A11 | S4='1072945921':D10 | S5='1':D1 | S8='Change:':A6: | S10='\\042alt0\\042':\D3A3D1\D3 | S16='(HWID=1328)':(A4=D4)
+Example 1: S0='2562603':D7 | S1='node-233':A4-D3 | S2='unix.hw':A4.A2 | S3='state_change.unavailable':A5_A6.A11 | S4='1073550845':D10 | S5='1':D1 | S8='Change:':A6: | S10='\\042alt0\\042':\D3A3D1\D3 | S16='(HWID=1328)':(A4=D4)
+Example 2: S0='119040':D6 | S1='node-10':A4-D2 | S2='unix.hw':A4.A2 | S3='state_change.unavailable':A5_A6.A11 | S4='1077804059':D10 | S5='1':D1 | S8='Change:':A6: | S10='\\042SCSI-WWID:01000010:6005-08b4-0001-4048-0008-a000-0047-0000\\042':\D3A4-A4:D8:D4-D2A1D1-D4-D4-D4-A1D3-D4-D4\D3 | S16='(HWID=2770)':(A4=D4)
+Example 3: S0='118765':D6 | S1='node-250':A4-D3 | S2='unix.hw':A4.A2 | S3='state_change.unavailable':A5_A6.A11 | S4='1077804057':D10 | S5='1':D1 | S8='Change:':A6: | S10='\\042SCSI-WWID:01000010:6005-08b4-0001-017f-0001-3000-003c-0000\\042':\D3A4-A4:D8:D4-D2A1D1-D4-D3A1-D4-D4-D3A1-D4\D3 | S16='(HWID=921)':(A4=D3)
+
+### FAMILY 5
+support=4
+template_anchor_key=clusterfilesystem clusterfilesystem there is no server for serverfilesystem domain storage
+examples_and_shapes:
+Example 0: 2557586 node-D7 clusterfilesystem clusterfilesystem.no_server 1072983906 1 ClusterFileSystem: There is no server for ServerFileSystem domain storage1034
+Tokens: S0='2557586':D7 | S1='node-D7':A4-A1D1 | S2='clusterfilesystem':A17 | S3='clusterfilesystem.no_server':A17.A2_A6 | S4='1072983906':D10 | S5='1':D1 | S6='ClusterFileSystem:':A17: | S7='There':A5 | S8='is':A2 | S9='no':A2 | S10='server':A6 | S11='for':A3 | S12='ServerFileSystem':A16 | S13='domain':A6 | S14='storage1034':A7D4
+Example 1: 2557582 node-D7 clusterfilesystem clusterfilesystem.no_server 1072983890 1 ClusterFileSystem: There is no server for ServerFileSystem domain storage1033
+Tokens: S0='2557582':D7 | S1='node-D7':A4-A1D1 | S2='clusterfilesystem':A17 | S3='clusterfilesystem.no_server':A17.A2_A6 | S4='1072983890':D10 | S5='1':D1 | S6='ClusterFileSystem:':A17: | S7='There':A5 | S8='is':A2 | S9='no':A2 | S10='server':A6 | S11='for':A3 | S12='ServerFileSystem':A16 | S13='domain':A6 | S14='storage1033':A7D4
+Example 2: 2553395 node-D7 clusterfilesystem clusterfilesystem.no_server 1072641482 1 ClusterFileSystem: There is no server for ServerFileSystem domain cluster_root
+Tokens: S0='2553395':D7 | S1='node-D7':A4-A1D1 | S2='clusterfilesystem':A17 | S3='clusterfilesystem.no_server':A17.A2_A6 | S4='1072641482':D10 | S5='1':D1 | S6='ClusterFileSystem:':A17: | S7='There':A5 | S8='is':A2 | S9='no':A2 | S10='server':A6 | S11='for':A3 | S12='ServerFileSystem':A16 | S13='domain':A6 | S14='cluster_root':A7_A4
+Example 3: 2586738 node-D0 clusterfilesystem clusterfilesystem.no_server 1074241389 1 ClusterFileSystem: There is no server for ServerFileSystem domain cluster_root
+Tokens: S0='2586738':D7 | S1='node-D0':A4-A1D1 | S2='clusterfilesystem':A17 | S3='clusterfilesystem.no_server':A17.A2_A6 | S4='1074241389':D10 | S5='1':D1 | S6='ClusterFileSystem:':A17: | S7='There':A5 | S8='is':A2 | S9='no':A2 | S10='server':A6 | S11='for':A3 | S12='ServerFileSystem':A16 | S13='domain':A6 | S14='cluster_root':A7_A4
+required_value_like_slots (28 sampled occurrences):
+Example 0: S0='2557586':D7 | S1='node-D7':A4-A1D1 | S3='clusterfilesystem.no_server':A17.A2_A6 | S4='1072983906':D10 | S5='1':D1 | S6='ClusterFileSystem:':A17: | S14='storage1034':A7D4
+Example 1: S0='2557582':D7 | S1='node-D7':A4-A1D1 | S3='clusterfilesystem.no_server':A17.A2_A6 | S4='1072983890':D10 | S5='1':D1 | S6='ClusterFileSystem:':A17: | S14='storage1033':A7D4
+Example 2: S0='2553395':D7 | S1='node-D7':A4-A1D1 | S3='clusterfilesystem.no_server':A17.A2_A6 | S4='1072641482':D10 | S5='1':D1 | S6='ClusterFileSystem:':A17: | S14='cluster_root':A7_A4
+Example 3: S0='2586738':D7 | S1='node-D0':A4-A1D1 | S3='clusterfilesystem.no_server':A17.A2_A6 | S4='1074241389':D10 | S5='1':D1 | S6='ClusterFileSystem:':A17: | S14='cluster_root':A7_A4
+
+### FAMILY 8
+support=4
+template_anchor_key=clusterfilesystem serverfilesystem serverfilesystem domain is full
+examples_and_shapes:
+Example 0: 48939 node-D0 clusterfilesystem fdmn.full 1076720866 1 ServerFileSystem: ServerFileSystem domain root1_local is full
+Tokens: S0='48939':D5 | S1='node-D0':A4-A1D1 | S2='clusterfilesystem':A17 | S3='fdmn.full':A4.A4 | S4='1076720866':D10 | S5='1':D1 | S6='ServerFileSystem:':A16: | S7='ServerFileSystem':A16 | S8='domain':A6 | S9='root1_local':A4D1_A5 | S10='is':A2 | S11='full':A4
+Example 1: 48959 node-D0 clusterfilesystem fdmn.full 1076724466 1 ServerFileSystem: ServerFileSystem domain root1_local is full
+Tokens: S0='48959':D5 | S1='node-D0':A4-A1D1 | S2='clusterfilesystem':A17 | S3='fdmn.full':A4.A4 | S4='1076724466':D10 | S5='1':D1 | S6='ServerFileSystem:':A16: | S7='ServerFileSystem':A16 | S8='domain':A6 | S9='root1_local':A4D1_A5 | S10='is':A2 | S11='full':A4
+Example 2: 2616610 node-D0 clusterfilesystem fdmn.full 1075023705 1 ServerFileSystem: ServerFileSystem domain storage232 is full
+Tokens: S0='2616610':D7 | S1='node-D0':A4-A1D1 | S2='clusterfilesystem':A17 | S3='fdmn.full':A4.A4 | S4='1075023705':D10 | S5='1':D1 | S6='ServerFileSystem:':A16: | S7='ServerFileSystem':A16 | S8='domain':A6 | S9='storage232':A7D3 | S10='is':A2 | S11='full':A4
+Example 3: 2616590 node-D0 clusterfilesystem fdmn.full 1075020184 1 ServerFileSystem: ServerFileSystem domain storage842 is full
+Tokens: S0='2616590':D7 | S1='node-D0':A4-A1D1 | S2='clusterfilesystem':A17 | S3='fdmn.full':A4.A4 | S4='1075020184':D10 | S5='1':D1 | S6='ServerFileSystem:':A16: | S7='ServerFileSystem':A16 | S8='domain':A6 | S9='storage842':A7D3 | S10='is':A2 | S11='full':A4
+required_value_like_slots (28 sampled occurrences):
+Example 0: S0='48939':D5 | S1='node-D0':A4-A1D1 | S3='fdmn.full':A4.A4 | S4='1076720866':D10 | S5='1':D1 | S6='ServerFileSystem:':A16: | S9='root1_local':A4D1_A5
+Example 1: S0='48959':D5 | S1='node-D0':A4-A1D1 | S3='fdmn.full':A4.A4 | S4='1076724466':D10 | S5='1':D1 | S6='ServerFileSystem:':A16: | S9='root1_local':A4D1_A5
+Example 2: S0='2616610':D7 | S1='node-D0':A4-A1D1 | S3='fdmn.full':A4.A4 | S4='1075023705':D10 | S5='1':D1 | S6='ServerFileSystem:':A16: | S9='storage232':A7D3
+Example 3: S0='2616590':D7 | S1='node-D0':A4-A1D1 | S3='fdmn.full':A4.A4 | S4='1075020184':D10 | S5='1':D1 | S6='ServerFileSystem:':A16: | S9='storage842':A7D3
+
+### FAMILY 11
+support=4
+template_anchor_key=success command has completed successfully
+examples_and_shapes:
+Example 0: 2558404 1894 boot_cmd success 1073118480 1 Command has completed successfully
+Tokens: S0='2558404':D7 | S1='1894':D4 | S2='boot_cmd':A4_A3 | S3='success':A7 | S4='1073118480':D10 | S5='1':D1 | S6='Command':A7 | S7='has':A3 | S8='completed':A9 | S9='successfully':A12
+Example 1: 2557571 1893 boot_cmd success 1072983828 1 Command has completed successfully
+Tokens: S0='2557571':D7 | S1='1893':D4 | S2='boot_cmd':A4_A3 | S3='success':A7 | S4='1072983828':D10 | S5='1':D1 | S6='Command':A7 | S7='has':A3 | S8='completed':A9 | S9='successfully':A12
+Example 2: 2555411 1885 shutdown_cmd success 1072761290 1 Command has completed successfully
+Tokens: S0='2555411':D7 | S1='1885':D4 | S2='shutdown_cmd':A8_A3 | S3='success':A7 | S4='1072761290':D10 | S5='1':D1 | S6='Command':A7 | S7='has':A3 | S8='completed':A9 | S9='successfully':A12
+Example 3: 2563586 1895 shutdown_cmd success 1073637835 1 Command has completed successfully
+Tokens: S0='2563586':D7 | S1='1895':D4 | S2='shutdown_cmd':A8_A3 | S3='success':A7 | S4='1073637835':D10 | S5='1':D1 | S6='Command':A7 | S7='has':A3 | S8='completed':A9 | S9='successfully':A12
+required_value_like_slots (20 sampled occurrences):
+Example 0: S0='2558404':D7 | S1='1894':D4 | S2='boot_cmd':A4_A3 | S4='1073118480':D10 | S5='1':D1
+Example 1: S0='2557571':D7 | S1='1893':D4 | S2='boot_cmd':A4_A3 | S4='1072983828':D10 | S5='1':D1
+Example 2: S0='2555411':D7 | S1='1885':D4 | S2='shutdown_cmd':A8_A3 | S4='1072761290':D10 | S5='1':D1
+Example 3: S0='2563586':D7 | S1='1895':D4 | S2='shutdown_cmd':A8_A3 | S4='1073637835':D10 | S5='1':D1

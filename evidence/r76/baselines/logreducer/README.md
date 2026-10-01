@@ -2,14 +2,26 @@
 
 Track directory: `r76_additional_20260929/baselines/logreducer/`. Written 2026-09-29, before any full-run result.
 
-> **This copy (snapshot taken during a resumed rerun).** `full/` was copied while a resumed rerun of the full campaign,
-> started 2026-10-01 00:04 UTC, was in progress. Linux, Proxifier and Apache had been re-run (their `status.json`,
-> `result.json` and `full/summary.json`, which lists only these three, are from the rerun). Zookeeper's `status.json`
-> had been reset to `RUNNING` at 00:05:11 UTC, but its `result.json` from 2026-09-29 is a valid record (PASS,
-> byte-exact archive-only decode, 93,001 B, 112.11x). Thunderbird was still decoding (1,380 of 2,113 blocks, no
-> `result.json`). Spark is a terminal FAIL (48 of 333 blocks not restored byte for byte), as expected. Because
-> `analysis/r76/r76_tables.py` reads `status.json`, the LogReducer+R cells for Zookeeper and Thunderbird and the
-> LogReducer+R aggregate cells print `--`; the valid Zookeeper `result.json` is included but not used by the tables.
+> **This copy (final records).** `full/` holds the final record of every dataset. A resumed rerun of the full
+> campaign, started 2026-10-01 00:04 UTC, re-ran Linux, Proxifier and Apache (`logs/full_resume_20261001.log`) and
+> Zookeeper (11:52 UTC, `logs/full_resume_zk_20261001.log`: PASS, byte-exact archive-only decode, 93,001 B, 112.11x,
+> the same bytes as its first run). For Thunderbird, a resume at 00:05 UTC (`logs/full_resume_tb_20261001.log`) wrote
+> no result, and a relaunch with 8 workers was rejected by the driver's argument check before it started
+> (`logs/full_resume_tb2_20261001.log`; `--workers` accepts 1-4). The final resume (`after_t2_lr_tb.sh`, 4 workers,
+> `logs/after_t2_lr_tb.log`, `logs/full_resume_tb3_20261001.log`) ran from 12:11 to 19:59 UTC on 2026-10-01, before
+> the 2026-10-02 04:00 UTC cut-off for sampled blocks (`../../DEV_DESIGN_R76_zh.md`, change log of 2026-09-29
+> 05:30 UTC), reused the 2,113 encoded blocks and
+> decoded every block from its archive alone. **Thunderbird: PASS**, 2,113/2,113 blocks and the full file with SHA-256
+> equal to the original; 702,689,351 B, **45.24x** (suffix 45.25x); native part 638,308,535 B (49.80x, not
+> byte-exact), residual 64,380,816 B, no full-fallback block; archive-only decode 27,345 s with 4 workers
+> (`full/Thunderbird/result.json`). `full/summary.json` is the summary of that last invocation (Thunderbird only).
+> Spark is a terminal FAIL (48 of 333 blocks not restored byte for byte), as expected, so LogReducer+R has a PASS
+> record on 15 of the 16 files. `analysis/r76/r76_tables.py` reads `status.json`: the LogReducer+R cell for Spark and
+> the aggregate rows that need all 16 files (mean, geometric mean, corpus, suffix) print `--`, and the "smaller" row
+> counts the 15 files with a PASS record. Included from the resumed invocations: the run manifests
+> (`full/manifest_<tag>.json`; the tag is the UTC time, equal to `created_at` inside) and the driver logs (`logs/`; one
+> JSON line per dataset, plus the launcher's start/exit lines). The first full run's manifest, the input
+> inventories, per-block records, diagnostics, block files, archives and all other logs are not included.
 
 ## Upstream and build
 

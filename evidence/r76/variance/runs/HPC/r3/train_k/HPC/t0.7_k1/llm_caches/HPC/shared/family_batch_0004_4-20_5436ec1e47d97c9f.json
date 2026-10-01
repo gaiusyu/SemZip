@@ -1,0 +1,101 @@
+{
+  "families": [
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines start with a consistent repeated prefix structure: 'node node status configured out'."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0",
+          "action": "STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "Unique identifier for the log entry",
+          "reason": "Distinguishes individual log entries uniquely within the family"
+        },
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Node identifier",
+          "reason": "Identifies the specific node associated with the log entry"
+        },
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "Timestamp",
+          "reason": "Represents the time of the log entry"
+        },
+        {
+          "slot": "S5",
+          "action": "STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "Status indicator",
+          "reason": "Numerical representation of the status"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 20,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines start with a consistent repeated prefix structure: 'node node status active'."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0",
+          "action": "STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "Unique identifier for the log entry",
+          "reason": "Distinguishes individual log entries uniquely within the family"
+        },
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Node identifier",
+          "reason": "Identifies the specific node associated with the log entry"
+        },
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "Timestamp",
+          "reason": "Represents the time of the log entry"
+        },
+        {
+          "slot": "S5",
+          "action": "STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "Status indicator",
+          "reason": "Numerical representation of the status"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

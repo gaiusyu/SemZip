@@ -1,0 +1,89 @@
+{
+ "dataset": "Proxifier",
+ "method": "semzip",
+ "repeat": 1,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_011_Proxifier_semzip_r1_a1",
+ "session": "T2",
+ "formal": true,
+ "input": "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Proxifier.log",
+ "input_kind": "full",
+ "sampled_blocks": false,
+ "raw_bytes": 2541814,
+ "blocks": 1,
+ "started_unix": 1790855995.7903872,
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "encode",
+   "--input",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/raw/Proxifier.log",
+   "--plan",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/runs/publish/pool/Proxifier/program.json",
+   "--dataset",
+   "Proxifier",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_011_Proxifier_semzip_r1_a1/work",
+   "--block-size",
+   "100000",
+   "--workers",
+   "4"
+  ],
+  "seconds": 8.292147636413574,
+  "returncode": 0,
+  "load_average": [
+   11.62,
+   13.85,
+   18.21
+  ],
+  "started_unix": 1790855995.7929397,
+  "own_cpu_seconds": 3.1642999999999972,
+  "other_cpu_seconds": 0.0768338330000029,
+  "other_cores": 0.00926585444072414
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "decode",
+   "--archive",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_011_Proxifier_semzip_r1_a1/work/archive",
+   "--output",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_011_Proxifier_semzip_r1_a1/restored.owned.log",
+   "--semzip-source",
+   "<WORKDIR>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKDIR>/r76_additional_20260929/timing/runs/T2/20261001115239_011_Proxifier_semzip_r1_a1/decode",
+   "--workers",
+   "4"
+  ],
+  "seconds": 3.2026976719498634,
+  "returncode": 0,
+  "load_average": [
+   11.81,
+   13.85,
+   18.19
+  ],
+  "started_unix": 1790856004.092292,
+  "own_cpu_seconds": 0.49923100000000886,
+  "other_cpu_seconds": 0.04239946799999117,
+  "other_cores": 0.013238673250784101
+ },
+ "archive_bytes": 70361,
+ "fallback_blocks": 0,
+ "sha_pass": true,
+ "audit_seconds": 0.012162737548351288,
+ "encode_MB_per_s": 0.3065326513047176,
+ "decode_MB_per_s": 0.7936478120498008,
+ "finished_unix": 1790856007.3085775,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.012080002453298508
+ },
+ "max_other_cores": 0.013238673250784101,
+ "contaminated": false
+}
