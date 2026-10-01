@@ -1,0 +1,284 @@
+{
+  "families": [
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "2005.11.10",
+              "Nov",
+              "10",
+              "22:59:15"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "::ffff:10.100.10.250",
+              "bn389/bn389",
+              "sshd[5882]:",
+              "src@cadmin1"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The family contains a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "timestamp in seconds",
+          "reason": "semantic role known as primary timestamp in seconds"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "structured_ip",
+          "structured_host",
+          "structured_process",
+          "user_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "composed_timestamp",
+          "meaning": "composed timestamp value",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp in microseconds",
+            "context_source": null,
+            "why_not_merge_raw": "storing as structured integer allows compact representation and precise reconstruction"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{4}\\.\\d{2}\\.\\d{2}) ([A-Za-z]{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "from datetime import datetime\n\ndef forward(groups):\n    date_str = groups[0]\n    month_str = groups[1]\n    day = groups[2]\n    time_str = groups[3]\n    dt_str = f\"{date_str} {time_str}\"\n    dt = datetime.strptime(dt_str, '%Y.%m.%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "structured_ip",
+          "meaning": "IP address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "IPv6-mapped IPv4 address",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured value with separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "from (::ffff:[0-9\\.]+)",
+          "replacement": "from {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "structured_host",
+          "meaning": "host identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured host name",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "([a-zA-Z0-9]+/[a-zA-Z0-9]+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "2005.11.10",
+              "Nov",
+              "10",
+              "22:59:15"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "sshd(pam_unix)[5621]:",
+              "(uid=0)"
+            ],
+            "reason": "the captured value itself contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The family contains a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "timestamp in seconds",
+          "reason": "semantic role known as primary timestamp in seconds"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "structured_process",
+          "uid_value"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "composed_timestamp",
+          "meaning": "composed timestamp value",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp in microseconds",
+            "context_source": null,
+            "why_not_merge_raw": "storing as structured integer allows compact representation and precise reconstruction"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{4}\\.\\d{2}\\.\\d{2}) ([A-Za-z]{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "from datetime import datetime\n\ndef forward(groups):\n    date_str = groups[0]\n    month_str = groups[1]\n    day = groups[2]\n    time_str = groups[3]\n    dt_str = f\"{date_str} {time_str}\"\n    dt = datetime.strptime(dt_str, '%Y.%m.%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "structured_process",
+          "meaning": "process identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured process identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "sshd\\(pam_unix\\)\\[(\\d+)\\]:",
+          "replacement": "sshd(pam_unix)[{placeholder}]:",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "uid_value",
+          "meaning": "user ID value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "user identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\(uid=(\\d+)\\)",
+          "replacement": "(uid={placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"uid={record['stored'][0]}\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The family contains a repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

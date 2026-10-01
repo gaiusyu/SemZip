@@ -1,0 +1,47 @@
+{
+  "cohort": "historical_source_grounded_full_20260712",
+  "date": "2026-07-12",
+  "recorded_status": "completed; historical gates passed",
+  "environment": {
+    "os": "Ubuntu 22.04.1 LTS",
+    "python": "3.10.8",
+    "cpu": "Intel Xeon (server CPU)",
+    "reported_execution_cpus": 32,
+    "gzip_level": 9,
+    "python_lzma_preset": 6
+  },
+  "code_sha256": {
+    "source_grounded_representation_study.py": "02bbb7072445b0fc4afff63bd75958501fbd500f1677516273df2877070b987a",
+    "family_catalog.json": "51d4e0d1f1abd13f12c50771260a7d80316d7d42130749d3a23fad36f9704563"
+  },
+  "inputs": [
+    {
+      "dataset": "Spark",
+      "raw_bytes": 2941228156,
+      "raw_sha256": "f4aca8610fc015b4c33dd88865608e127adf44a713d0379447ee537e5da880d5"
+    },
+    {
+      "dataset": "Zookeeper",
+      "raw_bytes": 10426438,
+      "raw_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a"
+    },
+    {
+      "dataset": "OpenStack",
+      "raw_bytes": 61442082,
+      "raw_sha256": "94df6daec483b9285f63d58e7211dffa793c4eccea23fb45a347dec188f73897"
+    },
+    {
+      "dataset": "OpenSSH",
+      "raw_bytes": 73417506,
+      "raw_sha256": "89eee9e36c182722f9fadc6e5617a4818ffc66109e7e222b8f9e8b78fc3aa2f3"
+    }
+  ],
+  "scope": "Whitelisted historical run-manifest fields; no fresh execution or archive audit during export.",
+  "omitted": [
+    "private execution label",
+    "remote working directory",
+    "machine-local command input paths"
+  ],
+  "block_contract": "Historical whole-file paired-field control; not the R71 100000-record deployment. Numeric previous state spans each family stream.",
+  "metric_scope": "Uncompressed length-framed rendered fields divided by latent streams; residual text, catalog, and archive headers are excluded from this stream metric. Complete gzip/xz sizes remain separate diagnostics."
+}

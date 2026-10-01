@@ -1,0 +1,67 @@
+{
+  "schema": "semzip.r76.logshrink.v1",
+  "dataset": "HealthApp",
+  "started_at": "2026-09-29T03:50:30.294114+00:00",
+  "finished_at": "2026-09-29T03:51:04.082289+00:00",
+  "partial_first_blocks_only": false,
+  "upstream": "github.com/IntelligentDDS/LogShrink",
+  "upstream_commit": "59ce49434eec06c709c7e16027a46214a6c37961",
+  "header_length_L": 3,
+  "L_mode": "official",
+  "params": "-E E -C -K lzma -V -S -P -wh 20 -th 4 -NC 16 -mt 0.5 (sample_rate 0.1), seed 0",
+  "workers": 3,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+    "bytes": 23529930,
+    "mtime_ns": 1789369303348633000,
+    "device": 1048818,
+    "inode": 199002808556006449
+  },
+  "raw_bytes": 23529930,
+  "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+  "stream_full_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+  "input_matches_r68_inventory": true,
+  "blocks": 3,
+  "blocks_status_ok": 3,
+  "failed_blocks": [],
+  "native": {
+    "archive_bytes": 727490,
+    "ratio": 32.34399098269392,
+    "suffix_raw_bytes": 14186163,
+    "suffix_archive_bytes": 466335,
+    "suffix_ratio": 30.420541027373027,
+    "lossless_blocks": 0,
+    "full_sha256_match": false,
+    "lossless": false,
+    "payload_7z_bytes": 724005,
+    "model_7z_bytes": 3455,
+    "model_raw_bytes": 6260,
+    "header_bytes": 30
+  },
+  "repaired": {
+    "archive_bytes": 826102,
+    "ratio": 28.48308078179208,
+    "suffix_archive_bytes": 525643,
+    "suffix_ratio": 26.988208727216,
+    "residual_bytes": 98612,
+    "lossless_blocks": 3,
+    "full_sha256_match": true,
+    "lossless": true,
+    "fallback_blocks": 0,
+    "differing_lines": 253395
+  },
+  "timing": {
+    "wall_seconds_encode_decode_audit": 33.784882947802544,
+    "sum_block_encode_seconds": 142.38451099395752,
+    "sum_block_decode_seconds": 89.09107248485088,
+    "sum_residual_seconds": 5.107061922550201,
+    "sum_patch_seconds": 1.1156684309244156,
+    "encode_MB_per_s_single_worker": 0.16525624757736856,
+    "decode_MB_per_s_single_worker": 0.26411097480054524,
+    "resumed_blocks": 3
+  },
+  "host": {
+    "node": "<DEV_HOST>",
+    "python": "3.9.2"
+  }
+}

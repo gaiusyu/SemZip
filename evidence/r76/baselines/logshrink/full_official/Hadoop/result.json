@@ -1,0 +1,67 @@
+{
+  "schema": "semzip.r76.logshrink.v1",
+  "dataset": "Hadoop",
+  "started_at": "2026-09-29T03:51:24.666265+00:00",
+  "finished_at": "2026-09-29T03:53:11.465062+00:00",
+  "partial_first_blocks_only": false,
+  "upstream": "github.com/IntelligentDDS/LogShrink",
+  "upstream_commit": "59ce49434eec06c709c7e16027a46214a6c37961",
+  "header_length_L": 5,
+  "L_mode": "official",
+  "params": "-E E -C -K lzma -V -S -P -wh 20 -th 4 -NC 16 -mt 0.5 (sample_rate 0.1), seed 0",
+  "workers": 3,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/raw/Hadoop.log",
+    "bytes": 48595595,
+    "mtime_ns": 1789369517402558000,
+    "device": 1048818,
+    "inode": 199002808556008278
+  },
+  "raw_bytes": 48595595,
+  "raw_sha256": "e31aa21eed52aa4fc4945255b35c71295b0a49feedb052c192c4968644d9daf5",
+  "stream_full_sha256": "e31aa21eed52aa4fc4945255b35c71295b0a49feedb052c192c4968644d9daf5",
+  "input_matches_r68_inventory": true,
+  "blocks": 4,
+  "blocks_status_ok": 4,
+  "failed_blocks": [],
+  "native": {
+    "archive_bytes": 758477,
+    "ratio": 64.06996520659163,
+    "suffix_raw_bytes": 31409632,
+    "suffix_archive_bytes": 407710,
+    "suffix_ratio": 77.0391503764931,
+    "lossless_blocks": 0,
+    "full_sha256_match": false,
+    "lossless": false,
+    "payload_7z_bytes": 750541,
+    "model_7z_bytes": 7896,
+    "model_raw_bytes": 18811,
+    "header_bytes": 40
+  },
+  "repaired": {
+    "archive_bytes": 797305,
+    "ratio": 60.94981845090649,
+    "suffix_archive_bytes": 423814,
+    "suffix_ratio": 74.11183207727919,
+    "residual_bytes": 38828,
+    "lossless_blocks": 4,
+    "full_sha256_match": true,
+    "lossless": true,
+    "fallback_blocks": 0,
+    "differing_lines": 391814
+  },
+  "timing": {
+    "wall_seconds_encode_decode_audit": 106.79774075746536,
+    "sum_block_encode_seconds": 339.29640769958496,
+    "sum_block_decode_seconds": 225.29609790444374,
+    "sum_residual_seconds": 3.403431922197342,
+    "sum_patch_seconds": 1.8435102701187134,
+    "encode_MB_per_s_single_worker": 0.14322460803365425,
+    "decode_MB_per_s_single_worker": 0.2156965675482367,
+    "resumed_blocks": 4
+  },
+  "host": {
+    "node": "<DEV_HOST>",
+    "python": "3.9.2"
+  }
+}

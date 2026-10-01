@@ -1,0 +1,33 @@
+{
+  "candidate_id": "SEMZIP-V6-EXPLICIT-EXECUTION-ENV-R36-20260915",
+  "parent": "SEMZIP-V6-BOUNDED-BLOCKS-R35-20260915",
+  "current_details": "../ROUND36.md",
+  "r36_only_change": "Versioned UTC0/C-time-locale execution policy enforced in training and each semantic encode/decode worker, stored in each semantic archive; legacy archives rejected explicitly. Generated programs and codecs unchanged.",
+  "r35_only_change": "New block-bounded encode/decode harness; existing semantic worker, runtime, trainer, native source and binaries unchanged. Archive parity pending.",
+  "r32_only_change": "Complete encoder timing includes preparation and final package writes; offline scope label includes lowering. Archive algorithm unchanged from R31.",
+  "benchmark_runner_sha256": "eb1f2a0089611e029b0927439ec6d73f8888824cfc27d3755ca76028560cecfb",
+  "r31_only_change": "Pure zero-padding map identity shortcut and bounded immutable tuple LRU; no generated-function execution cache added",
+  "r30_only_change": "Identity display complements and constant-layout metadata; no matcher/program execution cache added",
+  "r29_only_change": "Syntax-aware offline numeric display lowering; learned code unchanged; out-of-envelope layout integers use exact decimal dictionary",
+  "lowering_sha256": "350ed9ed2db38045fda783330fed09e771b293c38b60b8c56b7dd406150c3e06",
+  "runner_sha256": "3541346b2736f120b410e726bf830e8de5bc491816731fef2e35e4e5c6c714d8",
+  "r28_only_change": "Bounded canonical JSON serialization cache with typed recursive content key; no generated-function result cache added",
+  "inherited_rounds": ["R20 train-only", "R21 counterexample repair", "R25 uniform string routing", "R27 prefix dictionary"],
+  "historical_fields_below": "The changes/unchanged lists below describe R9, not cumulative R28; use ROUND28.md for the current delta",
+  "status": "research candidate, not default",
+  "frozen_base_commit": "6ba4f761f9d34fe43d5821c90f7cd45bd6263881",
+  "base_version": "SEMZIP-DELOG-ALLGROUP-OR20-ADMISSION-V6-20260718",
+  "modified_file": "runtime/pare_dataset_extract.py",
+  "modified_file_sha256": "0a6cf004319f792cefc4c6edd64c80a9c28aa38c6a639100c4b8fef30684db1f",
+  "format_note": "Inherited summary version labels identify the V6 container/backend, not this candidate source revision. Use this candidate ID and source hash for experiment attribution.",
+  "changes": [
+    "R5 deterministic factoring of a single ASCII integer between identical prefix/suffix across a stream",
+    "Preserve the original 512-entry string MTF rank sequence",
+    "For emitted literal values, factor a strict-majority shared digit/literal skeleton with at least two ASCII numeric fields",
+    "Delta numeric columns; condition the final column on preceding numeric values",
+    "Store exact numeric widths, separator literals, exception routing and exception strings",
+    "Preserve all other frozen routes and full archive reconstruction checks"
+  ],
+  "unchanged": ["LLM prompt", "sampling", "model config", "verifier", "repair", "global promotion", "DeLog residual backend", "100k block size", "8 workers"],
+  "scope": "Only backend ablation; no new dataset-specific recognizers or compressed-cost racing. Existing frozen recognizer rewriting remains and is not claimed eliminated."
+}

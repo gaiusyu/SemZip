@@ -1,0 +1,1252 @@
+{
+  "families": [
+    {
+      "family_id": 19,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "email_user",
+            "tokens": [
+              "src@eadmin1",
+              "src@aadmin1"
+            ],
+            "reason": "the captured email format contains explicit structural separators encoded by regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "process_id",
+            "tokens": [
+              "sendmail[19524]",
+              "sendmail[30053]"
+            ],
+            "reason": "the captured process id is bracketed and explicitly encoded by regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW",
+          "meaning": "email user",
+          "reason": "structured variable with email format"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW",
+          "meaning": "process ID",
+          "reason": "structured bracketed variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "email_user",
+          "process_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "email_user",
+          "meaning": "email-like structured variable",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "email",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "src@([A-Za-z0-9_-]+)",
+          "replacement": "src@{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"src@{record['stored'][0]}\""
+          }
+        },
+        {
+          "tag": "process_id",
+          "meaning": "process id bracketed variable",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "process_id",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "sendmail\\[(\\d+)\\]",
+          "replacement": "sendmail[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"sendmail[{record['stored'][0]}]\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "module_sweep",
+            "tokens": [
+              "[ib_sm_sweep.c:1831]",
+              "[ib_sm_sweep.c:1831]"
+            ],
+            "reason": "the captured text contains explicit structural separators encoded by regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW",
+          "meaning": "module identifier",
+          "reason": "structured variable with encoded separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "module_sweep"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "module_sweep",
+          "meaning": "module identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "module_identifier",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "\\[(ib_sm_sweep\\.c:\\d+)\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"[{record['stored'][0]}]\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "interface_identifier",
+            "tokens": [
+              "ide0...",
+              "ide1..."
+            ],
+            "reason": "intrinsic structure due to explicit separators in regex capturing",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        },
+        {
+          "slot": "S12",
+          "action": "STREAM_RAW",
+          "meaning": "interface identifier",
+          "reason": "structured variable with encoded separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "interface_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "interface_identifier",
+          "meaning": "IDE interface identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "interface_identifier",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "ide([0-9]+\\.\\.\\.+)",
+          "replacement": "ide{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"ide{record['stored'][0]}\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 29,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "usb_hub_id",
+            "tokens": [
+              "1-0:1.0",
+              "1-3:1.0"
+            ],
+            "reason": "intrinsic structure due to explicit separators encoded by regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        },
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW",
+          "meaning": "USB hub identifier",
+          "reason": "structured variable with encoded separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "usb_hub_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "usb_hub_id",
+          "meaning": "USB hub identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hub_identifier",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "([0-9]+-[0-9]+:[0-9]+\\.[0-9]+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "user_session",
+            "tokens": [
+              "src@eadmin1",
+              "src@aadmin1"
+            ],
+            "reason": "explicit structural separators encoded by regex in email-like format",
+            "must_emit_function": true
+          },
+          {
+            "name": "process_id",
+            "tokens": [
+              "crond(pam_unix)[16448]",
+              "crond(pam_unix)[26968]"
+            ],
+            "reason": "process id is bracketed and explicitly encoded by regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW",
+          "meaning": "user session",
+          "reason": "structured variable with email-like format"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW",
+          "meaning": "process ID",
+          "reason": "structured bracketed variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "user_session",
+          "process_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "user_session",
+          "meaning": "email-like structured variable",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "email",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "src@([A-Za-z0-9_-]+)",
+          "replacement": "src@{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"src@{record['stored'][0]}\""
+          }
+        },
+        {
+          "tag": "process_id",
+          "meaning": "process id bracketed variable",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "process_id",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "crond\\(pam_unix\\)\\[(\\d+)\\]",
+          "replacement": "crond(pam_unix)[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"crond(pam_unix)[{record['stored'][0]}]\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 26,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "memory_range_start_end",
+            "tokens": [
+              "00000000bffcfc00",
+              "00000000bffff000"
+            ],
+            "reason": "captured values are structured with clear separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        },
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW",
+          "meaning": "memory range start",
+          "reason": "structural evidence with separators"
+        },
+        {
+          "slot": "S12",
+          "action": "STREAM_RAW",
+          "meaning": "memory range end",
+          "reason": "structural evidence with separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "memory_range_start_end"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "memory_range_start",
+          "meaning": "memory range start address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "start_address",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "BIOS-e820: ([0-9a-fA-F]+) -",
+          "replacement": "BIOS-e820: {placeholder} -",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"BIOS-e820: {record['stored'][0]} -\""
+          }
+        },
+        {
+          "tag": "memory_range_end",
+          "meaning": "memory range end address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "end_address",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "- ([0-9a-fA-F]+) \\(",
+          "replacement": "- {placeholder} (",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"- {record['stored'][0]} (\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 27,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "memory_range_start_end",
+            "tokens": [
+              "00000000e0000000",
+              "00000000fec90000"
+            ],
+            "reason": "captured values are structured with clear separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        },
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW",
+          "meaning": "memory range start",
+          "reason": "structured evidence with separators"
+        },
+        {
+          "slot": "S12",
+          "action": "STREAM_RAW",
+          "meaning": "memory range end",
+          "reason": "structured evidence with separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "memory_range_start_end"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "memory_range_start",
+          "meaning": "memory range start address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "start_address",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "BIOS-e820: ([0-9a-fA-F]+) -",
+          "replacement": "BIOS-e820: {placeholder} -",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"BIOS-e820: {record['stored'][0]} -\""
+          }
+        },
+        {
+          "tag": "memory_range_end",
+          "meaning": "memory range end address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "end_address",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "- ([0-9a-fA-F]+) \\(",
+          "replacement": "- {placeholder} (",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"- {record['stored'][0]} (\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 24,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "user_root_command",
+            "tokens": [
+              "(/projects/tbird/temps/get_temps a)"
+            ],
+            "reason": "intrinsically structured paths with separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        },
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW",
+          "meaning": "user command path",
+          "reason": "structured variable containing paths"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "user_root_command"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "user_command_path",
+          "meaning": "file path of user command",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "command_path",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(\\/(projects\\/tbird\\/temps\\/get_temps [a-z])\\)",
+          "replacement": "({placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"({record['stored'][0]})\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one timestamp-like value",
+            "target_value": "one integer timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "user_root_command",
+            "tokens": [
+              "(/projects/tbird/temps/get_temps b)"
+            ],
+            "reason": "intrinsically structured paths with separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "logs have a repeated prefix with timestamp and source"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "epoch timestamp",
+          "reason": "timestamp value derived from multiple tokens"
+        },
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW",
+          "meaning": "user command path",
+          "reason": "structured variable containing paths"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "user_root_command"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "derived log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "a unified timestamp integer is used instead of token storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "user_command_path",
+          "meaning": "file path of user command",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "command_path",
+            "context_source": null,
+            "why_not_merge_raw": null
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(\\/(projects\\/tbird\\/temps\\/get_temps [a-z])\\)",
+          "replacement": "({placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"({record['stored'][0]})\""
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

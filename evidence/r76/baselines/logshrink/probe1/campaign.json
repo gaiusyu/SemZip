@@ -1,0 +1,291 @@
+{
+  "schema": "semzip.r76.logshrink.v1",
+  "started_at": "2026-09-29T02:58:13.990324+00:00",
+  "argv": [
+    "adapter/ls_run.py",
+    "--datasets",
+    "Thunderbird",
+    "Windows",
+    "Spark",
+    "HDFS",
+    "BGL",
+    "Android",
+    "Mac",
+    "OpenSSH",
+    "OpenStack",
+    "Hadoop",
+    "HPC",
+    "--output",
+    "probe1",
+    "--workers",
+    "1",
+    "--max-blocks",
+    "1"
+  ],
+  "pid": 1262727,
+  "static_hashes": {
+    "parser/THULR": "c8d50742309159dc8baa52804be2103b00ecf24ad4547ce29e560813f91117c4",
+    "parser/Elastic": "6d0085ef8f30c6d462bb234c96ca4827cdb069e606047429eac925927bfcea0f",
+    "decompression/restore.py": "ae6c93bde7aa369d02eba073e174ee63d0a1cdbc7660dfd164445c0dc1a15e6f",
+    "decompression/restore_r76.py": "7bcd87f33fac2e2aafa21cc901a4ae1f3d4db520ec83faecd459e287ad9060ea",
+    "decompression/decompress.py": "b8932e4aeac780c6a805b32b976b1b4387db02facea061783621e810d1c2c1a8",
+    "logshrink.py": "61a363bf4a69c8e50afa7903be3c59de5a35c5c7295b7838d7e0d1de24831227",
+    "compression/compress.py": "54809dab86f15a9c92cb3f808bfba915a79b051d8ed41136cdb153e4b78d0fea",
+    "preprocess.py": "92a32d50e66bf964c8b40057de9d2315580cc453503b22106975327383ac7b0f",
+    "parser/training.py": "60ae7cb2099cfbbfc18173d798c6ac45e04b3ac2215735e9f68c26d2bafa8793",
+    "parser/sampler.py": "4aec236a22ab5480d25db1ceaae8999a6326492fb8738789964c324f07104052",
+    "run.py": "8e735c39b1c9dc36cf5de7a5e7d5a3d28dd50787a652bec9c02c2c5a34dd3959",
+    "analyzer/property_miner.py": "211b08b97b2ad45a9fb32b180d4bdf0a5e910f7ebeffe623123d4d822934a5e8",
+    "adapter/ls_run.py": "f18c1f9a5a06df369468b3959572b2912ec5d167a9595f42a0b9ac4e4b29a953",
+    "adapter/ls_seg_runner.py": "1fb277853474c6413307a74c80140a4bf2e93eea66250be2db3a8bd46f64d157",
+    "adapter/ls_segment.py": "121a5e74a4e473c6c51a8edadb68b9f92d50f6922db77bfbb900cab390854a76"
+  },
+  "datasets": {
+    "Thunderbird": {
+      "blocks": 1,
+      "blocks_status_ok": 1,
+      "native": {
+        "archive_bytes": 356134,
+        "ratio": 40.80934704352856,
+        "suffix_raw_bytes": 0,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "lossless_blocks": 0,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 354255,
+        "model_7z_bytes": 1869,
+        "model_raw_bytes": 3589,
+        "header_bytes": 10
+      },
+      "repaired": {
+        "archive_bytes": 359226,
+        "ratio": 40.45808488249737,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "residual_bytes": 3092,
+        "lossless_blocks": 1,
+        "full_sha256_match": false,
+        "lossless": false,
+        "fallback_blocks": 0,
+        "differing_lines": 4168
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 117.91046877205372,
+        "sum_block_encode_seconds": 68.1830126196146,
+        "sum_block_decode_seconds": 48.96458177268505,
+        "sum_residual_seconds": 0.2304641306400299,
+        "sum_patch_seconds": 0.07084639370441437,
+        "encode_MB_per_s_single_worker": 0.21315567384916395,
+        "decode_MB_per_s_single_worker": 0.29681854666851426,
+        "resumed_blocks": 0
+      },
+      "header_length_L": 9
+    },
+    "Windows": {
+      "blocks": 1,
+      "blocks_status_ok": 1,
+      "native": {
+        "archive_bytes": 49692,
+        "ratio": 444.42250261611525,
+        "suffix_raw_bytes": 0,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "lossless_blocks": 0,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 48787,
+        "model_7z_bytes": 895,
+        "model_raw_bytes": 1717,
+        "header_bytes": 10
+      },
+      "repaired": {
+        "archive_bytes": 72800,
+        "ratio": 303.35498626373624,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "residual_bytes": 23108,
+        "lossless_blocks": 1,
+        "full_sha256_match": false,
+        "lossless": false,
+        "fallback_blocks": 0,
+        "differing_lines": 100000
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 62.89118906855583,
+        "sum_block_encode_seconds": 38.64950220286846,
+        "sum_block_decode_seconds": 22.693835571408272,
+        "sum_residual_seconds": 0.6536185592412949,
+        "sum_patch_seconds": 0.29849550127983093,
+        "encode_MB_per_s_single_worker": 0.571397863912487,
+        "decode_MB_per_s_single_worker": 0.9731384071462873,
+        "resumed_blocks": 0
+      },
+      "header_length_L": 4
+    },
+    "Spark": {
+      "blocks": 1,
+      "blocks_status_ok": 1,
+      "native": {
+        "archive_bytes": 270910,
+        "ratio": 43.62805728839836,
+        "suffix_raw_bytes": 0,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "lossless_blocks": 0,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 269241,
+        "model_7z_bytes": 1659,
+        "model_raw_bytes": 3435,
+        "header_bytes": 10
+      },
+      "repaired": {
+        "archive_bytes": 282182,
+        "ratio": 41.88529743215371,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "residual_bytes": 11272,
+        "lossless_blocks": 1,
+        "full_sha256_match": false,
+        "lossless": false,
+        "fallback_blocks": 0,
+        "differing_lines": 100000
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 121.25716760754585,
+        "sum_block_encode_seconds": 71.0342727303505,
+        "sum_block_decode_seconds": 49.26335722208023,
+        "sum_residual_seconds": 0.4160843640565872,
+        "sum_patch_seconds": 0.24113625288009644,
+        "encode_MB_per_s_single_worker": 0.16638837205902768,
+        "decode_MB_per_s_single_worker": 0.23992025039459766,
+        "resumed_blocks": 0
+      },
+      "header_length_L": 4
+    },
+    "HDFS": {
+      "blocks": 1,
+      "blocks_status_ok": 1,
+      "native": {
+        "archive_bytes": 488536,
+        "ratio": 28.863447115463345,
+        "suffix_raw_bytes": 0,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "lossless_blocks": 0,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 488053,
+        "model_7z_bytes": 473,
+        "model_raw_bytes": 507,
+        "header_bytes": 10
+      },
+      "repaired": {
+        "archive_bytes": 959576,
+        "ratio": 14.694857937255621,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "residual_bytes": 471040,
+        "lossless_blocks": 1,
+        "full_sha256_match": false,
+        "lossless": false,
+        "fallback_blocks": 0,
+        "differing_lines": 100000
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 61.4018590003252,
+        "sum_block_encode_seconds": 34.11900274455547,
+        "sum_block_decode_seconds": 22.373060941696167,
+        "sum_residual_seconds": 4.110786110162735,
+        "sum_patch_seconds": 0.418267160654068,
+        "encode_MB_per_s_single_worker": 0.4132838554975096,
+        "decode_MB_per_s_single_worker": 0.6302594462486175,
+        "resumed_blocks": 0
+      },
+      "header_length_L": 5
+    },
+    "BGL": {
+      "blocks": 1,
+      "blocks_status_ok": 1,
+      "native": {
+        "archive_bytes": 311275,
+        "ratio": 42.5980820817605,
+        "suffix_raw_bytes": 0,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "lossless_blocks": 0,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 310753,
+        "model_7z_bytes": 512,
+        "model_raw_bytes": 577,
+        "header_bytes": 10
+      },
+      "repaired": {
+        "archive_bytes": 311399,
+        "ratio": 42.58111939986962,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "residual_bytes": 124,
+        "lossless_blocks": 1,
+        "full_sha256_match": false,
+        "lossless": false,
+        "fallback_blocks": 0,
+        "differing_lines": 90
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 71.60886047780514,
+        "sum_block_encode_seconds": 41.121085077524185,
+        "sum_block_decode_seconds": 29.99248167872429,
+        "sum_residual_seconds": 0.1052933782339096,
+        "sum_patch_seconds": 0.03420369327068329,
+        "encode_MB_per_s_single_worker": 0.3224554501663053,
+        "decode_MB_per_s_single_worker": 0.44210139534422127,
+        "resumed_blocks": 0
+      },
+      "header_length_L": 9
+    },
+    "Android": {
+      "blocks": 1,
+      "blocks_status_ok": 1,
+      "native": {
+        "archive_bytes": 629811,
+        "ratio": 18.7909944411895,
+        "suffix_raw_bytes": 0,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "lossless_blocks": 0,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 623750,
+        "model_7z_bytes": 6051,
+        "model_raw_bytes": 14920,
+        "header_bytes": 10
+      },
+      "repaired": {
+        "archive_bytes": 643075,
+        "ratio": 18.40341328771916,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "residual_bytes": 13264,
+        "lossless_blocks": 1,
+        "full_sha256_match": false,
+        "lossless": false,
+        "fallback_blocks": 0,
+        "differing_lines": 100000
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 314.12704703211784,
+        "sum_block_encode_seconds": 162.1121615022421,
+        "sum_block_decode_seconds": 150.38964426517487,
+        "sum_residual_seconds": 0.8849284499883652,
+        "sum_patch_seconds": 0.3818109929561615,
+        "encode_MB_per_s_single_worker": 0.07300362224728167,
+        "decode_MB_per_s_single_worker": 0.07869408201493121,
+        "resumed_blocks": 0
+      },
+      "header_length_L": 6
+    }
+  }
+}

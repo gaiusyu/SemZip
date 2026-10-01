@@ -1,0 +1,197 @@
+{
+ "dataset": "Thunderbird",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [],
+  "local_families": [
+   {
+    "key": [
+     "cadmin",
+     "nov",
+     "dhcpd",
+     "dhcpdiscover",
+     "from",
+     "via",
+     "eth",
+     "network",
+     "no",
+     "free",
+     "leases"
+    ],
+    "tags": [
+     "C"
+    ]
+   },
+   {
+    "key": [
+     "cn",
+     "nov",
+     "sysctl"
+    ],
+    "tags": [
+     "A"
+    ]
+   },
+   {
+    "key": [
+     "eadmin",
+     "nov",
+     "sendmail",
+     "unable",
+     "to",
+     "qualify",
+     "my",
+     "own",
+     "domain",
+     "name",
+     "eadmin",
+     "using",
+     "short",
+     "name"
+    ],
+    "tags": [
+     "D",
+     "E"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "A": "<A>",
+  "C": "<C>",
+  "D": "<D>",
+  "E": "<E>",
+  "RV0": "<RV0>"
+ },
+ "residual_schema_plan": {
+  "passes": [
+   {
+    "alpha_contexts": [],
+    "groups": [
+     {
+      "group_key": [
+       "context",
+       "<AD+>",
+       "AD+",
+       "<AD+>"
+      ],
+      "tag_base": "RV0"
+     }
+    ],
+    "mode": "context"
+   }
+  ]
+ },
+ "spec_count": 5,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "src@([A-Za-z0-9._-]+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "hostname",
+   "replacement": "src@{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "C",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "sysctl: ([a-z0-9._]+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]",
+    "op": "python_exec"
+   },
+   "proposal_tag": "structured_variable",
+   "replacement": "sysctl: {placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "A",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": " ([A-Za-z0-9_-]+) ",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]",
+    "op": "python_exec"
+   },
+   "proposal_tag": "hostname_value",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "D",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": " src@(\\w+) ",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "email_source_value",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "E",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "",
+   "pattern": "residual-variable:[\"context\", \"<AD+>\", \"AD+\", \"<AD+>\"]",
+   "program": {},
+   "proposal_tag": "",
+   "replacement": "{placeholder}",
+   "semantic_class": "",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "RV0",
+   "value_type": ""
+  }
+ ],
+ "version": 1
+}

@@ -1,0 +1,217 @@
+{
+  "families": [
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "2017-05-16",
+              "00:00:04.500"
+            ],
+            "reason": "Date and time together represent a timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "instance_id_variable",
+            "tokens": [
+              "b9000564-fe1a-409b-b8cc-1e88b294cd1d",
+              "3edec1e4-9678-4a3a-a21b-a145a4ee5e61",
+              "96abccce-8d1f-4e07-b6d1-4b2ab87e23b4"
+            ],
+            "reason": "The captured instance ID contains structural separators explicitly encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "This family does not have a unified log header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "Timestamp is composed of date and time fields"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "timestamp value",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "full timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Date and time together form a single semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_str = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance ID",
+            "context_source": null,
+            "why_not_merge_raw": "Instance ID is a standalone structured value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\[instance: ([0-9a-fA-F-]+)\\]",
+          "replacement": "[instance: {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "file_path_variable",
+            "tokens": [
+              "/var/lib/nova/instances/_base/a489c868f0c37da93b76227c91bb03908ac0e742"
+            ],
+            "reason": "The captured file path contains multiple structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines share a repeated prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW",
+          "meaning": "file path",
+          "reason": "Captured value represents a structured file path"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "file_path"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "file_path",
+          "meaning": "structured file path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "full file path",
+            "context_source": null,
+            "why_not_merge_raw": "File path is an intrinsically structured value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "files: (/[^ ]+)",
+          "replacement": "files: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "This family does not have a unified log header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "This family does not have a unified log header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

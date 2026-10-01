@@ -1,0 +1,332 @@
+{
+  "families": [
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "16/04/07",
+              "10:54:15"
+            ],
+            "reason": "jointly represent one date/time value",
+            "target_value": "numeric timestamp representation",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp + INFO + prefix format"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_value",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time merged",
+            "context_source": null,
+            "why_not_merge_raw": "date and time are jointly semantic"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    dt_string = f'{date} {time}'\n    dt = datetime.strptime(dt_string, '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp())], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 30,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "acl_values",
+            "tokens": [
+              "yarn",
+              "curi"
+            ],
+            "reason": "values immediately introduced by 'to:'",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp + INFO + prefix format"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "acl_values"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "acl_values",
+          "meaning": "access control list values",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "acl value directly",
+            "context_source": null,
+            "why_not_merge_raw": "each ACL value is isolated"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "to: ([A-Za-z0-9,]+)",
+          "replacement": "to: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 28,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp + INFO + prefix format"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "task_partition_slot",
+            "tokens": [
+              "6,NODE_LOCAL",
+              "12,NODE_LOCAL"
+            ],
+            "reason": "partition slot and locality are paired",
+            "target_value": "partition id",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp + INFO + prefix format"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "task_partition_slot"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "task_partition_slot",
+          "meaning": "partition and locality",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "split_context_value",
+            "stored_source": "partition id",
+            "context_source": "locality",
+            "why_not_merge_raw": "partition and locality are independent slots"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(\\d+),([A-Za-z_]+)",
+          "replacement": "{placeholder},{group2}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    partition = int(groups[0])\n    locality = groups[1]\n    return {'stored': [partition], 'layout': [len(locality)]}\n\ndef inverse(record):\n    partition = record['stored'][0]\n    locality_length = record['layout'][0]\n    locality = 'NODE_LOCAL'[:locality_length]  # Example of reconstruction\n    return f'{partition},{locality}'"
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp + INFO + prefix format"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp + INFO + prefix format"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 29,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "resultstage_task_count",
+            "tokens": [
+              "ResultStage 1",
+              "ResultStage 3"
+            ],
+            "reason": "stage number represents task count",
+            "target_value": "stage id",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp + INFO + prefix format"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "resultstage_task_count"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "resultstage_task_count",
+          "meaning": "stage and task count",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "stage id",
+            "context_source": null,
+            "why_not_merge_raw": "stage is isolated"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "ResultStage (\\d+)",
+          "replacement": "ResultStage {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    stage_id = int(groups[0])\n    return {'stored': [stage_id], 'layout': []}\n\ndef inverse(record):\n    stage_id = record['stored'][0]\n    return f'ResultStage {stage_id}'"
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp + INFO + prefix format"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

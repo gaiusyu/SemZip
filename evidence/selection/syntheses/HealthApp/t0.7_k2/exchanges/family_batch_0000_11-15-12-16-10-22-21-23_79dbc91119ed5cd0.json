@@ -1,0 +1,305 @@
+{
+  "families": [
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_and_identifier",
+            "tokens": [
+              "20171223-22:19:58:424",
+              "HiH_HiSyncControl",
+              "30002312",
+              "initDataPrivacy"
+            ],
+            "reason": "timestamp and identifier fields together define the unique event",
+            "target_value": "one composed numeric timestamp with identifier",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp and identifier fields form a consistent header across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "event_identifier_with_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "event_identifier_with_timestamp",
+          "meaning": "unique event identifier with timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed timestamp and identifier",
+            "context_source": null,
+            "why_not_merge_raw": "provides a single semantic quantity"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{8}-\\d{2}:\\d{2}:\\d{2}:\\d{3})\\|([^|]+)\\|(\\d+)\\|([^ ]+)",
+          "replacement": "{placeholder} the dataPrivacy switch is open, start push health data",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_str = groups[0]\n    identifier = groups[1] + '|' + groups[2] + '|' + groups[3]\n    dt = datetime.strptime(dt_str, '%Y%m%d-%H:%M:%S:%f')\n    ts = int(dt.timestamp() * 1000000)\n    return {'stored': [ts, identifier], 'layout': []}\n\ndef inverse(record):\n    ts, identifier = record['stored']\n    dt = datetime.fromtimestamp(ts / 1000000)\n    dt_str = dt.strftime('%Y%m%d-%H:%M:%S:%f')[:-3]\n    return f\"{dt_str}|{identifier}\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_and_identifier",
+            "tokens": [
+              "20171223-22:19:58:424",
+              "HiH_",
+              "30002312",
+              "initDataPrivacy"
+            ],
+            "reason": "timestamp and identifier fields together define the unique event",
+            "target_value": "one composed numeric timestamp with identifier",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp and identifier fields form a consistent header across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "event_identifier_with_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "event_identifier_with_timestamp",
+          "meaning": "unique event identifier with timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed timestamp and identifier",
+            "context_source": null,
+            "why_not_merge_raw": "provides a single semantic quantity"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{8}-\\d{2}:\\d{2}:\\d{2}:\\d{3})\\|([^|]+)\\|(\\d+)\\|([^ ]+)",
+          "replacement": "{placeholder} the dataPrivacy is true",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_str = groups[0]\n    identifier = groups[1] + '|' + groups[2] + '|' + groups[3]\n    dt = datetime.strptime(dt_str, '%Y%m%d-%H:%M:%S:%f')\n    ts = int(dt.timestamp() * 1000000)\n    return {'stored': [ts, identifier], 'layout': []}\n\ndef inverse(record):\n    ts, identifier = record['stored']\n    dt = datetime.fromtimestamp(ts / 1000000)\n    dt_str = dt.strftime('%Y%m%d-%H:%M:%S:%f')[:-3]\n    return f\"{dt_str}|{identifier}\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "sync_options",
+            "tokens": [
+              "syncAction",
+              "syncMethod",
+              "syncScope",
+              "syncDataType",
+              "syncModel",
+              "pushAction"
+            ],
+            "reason": "multiple sync options represent one structured object",
+            "target_value": "one structured numeric representation",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp and identifier fields form a consistent header across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "sync_options"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "sync_options",
+          "meaning": "structured sync options",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "structured sync options",
+            "context_source": null,
+            "why_not_merge_raw": "provides a single structured data object"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "HiSyncOption\\{syncAction=(\\d+), syncMethod=(\\d+), syncScope=(\\d+), syncDataType=(\\d+), syncModel=(\\d+), pushAction=(\\d+)\\}",
+          "replacement": "HiSyncOption{syncAction={group1}, syncMethod={group2}, syncScope={group3}, syncDataType={group4}, syncModel={group5}, pushAction={group6}}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    sync_action = int(groups[0])\n    sync_method = int(groups[1])\n    sync_scope = int(groups[2])\n    sync_data_type = int(groups[3])\n    sync_model = int(groups[4])\n    push_action = int(groups[5])\n    return {'stored': [sync_action, sync_method, sync_scope, sync_data_type, sync_model, push_action], 'layout': []}\n\ndef inverse(record):\n    sync_action, sync_method, sync_scope, sync_data_type, sync_model, push_action = record['stored']\n    return f\"HiSyncOption{{syncAction={sync_action}, syncMethod={sync_method}, syncScope={sync_scope}, syncDataType={sync_data_type}, syncModel={sync_model}, pushAction={push_action}}}\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no consistent header structure across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no consistent header structure across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 22,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no consistent header structure across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 21,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no consistent header structure across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 23,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no consistent header structure across examples"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

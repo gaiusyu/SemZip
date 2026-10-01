@@ -1,0 +1,369 @@
+You are generating reversible extraction programs for several Spark log-line families in one batch.
+Return JSON only. The top-level object must be {"families": [...]}.
+Return exactly 9 family objects, one for each input family_id in this exact set: [19, 8, 18, 3, 20, 17, 16, 15, 7].
+Do not omit a family. If a family has no safe function, still return it with all three class function arrays empty.
+Each output family must preserve its input family_id exactly and follow this schema:
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "1234 bytes",
+              "1.20 KB"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "10.0.0.5",
+              "/var/log/app",
+              "api.example.net",
+              "550e8400-e29b-41d4-a716-446655440000"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "user Alice",
+              "username=Alice"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "semantic role if known",
+          "reason": "why this slot is extracted, composed, or kept"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_2_formatted_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_3_common_variable": [
+          "semantic names found in this family, or an empty list"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+Class-wise completion contract:
+- Inspect Class 1, Class 2, and Class 3 independently for every family before emitting JSON.
+- class_inventory must contain all three class keys and briefly name every candidate category found; use [] when none is present.
+- Put executable proposals only in class_1_functions, class_2_functions, or class_3_functions. Always emit all three arrays, even when empty.
+- Do not emit a flat functions array or header.functions. A changing header field belongs in the class array matching its semantics.
+- The class bucket is authoritative: Class 1 and Class 2 store numeric values; Class 3 stores exact strings.
+
+For every family, fill family_analysis before writing functions. This is a short machine-readable plan, not chain-of-thought.
+- has_composable_tokens means several tokens/pieces jointly represent one value, such as weekday + month + day + time + year forming one timestamp-like value.
+- has_semantic_equivalent_tokens means two displays represent the same value, such as '1234 bytes' and '(1.20 KB)' describing the same byte count.
+- If has_composable_tokens=true, at least one function should implement the best composable_group unless exact reconstruction is impossible.
+- If has_semantic_equivalent_tokens=true, at least one function should implement the best semantic_equivalent_group unless exact reconstruction is impossible.
+- raw_variable_groups are Class 3 candidates through either of two evidence routes: (A) the captured value itself contains at least two non-alphanumeric separator occurrences explicitly encoded by the regex; or (B) a plain value is immediately introduced by a stable, unambiguous field-name literal explicitly present in the regex, such as user( +)([A-Za-z0-9]+) or username=([A-Za-z0-9]+). Whitespace alone and generic words such as for, from, to, or by do not qualify. Unanchored broad captures such as ([A-Za-z0-9]+), (\w+), or ([^ ]+) must be left to residual.
+- This planning step is meant to prevent skipping high-value fusion opportunities before regex writing.
+
+Direct per-line context schema:
+- Every function must include tag, class, value_type, target_role, context, regex, replacement, and program.
+- class must be one of class_1_composed_numeric, class_2_formatted_numeric, class_3_common_variable.
+- value_type must be numeric for class_1_composed_numeric and class_2_formatted_numeric. Use string for class_3_common_variable.
+- target_role must be log_timestamp only when the stored target itself is the primary timestamp of the log record. Use ordinary_value for every other stored target.
+- Use context=null when no other field in the same physical line should partition the target's distribution. A log_timestamp normally uses context=null.
+- Otherwise context must contain code defining project_context(line, groups). It returns the actual per-line context value as str/int, or None when absent; it must not return a semantic label.
+- line is the complete original physical log line and groups are the target regex groups. The target regex does not need to capture the context, and the context may be adjacent or non-adjacent.
+- Context only routes an already reversible target. forward(groups) and inverse(record) must reconstruct the target without context. Numeric streams use delta within each returned context; string streams use dictionary ranks within each returned context.
+- project_context must be deterministic, must not import modules, and may use provided re.search/re.match/re.fullmatch with literal safe regexes.
+- Direct projector example for 'Failed password from 173.234.31.186 port 38926 ssh2': the source_port target regex is 'port( +)(\\d+)', its target program stores int(groups[1]), and context.code is: def project_context(line, groups): m = re.search(r'from( +)((?:\\d{1,3}\\.){3}\\d{1,3})', line); return m.group(2) if m else None.
+- The example returns the concrete IP bytes, not the words source_ip and not another function tag.
+- Before writing each function, fill source_separation. This is a machine-readable audit, not a long chain-of-thought. Use decision=merge_equivalent only when the captured pieces are one semantic quantity or one piece is exactly derivable from another. Use decision=split_context_value when a textual span contains independent sources and one source predicts/groups the other. Use decision=raw_single_source only for one bounded opaque variable. Use decision=leave_to_residual when the LLM should not create a function.
+- If a target's distribution depends on another field anywhere in the same line, attach a projector to the target. Example: source_port stores only the port and project_context returns the concrete source IP from the complete line.
+- Contrastive source-separation example. Bad: store '10.10.34.12:3888' as one raw endpoint string; this repeats the IP many times and mixes address entropy with port entropy. Good: capture IP as context and store only the port as numeric value, with source_separation.decision='split_context_value', stored_source='port', context_source='ip'.
+- Contrastive source-separation example. Good merge: '1234 bytes (1.20 KB)' has two displays of one byte-size value, so use source_separation.decision='merge_equivalent' and store one canonical integer plus layout/display flags.
+
+Executable program forms:
+- Raw python_exec: store the captured raw value exactly as a string; downstream codec chooses rank/delta/raw.
+- {"op":"python_exec", "code":"..."}: real Python code defining forward(groups) and inverse(record). Use this for exact date/time, unit, duration, tuple, and compound numeric transforms.
+- python_exec code must not import modules. The verifier already provides datetime, re, math, and calendar-like helpers. Any import/from-import statement is rejected.
+- Use only the verifier-aligned Python subset: ordinary assignments, arithmetic, indexing/slicing, simple if/for/while, int/str/len/float/round/abs/min/max, datetime/timedelta/re helpers, f-strings, lists, tuples, and dicts.
+- Do not use augmented assignment such as +=, -=, *=, //=, or %=; write ordinary assignment instead. Example: write `v = v // 1000`, not `v //= 1000`.
+- Do not use comprehensions, lambda, try/except, with, class definitions, file/network/system calls, eval/exec/compile, globals/locals/vars, or double-underscore names.
+- python_exec forward(groups) must return a dict exactly shaped like {'stored': [one_value], 'layout': [optional_small_integers]}. Use layout for variable spaces or widths needed by inverse(record).
+- python_exec inverse(record) must read record['stored'] and return the exact original captured bytes as a string.
+- Do not return datetime objects, ISO strings, tuples, or plain integers from forward(). Do not make inverse(record) expect a datetime object directly.
+
+Placeholder routing contract:
+- Use exactly one {placeholder} in every replacement. The decoder uses that route to choose this function's side stream.
+- If a function consumes several capture groups that together describe one attribute, they still map to one {placeholder}, not multiple placeholders.
+- If a span contains independent attributes, emit separate functions with separate tags.
+- Do not duplicate storage: bytes consumed into {placeholder} must not also remain as {groupN}.
+
+For each family:
+- Every function must include class and target_role. Use class_1_composed_numeric for multi-piece values that become one compressible semantic integer, class_2_formatted_numeric for text or formatted tokens that express numeric meaning and can be converted into one compressible integer, and class_3_common_variable for an exact string supported by either intrinsic structure or an explicit adjacent field-name anchor. Use target_role=log_timestamp only for the primary log timestamp; otherwise use ordinary_value.
+- If a date/time-like span is present, prefer class_1_composed_numeric and write python_exec that stores one integer timestamp-like value. Do not use class_3_common_variable or raw identity for a timestamp merely because spaces or display widths vary; store those reversible display details in layout.
+- Choose class_2 not only for visibly numeric tokens, but for non-numeric or formatted text that carries numeric meaning and has a deterministic numeric representation: units, durations, byte-size displays, ordinal/state counters, severity-like levels, port-like roles, process/thread ids, slots, or structured subfields. Do not classify random-looking session ids, hashes, request ids, or opaque hex strings as class_1/class_2 merely because they can be parsed as integers.
+- Strategy switch for numbers: leave anonymous/simple numbers to deterministic residual coders, but extract semantically stable numbers whose surrounding words vary across templates. A port near an IP/host should be a class_2 target whose context projector returns the concrete IP/host when that field predicts the port distribution.
+- For every ordinary_value target, ask whether another field anywhere in the same physical line predicts or partitions its distribution. If yes, provide context.code defining project_context(line, groups); otherwise use context=null.
+- project_context returns the actual value found on this line, not a field name or another function tag. A log_timestamp normally uses context=null.
+- Context routing is available to every class. Numeric targets use context-local delta and string targets use context-local dictionary ranks, while target reconstruction remains independent of context.
+- Prefer class_3_common_variable only after one evidence route passes. Intrinsic route: the captured value has at least two separator occurrences explicit in the regex. Role-anchor route: a plain value is immediately introduced by a stable, unambiguous field-name literal explicit in the regex, such as user or username=. A semantic explanation, whitespace, or a generic word such as for/from/to/by is insufficient. Numeric-looking opaque identifiers may use class_3 only when they satisfy one route and lack semantic magnitude/order.
+- First decide whether there is a unified log header. Headers can use brackets, punctuation, or component fields, not just whitespace.
+- Put changing header fields in header.functions.
+- Then propose normal value functions for hard formats such as session ids, stable-affix ids, derived date/time text, unit-bearing values, and compound numeric fields.
+- Prefer one reversible function for a complete real-world attribute over several substring functions. If adjacent tokens or neighboring pieces describe the same underlying value, capture the complete span and store one compact value when exact rendering is possible.
+- Do not split one attribute into independent streams just because it appears as several tokens or contains punctuation. A date/time-like attribute, unit-bearing display, bracketed identifier, endpoint-like text, or stable-affix id should be considered as a complete reversible span first.
+- If one displayed piece is derivable from another captured value, store the source value and render the derived text instead of creating a separate stream. If exact derivation is not safe, store the complete formatted span with raw python_exec.
+- Prefer executable python_exec for complete composed attributes when a deterministic parse/render relation is clear. Use raw python_exec when the exact bytes are opaque or when a compact inverse renderer is not safe.
+- Set general=true when the function likely applies across many families/templates, such as a repeated header attribute, address-like value, endpoint-like value, bracketed process/context id, port-like number, user/domain-like token, or other recurring value format. Set general=false for message-specific variables.
+- Set order_hint=global_composed for a global function that consumes a complete multi-piece attribute or starts at a repeated line prefix; set family_structured for context-scoped message variables; set global_atomic for simple intrinsic global values.
+- Constants remain literal. Store changing bytes once: either as {placeholder} or as preserved {groupN}, never both.
+- Unit-bearing variants must be byte-exact. If examples include both plain and displayed forms such as '123 bytes' and '123 bytes (1.20 KB)', do not consume the optional display and drop it from replacement. Store the complete formatted value span or render all captured pieces exactly.
+- Use numeric scalar programs only after checking that the scalar render reconstructs the whole matched value, including optional unit displays and alternate units.
+- Regexes must be Python re compatible, local to the matched substring, and under 220 characters.
+- Avoid broad tail captures like (.+) or (.*). Avoid bare all-number regexes unless tightly scoped by literals. For Class 3, forbid unanchored plain-token captures such as ([A-Za-z0-9]+), (\w+), and ([^ ]+). A narrow plain-token capture is allowed only when a stable, unambiguous field-name literal immediately introduces it in the same regex; whitespace or generic for/from/to/by does not qualify.
+- If functions overlap, order most specific first.
+
+Executable examples, for style only and not a closed type list:
+Example exact raw value:
+{"tag": "dot_value", "meaning": "recurring dotted value", "class": "class_3_common_variable", "general": true, "order_hint": "global_atomic", "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})", "replacement": "from {placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example exact raw plain value with an explicit role anchor:
+{"tag": "user_name", "meaning": "user_field_value", "class": "class_3_common_variable", "general": false, "order_hint": "family_structured", "regex": "user( +)([A-Za-z][A-Za-z0-9._-]*)", "replacement": "user{group1}{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example fixed-width integer:
+{"tag": "bracket_number", "meaning": "recurring bracketed numeric id", "class": "class_2_formatted_numeric", "general": true, "order_hint": "global_composed", "regex": "worker\\[(\\d{5})\\]", "replacement": "worker[{placeholder}]", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    return {'stored': [int(text)], 'layout': []}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    return str(value).zfill(5)"}}
+Example composed date/time-like attribute with a fixed exact layout:
+{"tag": "composed_time", "meaning": "complete repeated date/time-like prefix", "class": "class_1_composed_numeric", "general": true, "order_hint": "global_composed", "regex": "^([A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2})", "replacement": "{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"}}
+If exact reconstruction needs variable width, variable spaces, optional text, or any other layout bytes, either capture the complete span with raw python_exec, or emit a python_exec that stores the required layout bytes and inverse reconstructs exactly.
+
+Open executable transducer mode:
+- Prefer LLM-generated executable Python transforms for structured numeric fields, including timestamps, dates, durations, sizes, tuple-like IDs, and compound numeric tokens.
+- The transform must define forward(groups) and inverse(record). forward receives the captured value bytes; inverse reconstructs exactly the captured bytes from the stored integer.
+- A timestamp does not need true Unix time. A monotonic packed integer is acceptable if inverse renders the exact original bytes and deltas are locally small.
+- For YYYY-MM-DD HH:MM:SS,mmm, write Python that parses the seven numeric fields, packs them into one integer, and inverse-unpacks with the same zero padding and punctuation.
+- For bracketed or prefixed fields, capture only the value span and preserve stable punctuation in replacement groups.
+- Stable text is an anchor, not a side-stream value. Never store the same bytes twice: if a captured group is represented by {placeholder}, do not also keep that group as {groupN} in replacement.
+
+
+Focus function budget on complete formatted spans and semantic dependencies. Plain leftover numbers can be handled by generic residual coders unless local context gives them a stable role.
+
+### FAMILY 19
+support=4
+template_anchor_key=info changing modify acls to
+examples_and_shapes:
+Example 0: 17/03/23 14:15:45 INFO spark.SecurityManager: Changing modify acls to: yarn,curi
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:15:45':D2:D2:D2 | S2='INFO':A4 | S3='spark.SecurityManager:':A5.A15: | S4='Changing':A8 | S5='modify':A6 | S6='acls':A4 | S7='to:':A2: | S8='yarn,curi':A4,A4
+Example 1: 17/03/23 14:34:28 INFO spark.SecurityManager: Changing modify acls to: yarn,curi
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:34:28':D2:D2:D2 | S2='INFO':A4 | S3='spark.SecurityManager:':A5.A15: | S4='Changing':A8 | S5='modify':A6 | S6='acls':A4 | S7='to:':A2: | S8='yarn,curi':A4,A4
+Example 2: 17/03/23 14:15:45 INFO spark.SecurityManager: Changing view acls to: yarn,curi
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:15:45':D2:D2:D2 | S2='INFO':A4 | S3='spark.SecurityManager:':A5.A15: | S4='Changing':A8 | S5='view':A4 | S6='acls':A4 | S7='to:':A2: | S8='yarn,curi':A4,A4
+Example 3: 17/03/23 14:34:28 INFO spark.SecurityManager: Changing view acls to: yarn,curi
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:34:28':D2:D2:D2 | S2='INFO':A4 | S3='spark.SecurityManager:':A5.A15: | S4='Changing':A8 | S5='view':A4 | S6='acls':A4 | S7='to:':A2: | S8='yarn,curi':A4,A4
+required_value_like_slots (20 sampled occurrences):
+Example 0: S0='17/03/23':D2/D2/D2 | S1='14:15:45':D2:D2:D2 | S3='spark.SecurityManager:':A5.A15: | S7='to:':A2: | S8='yarn,curi':A4,A4
+Example 1: S0='17/03/23':D2/D2/D2 | S1='14:34:28':D2:D2:D2 | S3='spark.SecurityManager:':A5.A15: | S7='to:':A2: | S8='yarn,curi':A4,A4
+Example 2: S0='17/03/23':D2/D2/D2 | S1='14:15:45':D2:D2:D2 | S3='spark.SecurityManager:':A5.A15: | S7='to:':A2: | S8='yarn,curi':A4,A4
+Example 3: S0='17/03/23':D2/D2/D2 | S1='14:34:28':D2:D2:D2 | S3='spark.SecurityManager:':A5.A15: | S7='to:':A2: | S8='yarn,curi':A4,A4
+
+### FAMILY 8
+support=2
+template_anchor_key=warn tasksetmanager lost task in stage tid executorlostfailure executor exited caused by one of the running tasks reason container killed by yarn for exceeding memory limits gb of gb virtual memory used consider boosting
+examples_and_shapes:
+Example 0: 17/03/23 14:51:14 WARN TaskSetManager: Lost task 34.0 in stage 1.0 (TID 36, mesos-slave-21): ExecutorLostFailure (executor 7 exited caused by one of the running tasks) Reason: Container killed by YARN for exceeding memory limits. 46.5 GB of 46.2 GB virtual memory used. Consider boosting spark.yarn.executor.memoryOverhead.
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:51:14':D2:D2:D2 | S2='WARN':A4 | S3='TaskSetManager:':A14: | S4='Lost':A4 | S5='task':A4 | S6='34.0':D2.D1 | S7='in':A2 | S8='stage':A5 | S9='1.0':D1.D1 | S10='(TID':(A3 | S11='36,':D2, | S12='mesos-slave-21):':A5-A5-D2): | S13='ExecutorLostFailure':A19 | S14='(executor':(A8 | S15='7':D1 | S16='exited':A6 | S17='caused':A6 | S18='by':A2 | S19='one':A3 | S20='of':A2 | S21='the':A3 | S22='running':A7 | S23='tasks)':A5) | S24='Reason:':A6: | S25='Container':A9 | S26='killed':A6 | S27='by':A2 | S28='YARN':A4 | S29='for':A3 | S30='exceeding':A9 | S31='memory':A6 | S32='limits.':A6. | S33='46.5':D2.D1 | S34='GB':A2 | S35='of':A2 | S36='46.2':D2.D1 | S37='GB':A2 | S38='virtual':A7 | S39='memory':A6 | S40='used.':A4. | S41='Consider':A8 | S42='boosting':A8 | S43='spark.yarn.executor.memoryOverhead.':A5.A4.A8.A14.
+Example 1: 17/03/23 14:51:14 WARN TaskSetManager: Lost task 16.0 in stage 1.0 (TID 18, mesos-slave-21): ExecutorLostFailure (executor 7 exited caused by one of the running tasks) Reason: Container killed by YARN for exceeding memory limits. 46.5 GB of 46.2 GB virtual memory used. Consider boosting spark.yarn.executor.memoryOverhead.
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:51:14':D2:D2:D2 | S2='WARN':A4 | S3='TaskSetManager:':A14: | S4='Lost':A4 | S5='task':A4 | S6='16.0':D2.D1 | S7='in':A2 | S8='stage':A5 | S9='1.0':D1.D1 | S10='(TID':(A3 | S11='18,':D2, | S12='mesos-slave-21):':A5-A5-D2): | S13='ExecutorLostFailure':A19 | S14='(executor':(A8 | S15='7':D1 | S16='exited':A6 | S17='caused':A6 | S18='by':A2 | S19='one':A3 | S20='of':A2 | S21='the':A3 | S22='running':A7 | S23='tasks)':A5) | S24='Reason:':A6: | S25='Container':A9 | S26='killed':A6 | S27='by':A2 | S28='YARN':A4 | S29='for':A3 | S30='exceeding':A9 | S31='memory':A6 | S32='limits.':A6. | S33='46.5':D2.D1 | S34='GB':A2 | S35='of':A2 | S36='46.2':D2.D1 | S37='GB':A2 | S38='virtual':A7 | S39='memory':A6 | S40='used.':A4. | S41='Consider':A8 | S42='boosting':A8 | S43='spark.yarn.executor.memoryOverhead.':A5.A4.A8.A14.
+required_value_like_slots (34 sampled occurrences):
+Example 0: S0='17/03/23':D2/D2/D2 | S1='14:51:14':D2:D2:D2 | S3='TaskSetManager:':A14: | S6='34.0':D2.D1 | S9='1.0':D1.D1 | S10='(TID':(A3 | S11='36,':D2, | S12='mesos-slave-21):':A5-A5-D2): | S14='(executor':(A8 | S15='7':D1 | S23='tasks)':A5) | S24='Reason:':A6: | S32='limits.':A6. | S33='46.5':D2.D1 | S36='46.2':D2.D1 | S40='used.':A4. | S43='spark.yarn.executor.memoryOverhead.':A5.A4.A8.A14.
+Example 1: S0='17/03/23':D2/D2/D2 | S1='14:51:14':D2:D2:D2 | S3='TaskSetManager:':A14: | S6='16.0':D2.D1 | S9='1.0':D1.D1 | S10='(TID':(A3 | S11='18,':D2, | S12='mesos-slave-21):':A5-A5-D2): | S14='(executor':(A8 | S15='7':D1 | S23='tasks)':A5) | S24='Reason:':A6: | S32='limits.':A6. | S33='46.5':D2.D1 | S36='46.2':D2.D1 | S40='used.':A4. | S43='spark.yarn.executor.memoryOverhead.':A5.A4.A8.A14.
+
+### FAMILY 18
+support=2
+template_anchor_key=info securitymanager authentication disabled ui acls disabled users with view permissions curi users with modify permissions curi
+examples_and_shapes:
+Example 0: 17/03/23 14:15:45 INFO spark.SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, curi); users with modify permissions: Set(yarn, curi)
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:15:45':D2:D2:D2 | S2='INFO':A4 | S3='spark.SecurityManager:':A5.A15: | S4='SecurityManager:':A15: | S5='authentication':A14 | S6='disabled;':A8; | S7='ui':A2 | S8='acls':A4 | S9='disabled;':A8; | S10='users':A5 | S11='with':A4 | S12='view':A4 | S13='permissions:':A11: | S14='Set(yarn,':A3(A4, | S15='curi);':A4); | S16='users':A5 | S17='with':A4 | S18='modify':A6 | S19='permissions:':A11: | S20='Set(yarn,':A3(A4, | S21='curi)':A4)
+Example 1: 17/03/23 14:34:28 INFO spark.SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, curi); users with modify permissions: Set(yarn, curi)
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:34:28':D2:D2:D2 | S2='INFO':A4 | S3='spark.SecurityManager:':A5.A15: | S4='SecurityManager:':A15: | S5='authentication':A14 | S6='disabled;':A8; | S7='ui':A2 | S8='acls':A4 | S9='disabled;':A8; | S10='users':A5 | S11='with':A4 | S12='view':A4 | S13='permissions:':A11: | S14='Set(yarn,':A3(A4, | S15='curi);':A4); | S16='users':A5 | S17='with':A4 | S18='modify':A6 | S19='permissions:':A11: | S20='Set(yarn,':A3(A4, | S21='curi)':A4)
+required_value_like_slots (24 sampled occurrences):
+Example 0: S0='17/03/23':D2/D2/D2 | S1='14:15:45':D2:D2:D2 | S3='spark.SecurityManager:':A5.A15: | S4='SecurityManager:':A15: | S6='disabled;':A8; | S9='disabled;':A8; | S13='permissions:':A11: | S14='Set(yarn,':A3(A4, | S15='curi);':A4); | S19='permissions:':A11: | S20='Set(yarn,':A3(A4, | S21='curi)':A4)
+Example 1: S0='17/03/23':D2/D2/D2 | S1='14:34:28':D2:D2:D2 | S3='spark.SecurityManager:':A5.A15: | S4='SecurityManager:':A15: | S6='disabled;':A8; | S9='disabled;':A8; | S13='permissions:':A11: | S14='Set(yarn,':A3(A4, | S15='curi);':A4); | S19='permissions:':A11: | S20='Set(yarn,':A3(A4, | S21='curi)':A4)
+
+### FAMILY 3
+support=2
+template_anchor_key=info tasksetmanager starting task in stage tid partition bytes
+examples_and_shapes:
+Example 0: 17/03/23 14:35:40 INFO TaskSetManager: Starting task 0.0 in stage 0.0 (TID 0, mesos-master-1, partition 0,NODE_LOCAL, 2159 bytes)
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:35:40':D2:D2:D2 | S2='INFO':A4 | S3='TaskSetManager:':A14: | S4='Starting':A8 | S5='task':A4 | S6='0.0':D1.D1 | S7='in':A2 | S8='stage':A5 | S9='0.0':D1.D1 | S10='(TID':(A3 | S11='0,':D1, | S12='mesos-master-1,':A5-A6-D1, | S13='partition':A9 | S14='0,NODE_LOCAL,':D1,A4_A5, | S15='2159':D4 | S16='bytes)':A5)
+Example 1: 17/03/23 14:35:40 INFO TaskSetManager: Starting task 1.0 in stage 0.0 (TID 1, mesos-master-1, partition 1,NODE_LOCAL, 2159 bytes)
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:35:40':D2:D2:D2 | S2='INFO':A4 | S3='TaskSetManager:':A14: | S4='Starting':A8 | S5='task':A4 | S6='1.0':D1.D1 | S7='in':A2 | S8='stage':A5 | S9='0.0':D1.D1 | S10='(TID':(A3 | S11='1,':D1, | S12='mesos-master-1,':A5-A6-D1, | S13='partition':A9 | S14='1,NODE_LOCAL,':D1,A4_A5, | S15='2159':D4 | S16='bytes)':A5)
+required_value_like_slots (22 sampled occurrences):
+Example 0: S0='17/03/23':D2/D2/D2 | S1='14:35:40':D2:D2:D2 | S3='TaskSetManager:':A14: | S6='0.0':D1.D1 | S9='0.0':D1.D1 | S10='(TID':(A3 | S11='0,':D1, | S12='mesos-master-1,':A5-A6-D1, | S14='0,NODE_LOCAL,':D1,A4_A5, | S15='2159':D4 | S16='bytes)':A5)
+Example 1: S0='17/03/23':D2/D2/D2 | S1='14:35:40':D2:D2:D2 | S3='TaskSetManager:':A14: | S6='1.0':D1.D1 | S9='0.0':D1.D1 | S10='(TID':(A3 | S11='1,':D1, | S12='mesos-master-1,':A5-A6-D1, | S14='1,NODE_LOCAL,':D1,A4_A5, | S15='2159':D4 | S16='bytes)':A5)
+
+### FAMILY 20
+support=2
+template_anchor_key=info tasksetmanager finished task in stage tid in ms on
+examples_and_shapes:
+Example 0: 17/03/23 14:35:45 INFO TaskSetManager: Finished task 1.0 in stage 0.0 (TID 1) in 5794 ms on mesos-master-1 (1/2)
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:35:45':D2:D2:D2 | S2='INFO':A4 | S3='TaskSetManager:':A14: | S4='Finished':A8 | S5='task':A4 | S6='1.0':D1.D1 | S7='in':A2 | S8='stage':A5 | S9='0.0':D1.D1 | S10='(TID':(A3 | S11='1)':D1) | S12='in':A2 | S13='5794':D4 | S14='ms':A2 | S15='on':A2 | S16='mesos-master-1':A5-A6-D1 | S17='(1/2)':(D1/D1)
+Example 1: 17/03/23 14:35:45 INFO TaskSetManager: Finished task 0.0 in stage 0.0 (TID 0) in 5892 ms on mesos-master-1 (2/2)
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:35:45':D2:D2:D2 | S2='INFO':A4 | S3='TaskSetManager:':A14: | S4='Finished':A8 | S5='task':A4 | S6='0.0':D1.D1 | S7='in':A2 | S8='stage':A5 | S9='0.0':D1.D1 | S10='(TID':(A3 | S11='0)':D1) | S12='in':A2 | S13='5892':D4 | S14='ms':A2 | S15='on':A2 | S16='mesos-master-1':A5-A6-D1 | S17='(2/2)':(D1/D1)
+required_value_like_slots (20 sampled occurrences):
+Example 0: S0='17/03/23':D2/D2/D2 | S1='14:35:45':D2:D2:D2 | S3='TaskSetManager:':A14: | S6='1.0':D1.D1 | S9='0.0':D1.D1 | S10='(TID':(A3 | S11='1)':D1) | S13='5794':D4 | S16='mesos-master-1':A5-A6-D1 | S17='(1/2)':(D1/D1)
+Example 1: S0='17/03/23':D2/D2/D2 | S1='14:35:45':D2:D2:D2 | S3='TaskSetManager:':A14: | S6='0.0':D1.D1 | S9='0.0':D1.D1 | S10='(TID':(A3 | S11='0)':D1) | S13='5892':D4 | S16='mesos-master-1':A5-A6-D1 | S17='(2/2)':(D1/D1)
+
+### FAMILY 17
+support=2
+template_anchor_key=info executor is trying to kill task in stage tid
+examples_and_shapes:
+Example 0: 17/03/23 14:30:04 INFO executor.Executor: Executor is trying to kill task 9.2 in stage 1.0 (TID 102)
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:30:04':D2:D2:D2 | S2='INFO':A4 | S3='executor.Executor:':A8.A8: | S4='Executor':A8 | S5='is':A2 | S6='trying':A6 | S7='to':A2 | S8='kill':A4 | S9='task':A4 | S10='9.2':D1.D1 | S11='in':A2 | S12='stage':A5 | S13='1.0':D1.D1 | S14='(TID':(A3 | S15='102)':D3)
+Example 1: 17/03/23 14:30:04 INFO executor.Executor: Executor is trying to kill task 3.2 in stage 1.0 (TID 103)
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:30:04':D2:D2:D2 | S2='INFO':A4 | S3='executor.Executor:':A8.A8: | S4='Executor':A8 | S5='is':A2 | S6='trying':A6 | S7='to':A2 | S8='kill':A4 | S9='task':A4 | S10='3.2':D1.D1 | S11='in':A2 | S12='stage':A5 | S13='1.0':D1.D1 | S14='(TID':(A3 | S15='103)':D3)
+required_value_like_slots (14 sampled occurrences):
+Example 0: S0='17/03/23':D2/D2/D2 | S1='14:30:04':D2:D2:D2 | S3='executor.Executor:':A8.A8: | S10='9.2':D1.D1 | S13='1.0':D1.D1 | S14='(TID':(A3 | S15='102)':D3)
+Example 1: S0='17/03/23':D2/D2/D2 | S1='14:30:04':D2:D2:D2 | S3='executor.Executor:':A8.A8: | S10='3.2':D1.D1 | S13='1.0':D1.D1 | S14='(TID':(A3 | S15='103)':D3)
+
+### FAMILY 16
+support=2
+template_anchor_key=error exception while beginning fetch of outstanding blocks after retries
+examples_and_shapes:
+Example 0: 17/03/23 14:35:21 ERROR shuffle.RetryingBlockFetcher: Exception while beginning fetch of 1 outstanding blocks (after 1 retries)
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:35:21':D2:D2:D2 | S2='ERROR':A5 | S3='shuffle.RetryingBlockFetcher:':A7.A20: | S4='Exception':A9 | S5='while':A5 | S6='beginning':A9 | S7='fetch':A5 | S8='of':A2 | S9='1':D1 | S10='outstanding':A11 | S11='blocks':A6 | S12='(after':(A5 | S13='1':D1 | S14='retries)':A7)
+Example 1: 17/03/23 14:35:26 ERROR shuffle.RetryingBlockFetcher: Exception while beginning fetch of 1 outstanding blocks (after 2 retries)
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:35:26':D2:D2:D2 | S2='ERROR':A5 | S3='shuffle.RetryingBlockFetcher:':A7.A20: | S4='Exception':A9 | S5='while':A5 | S6='beginning':A9 | S7='fetch':A5 | S8='of':A2 | S9='1':D1 | S10='outstanding':A11 | S11='blocks':A6 | S12='(after':(A5 | S13='2':D1 | S14='retries)':A7)
+required_value_like_slots (14 sampled occurrences):
+Example 0: S0='17/03/23':D2/D2/D2 | S1='14:35:21':D2:D2:D2 | S3='shuffle.RetryingBlockFetcher:':A7.A20: | S9='1':D1 | S12='(after':(A5 | S13='1':D1 | S14='retries)':A7)
+Example 1: S0='17/03/23':D2/D2/D2 | S1='14:35:26':D2:D2:D2 | S3='shuffle.RetryingBlockFetcher:':A7.A20: | S9='1':D1 | S12='(after':(A5 | S13='2':D1 | S14='retries)':A7)
+
+### FAMILY 15
+support=2
+template_anchor_key=info retrying fetch for outstanding blocks after ms
+examples_and_shapes:
+Example 0: 17/03/23 14:35:16 INFO shuffle.RetryingBlockFetcher: Retrying fetch (1/3) for 1 outstanding blocks after 5000 ms
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:35:16':D2:D2:D2 | S2='INFO':A4 | S3='shuffle.RetryingBlockFetcher:':A7.A20: | S4='Retrying':A8 | S5='fetch':A5 | S6='(1/3)':(D1/D1) | S7='for':A3 | S8='1':D1 | S9='outstanding':A11 | S10='blocks':A6 | S11='after':A5 | S12='5000':D4 | S13='ms':A2
+Example 1: 17/03/23 14:35:21 INFO shuffle.RetryingBlockFetcher: Retrying fetch (2/3) for 1 outstanding blocks after 5000 ms
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:35:21':D2:D2:D2 | S2='INFO':A4 | S3='shuffle.RetryingBlockFetcher:':A7.A20: | S4='Retrying':A8 | S5='fetch':A5 | S6='(2/3)':(D1/D1) | S7='for':A3 | S8='1':D1 | S9='outstanding':A11 | S10='blocks':A6 | S11='after':A5 | S12='5000':D4 | S13='ms':A2
+required_value_like_slots (12 sampled occurrences):
+Example 0: S0='17/03/23':D2/D2/D2 | S1='14:35:16':D2:D2:D2 | S3='shuffle.RetryingBlockFetcher:':A7.A20: | S6='(1/3)':(D1/D1) | S8='1':D1 | S12='5000':D4
+Example 1: S0='17/03/23':D2/D2/D2 | S1='14:35:21':D2:D2:D2 | S3='shuffle.RetryingBlockFetcher:':A7.A20: | S6='(2/3)':(D1/D1) | S8='1':D1 | S12='5000':D4
+
+### FAMILY 7
+support=2
+template_anchor_key=info reading broadcast variable took ms
+examples_and_shapes:
+Example 0: 17/03/23 14:25:16 INFO broadcast.TorrentBroadcast: Reading broadcast variable 6 took 11229 ms
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:25:16':D2:D2:D2 | S2='INFO':A4 | S3='broadcast.TorrentBroadcast:':A9.A16: | S4='Reading':A7 | S5='broadcast':A9 | S6='variable':A8 | S7='6':D1 | S8='took':A4 | S9='11229':D5 | S10='ms':A2
+Example 1: 17/03/23 14:25:47 INFO broadcast.TorrentBroadcast: Reading broadcast variable 2 took 245 ms
+Tokens: S0='17/03/23':D2/D2/D2 | S1='14:25:47':D2:D2:D2 | S2='INFO':A4 | S3='broadcast.TorrentBroadcast:':A9.A16: | S4='Reading':A7 | S5='broadcast':A9 | S6='variable':A8 | S7='2':D1 | S8='took':A4 | S9='245':D3 | S10='ms':A2
+required_value_like_slots (10 sampled occurrences):
+Example 0: S0='17/03/23':D2/D2/D2 | S1='14:25:16':D2:D2:D2 | S3='broadcast.TorrentBroadcast:':A9.A16: | S7='6':D1 | S9='11229':D5
+Example 1: S0='17/03/23':D2/D2/D2 | S1='14:25:47':D2:D2:D2 | S3='broadcast.TorrentBroadcast:':A9.A16: | S7='2':D1 | S9='245':D3

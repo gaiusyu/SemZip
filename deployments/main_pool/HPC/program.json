@@ -1,0 +1,188 @@
+{
+ "dataset": "HPC",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [],
+  "local_families": [
+   {
+    "key": [
+     "clusterfilesystem",
+     "clusterfilesystem",
+     "serverfilesystem",
+     "domain",
+     "is",
+     "no",
+     "longer",
+     "served",
+     "by",
+     "node",
+     "node"
+    ],
+    "tags": [
+     "A",
+     "X4B"
+    ]
+   },
+   {
+    "key": [
+     "node",
+     "node",
+     "status",
+     "configured",
+     "out"
+    ],
+    "tags": [
+     "H"
+    ]
+   },
+   {
+    "key": [
+     "node",
+     "node",
+     "status",
+     "active"
+    ],
+    "tags": [
+     "I"
+    ]
+   },
+   {
+    "key": [
+     "link",
+     "error",
+     "on",
+     "broadcast",
+     "tree"
+    ],
+    "tags": [
+     "X4J"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "A": "<A>",
+  "H": "<H>",
+  "I": "<I>",
+  "X4J": "<X4J>",
+  "X4B": "<X4B>"
+ },
+ "spec_count": 5,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_atomic",
+   "pattern": "^(\\d+)( +)",
+   "program": {
+    "code": "def forward(groups):\n    sequence_number, sp1 = groups\n    return {'stored': [int(sequence_number)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    sequence_number = str(record['stored'][0])\n    sp1_len = record['layout'][0]\n    return sequence_number + (' ' * sp1_len)",
+    "group_regex": "^(?:^(\\d+)( +))$",
+    "intent": "Extracts the line sequence number as a numeric value",
+    "op": "python_exec"
+   },
+   "proposal_tag": "h0",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "A",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "(node-\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "node_identifier",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "H",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "(node-\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "node_identifier",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "I",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "(Interconnect-[0-9A-Za-z:]+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "structured_interconnect",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "X4J",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "(node-[A-Z]\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "intent": "Handles node identifiers like 'node-D4', storing them as a raw stream.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "node_id",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "X4B",
+   "value_type": "string"
+  }
+ ],
+ "version": 1
+}

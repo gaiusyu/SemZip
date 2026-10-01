@@ -1,0 +1,71 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "FAIL",
+  "started_at": "2026-09-29T02:44:54.619219+00:00",
+  "dataset": "HealthApp",
+  "codec": "zstd22long",
+  "trial": 1,
+  "workers": 2,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+    "bytes": 23529930,
+    "mtime_ns": 1789369303348633000,
+    "device": 1048818,
+    "inode": 199002808556006449
+  },
+  "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+  "raw_bytes": 23529930,
+  "records": 253395,
+  "codec_spec": {
+    "exe": "zstd",
+    "encode": [
+      "--ultra",
+      "-22",
+      "--long=27",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "decode": [
+      "-d",
+      "--long=27",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "suffix": ".zst",
+    "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+    "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+    "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/zstd22long/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.zst",
+      "archive_bytes": 568750,
+      "block_encode_seconds": 16.710097417235374
+    },
+    {
+      "index": 1,
+      "archive": "archives/block_000001.zst",
+      "archive_bytes": 563159,
+      "block_encode_seconds": 14.354893401265144
+    },
+    {
+      "index": 2,
+      "archive": "archives/block_000002.zst",
+      "archive_bytes": 307294,
+      "block_encode_seconds": 7.756744384765625
+    }
+  ],
+  "encode_seconds": 24.540759205818176,
+  "block_archive_bytes": 1439203,
+  "archive_bytes": 1439203,
+  "decode_seconds": 0.35894596576690674,
+  "error": "source changed during inventory: <WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/zstd22long/trial_001/attempt_001/roundtrip.owned.log",
+  "traceback": "Traceback (most recent call last):\n  File \"<WORKDIR>/r76_additional_20260929/codecs/codec_baseline_r76.py\", line 443, in benchmark\n    recovered = inventory(restored)\n  File \"<WORKDIR>/r76_additional_20260929/codecs/codec_baseline_r76.py\", line 151, in inventory\n    raise RuntimeError(\"source changed during inventory: %s\" % source)\nRuntimeError: source changed during inventory: <WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/zstd22long/trial_001/attempt_001/roundtrip.owned.log\n",
+  "finished_at": "2026-09-29T02:45:19.799526+00:00"
+}

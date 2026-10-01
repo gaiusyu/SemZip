@@ -1,0 +1,254 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_and_fan_speeds",
+            "tokens": [
+              "S0",
+              "S4",
+              "S9",
+              "S10",
+              "S11",
+              "S12",
+              "S13",
+              "S14"
+            ],
+            "reason": "fan speeds and timestamp form a structured value",
+            "target_value": "one numeric-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines share a repeated prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S4+S9+S10+S11+S12+S13+S14",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW",
+          "meaning": "fan speed data and timestamp",
+          "reason": "aggregating multiple fields into one structured value for compression"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "fan_speed_summary"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "fan_speed_summary",
+          "meaning": "aggregated fan speed and timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "aggregated fan speeds and timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "structural composition of timestamp and speeds is required"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) .*? (\\d{10}) .*? (\\d{4}) (\\d{4}) (\\d{4}) (?:\\*{4}|(\\d{4})) (\\d{4}) (\\d{4})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    timestamp = int(groups[1])\n    speeds = [int(g) for g in groups[2:] if g is not None]\n    return {'stored': [timestamp * 1000000 + sum(speeds)], 'layout': []}\n\ndef inverse(record):\n    combined = record['stored'][0]\n    timestamp = combined // 1000000\n    total_speed = combined % 1000000\n    speeds = []\n    for _ in range(6):\n        speed = total_speed % 10000\n        speeds.insert(0, speed)\n        total_speed //= 10000\n    speeds[-2] = '****' if speeds[-2] == 0 else speeds[-2]\n    return f\"{str(timestamp).zfill(6)} Interconnect-0N00 switch_module fan {str(timestamp).zfill(10)} 1 Fan speeds ( {' '.join(map(str, speeds))} )\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "component_identifier",
+            "tokens": [
+              "\\042alt0\\042",
+              "\\042SCSI-WWID:01000010:6005-08b4-0001-4048-0008-a000-0047-0000\\042"
+            ],
+            "reason": "values contain intrinsic structure with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines share a repeated prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "component identifier",
+          "reason": "intrinsically structured variable for component identification"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "component_identifier"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "component_identifier",
+          "meaning": "structured component identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "intrinsically structured identifier",
+            "context_source": null,
+            "why_not_merge_raw": "structured identifier must be stored as-is"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Component \\\\042([^\\\\]+)\\\\042",
+          "replacement": "Component \\042{placeholder}\\042",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'Component \\\"{record[\"stored\"][0]}\\\"'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines share a repeated prefix structure"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "domain_identifier",
+            "tokens": [
+              "root1_local",
+              "storage232",
+              "storage842"
+            ],
+            "reason": "values contain intrinsic structure with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines share a repeated prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "domain identifier",
+          "reason": "intrinsically structured domain identifier"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "domain_identifier"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "domain_identifier",
+          "meaning": "structured domain identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "intrinsically structured identifier",
+            "context_source": null,
+            "why_not_merge_raw": "structured domain must be stored as-is"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "domain ([^ ]+)",
+          "replacement": "domain {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'domain {record[\"stored\"][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines share a repeated prefix structure"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

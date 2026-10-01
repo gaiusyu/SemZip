@@ -1,0 +1,103 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix with a common structure consisting of a timestamp, log level, and component identifier.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "log_line_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2}),(\\d{3})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Parse date and time into a single epoch-microsecond integer and reconstruct with exact spacing and display format.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day, sp1, hour, minute, second, millis = groups\n    datetime_str = f\"{year}-{month}-{day} {hour}:{minute}:{second}.{millis}\"\n    dt = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    date_str = dt.strftime('%Y-%m-%d')\n    time_str = dt.strftime('%H:%M:%S')\n    millis_str = str(int(micros % 1000000 // 1000)).zfill(3)\n    return date_str + (' ' * sp1_len) + time_str + ',' + millis_str"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log timestamp as epoch microseconds",
+      "reason": "Merge date and time fields into one numeric representation for compression and precise reconstruction."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "component name with architecture and other details",
+      "reason": "High-entropy identifier with stable structural separators; exact bytes must be preserved."
+    },
+    {
+      "slot": "S8",
+      "action": "STREAM_RAW",
+      "meaning": "component version with revision",
+      "reason": "Stable numeric structure but requires exact byte preservation for parentheses and formatting."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "elevation level",
+      "reason": "Numeric field with low entropy expected to have small deltas."
+    },
+    {
+      "slot": "S14",
+      "action": "STREAM_RAW",
+      "meaning": "lower version revision holder value",
+      "reason": "Stable numeric structure but requires exact byte preservation for formatting."
+    },
+    {
+      "slot": "S4+S5+S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "static literal fields for application and component context",
+      "reason": "Stable constant structure that does not benefit from side-stream extraction."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "elevation_level",
+      "meaning": "numeric_elevation_level",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "elevation:(\\d+),",
+      "replacement": "elevation:{placeholder},",
+      "program": {
+        "intent": "Store elevation level as an integer and reconstruct exactly, including the colon, number, and trailing comma.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return 'elevation:' + str(record['stored'][0]) + ','"
+      }
+    },
+    {
+      "tag": "component_version",
+      "meaning": "component_version_with_revision",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\((\\d+\\.\\d+\\.\\d+\\.\\d+)\\),",
+      "replacement": "({placeholder}),",
+      "program": {
+        "intent": "Store the numeric component version with exact formatting, including parentheses and trailing comma.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return '(' + str(record['stored'][0]) + '),'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

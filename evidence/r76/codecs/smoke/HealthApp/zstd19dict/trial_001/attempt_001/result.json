@@ -1,0 +1,110 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T02:48:12.593779+00:00",
+  "dataset": "HealthApp",
+  "codec": "zstd19dict",
+  "trial": 1,
+  "workers": 2,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+    "bytes": 23529930,
+    "mtime_ns": 1789369303348633000,
+    "device": 1048818,
+    "inode": 199002808556006449
+  },
+  "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+  "raw_bytes": 23529930,
+  "records": 253395,
+  "codec_spec": {
+    "exe": "zstd",
+    "encode": [
+      "-19",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "decode": [
+      "-d",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "suffix": ".zst",
+    "mode": "block0-trained-dictionary-counted-once-per-file",
+    "train": [
+      "--train",
+      "-T1"
+    ],
+    "sample_records": 1000,
+    "dictionary_file": "dictionary.zdict",
+    "dictionary_size": "zstd-default(--maxdict unset)",
+    "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+    "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+    "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/zstd19dict/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.zst",
+      "archive_bytes": 567555,
+      "block_encode_seconds": 3.179074987769127,
+      "raw_bytes": 9343767,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68",
+      "archive_sha256": "521bb48040a08609d82d4fd3977342b65d7e7c7cc32e1f3631b8bca007775395",
+      "decoded_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68"
+    },
+    {
+      "index": 1,
+      "archive": "archives/block_000001.zst",
+      "archive_bytes": 565727,
+      "block_encode_seconds": 3.1234436631202698,
+      "raw_bytes": 9260166,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd",
+      "archive_sha256": "4a5189dd8d4ad3e6c7d0a08c007229699f9a8a2dcbc4e14bbd9eca24606cedec",
+      "decoded_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd"
+    },
+    {
+      "index": 2,
+      "archive": "archives/block_000002.zst",
+      "archive_bytes": 307743,
+      "block_encode_seconds": 1.739922970533371,
+      "raw_bytes": 4925997,
+      "lf_count": 53395,
+      "records": 53395,
+      "ends_with_lf": true,
+      "raw_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1",
+      "archive_sha256": "0e06f38c818745dcd66b12387ddd4d86c6de8b6102b6505f4307a59f5e6006fa",
+      "decoded_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1"
+    }
+  ],
+  "encode_seconds": 6.218269065022469,
+  "block_archive_bytes": 1441025,
+  "archive_bytes": 1553665,
+  "samples": 100,
+  "sample_bytes": 9343767,
+  "dictionary_train_seconds": 0.9266182631254196,
+  "dictionary_archive": "archives/dictionary.zdict",
+  "dictionary_bytes": 112640,
+  "dictionary_sha256": "3b150fa94787ea878efc4289e84b868dc8d7ae66e1e70519c8ed4a6f03526c70",
+  "archive_components": "block archives + one dictionary file (counted once per file)",
+  "decode_seconds": 0.3458128124475479,
+  "restored_settle_seconds": 2.0027914941310883,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+  "audit_seconds": 0.10034309327602386,
+  "compression_ratio": 15.14478990001062,
+  "encode_MB_per_s": 3.783999977156823,
+  "decode_MB_per_s": 68.04238927257494,
+  "finished_at": "2026-09-29T02:48:21.285996+00:00"
+}

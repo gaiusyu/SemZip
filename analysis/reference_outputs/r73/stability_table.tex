@@ -1,0 +1,25 @@
+\begin{table}[t]\centering\small
+\caption{Archive size of each single synthesis relative to the selected deployment (100 = cost-guided selection; lower is better). Multi-block files use the fixed held-out block sample; $\dagger$ one-block files use block 0 (in-sample). \emph{c0} is the greedy synthesis deployed as SemZip-1; c1--c4 are temperature-0.7 samples. Single: verified programs as synthesized; gated: after the per-synthesis quality gate.}
+\label{tab:stability}
+\begin{tabular}{lrrrr}
+\toprule
+Dataset & c0 single & c0 gated & single range (c0--c4) & gated range \\
+\midrule
+Linux$\dagger$ & 104.2 & 102.9 & 100.0--104.6 & 100.0--104.5 \\
+Proxifier$\dagger$ & 104.5 & 104.5 & 104.5--121.0 & 103.9--120.4 \\
+Apache$\dagger$ & 102.3 & 102.1 & 100.4--102.3 & 100.1--102.1 \\
+Zookeeper$\dagger$ & 105.8 & 103.1 & 105.8--164.3 & 103.1--119.8 \\
+Mac & 105.5 & 100.0 & 102.0--115.7 & 99.3--100.6 \\
+HealthApp & 154.2 & 100.0 & 151.1--214.1 & 100.0--199.4 \\
+HPC & 147.6 & 100.1 & 100.8--149.9 & 100.0--102.3 \\
+Hadoop & 100.3 & 100.5 & 100.3--121.4 & 100.5--120.9 \\
+OpenStack & 98.4 & 98.4 & 97.1--104.7 & 98.4--104.6 \\
+OpenSSH & 102.2 & 100.1 & 101.5--108.3 & 100.1--108.3 \\
+Android & 100.0 & 100.0 & 100.0--104.8 & 100.0--104.8 \\
+BGL & 133.4 & 133.4 & 119.8--137.6 & 119.4--137.6 \\
+HDFS & 114.1 & 114.1 & 100.0--120.4 & 100.0--120.4 \\
+Spark & 110.3 & 100.4 & 102.4--110.3 & 100.4--102.9 \\
+Windows & 117.5 & 114.8 & 105.8--129.9 & 102.2--124.9 \\
+Thunderbird & 100.2 & 100.2 & 100.2--111.3 & 100.0--100.3 \\
+\bottomrule
+\end{tabular}\end{table}

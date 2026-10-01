@@ -1,0 +1,157 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure with a timestamp, log level, and component identifier, which should be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "date_and_time_as_epoch_microseconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2}),(\\d{3})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Parse date and time into epoch microseconds and reconstruct the exact original format.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day, sp1, hour, minute, second, millis = groups\n    dt = datetime.strptime(f\"{year}-{month}-{day} {hour}:{minute}:{second}.{millis}\", \"%Y-%m-%d %H:%M:%S.%f\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d') + (' ' * sp1_len) + dt.strftime('%H:%M:%S,%f')[:-3]"
+        }
+      },
+      {
+        "tag": "log_level",
+        "meaning": "log_level_indicator",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "(Info|Error|Warning)( +)CBS",
+        "replacement": "{placeholder}{group2}CBS",
+        "program": {
+          "intent": "Extract the log level as a common variable.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': [len(groups[1])]}\n\ndef inverse(record):\n    log_level = record['stored'][0]\n    sp1_len = record['layout'][0]\n    return log_level + (' ' * sp1_len)"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log timestamp",
+      "reason": "The date and time fields together form a single semantic timestamp value."
+    },
+    {
+      "slot": "S2",
+      "action": "STREAM_RAW",
+      "meaning": "log level",
+      "reason": "The log level is a stable, recurring field with a small set of possible values."
+    },
+    {
+      "slot": "S4",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "log message type",
+      "reason": "This field is a stable literal structure that does not vary across examples."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "component label",
+      "reason": "This field is a stable literal structure that does not vary across examples."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "component_identifier",
+      "reason": "The component identifier is a high-entropy string with a stable structure and should be extracted as a raw stream."
+    },
+    {
+      "slot": "S7",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "elevate label",
+      "reason": "This field is a stable literal structure that does not vary across examples."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "elevate_value",
+      "reason": "The elevate value is a numeric field with a stable semantic role and is likely to form a compressible numeric stream."
+    },
+    {
+      "slot": "S9",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "applicable label",
+      "reason": "This field is a stable literal structure that does not vary across examples."
+    },
+    {
+      "slot": "S10",
+      "action": "UINT_DELTA",
+      "meaning": "applicable_value",
+      "reason": "The applicable value is a numeric field with a stable semantic role and is likely to form a compressible numeric stream."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "component_identifier",
+      "meaning": "component_identifier_with_architecture_and_version",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "Component:( +)([a-zA-Z0-9._-]+_[a-zA-Z0-9._-]+_[a-zA-Z0-9._-]+_[a-zA-Z0-9._-]+_[a-zA-Z0-9._-]+),",
+      "replacement": "Component:{group1}{placeholder},",
+      "program": {
+        "intent": "Extract the component identifier as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "elevate_value",
+      "meaning": "elevate_numeric_value",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "elevate:( +)(\\d+),",
+      "replacement": "elevate:{group1}{placeholder},",
+      "program": {
+        "intent": "Extract the elevate numeric value.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': [len(groups[0])]}\n\ndef inverse(record):\n    elevate_value = record['stored'][0]\n    sp1_len = record['layout'][0]\n    return 'elevate:' + (' ' * sp1_len) + str(elevate_value) + ','"
+      }
+    },
+    {
+      "tag": "applicable_value",
+      "meaning": "applicable_boolean_value",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "applicable\\(true/false\\):( +)(\\d+)",
+      "replacement": "applicable(true/false):{group1}{placeholder}",
+      "program": {
+        "intent": "Extract the applicable boolean value as a numeric field.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': [len(groups[0])]}\n\ndef inverse(record):\n    applicable_value = record['stored'][0]\n    sp1_len = record['layout'][0]\n    return 'applicable(true/false):' + (' ' * sp1_len) + str(applicable_value)"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

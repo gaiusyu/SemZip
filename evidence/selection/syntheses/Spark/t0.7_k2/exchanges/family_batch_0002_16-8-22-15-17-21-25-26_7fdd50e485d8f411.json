@@ -1,0 +1,747 @@
+{
+  "families": [
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "16/04/07",
+              "10:58:59"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_counts",
+            "tokens": [
+              "13",
+              "13"
+            ],
+            "reason": "numeric values represent counts of blocks",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix before variable content"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "date and time compose the primary timestamp"
+        },
+        {
+          "slot": "S5 and S10",
+          "action": "STREAM_RAW",
+          "meaning": "block counts",
+          "reason": "block counts are numeric values significant to the log"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_counts"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp composed of date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "composed complete timestamp preferred over raw storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO storage.ShuffleBlockFetcherIterator: Getting {group2} non-empty blocks out of {group3} blocks",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups[0], groups[1]\n    dt = datetime.strptime(f'{date} {time}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_counts",
+          "meaning": "number of non-empty blocks and total blocks",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "block counts",
+            "context_source": null,
+            "why_not_merge_raw": "counts are semantically similar"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Getting (\\d+) non-empty blocks out of (\\d+) blocks",
+          "replacement": "Getting {placeholder} blocks out of {group2}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    non_empty, total = groups[0], groups[1]\n    return {'stored': [non_empty, total], 'layout': []}\n\ndef inverse(record):\n    non_empty, total = record['stored']\n    return f'{non_empty} non-empty blocks out of {total} blocks'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "15/09/01",
+              "18:16:43"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "broadcast_variable",
+            "tokens": [
+              "1",
+              "422"
+            ],
+            "reason": "numeric values represent variable ID and time in ms",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix before variable content"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "date and time compose the primary timestamp"
+        },
+        {
+          "slot": "S7 and S9",
+          "action": "STREAM_RAW",
+          "meaning": "broadcast variable ID and time",
+          "reason": "variable ID and time are numeric values significant to the log"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "broadcast_variable"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp composed of date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "composed complete timestamp preferred over raw storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO broadcast.TorrentBroadcast: Reading broadcast variable {group2} took {group3} ms",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups[0], groups[1]\n    dt = datetime.strptime(f'{date} {time}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "broadcast_variable",
+          "meaning": "broadcast variable ID and time taken",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "variable ID and time",
+            "context_source": null,
+            "why_not_merge_raw": "counts are semantically similar"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Reading broadcast variable (\\d+) took (\\d+) ms",
+          "replacement": "Reading broadcast variable {placeholder} took {group2} ms",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    variable_id, time = groups[0], groups[1]\n    return {'stored': [variable_id, time], 'layout': []}\n\ndef inverse(record):\n    variable_id, time = record['stored']\n    return f'broadcast variable {variable_id} took {time} ms'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 22,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "16/04/07",
+              "10:54:15"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix before variable content"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "date and time compose the primary timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp composed of date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "composed complete timestamp preferred over raw storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO output.FileOutputCommitter: Saved output of task {group2} to {group3}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups[0], groups[1]\n    dt = datetime.strptime(f'{date} {time}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "16/04/07",
+              "10:58:59"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix before variable content"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "date and time compose the primary timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp composed of date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "composed complete timestamp preferred over raw storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO storage.ShuffleBlockFetcherIterator: Started {group2} remote fetches in {group3} ms",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups[0], groups[1]\n    dt = datetime.strptime(f'{date} {time}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "16/04/07",
+              "10:58:58"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix before variable content"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "date and time compose the primary timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp composed of date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "composed complete timestamp preferred over raw storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO spark.MapOutputTrackerWorker: Don't have map outputs for shuffle {group2}, fetching them",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups[0], groups[1]\n    dt = datetime.strptime(f'{date} {time}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 21,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "16/04/07",
+              "11:02:23"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix before variable content"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "date and time compose the primary timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp composed of date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "composed complete timestamp preferred over raw storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO spark.CacheManager: Partition {group2} not found, computing it",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups[0], groups[1]\n    dt = datetime.strptime(f'{date} {time}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "16/04/07",
+              "10:46:41"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix before variable content"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "date and time compose the primary timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp composed of date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "composed complete timestamp preferred over raw storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO cluster.YarnClusterScheduler: Adding task set {group2} with {group3} tasks",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups[0], groups[1]\n    dt = datetime.strptime(f'{date} {time}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 26,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "16/04/07",
+              "10:47:15"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix before variable content"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "date and time compose the primary timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp composed of date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "composed complete timestamp preferred over raw storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO cluster.YarnClusterScheduler: Removed TaskSet {group2}, whose tasks have all completed, from pool",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups[0], groups[1]\n    dt = datetime.strptime(f'{date} {time}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "16/04/07",
+              "10:47:15"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix before variable content"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "date and time compose the primary timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp composed of date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "composed complete timestamp preferred over raw storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO spark.MapOutputTrackerMasterEndpoint: Asked to send map output locations for shuffle {group2} to {group3}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups[0], groups[1]\n    dt = datetime.strptime(f'{date} {time}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 18,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "16/04/07",
+              "10:58:58"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "common prefix before variable content"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "date and time compose the primary timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp composed of date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "composed complete timestamp preferred over raw storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO spark.MapOutputTrackerWorker: Doing the fetch; tracker endpoint = {group2}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups[0], groups[1]\n    dt = datetime.strptime(f'{date} {time}', '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp / 1000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

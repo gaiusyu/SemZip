@@ -1,0 +1,211 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure with stable fields and changing fields that should be extracted into side streams.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "log_file_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})-(\\d{2})-(\\d{2})_(\\d{2}):(\\d{2}):(\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Extract and store the log file timestamp as epoch microseconds.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day, hour, minute, second = groups\n    text = f\"{year}-{month}-{day} {hour}:{minute}:{second}\"\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d_%H:%M:%S')"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log_file_timestamp",
+      "reason": "The log file timestamp is a composed field that can be stored as epoch microseconds for efficient compression and exact reconstruction."
+    },
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log_entry_timestamp",
+      "reason": "The log entry timestamp is a composed field that can be stored as epoch microseconds for efficient compression and exact reconstruction."
+    },
+    {
+      "slot": "S3",
+      "action": "UINT_DELTA",
+      "meaning": "process_id",
+      "reason": "The process ID is a stable numeric value that can be efficiently compressed using delta coding."
+    },
+    {
+      "slot": "S5",
+      "action": "STREAM_RAW",
+      "meaning": "component_name",
+      "reason": "The component name is a stable string with separators and should be stored as a raw stream for exact reconstruction."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "request_id",
+      "reason": "The request ID is a structured identifier with separators and should be stored as a raw stream for exact reconstruction."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "user_id",
+      "reason": "The user ID is a structured identifier with separators and should be stored as a raw stream for exact reconstruction."
+    },
+    {
+      "slot": "S8",
+      "action": "STREAM_RAW",
+      "meaning": "project_id",
+      "reason": "The project ID is a structured identifier with separators and should be stored as a raw stream for exact reconstruction."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "client_ip",
+      "reason": "The client IP is a structured identifier with separators and should be stored as a raw stream for exact reconstruction."
+    },
+    {
+      "slot": "S14",
+      "action": "STREAM_RAW",
+      "meaning": "request_path",
+      "reason": "The request path is a structured identifier with separators and should be stored as a raw stream for exact reconstruction."
+    },
+    {
+      "slot": "S16+S17",
+      "action": "STREAM_RAW",
+      "meaning": "http_status",
+      "reason": "The HTTP status is a stable numeric value with a literal anchor and should be stored as a raw stream for exact reconstruction."
+    },
+    {
+      "slot": "S18+S19",
+      "action": "UINT_DELTA",
+      "meaning": "response_length",
+      "reason": "The response length is a stable numeric value with a literal anchor and can be efficiently compressed using delta coding."
+    },
+    {
+      "slot": "S20+S21",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "response_time",
+      "reason": "The response time is a numeric value with a fractional part and can be stored as an integer for efficient compression and exact reconstruction."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "log_entry_timestamp",
+      "meaning": "log_entry_timestamp_as_epoch_microseconds",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{3})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract and store the log entry timestamp as epoch microseconds.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    year, month, day, sp1, hour, minute, second, millis = groups\n    text = f\"{year}-{month}-{day} {hour}:{minute}:{second}.{millis}\"\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d') + (' ' * sp1_len) + dt.strftime('%H:%M:%S.%f')[:-3]"
+      }
+    },
+    {
+      "tag": "response_time",
+      "meaning": "response_time_as_microseconds",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "time( +)(\\d+)\\.(\\d+)",
+      "replacement": "time{group1}{placeholder}",
+      "program": {
+        "intent": "Extract and store the response time as microseconds.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, whole, frac = groups\n    return {'stored': [int(whole) * 1000000 + int(frac.ljust(6, '0'))], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    seconds = micros // 1000000\n    microseconds = micros % 1000000\n    return 'time' + (' ' * sp1_len) + str(seconds) + '.' + str(microseconds).zfill(6)"
+      }
+    },
+    {
+      "tag": "response_length",
+      "meaning": "response_length_in_bytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "len( +)(\\d+)",
+      "replacement": "len{group1}{placeholder}",
+      "program": {
+        "intent": "Extract and store the response length as an integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, value = groups\n    return {'stored': [int(value)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    return 'len' + (' ' * sp1_len) + str(value)"
+      }
+    },
+    {
+      "tag": "http_status",
+      "meaning": "http_status_code",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "status( +)(\\d+)",
+      "replacement": "status{group1}{placeholder}",
+      "program": {
+        "intent": "Extract and store the HTTP status code as an integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, value = groups\n    return {'stored': [int(value)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    return 'status' + (' ' * sp1_len) + str(value)"
+      }
+    },
+    {
+      "tag": "client_ip",
+      "meaning": "client_ipv4_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract and store the client IPv4 address as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "request_path",
+      "meaning": "http_request_path",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\/v2\\/[^ ]+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract and store the HTTP request path as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

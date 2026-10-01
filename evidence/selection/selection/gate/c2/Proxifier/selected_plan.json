@@ -1,0 +1,196 @@
+{
+ "dataset": "Proxifier",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "HP",
+   "PT",
+   "BS",
+   "BR"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "close",
+     "bytes",
+     "sent",
+     "bytes",
+     "received",
+     "lifetime"
+    ],
+    "tags": [
+     "B"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "B": "<B>",
+  "BR": "<BR>",
+  "BS": "<BS>",
+  "HP": "<HP>",
+  "PT": "<PT>",
+  "RV0": "<RV0>"
+ },
+ "residual_schema_plan": {
+  "passes": [
+   {
+    "alpha_contexts": [],
+    "groups": [
+     {
+      "group_key": [
+       "context",
+       "proxy",
+       "A.A.A.A.A:D+",
+       "https"
+      ],
+      "tag_base": "RV0"
+     }
+    ],
+    "mode": "context"
+   }
+  ]
+ },
+ "spec_count": 6,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "\\[([0-9]{2})\\.([0-9]{2})( +)([0-9]{2}):([0-9]{2}):([0-9]{2})\\]",
+   "program": {
+    "code": "def forward(groups):\n    month, day, sp1, hour, minute, second = groups\n    packed = (int(month) * 1000000) + (int(day) * 10000) + (int(hour) * 100) + int(minute)\n    return {'stored': [packed], 'layout': [len(sp1), int(second)]}\n\ndef inverse(record):\n    packed = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = int(layout[0])\n    second = int(layout[1])\n    month = packed // 1000000\n    day = (packed // 10000) % 100\n    hour = (packed // 100) % 100\n    minute = packed % 100\n    return str(month).zfill(2) + '.' + str(day).zfill(2) + (' ' * sp1_len) + str(hour).zfill(2) + ':' + str(minute).zfill(2) + ':' + str(second).zfill(2)",
+    "group_regex": "^(?:\\[([0-9]{2})\\.([0-9]{2})( +)([0-9]{2}):([0-9]{2}):([0-9]{2})\\])$",
+    "intent": "Pack date and time into a single monotonic integer.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "header_timestamp",
+   "replacement": "[{placeholder}]",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "hostport:auto",
+   "store_group": 0,
+   "tag": "HP",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_atomic",
+   "pattern": "(-)( +)((?:[\\w.-]+):(\\d+))",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[2]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "group_regex": "^(?:(-)( +)((?:[\\w.-]+):(\\d+)))$",
+    "intent": "Capture the destination host and port as an exact string.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "header_endpoint",
+   "replacement": "{group1}{group2}{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "port:auto",
+   "store_group": 0,
+   "tag": "PT",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(\\d+)( +)bytes(?:(( +)\\((\\d+)(?:\\.(\\d+))?( +)(KB|MB|GB)\\)))?( +)sent",
+   "program": {
+    "code": "def forward(groups):\n    byte_text, sp1, display_span, sp2, whole, frac, sp3, unit, sp4 = groups\n    has_display = 1 if display_span else 0\n    sp2_len = 0\n    frac_width = 0\n    sp3_len = 0\n    unit_code = 0\n    if display_span:\n        sp2_len = len(sp2)\n        frac_width = len(frac or '')\n        sp3_len = len(sp3)\n        unit_code = {'KB': 1, 'MB': 2, 'GB': 3}.get(unit, 0)\n    layout = [len(sp1), has_display, len(sp4), sp2_len, frac_width, sp3_len, unit_code]\n    return {'stored': [int(byte_text)], 'layout': layout}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = int(layout[0])\n    has_display = int(layout[1])\n    sp4_len = int(layout[2])\n    display = ''\n    if has_display:\n        unit_names = {1: 'KB', 2: 'MB', 3: 'GB'}\n        sp2_len = int(layout[3])\n        frac_width = int(layout[4])\n        sp3_len = int(layout[5])\n        unit_code = int(layout[6])\n        divisor = 1024 if unit_code == 1 else (1048576 if unit_code == 2 else 1073741824)\n        scale = 10 ** frac_width\n        shown = (v * scale) // divisor\n        whole = shown // scale\n        frac_value = shown % scale\n        frac = ('.' + str(frac_value).zfill(frac_width)) if frac_width else ''\n        display = (' ' * sp2_len) + '(' + str(whole) + frac + (' ' * sp3_len) + unit_names[unit_code] + ')'\n    return str(v) + (' ' * sp1_len) + 'bytes' + display + (' ' * sp4_len) + 'sent'",
+    "group_regex": "^(?:(\\d+)( +)bytes(?:(( +)\\((\\d+)(?:\\.(\\d+))?( +)(KB|MB|GB)\\)))?( +)sent)$",
+    "intent": "Capture the number of bytes sent, optionally with a formatted display.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "bytes_sent",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "bytes_sent:auto",
+   "store_group": 0,
+   "tag": "BS",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(\\d+)( +)bytes(?:(( +)\\((\\d+)(?:\\.(\\d+))?( +)(KB|MB|GB)\\)))?( +)received",
+   "program": {
+    "code": "def forward(groups):\n    byte_text, sp1, display_span, sp2, whole, frac, sp3, unit, sp4 = groups\n    has_display = 1 if display_span else 0\n    sp2_len = 0\n    frac_width = 0\n    sp3_len = 0\n    unit_code = 0\n    if display_span:\n        sp2_len = len(sp2)\n        frac_width = len(frac or '')\n        sp3_len = len(sp3)\n        unit_code = {'KB': 1, 'MB': 2, 'GB': 3}.get(unit, 0)\n    layout = [len(sp1), has_display, len(sp4), sp2_len, frac_width, sp3_len, unit_code]\n    return {'stored': [int(byte_text)], 'layout': layout}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = int(layout[0])\n    has_display = int(layout[1])\n    sp4_len = int(layout[2])\n    display = ''\n    if has_display:\n        unit_names = {1: 'KB', 2: 'MB', 3: 'GB'}\n        sp2_len = int(layout[3])\n        frac_width = int(layout[4])\n        sp3_len = int(layout[5])\n        unit_code = int(layout[6])\n        divisor = 1024 if unit_code == 1 else (1048576 if unit_code == 2 else 1073741824)\n        scale = 10 ** frac_width\n        shown = (v * scale) // divisor\n        whole = shown // scale\n        frac_value = shown % scale\n        frac = ('.' + str(frac_value).zfill(frac_width)) if frac_width else ''\n        display = (' ' * sp2_len) + '(' + str(whole) + frac + (' ' * sp3_len) + unit_names[unit_code] + ')'\n    return str(v) + (' ' * sp1_len) + 'bytes' + display + (' ' * sp4_len) + 'received'",
+    "group_regex": "^(?:(\\d+)( +)bytes(?:(( +)\\((\\d+)(?:\\.(\\d+))?( +)(KB|MB|GB)\\)))?( +)received)$",
+    "intent": "Capture the number of bytes received, optionally with a formatted display.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "bytes_received",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "bytes_received:auto",
+   "store_group": 0,
+   "tag": "BR",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "(\\w+\\.exe)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "intent": "Capture the application or process name as an exact string.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "header_component",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "B",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "",
+   "pattern": "residual-variable:[\"context\", \"proxy\", \"A.A.A.A.A:D+\", \"https\"]",
+   "program": {},
+   "proposal_tag": "",
+   "replacement": "{placeholder}",
+   "semantic_class": "",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "RV0",
+   "value_type": ""
+  }
+ ],
+ "version": 1
+}

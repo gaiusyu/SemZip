@@ -1,0 +1,29 @@
+\begin{table*}[t]\centering\small
+\caption{Complete original-file compression ratios (raw / all archive bytes). SemZip: frozen cost-guided deployment trained on block 0; bold: best of frozen SemZip and external methods (not SemZip+Evo). SemZip+Evo adds optional online evolution (RQ4): each block stores the smallest payload among published programs and the empty program; new programs are published only on Spark and Thunderbird. SemZip-1: single-synthesis ablation. $\dagger$: one block, in-sample. *Disclosed LogLite adaptation.}
+\label{tab:external-ratios}
+\setlength{\tabcolsep}{3.4pt}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Dataset & SemZip & SemZip+Evo & SemZip-1 & DeLog & LogLite-BL* & gzip6 & XZ6 & Zstd3 \\
+\midrule
+Linux$\dagger$ & \textbf{40.09} & 40.09 & 38.47 & 27.60 & 18.94 & 10.13 & 19.97 & 12.24 \\
+Proxifier$\dagger$ & \textbf{36.13} & 36.13 & 34.56 & 30.19 & 16.73 & 14.76 & 21.08 & 13.59 \\
+Apache$\dagger$ & \textbf{73.74} & 73.74 & 72.05 & 59.77 & 28.86 & 19.54 & 28.38 & 18.85 \\
+Zookeeper$\dagger$ & \textbf{189.42} & 189.42 & 179.00 & 156.89 & 58.70 & 22.68 & 29.63 & 23.03 \\
+Mac & \textbf{54.13} & 54.13 & 49.03 & 44.22 & 24.81 & 11.32 & 23.86 & 16.95 \\
+HealthApp & \textbf{59.53} & 59.53 & 38.49 & 51.40 & 16.56 & 10.24 & 15.83 & 9.92 \\
+HPC & \textbf{45.79} & 46.08 & 31.62 & 44.70 & 20.13 & 10.20 & 19.81 & 9.79 \\
+Hadoop & \textbf{85.03} & 85.03 & 84.53 & 80.60 & 37.10 & 19.20 & 37.66 & 26.17 \\
+OpenStack & \textbf{25.24} & 25.24 & 25.10 & 21.70 & 16.40 & 11.39 & 15.65 & 12.14 \\
+OpenSSH & \textbf{117.78} & 117.78 & 115.34 & 107.76 & 33.77 & 15.97 & 21.65 & 14.32 \\
+Android & \textbf{34.55} & 34.55 & 34.54 & 29.29 & 16.87 & 7.48 & 19.37 & 12.56 \\
+BGL & \textbf{52.32} & 52.32 & 40.60 & 40.33 & 24.15 & 11.81 & 22.05 & 10.57 \\
+HDFS & \textbf{31.05} & 31.05 & 27.20 & 29.83 & 12.67 & 10.13 & 15.63 & 10.27 \\
+Spark & \textbf{62.35} & 63.29 & 56.20 & 59.05 & 37.02 & 16.03 & 23.07 & 15.24 \\
+Windows & \textbf{618.58} & 618.70 & 530.10 & 536.18 & 300.43 & 16.77 & 217.81 & 145.95 \\
+Thunderbird & 64.86 & 78.66 & 64.65 & \textbf{67.68} & 39.78 & 15.75 & 28.54 & 18.82 \\
+\midrule
+Arithmetic mean (16) & 99.41 & 100.36 & 88.84 & 86.70 & 43.93 & 13.96 & 35.00 & 23.15 \\
+Total raw / total archive & 99.52 & 114.61 & 95.72 & 99.95 & 56.97 & 15.84 & 42.89 & 28.09 \\
+\bottomrule
+\end{tabular}\end{table*}

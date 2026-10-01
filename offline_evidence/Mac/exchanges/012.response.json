@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"timestamp\",\n      \"meaning\": \"log timestamp\",\n      \"class\": \"class_1_composed_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"log_timestamp\",\n      \"context\": null,\n      \"source_separation\": {\n        \"decision\": \"merge_equivalent\",\n        \"stored_source\": \"timestamp\",\n        \"context_source\": null,\n        \"why_not_merge_raw\": \"timestamp is composed from multiple tokens\"\n      },\n      \"general\": true,\n      \"order_hint\": \"global_composed\",\n      \"regex\": \"^([A-Z][a-z]{2} +\\\\d{1,2} +\\\\d{2}:\\\\d{2}:\\\\d{2})\",\n      \"replacement\": \"{placeholder}\",\n      \"program\": {\n        \"op\": \"python_exec\",\n        \"code\": \"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.replace(year=1970).timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000).replace(year=1970)\\n    return dt.strftime('%b %e %H:%M:%S')\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 312,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1131,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1443
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "Hadoop",
+  "candidates": [
+    {
+      "cid": "c0",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c0/Hadoop/selected_plan.json",
+      "train_cost": 286442
+    },
+    {
+      "cid": "c3",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c3/Hadoop/selected_plan.json",
+      "train_cost": 307610
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c4/Hadoop/selected_plan.json",
+      "train_cost": 366222
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c2/Hadoop/selected_plan.json",
+      "train_cost": 380118
+    },
+    {
+      "cid": "c1",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c1/Hadoop/selected_plan.json",
+      "train_cost": 380150
+    }
+  ],
+  "start": "c0",
+  "start_train_bytes": 286442,
+  "start_cost_reproduced": true,
+  "pool_groups": 24,
+  "duplicate_groups_skipped": 5,
+  "selected_train_bytes": 284130,
+  "selected_tags": [
+    "TS0",
+    "PT",
+    "H",
+    "D",
+    "J",
+    "F",
+    "G",
+    "X4F",
+    "X3P",
+    "X4K"
+  ],
+  "selected_plan_sha256": "0417d5568b5303247528d1767edfd5a9f38965cc3a3e0f67257b9d9be92b2875",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 58,
+      "n_improving": 4,
+      "before": 286442,
+      "accepted": [
+        {
+          "move": "add:X4F",
+          "screen_cost": 285278,
+          "applied_cost": 285278
+        },
+        {
+          "move": "add:X3P",
+          "screen_cost": 285510,
+          "applied_cost": 284462
+        },
+        {
+          "move": "add:X4K",
+          "screen_cost": 286390,
+          "applied_cost": 284130
+        }
+      ],
+      "after": 284130
+    },
+    {
+      "round": 1,
+      "n_moves": 58,
+      "n_improving": 0,
+      "before": 284130,
+      "accepted": [],
+      "after": 284130
+    },
+    {
+      "stage": "eliminate",
+      "tag": "G",
+      "before": 284130,
+      "after": 284130,
+      "accepted": false
+    }
+  ],
+  "evaluations": 118,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "8d13beb9b0ff65a4dd7136f18dd2713f58e0c1ff408e1b9f811f842fd0f72d19"
+}

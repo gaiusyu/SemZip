@@ -1,0 +1,127 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a consistent structure with a repeated prefix/header pattern, which includes a Unix timestamp, date, hostname, time, and user details.",
+    "functions": [
+      {
+        "tag": "log_header_timestamp",
+        "meaning": "unix_timestamp_as_int",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "-( +)(\\d{10})",
+        "replacement": "-{group1}{placeholder}",
+        "program": {
+          "intent": "Extract the Unix timestamp as an integer for compact storage and exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0]).zfill(10)"
+        }
+      },
+      {
+        "tag": "log_header_date_time",
+        "meaning": "date_and_time_as_compact_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})\\.(\\d{2})\\.(\\d{2})( +)([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{group1}{placeholder}",
+        "program": {
+          "intent": "Combine date and time tokens into one packed numeric value for compact storage, including spacing details for exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day, sp1, month_str, sp2, day_num, sp3, time = groups\n    text = f\"{year}.{month}.{day} {month_str} {day_num.zfill(2)} {time}\"\n    dt = datetime.strptime(text, \"%Y.%m.%d %b %d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp())], 'layout': [len(sp1), len(sp2), len(sp3)]}\n\ndef inverse(record):\n    stored = int(record['stored'][0])\n    layout = record.get('layout', [0, 0, 0])\n    dt = datetime.fromtimestamp(stored)\n    sp1, sp2, sp3 = layout\n    return f\"{dt.year}.{str(dt.month).zfill(2)}.{str(dt.day).zfill(2)}\" + (' ' * sp1) + dt.strftime('%b') + (' ' * sp2) + str(dt.day).zfill(2) + (' ' * sp3) + dt.strftime('%H:%M:%S')"
+        }
+      },
+      {
+        "tag": "log_header_user",
+        "meaning": "user_and_host_combination",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "local@(\\S+)",
+        "replacement": "local@{placeholder}",
+        "program": {
+          "intent": "Extract user and host combination for exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1",
+      "action": "UINT_DELTA",
+      "meaning": "Unix timestamp in seconds since epoch",
+      "reason": "Stable numeric timestamp for compact delta encoding."
+    },
+    {
+      "slot": "S2+S4+S5+S6",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "Date and time representation combining year, month, day, and time.",
+      "reason": "Fields together describe one semantic timestamp; stored as a single composed integer."
+    },
+    {
+      "slot": "S3",
+      "action": "STREAM_RAW",
+      "meaning": "Hostname",
+      "reason": "Hostname is a stable, low-entropy string with predictable patterns."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "User and host combination",
+      "reason": "Variable user@host combination is bounded and has predictable structure."
+    },
+    {
+      "slot": "S8",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Path to gmetad with PID",
+      "reason": "Fixed path structure with low variability and infrequent changes; more efficient to keep as part of the template."
+    },
+    {
+      "slot": "S9",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "RRD_update literal",
+      "reason": "Appears to be consistent and part of the template."
+    },
+    {
+      "slot": "S10+S12",
+      "action": "STREAM_RAW",
+      "meaning": "RRD file path and filename",
+      "reason": "Variable file path with high entropy and clear structure; best stored as one raw stream."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "rrd_file_path",
+      "meaning": "rrd_file_path_and_name",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "\\(/var/lib/ganglia/rrds/__SummaryInfo__/(\\S+\\.rrd)\\):",
+      "replacement": "({placeholder}):",
+      "program": {
+        "intent": "Extract the RRD file path and name with exact reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

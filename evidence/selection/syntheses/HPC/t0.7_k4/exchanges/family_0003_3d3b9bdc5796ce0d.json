@@ -1,0 +1,199 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header ('clusterfilesystem clusterfilesystem.not_served ...') with changing fields that can be extracted into side streams for better compression.",
+    "functions": [
+      {
+        "tag": "timestamp_epoch",
+        "meaning": "epoch_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{10})( +)(\\d+)",
+        "replacement": "{placeholder}{group2}{group3}",
+        "program": {
+          "intent": "Extracts a 10-digit epoch timestamp and stores it as microseconds, with layout details for spacing.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    epoch, sp1, task_id = groups\n    return {'stored': [int(epoch) * 1000000], 'layout': [len(sp1), int(task_id)]}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    sp1_len = record['layout'][0]\n    task_id = record['layout'][1]\n    epoch = str(micros // 1000000)\n    return epoch + (' ' * sp1_len) + str(task_id)"
+        }
+      },
+      {
+        "tag": "node_id",
+        "meaning": "node_identifier",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(node-[A-Z]\\d+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Handles node identifiers like 'node-D4', storing them as a raw stream.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "domain_name",
+        "meaning": "domain_name_field",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "domain( +)([A-Za-z0-9_]+(?:_[A-Za-z0-9]+)*)",
+        "replacement": "domain{group1}{placeholder}",
+        "program": {
+          "intent": "Extracts the domain name (e.g., 'root13_domain') and stores it as a raw string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "node_name",
+        "meaning": "node_name_field",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "node( +)(node-[0-9]+)",
+        "replacement": "node{group1}{placeholder}",
+        "program": {
+          "intent": "Extracts the node name like 'node-140' and stores it as a raw string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "line identifier",
+      "reason": "This value appears to be a unique identifier for each line and does not benefit from compression into a side stream."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "source node identifier",
+      "reason": "Node identifiers like 'node-D4' are stable and useful to extract as a raw string."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "event type",
+      "reason": "This field is stable and does not vary between lines; better left in the main template."
+    },
+    {
+      "slot": "S4+S5",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "epoch timestamp and task id",
+      "reason": "The epoch timestamp and task ID form a composed numeric value with stable layout that can be compressed."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "component name",
+      "reason": "This field is stable and does not vary between lines; better left in the main template."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain name",
+      "reason": "Domain names like 'root13_domain' and 'cluster_var_backup' vary across lines and should be stored as raw strings for compression."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "node name",
+      "reason": "Node names like 'node-140' and 'node-32' vary across lines and should be stored as raw strings for compression."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "timestamp_epoch",
+      "meaning": "epoch_timestamp",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "(\\d{10})( +)(\\d+)",
+      "replacement": "{placeholder}{group2}{group3}",
+      "program": {
+        "intent": "Extracts a 10-digit epoch timestamp and stores it as microseconds, with layout details for spacing.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    epoch, sp1, task_id = groups\n    return {'stored': [int(epoch) * 1000000], 'layout': [len(sp1), int(task_id)]}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    sp1_len = record['layout'][0]\n    task_id = record['layout'][1]\n    epoch = str(micros // 1000000)\n    return epoch + (' ' * sp1_len) + str(task_id)"
+      }
+    },
+    {
+      "tag": "node_id",
+      "meaning": "node_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(node-[A-Z]\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Handles node identifiers like 'node-D4', storing them as a raw stream.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "domain_name",
+      "meaning": "domain_name_field",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "domain( +)([A-Za-z0-9_]+(?:_[A-Za-z0-9]+)*)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the domain name (e.g., 'root13_domain') and stores it as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "node_name",
+      "meaning": "node_name_field",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node( +)(node-[0-9]+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the node name like 'node-140' and stores it as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

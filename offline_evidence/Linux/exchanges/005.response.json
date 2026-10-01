@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"header_timestamp\",\n      \"meaning\": \"month_day_time_as_monotonic_integer\",\n      \"class\": \"class_1_composed_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"log_timestamp\",\n      \"context\": null,\n      \"regex\": \"([A-Z][a-z]{2})( +)(\\\\d{1,2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2})\",\n      \"replacement\": \"{placeholder}\",\n      \"program\": {\n        \"intent\": \"Pack month, day, and time into one monotonic integer and preserve spacing for exact reconstruction.\",\n        \"op\": \"python_exec\",\n        \"parameters\": {},\n        \"code\": \"def forward(groups):\\n    month, sp1, day, sp2, time = groups\\n    text = month + ' ' + day.zfill(2) + ' ' + time\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    monotonic = (dt.month * 1000000) + (dt.day * 10000) + (dt.hour * 100) + dt.minute * 100 + dt.second\\n    return {'stored': [monotonic], 'layout': [len(sp1), len(sp2), len(day)]}\\n\\ndef inverse(record):\\n    monotonic = int(record['stored'][0])\\n    layout = record.get('layout', [])\\n    sp1_len, sp2_len, day_width = layout\\n    month = datetime.strptime(str(monotonic // 1000000), '%m').strftime('%b')\\n    day = str((monotonic % 1000000) // 10000).zfill(day_width)\\n    hour = (monotonic % 10000) // 100\\n    minute = (monotonic % 100) // 1\\n    second = monotonic % 100\\n    time = f'{hour:02}:{minute:02}:{second:02}'\\n    return month + (' ' * sp1_len) + day + (' ' * sp2_len) + time\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 472,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1364,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1836
+  }
+}

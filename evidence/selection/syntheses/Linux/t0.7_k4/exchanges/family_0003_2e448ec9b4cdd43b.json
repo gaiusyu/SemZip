@@ -1,0 +1,47 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix of 'month day time combo', followed by component/thread-specific fields, which should be extracted into side streams for better compression.",
+    "functions": [
+      {
+        "tag": "component_thread_id",
+        "meaning": "component_name_with_thread_id",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "((?:[A-Za-z_]+)\\((?:[A-Za-z_]+)\\)\\[(\\d+)\\]:)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Store the component and thread ID as a raw string for exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ],
+    "slot_actions": [
+      {
+        "slot": "S1+S2",
+        "action": "COMPOSE_FIELDS_TO_INT",
+        "meaning": "Month+day+time as monotonic timestamp",
+        "reason": "The adjacent month, day, and time fields together form one timestamp value, making it suitable for a composed numeric stream."
+      },
+      {
+        "slot": "S4",
+        "action": "STREAM_RAW",
+        "meaning": "component_thread_id",
+        "reason": "The component and thread ID are embedded in a stable format '[component(thread_id)]:', which can be treated as a single raw context variable due to its structured separator format."
+      },
+      {
+        "slot": "S6",
+        "action": "KEEP_IN_MAIN",
+        "meaning": "operation_pass;",
+        "reason": "The 'pass;' field is stable and does not vary across examples. It is better kept in the main template as a literal constant."
+      }
+    ]
+  },
+  "_proposal_cache_mode": "api"
+}

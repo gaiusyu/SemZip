@@ -1,0 +1,163 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure with fields like timestamp, log level, and source component, which should be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "H0_timestamp",
+        "meaning": "log_header_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2}),(\\d+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Store timestamp as epoch microseconds preserving original layout.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day, sp1, hour, minute, second, millis = groups\n    dt_text = f\"{year}-{month}-{day} {hour}:{minute}:{second}.{millis}\"\n    dt = datetime.strptime(dt_text, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = int(layout[0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    timestamp = dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\n    date, time = timestamp.split(' ')\n    year, month, day = date.split('-')\n    hour, minute, second = time.split(':')\n    millis = second.split('.')[1]\n    second = second.split('.')[0]\n    return f\"{year}-{month}-{day}\" + (' ' * sp1_len) + f\"{hour}:{minute}:{second},{millis}\""
+        }
+      },
+      {
+        "tag": "H1_log_level",
+        "meaning": "log_header_info_level",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "Info( +)CBS",
+        "replacement": "{placeholder}CBS",
+        "program": {
+          "intent": "Store the log level as a raw string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "combined header timestamp",
+      "reason": "Timestamp spans adjacent fields (date and time) and can be compactly represented as epoch microseconds."
+    },
+    {
+      "slot": "S2+S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "log level and source component",
+      "reason": "Log level and component ('Info CBS') are static and part of the repeated header structure."
+    },
+    {
+      "slot": "S4+S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "application and action",
+      "reason": "These are stable and do not vary across examples; they are better left in the template."
+    },
+    {
+      "slot": "S6+S7",
+      "action": "STREAM_RAW",
+      "meaning": "component description and details",
+      "reason": "The component string is a high-entropy, varying value with a structured format and should be extracted as a raw string."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "version number in parentheses",
+      "reason": "The version number is numeric, consistently formatted, and varies across examples. It can be compressed effectively as an integer delta."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "elevation level",
+      "reason": "The elevation level is numeric and can be compressed effectively using integer delta encoding."
+    },
+    {
+      "slot": "S13+S14",
+      "action": "STREAM_RAW",
+      "meaning": "holder and version details",
+      "reason": "The holder and version string is structured and varies; it should be extracted as a raw string."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "component_details",
+      "meaning": "component_description_and_details",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "Component:( +)([a-zA-Z0-9\\._-]+)",
+      "replacement": "Component:{group1}{placeholder}",
+      "program": {
+        "intent": "Store the component description as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "version_number",
+      "meaning": "version_number_in_parentheses",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\((\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)\\),",
+      "replacement": "({placeholder}),",
+      "program": {
+        "intent": "Store version number as a single integer after packing all parts.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    major, minor, build, revision = map(int, groups)\n    packed_version = (major << 48) | (minor << 32) | (build << 16) | revision\n    return {'stored': [packed_version], 'layout': []}\n\ndef inverse(record):\n    packed_version = record['stored'][0]\n    major = (packed_version >> 48) & 0xFFFF\n    minor = (packed_version >> 32) & 0xFFFF\n    build = (packed_version >> 16) & 0xFFFF\n    revision = packed_version & 0xFFFF\n    return f\"{major}.{minor}.{build}.{revision}\""
+      }
+    },
+    {
+      "tag": "elevation_level",
+      "meaning": "elevation_level_number",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "elevation:(\\d+),",
+      "replacement": "elevation:{placeholder},",
+      "program": {
+        "intent": "Store the elevation level as a numeric integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "holder_details",
+      "meaning": "holder_and_version_details",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "holder:( +)([0-9]+(\\.[0-9]+)+)",
+      "replacement": "holder:{group1}{placeholder}",
+      "program": {
+        "intent": "Store the holder and version details as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

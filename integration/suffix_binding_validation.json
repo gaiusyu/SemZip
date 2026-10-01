@@ -1,0 +1,117 @@
+{
+  "inputs_unchanged": true,
+  "negative_checks": [
+    {
+      "case": "HPC_latent_suffix_plus123_and_recomputed_percent",
+      "reason": "paired: suffix payload differs from block ledger",
+      "rejected": true,
+      "validator": "integration"
+    },
+    {
+      "case": "HPC_latent_suffix_plus123_and_recomputed_percent",
+      "reason": "Suffix payload differs from block ledger",
+      "rejected": true,
+      "validator": "representation_generator"
+    },
+    {
+      "case": "HPC_surface_suffix_plus123_and_recomputed_percent",
+      "reason": "paired: suffix payload differs from block ledger",
+      "rejected": true,
+      "validator": "integration"
+    },
+    {
+      "case": "HPC_surface_suffix_plus123_and_recomputed_percent",
+      "reason": "Suffix payload differs from block ledger",
+      "rejected": true,
+      "validator": "representation_generator"
+    },
+    {
+      "case": "component_shift_preserving_complete_total",
+      "reason": "paired: component totals differ from block ledger",
+      "rejected": true,
+      "validator": "integration"
+    },
+    {
+      "case": "component_shift_preserving_complete_total",
+      "reason": "Component totals differ from block ledger",
+      "rejected": true,
+      "validator": "representation_generator"
+    },
+    {
+      "case": "R70_raw_suffix_plus123",
+      "reason": "paired: original full/suffix size differs from block ledger",
+      "rejected": true,
+      "validator": "integration"
+    },
+    {
+      "case": "R70_raw_suffix_plus123",
+      "reason": "Original suffix bytes differ from block ledger",
+      "rejected": true,
+      "validator": "representation_generator"
+    },
+    {
+      "case": "main_suffix_raw_bytes_plus1_and_recomputed_ratio",
+      "reason": "main suffix raw bytes differ from block ledger",
+      "rejected": true,
+      "validator": "integration"
+    },
+    {
+      "case": "main_suffix_archive_bytes_plus1_and_recomputed_ratio",
+      "reason": "main suffix archive differs from block payloads plus its manifest",
+      "rejected": true,
+      "validator": "integration"
+    },
+    {
+      "case": "main_suffix_manifest_bytes_plus1_and_recomputed_ratio",
+      "reason": "paired: main suffix manifest differs from canonical sequential reconstruction",
+      "rejected": true,
+      "validator": "integration"
+    },
+    {
+      "case": "real_pair_with_in_memory_failed_status",
+      "reason": "paired: unfinished/uncertified result",
+      "rejected": true,
+      "validator": "integration"
+    },
+    {
+      "case": "real_pair_with_in_memory_failed_status",
+      "reason": "Unfinished or uncertified representation row",
+      "rejected": true,
+      "validator": "representation_generator"
+    }
+  ],
+  "original_evidence_sha256": "0816e061f4c4686923e74a96a1601b6b6a80773686842de330501c4e715afbeb",
+  "real_paired_blocks": 29,
+  "real_partial_rejection": [
+    {
+      "reason": "snapshot: final COMPLETE export required; initial/in-progress snapshots rejected",
+      "rejected": true,
+      "validator": "integration"
+    }
+  ],
+  "real_passed_main_suffix_rows": 14,
+  "scope": "Existing real 29-block controls and real partial snapshot only; intentional malformed fields exist solely in memory as validator negative tests. No API/compression/fabricated complete matrix. Full terminal campaign integration remains untested.",
+  "snapshot_status": "IN_PROGRESS",
+  "source_and_input_sha256": {
+    "integration": "e519cae0b56cc81b12dc4d5503fdeed92be5a772fdb4943d2ce4f1fd22f65ba8",
+    "parity": "4056fdc290187c4684af037090661a25de41c137836522d17d7158a746cd4d26",
+    "representation": "524866d900afb1e2865ac4976e134316c2f975d0f2e0069c4306999677e5082b",
+    "representation_generator": "405226d26b283f7a2ff89c38aef04e02bf98c486e87be099e965844c2f34ca80",
+    "snapshot": "afdef3d032cd30e936a743f36dba46b595e0939eafb4312ec9aeb100b8c1dbd4"
+  },
+  "status": "PASS_BOUNDED_METADATA_VALIDATION",
+  "unchanged_generated_tex": {
+    "representation_components.tex": {
+      "sha256": "a34cbb0847dc1d549d6b242d9d0112cdc8dea073bba1edef349ba6085013b31c",
+      "unchanged_bytes": true
+    },
+    "representation_results_text.tex": {
+      "sha256": "a7cea4e942d8010e381cfed2151418c2962073861ba2d944ab699d0ef251f74c",
+      "unchanged_bytes": true
+    },
+    "representation_table.tex": {
+      "sha256": "b72ffd5302e984c7c2df2508aac916790a26d8e9f03e3a8f52a14b09f2e902ff",
+      "unchanged_bytes": true
+    }
+  }
+}

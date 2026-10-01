@@ -1,0 +1,296 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "16/04/07",
+              "10:46:42"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "105.0 B",
+              "0.1 KB"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "mesos-slave-25:49920",
+              "10.10.34.25:55299"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "broadcast_1_piece0",
+              "broadcast_6_piece0"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "semantic role if known",
+          "reason": "why this slot is extracted, composed, or kept"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp",
+          "size",
+          "free_space"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "host_port",
+          "broadcast_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "composed value is one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2})/(\\d{2})/(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_text = f\"20{groups[0]}-{groups[1]}-{groups[2]}T{groups[3]}:{groups[4]}:{groups[5]}\"\n    dt = datetime.strptime(dt_text, '%Y-%m-%dT%H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    ts = int(record['stored'][0])\n    dt = datetime.fromtimestamp(ts / 1000)\n    return f\"{dt.strftime('%y/%m/%d %H:%M:%S')}\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "host_port",
+          "meaning": "host and port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "host_port",
+            "context_source": null,
+            "why_not_merge_raw": "value is a single structured and meaningful entity"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\b([a-zA-Z0-9.-]+:\\d+)\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "hdfs://10.10.34.11:9000/pjhe/logs/sosp_29_withID.log:1342177280+134217728",
+              "Paths:/yxsu/dataset/ImageNet/ILSVRC2012_img_test/ILSVRC2012_test_00001334.JPEG:0+75678"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S6",
+          "action": "STREAM_RAW",
+          "meaning": "semantic role if known",
+          "reason": "why this slot is extracted, composed, or kept"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "input_split_path"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "input_split_path",
+          "meaning": "input file split path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "file_path_and_offsets",
+            "context_source": null,
+            "why_not_merge_raw": "value is a single structured and meaningful entity"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "split: (.*)",
+          "replacement": "split: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"split: {record['stored'][0]}\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "1097.0 B",
+              "1.1 KB"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "broadcast_1_piece0",
+              "broadcast_0"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S5",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "semantic role if known",
+          "reason": "why this slot is extracted, composed, or kept"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "estimated_size",
+          "free_memory"
+        ],
+        "class_3_common_variable": [
+          "block_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "estimated_size",
+          "meaning": "size of stored block",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "size",
+            "context_source": null,
+            "why_not_merge_raw": "different displays of the same underlying value can be merged into one canonical integer"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "estimated size ([0-9.]+) (B|KB|MB)",
+          "replacement": "estimated size {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    size = float(groups[0])\n    unit = groups[1]\n    multiplier = {'B': 1, 'KB': 1024, 'MB': 1024**2}[unit]\n    return {'stored': [int(size * multiplier)], 'layout': []}\n\ndef inverse(record):\n    size = int(record['stored'][0])\n    if size < 1024:\n        return f\"{size} B\"\n    elif size < 1024**2:\n        return f\"{size / 1024:.1f} KB\"\n    else:\n        return f\"{size / 1024**2:.1f} MB\""
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block_id",
+            "context_source": null,
+            "why_not_merge_raw": "value is a single structured and meaningful entity"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Block ([a-zA-Z0-9_]+)",
+          "replacement": "Block {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"Block {record['stored'][0]}\""
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,961 @@
+{
+  "families": [
+    {
+      "family_id": 21,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "2015-07-29",
+              "17:42:28,594"
+            ],
+            "reason": "Date and time tokens together form a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_file_path",
+            "tokens": [
+              "/var/lib/zookeeper/version-2/snapshot.0"
+            ],
+            "reason": "The file path contains explicit separators and structured values within the captured span",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a consistent format with a timestamp and INFO level"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "snapshot_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "file_path"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "snapshot_timestamp",
+          "meaning": "timestamp for snapshot",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens together explicitly represent one semantic timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_text, \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "file_path",
+          "meaning": "file path for snapshot",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "file path",
+            "context_source": null,
+            "why_not_merge_raw": "File path is explicitly captured as a single structured value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "to (/var/lib/zookeeper/version-2/snapshot\\.\\d+)",
+          "replacement": "to {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "2015-07-30",
+              "18:06:30,000"
+            ],
+            "reason": "Date and time tokens together form a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "session_id_variable",
+            "tokens": [
+              "0x34ede65503f0003",
+              "0x14ede63a5a70006"
+            ],
+            "reason": "Session ID contains structured values with fixed prefixes encoded in the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "timeout_with_units",
+            "tokens": [
+              "10000ms",
+              "20000ms"
+            ],
+            "reason": "Timeout value is a structured numeric with explicit units",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a consistent format with a timestamp and INFO level"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_ms"
+        ],
+        "class_2_formatted_numeric": [
+          "timeout_ms"
+        ],
+        "class_3_common_variable": [
+          "session_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_ms",
+          "meaning": "timestamp in milliseconds",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens together explicitly represent one semantic timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_text, \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "timeout_ms",
+          "meaning": "session timeout in milliseconds",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "numeric timeout",
+            "context_source": null,
+            "why_not_merge_raw": "Timeout value is semantically one numeric quantity in milliseconds with units"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "timeout of (\\d+)ms",
+          "replacement": "timeout of {placeholder}ms",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0]\n    return str(value)"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "session_id",
+          "meaning": "session identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "session ID",
+            "context_source": null,
+            "why_not_merge_raw": "Session ID is a structured value with a fixed prefix and format"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "session (0x[0-9a-fA-F]+)",
+          "replacement": "session {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "2015-07-29",
+              "19:52:04,487"
+            ],
+            "reason": "Date and time tokens together form a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_client_address",
+            "tokens": [
+              "/10.10.34.15:34816",
+              "/10.10.34.18:42772"
+            ],
+            "reason": "Client address contains explicit separators and is structured with IP and port",
+            "must_emit_function": true
+          },
+          {
+            "name": "session_id_variable",
+            "tokens": [
+              "0x14ed93111f20004",
+              "0x14ed93111f20005"
+            ],
+            "reason": "Session ID contains structured values with fixed prefixes encoded in the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a consistent format with a timestamp and INFO level"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_ms"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "client_address",
+          "session_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_ms",
+          "meaning": "timestamp in milliseconds",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens together explicitly represent one semantic timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_text, \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "client_address",
+          "meaning": "client IP and port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "client address",
+            "context_source": null,
+            "why_not_merge_raw": "Client address is a structured value with explicit separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "client (/[\\d.]+:\\d+)",
+          "replacement": "client {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "session_id",
+          "meaning": "session identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "session ID",
+            "context_source": null,
+            "why_not_merge_raw": "Session ID is a structured value with a fixed prefix and format"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "sessionid ([0x[0-9a-fA-F]+)",
+          "replacement": "sessionid {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "No unified header detected"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "2015-07-29",
+              "17:41:41,935"
+            ],
+            "reason": "Date and time tokens together form a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "notification_timeout_value",
+            "tokens": [
+              "400",
+              "800"
+            ],
+            "reason": "Structured numeric value with semantic meaning for timeouts",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a consistent format with a timestamp and INFO level"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_ms"
+        ],
+        "class_2_formatted_numeric": [
+          "notification_timeout"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_ms",
+          "meaning": "timestamp in milliseconds",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens together explicitly represent one semantic timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_text, \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "notification_timeout",
+          "meaning": "notification timeout duration",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "timeout value",
+            "context_source": null,
+            "why_not_merge_raw": "Timeout value is semantically one numeric quantity"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "Notification time out: (\\d+)",
+          "replacement": "Notification time out: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    return str(value)"
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 22,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "2015-07-29",
+              "19:53:01,214"
+            ],
+            "reason": "Date and time tokens together form a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "client_id_variable",
+            "tokens": [
+              "0x34ed9348509000b",
+              "0x34ed93485090007"
+            ],
+            "reason": "Client ID contains structured values with fixed prefixes encoded in the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a consistent format with a timestamp and INFO level"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_ms"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "client_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_ms",
+          "meaning": "timestamp in milliseconds",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens together explicitly represent one semantic timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_text, \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "client_id",
+          "meaning": "client identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "client ID",
+            "context_source": null,
+            "why_not_merge_raw": "Client ID is a structured value with a fixed prefix and format"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "client: (0x[0-9a-fA-F]+)",
+          "replacement": "client: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "2015-07-29",
+              "19:04:02,385"
+            ],
+            "reason": "Date and time tokens together form a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "connection_id_variable",
+            "tokens": [
+              "188978561024",
+              "1"
+            ],
+            "reason": "Connection and my ID have numeric structured values encoded in the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a consistent format with a timestamp and WARN level"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_ms"
+        ],
+        "class_2_formatted_numeric": [
+          "connection_id",
+          "my_id"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_ms",
+          "meaning": "timestamp in milliseconds",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens together explicitly represent one semantic timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_text, \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "connection_id",
+          "meaning": "connection identifier",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "numeric connection ID",
+            "context_source": null,
+            "why_not_merge_raw": "Connection ID is one numeric quantity with semantic meaning"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "Connection broken for id (\\d+),",
+          "replacement": "Connection broken for id {placeholder},",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0]\n    return str(value)"
+          }
+        },
+        {
+          "tag": "my_id",
+          "meaning": "my identifier",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "numeric my ID",
+            "context_source": null,
+            "why_not_merge_raw": "My ID is one numeric quantity with semantic meaning"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "my id = (\\d+),",
+          "replacement": "my id = {placeholder},",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0]\n    return str(value)"
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 19,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "2015-08-20",
+              "17:12:29,467"
+            ],
+            "reason": "Date and time tokens together form a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "session_id_variable",
+            "tokens": [
+              "0x0"
+            ],
+            "reason": "Session ID contains structured values with fixed prefixes encoded in the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a consistent format with a timestamp and WARN level"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_ms"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "session_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_ms",
+          "meaning": "timestamp in milliseconds",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens together explicitly represent one semantic timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_text, \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "session_id",
+          "meaning": "session identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "session ID",
+            "context_source": null,
+            "why_not_merge_raw": "Session ID is a structured value with a fixed prefix and format"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "session (0x[0-9a-fA-F]+)",
+          "replacement": "session {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "2015-07-29",
+              "17:42:28,310"
+            ],
+            "reason": "Date and time tokens together form a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_endpoint",
+            "tokens": [
+              "/10.10.34.12:47478",
+              "/10.10.34.13:57684"
+            ],
+            "reason": "Endpoint contains explicit separators and structured values within the captured span",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a consistent format with a timestamp and INFO level"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_ms"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "endpoint"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_ms",
+          "meaning": "timestamp in milliseconds",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens together explicitly represent one semantic timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_text, \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "endpoint",
+          "meaning": "client or server endpoint",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "Endpoint contains structured IP and port information"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "request (/[\\d.]+:\\d+)",
+          "replacement": "request {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_value",
+            "tokens": [
+              "2015-07-29",
+              "19:37:25,318"
+            ],
+            "reason": "Date and time tokens together form a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "client_address",
+            "tokens": [
+              "/10.10.34.12:45539",
+              "/10.10.34.12:45541"
+            ],
+            "reason": "Client address contains structured values with separators encoded in the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a consistent format with a timestamp and INFO level"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_ms"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "client_address"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_ms",
+          "meaning": "timestamp in milliseconds",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens together explicitly represent one semantic timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2},\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_text, \"%Y-%m-%d %H:%M:%S,%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S,%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "client_address",
+          "meaning": "client IP and port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "client address",
+            "context_source": null,
+            "why_not_merge_raw": "Client address is a structured value with separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "connection from (/[\\d.]+:\\d+)",
+          "replacement": "connection from {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

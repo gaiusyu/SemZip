@@ -1,0 +1,72 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T02:43:56.456503+00:00",
+  "dataset": "Apache",
+  "codec": "delog",
+  "trial": 1,
+  "workers": 2,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+    "bytes": 5135876,
+    "mtime_ns": 1789369148595142000,
+    "device": 1048818,
+    "inode": 199002808556005632
+  },
+  "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+  "raw_bytes": 5135876,
+  "records": 56482,
+  "codec_spec": {
+    "suffix": ".tar.xz",
+    "mode": "official-cli-independent-block-adapter",
+    "encoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/Delog_compress",
+    "decoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/decompress",
+    "encoder_sha256": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739",
+    "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+    "encode_arguments": [
+      "DATASET",
+      "text",
+      "100000",
+      "1",
+      "0",
+      "lzma",
+      "normal"
+    ],
+    "decode_arguments": [
+      "ARCHIVE_DIRECTORY",
+      "OUTPUT_FILE",
+      "1"
+    ],
+    "compressor_source_sha256": "d2f82b0b774a73096fe3bc60871a9b78e623f9253e516e764a5ae1fd7c4b0879"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Apache/delog/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.tar.xz",
+      "archive_bytes": 85932,
+      "block_encode_seconds": 0.6901349425315857,
+      "raw_bytes": 5135876,
+      "lf_count": 56481,
+      "records": 56482,
+      "ends_with_lf": false,
+      "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "archive_sha256": "663b2a055b15311848f97555691055d01ff44602eff988a300ae89a86917e6db",
+      "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b"
+    }
+  ],
+  "encode_seconds": 0.7270929515361786,
+  "block_archive_bytes": 85932,
+  "archive_bytes": 85932,
+  "decode_seconds": 0.4454507380723953,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+  "audit_seconds": 0.026397064328193665,
+  "compression_ratio": 59.766745799003864,
+  "encode_MB_per_s": 7.0635755568102905,
+  "decode_MB_per_s": 11.529616096775463,
+  "finished_at": "2026-09-29T02:43:57.690597+00:00"
+}

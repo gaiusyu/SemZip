@@ -1,0 +1,241 @@
+{
+  "accounting_scope": "Sum actual native block-file lengths, including native headers/footers and LogLite tail byte; directory entries/filenames and an outer transport container are excluded by the predeclared multi-file artifact convention. SemZip actual manifest files remain counted.",
+  "api_calls": 0,
+  "archive_blocks": 11,
+  "binary_sha256": {
+    "delog_decoder": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+    "delog_encoder": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739",
+    "gzip6": "ba757f55ac46ded64366c7385fdc295e6e54abb2e138eebf960a7bdedcdf937e",
+    "loglite_wide": "2e207d6977a75ee3f59f6e9afc1c14dc44185c291fcf822deb7ee7db336c64b4",
+    "xz6": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+    "zstd3": "9a478299fb17126383eaeff489909f3611d3b567681a27fd3a79b5b348f3f357"
+  },
+  "fixture_manifest_sha256": "ef9ed906d988bf85c2b36c9ba8f963c43d431a2a3da7cd18035aa36e3d3246ed",
+  "fixtures": 8,
+  "formal_wrapper_qualification": "Frozen codec-phase decode still opens encode_phase.json as an orchestration index; its used fields can be reconstructed from directory names. The frozen CLI itself has not been changed to enumerate directories.",
+  "limitations": [
+    "The supplementary decoder enumerates the directory; the frozen formal wrapper still uses its reconstructible index.",
+    "No physical sandbox denies all filesystem access; rather, source tracing and the child interface establish that no raw input or encode ledger is supplied/read in this decode path.",
+    "Successful fixtures do not establish correctness for arbitrary malformed archives, loss of directory members, or every possible raw byte pattern; full measured-file SHA checks remain required.",
+    "This is decode-only capability evidence, not a new speed comparison and not a change to first-pass/formal measurements.",
+    "Original AUX completion evidence is unchanged."
+  ],
+  "new_decodes": 8,
+  "new_encodes": 0,
+  "original_evidence_sha256": {
+    "ACCOUNTING_AUDIT.json": "3a2636f15db72f5b6c309b507d64ebc01ee48cdbfc1131f0e41e8f6e5a9602f0",
+    "fixtures.json": "ef9ed906d988bf85c2b36c9ba8f963c43d431a2a3da7cd18035aa36e3d3246ed",
+    "helper.py": "07ded72677b42a62eb71a8ce247f3d38daf9abb36a03faa8f663e1034d8a6bcc",
+    "run/results.json": "05bba28d33be6db7e2c37327fa3c7b0ec6863c15c37fa54c362c71d9b335cc76",
+    "run/status.json": "ff61fedf39cc235495970f33804fbcf33410acf04a8191c89a7ad01c95d790eb"
+  },
+  "passed": 8,
+  "rows": [
+    {
+      "archive_blocks": 1,
+      "archive_bytes": 440,
+      "archive_inventory": {
+        "block_000000.tar.xz": {
+          "bytes": 440,
+          "sha256": "a58c4d5d75f1ade91b54daf3f4c43b94c8184007a5821d64857007aaf2a7a2b0"
+        }
+      },
+      "decoded_bytes": 24,
+      "decoded_records": 3,
+      "decoded_sha256": "ef1f735bdb39dc5237e64c83769c0f51fdb60bb958b96c72b9c79488d9d5acff",
+      "diagnostic_process_seconds_not_benchmark": 0.8304070830345154,
+      "encode_ledger_passed_to_child": false,
+      "existing_result_sha256": "c01c429036ec1bdf613a6d4e1bca0cdf229bb9bc82535aea4ef0d747e2cc6326",
+      "expected_hash_passed_to_child": false,
+      "expected_raw_sha256": "ef1f735bdb39dc5237e64c83769c0f51fdb60bb958b96c72b9c79488d9d5acff",
+      "fixture": "tiny_delog",
+      "method": "delog",
+      "raw_path_passed_to_child": false,
+      "status": "PASS",
+      "workers": 1
+    },
+    {
+      "archive_blocks": 1,
+      "archive_bytes": 44,
+      "archive_inventory": {
+        "block_000000.gz": {
+          "bytes": 44,
+          "sha256": "78ada2a3d21999b3918f3e42df29240154a8a5b373ae4e47d079fc4346636a63"
+        }
+      },
+      "decoded_bytes": 24,
+      "decoded_records": 3,
+      "decoded_sha256": "ef1f735bdb39dc5237e64c83769c0f51fdb60bb958b96c72b9c79488d9d5acff",
+      "diagnostic_process_seconds_not_benchmark": 0.5780340135097504,
+      "encode_ledger_passed_to_child": false,
+      "existing_result_sha256": "c2c8b8d97545c3cd28b4d230648f1fb3883c24e9b459b14398d350044bbd4946",
+      "expected_hash_passed_to_child": false,
+      "expected_raw_sha256": "ef1f735bdb39dc5237e64c83769c0f51fdb60bb958b96c72b9c79488d9d5acff",
+      "fixture": "tiny_gzip6",
+      "method": "gzip6",
+      "raw_path_passed_to_child": false,
+      "status": "PASS",
+      "workers": 1
+    },
+    {
+      "archive_blocks": 1,
+      "archive_bytes": 80,
+      "archive_inventory": {
+        "block_000000.xz": {
+          "bytes": 80,
+          "sha256": "c9846f5f0b714f7253f9ea75e2208d364650109b01bb186884263a2f90e098ab"
+        }
+      },
+      "decoded_bytes": 24,
+      "decoded_records": 3,
+      "decoded_sha256": "ef1f735bdb39dc5237e64c83769c0f51fdb60bb958b96c72b9c79488d9d5acff",
+      "diagnostic_process_seconds_not_benchmark": 0.5787111520767212,
+      "encode_ledger_passed_to_child": false,
+      "existing_result_sha256": "abe5cab528e8ebf5ce9990185c395d24a7ee60509b28edc77d61082f3b6651bb",
+      "expected_hash_passed_to_child": false,
+      "expected_raw_sha256": "ef1f735bdb39dc5237e64c83769c0f51fdb60bb958b96c72b9c79488d9d5acff",
+      "fixture": "tiny_xz6",
+      "method": "xz6",
+      "raw_path_passed_to_child": false,
+      "status": "PASS",
+      "workers": 1
+    },
+    {
+      "archive_blocks": 1,
+      "archive_bytes": 37,
+      "archive_inventory": {
+        "block_000000.zst": {
+          "bytes": 37,
+          "sha256": "2a6aca85558ec4210a8dd8543c72a22563feacfdd832fdfa084ae17e49636f61"
+        }
+      },
+      "decoded_bytes": 24,
+      "decoded_records": 3,
+      "decoded_sha256": "ef1f735bdb39dc5237e64c83769c0f51fdb60bb958b96c72b9c79488d9d5acff",
+      "diagnostic_process_seconds_not_benchmark": 0.582392230629921,
+      "encode_ledger_passed_to_child": false,
+      "existing_result_sha256": "59a6232d95aedea6b5d6daaea8a756fe6cea21a85762035064195776ae4c11c6",
+      "expected_hash_passed_to_child": false,
+      "expected_raw_sha256": "ef1f735bdb39dc5237e64c83769c0f51fdb60bb958b96c72b9c79488d9d5acff",
+      "fixture": "tiny_zstd3",
+      "method": "zstd3",
+      "raw_path_passed_to_child": false,
+      "status": "PASS",
+      "workers": 1
+    },
+    {
+      "archive_blocks": 1,
+      "archive_bytes": 105,
+      "archive_inventory": {
+        "block_000000.lite.xz": {
+          "bytes": 105,
+          "sha256": "f186c014accc89a553f1dd193be495e6f6d8adbbf51323bba22b1e78939be6ca"
+        }
+      },
+      "decoded_bytes": 24,
+      "decoded_records": 3,
+      "decoded_sha256": "ef1f735bdb39dc5237e64c83769c0f51fdb60bb958b96c72b9c79488d9d5acff",
+      "diagnostic_process_seconds_not_benchmark": 0.6774462163448334,
+      "encode_ledger_passed_to_child": false,
+      "existing_result_sha256": "b1c7e3fa86a891860ed7d7ace15ce27e8da1af7a33cd8a1814f51c94ed9412d6",
+      "expected_hash_passed_to_child": false,
+      "expected_raw_sha256": "ef1f735bdb39dc5237e64c83769c0f51fdb60bb958b96c72b9c79488d9d5acff",
+      "fixture": "tiny_loglite",
+      "method": "loglite",
+      "raw_path_passed_to_child": false,
+      "status": "PASS",
+      "workers": 1
+    },
+    {
+      "archive_blocks": 2,
+      "archive_bytes": 7372,
+      "archive_inventory": {
+        "block_000000.gz": {
+          "bytes": 7336,
+          "sha256": "cc7fe943a2921c96eb722338a6eff2a00c65a43553a95b2115a3d882c1765d05"
+        },
+        "block_000001.gz": {
+          "bytes": 36,
+          "sha256": "a02ae1bfac91bde738f2095726297e0a3deeb47a7a9b17961c6d30923647b1aa"
+        }
+      },
+      "decoded_bytes": 3000016,
+      "decoded_records": 100001,
+      "decoded_sha256": "d0018b8b1d133cfbc24ad3598926fa45b01a28ee2127edb8cc02fdad0d76ce81",
+      "diagnostic_process_seconds_not_benchmark": 0.7531285285949707,
+      "encode_ledger_passed_to_child": false,
+      "existing_result_sha256": "186300b178bbf29274cd4c9cb8a068738fcd9069d7b2349570c7117e517f7935",
+      "expected_hash_passed_to_child": false,
+      "expected_raw_sha256": "d0018b8b1d133cfbc24ad3598926fa45b01a28ee2127edb8cc02fdad0d76ce81",
+      "fixture": "two_block_tail_gzip6",
+      "method": "gzip6",
+      "raw_path_passed_to_child": false,
+      "status": "PASS",
+      "workers": 1
+    },
+    {
+      "archive_blocks": 2,
+      "archive_bytes": 668,
+      "archive_inventory": {
+        "block_000000.xz": {
+          "bytes": 596,
+          "sha256": "89a955873a973e66267d2ad55a7b5694c7499f0dae13208b2570a2d749fef683"
+        },
+        "block_000001.xz": {
+          "bytes": 72,
+          "sha256": "64e4a6fef6de38e4c52e73af9ee6ea64c070a29171a986557f535adae1a73532"
+        }
+      },
+      "decoded_bytes": 3000016,
+      "decoded_records": 100001,
+      "decoded_sha256": "d0018b8b1d133cfbc24ad3598926fa45b01a28ee2127edb8cc02fdad0d76ce81",
+      "diagnostic_process_seconds_not_benchmark": 0.7604961693286896,
+      "encode_ledger_passed_to_child": false,
+      "existing_result_sha256": "a1ff0334920f7ce0bde1239d9fa296e5115e0ff08ea77e47692d0f493aae6f05",
+      "expected_hash_passed_to_child": false,
+      "expected_raw_sha256": "d0018b8b1d133cfbc24ad3598926fa45b01a28ee2127edb8cc02fdad0d76ce81",
+      "fixture": "two_block_tail_xz6",
+      "method": "xz6",
+      "raw_path_passed_to_child": false,
+      "status": "PASS",
+      "workers": 1
+    },
+    {
+      "archive_blocks": 2,
+      "archive_bytes": 349,
+      "archive_inventory": {
+        "block_000000.zst": {
+          "bytes": 320,
+          "sha256": "f90bdff5a7721d7d84bb983c53218a2a4c37512582571d7a8cbc2272abb7ea6f"
+        },
+        "block_000001.zst": {
+          "bytes": 29,
+          "sha256": "27cfda7f3861f1b4a50b3a9d190d681e3fe1b803a9b21e1af308b019052b7525"
+        }
+      },
+      "decoded_bytes": 3000016,
+      "decoded_records": 100001,
+      "decoded_sha256": "d0018b8b1d133cfbc24ad3598926fa45b01a28ee2127edb8cc02fdad0d76ce81",
+      "diagnostic_process_seconds_not_benchmark": 0.806746244430542,
+      "encode_ledger_passed_to_child": false,
+      "existing_result_sha256": "d031b23fe1161b3669258da8fa90bcc4b3e767c9e12fbb89dbacd04edbaa2ee5",
+      "expected_hash_passed_to_child": false,
+      "expected_raw_sha256": "d0018b8b1d133cfbc24ad3598926fa45b01a28ee2127edb8cc02fdad0d76ce81",
+      "fixture": "two_block_tail_zstd3",
+      "method": "zstd3",
+      "raw_path_passed_to_child": false,
+      "status": "PASS",
+      "workers": 1
+    }
+  ],
+  "scope": "Supplementary archive-directory decode capability only. Frozen formal CLI still reads its reconstructible encode_phase index; this check does not change or relabel formal timing.",
+  "source_sha256": {
+    "archive_directory_decode_control_20260923/helper.py": "07ded72677b42a62eb71a8ce247f3d38daf9abb36a03faa8f663e1034d8a6bcc",
+    "codec_baseline.py": "0b0c15f6f33ce2180201f11e07606373417dd78087aef2f5a8125075e757c26d",
+    "formal_campaign_v2.py": "b81eaf002ce70d351905106f7a11787cc2524c7e98f660a6267609017892092e",
+    "loglite_adapter.py": "73fbc851b33ce3d15a47e6fadadcd47d91250eeb9e1adbdbdb563bcfc9a07b77"
+  },
+  "source_unchanged": true,
+  "status": "PASS",
+  "workers": 1
+}

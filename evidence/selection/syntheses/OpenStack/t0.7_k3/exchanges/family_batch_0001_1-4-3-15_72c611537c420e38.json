@@ -1,0 +1,299 @@
+{
+  "families": [
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "log_timestamp",
+            "tokens": [
+              "S1",
+              "S2"
+            ],
+            "reason": "Date and time form a single timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "instance_id",
+            "tokens": [
+              "S13"
+            ],
+            "reason": "The instance ID contains multiple structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines start with the same structured prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Primary log timestamp",
+          "reason": "Represents the log timestamp"
+        },
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Instance ID",
+          "reason": "Represents the unique instance ID"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "Primary log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as microseconds since epoch",
+            "context_source": null,
+            "why_not_merge_raw": "Date and time together form one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_str = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "Instance ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "complete instance ID",
+            "context_source": null,
+            "why_not_merge_raw": "Instance ID is a standalone structured value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\[instance: ([a-f0-9-]+)\\]",
+          "replacement": "[instance: {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "file_path",
+            "tokens": [
+              "S15"
+            ],
+            "reason": "The file path contains multiple structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines start with the same structured prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "File path",
+          "reason": "Represents the path of the file being referenced"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "file_path"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "file_path",
+          "meaning": "File path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "complete file path",
+            "context_source": null,
+            "why_not_merge_raw": "File path is a standalone structured value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "files: (.+)",
+          "replacement": "files: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "image_id",
+            "tokens": [
+              "S13"
+            ],
+            "reason": "The image ID contains multiple structural separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "file_path",
+            "tokens": [
+              "S15"
+            ],
+            "reason": "The file path contains multiple structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines start with the same structured prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Image ID",
+          "reason": "Represents the unique image ID"
+        },
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "File path",
+          "reason": "Represents the path of the image file being referenced"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "image_id",
+          "file_path"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "image_id",
+          "meaning": "Image ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "complete image ID",
+            "context_source": null,
+            "why_not_merge_raw": "Image ID is a standalone structured value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "image ([a-f0-9-]+)",
+          "replacement": "image {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "file_path",
+          "meaning": "File path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "complete file path",
+            "context_source": null,
+            "why_not_merge_raw": "File path is a standalone structured value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "at \\((.+?)\\):",
+          "replacement": "at ({placeholder}):",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines start with the same structured prefix"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

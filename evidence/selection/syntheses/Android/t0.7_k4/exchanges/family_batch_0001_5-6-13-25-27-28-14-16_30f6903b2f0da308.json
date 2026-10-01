@@ -1,0 +1,973 @@
+{
+  "families": [
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "12-17",
+              "19:57:15.962"
+            ],
+            "reason": "date and time together represent one timestamp-like value",
+            "target_value": "microsecond timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "type=0x104a",
+              "len=1"
+            ],
+            "reason": "plain values immediately introduced by stable field-name literals",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "header includes consistent timestamp and process/thread IDs"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "type_value",
+          "length_value"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microseconds",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "fields together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    datetime_obj = datetime.strptime(f'{date} {time}', '%m-%d %H:%M:%S.%f')\n    return {'stored': [int(datetime_obj.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    datetime_obj = datetime.fromtimestamp(micros / 1000000)\n    return datetime_obj.strftime('%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "type_value",
+          "meaning": "attribute_type",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "type attribute value",
+            "context_source": null,
+            "why_not_merge_raw": "value is an opaque string"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "type=(0x[0-9a-fA-F]{4})",
+          "replacement": "type={placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'type={record['stored'][0]}'"
+          }
+        },
+        {
+          "tag": "length_value",
+          "meaning": "attribute_length",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "length attribute value",
+            "context_source": null,
+            "why_not_merge_raw": "value is an opaque string"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "len=(\\d+)",
+          "replacement": "len={placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'len={record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "12-17",
+              "19:31:51.443"
+            ],
+            "reason": "date and time together represent one timestamp-like value",
+            "target_value": "microsecond timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "header includes consistent timestamp and process/thread IDs"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microseconds",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "fields together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    datetime_obj = datetime.strptime(f'{date} {time}', '%m-%d %H:%M:%S.%f')\n    return {'stored': [int(datetime_obj.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    datetime_obj = datetime.fromtimestamp(micros / 1000000)\n    return datetime_obj.strftime('%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "12-17",
+              "19:31:45.796"
+            ],
+            "reason": "date and time together represent one timestamp-like value",
+            "target_value": "microsecond timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "wlan0"
+            ],
+            "reason": "captured value contains structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "header includes consistent timestamp and process/thread IDs"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "interface_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microseconds",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "fields together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    datetime_obj = datetime.strptime(f'{date} {time}', '%m-%d %H:%M:%S.%f')\n    return {'stored': [int(datetime_obj.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    datetime_obj = datetime.fromtimestamp(micros / 1000000)\n    return datetime_obj.strftime('%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "interface_id",
+          "meaning": "wireless_interface_identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "interface identifier",
+            "context_source": null,
+            "why_not_merge_raw": "value is an opaque string"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "interface: ([A-Za-z0-9]+)",
+          "replacement": "interface: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'interface: {record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "12-17",
+              "19:31:36.779"
+            ],
+            "reason": "date and time together represent one timestamp-like value",
+            "target_value": "microsecond timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "ProcessRecord{34bf34f 0:system/1000}"
+            ],
+            "reason": "captured value contains explicit structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "header includes consistent timestamp and process/thread IDs"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "process_record"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microseconds",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "fields together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    datetime_obj = datetime.strptime(f'{date} {time}', '%m-%d %H:%M:%S.%f')\n    return {'stored': [int(datetime_obj.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    datetime_obj = datetime.fromtimestamp(micros / 1000000)\n    return datetime_obj.strftime('%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "process_record",
+          "meaning": "process_record_details",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "process record details",
+            "context_source": null,
+            "why_not_merge_raw": "value contains structured separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "ProcessRecord\\{([0-9a-f]{7} [0-9]+:[A-Za-z0-9_/]+)\\}",
+          "replacement": "ProcessRecord{{placeholder}}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'ProcessRecord{{{record['stored'][0]}}}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 27,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "12-17",
+              "19:31:36.279"
+            ],
+            "reason": "date and time together represent one timestamp-like value",
+            "target_value": "microsecond timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "slot: 1"
+            ],
+            "reason": "plain value is introduced by a stable field-name literal",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "header includes consistent timestamp and process/thread IDs"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "slot_value"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microseconds",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "fields together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    datetime_obj = datetime.strptime(f'{date} {time}', '%m-%d %H:%M:%S.%f')\n    return {'stored': [int(datetime_obj.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    datetime_obj = datetime.fromtimestamp(micros / 1000000)\n    return datetime_obj.strftime('%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "slot_value",
+          "meaning": "slot_number",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "slot value",
+            "context_source": null,
+            "why_not_merge_raw": "value is an opaque string"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "slot: (\\d+)",
+          "replacement": "slot: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'slot: {record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 28,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "12-17",
+              "19:31:36.263"
+            ],
+            "reason": "date and time together represent one timestamp-like value",
+            "target_value": "microsecond timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "action:android.com.huawei.bone.NOTIFY_SPORT_DATA",
+              "mPermissionType:0"
+            ],
+            "reason": "plain values immediately introduced by stable field-name literals",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "header includes consistent timestamp and process/thread IDs"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "action_value",
+          "permission_type"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microseconds",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "fields together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    datetime_obj = datetime.strptime(f'{date} {time}', '%m-%d %H:%M:%S.%f')\n    return {'stored': [int(datetime_obj.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    datetime_obj = datetime.fromtimestamp(micros / 1000000)\n    return datetime_obj.strftime('%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "action_value",
+          "meaning": "broadcast_action",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "broadcast action",
+            "context_source": null,
+            "why_not_merge_raw": "value is an opaque string"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "action:([A-Za-z0-9._]+)",
+          "replacement": "action:{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'action:{record['stored'][0]}'"
+          }
+        },
+        {
+          "tag": "permission_type",
+          "meaning": "permission_type_value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "permission type value",
+            "context_source": null,
+            "why_not_merge_raw": "value is an opaque string"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "mPermissionType:(\\d+)",
+          "replacement": "mPermissionType:{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'mPermissionType:{record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "12-17",
+              "19:31:45.795"
+            ],
+            "reason": "date and time together represent one timestamp-like value",
+            "target_value": "microsecond timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "/data/misc/wifi/sockets/wpa_ctrl_1795-194\\x00"
+            ],
+            "reason": "captured value contains explicit structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "header includes consistent timestamp and process/thread IDs"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "socket_path"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microseconds",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "fields together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    datetime_obj = datetime.strptime(f'{date} {time}', '%m-%d %H:%M:%S.%f')\n    return {'stored': [int(datetime_obj.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    datetime_obj = datetime.fromtimestamp(micros / 1000000)\n    return datetime_obj.strftime('%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "socket_path",
+          "meaning": "socket_file_path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "socket path",
+            "context_source": null,
+            "why_not_merge_raw": "value contains structured separators"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "to (/data/misc/wifi/sockets/[A-Za-z0-9_/-]+\\\\x00)",
+          "replacement": "to {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'to {record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "12-17",
+              "19:31:36.280"
+            ],
+            "reason": "date and time together represent one timestamp-like value",
+            "target_value": "microsecond timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "progress:2167",
+              "fromUser:false"
+            ],
+            "reason": "plain values immediately introduced by stable field-name literals",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "header includes consistent timestamp and process/thread IDs"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "progress_value",
+          "user_flag"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microseconds",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "fields together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    datetime_obj = datetime.strptime(f'{date} {time}', '%m-%d %H:%M:%S.%f')\n    return {'stored': [int(datetime_obj.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    datetime_obj = datetime.fromtimestamp(micros / 1000000)\n    return datetime_obj.strftime('%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "progress_value",
+          "meaning": "slider_progress",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "progress value",
+            "context_source": null,
+            "why_not_merge_raw": "value is an opaque string"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "progress:(\\d+)",
+          "replacement": "progress:{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'progress:{record['stored'][0]}'"
+          }
+        },
+        {
+          "tag": "user_flag",
+          "meaning": "user_interaction_flag",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "user interaction flag",
+            "context_source": null,
+            "why_not_merge_raw": "value is an opaque string"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "fromUser:(true|false)",
+          "replacement": "fromUser:{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'fromUser:{record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "12-17",
+              "19:31:36.280"
+            ],
+            "reason": "date and time together represent one timestamp-like value",
+            "target_value": "microsecond timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "seekBarProgress:2167"
+            ],
+            "reason": "plain value is introduced by a stable field-name literal",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "header includes consistent timestamp and process/thread IDs"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "seekbar_progress"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microseconds",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "fields together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    datetime_obj = datetime.strptime(f'{date} {time}', '%m-%d %H:%M:%S.%f')\n    return {'stored': [int(datetime_obj.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    datetime_obj = datetime.fromtimestamp(micros / 1000000)\n    return datetime_obj.strftime('%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "seekbar_progress",
+          "meaning": "seekbar_progress_value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "seekbar progress value",
+            "context_source": null,
+            "why_not_merge_raw": "value is an opaque string"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "seekBarProgress:(\\d+)",
+          "replacement": "seekBarProgress:{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'seekBarProgress:{record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 20,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed_value",
+            "tokens": [
+              "12-17",
+              "19:31:36.319"
+            ],
+            "reason": "date and time together represent one timestamp-like value",
+            "target_value": "microsecond timestamp",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "transferRemoteInputFocus: 0"
+            ],
+            "reason": "plain value is introduced by a stable field-name literal",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "header includes consistent timestamp and process/thread IDs"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "input_focus"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microseconds",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "fields together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date, time = groups\n    datetime_obj = datetime.strptime(f'{date} {time}', '%m-%d %H:%M:%S.%f')\n    return {'stored': [int(datetime_obj.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    datetime_obj = datetime.fromtimestamp(micros / 1000000)\n    return datetime_obj.strftime('%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "input_focus",
+          "meaning": "remote_input_focus_value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "remote input focus value",
+            "context_source": null,
+            "why_not_merge_raw": "value is an opaque string"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "transferRemoteInputFocus: (\\d+)",
+          "replacement": "transferRemoteInputFocus: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'transferRemoteInputFocus: {record['stored'][0]}'"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

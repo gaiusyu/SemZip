@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"timestamp_composed\",\n      \"meaning\": \"timestamp\",\n      \"class\": \"class_1_composed_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"log_timestamp\",\n      \"context\": null,\n      \"regex\": \"(\\\\d{6})( +)(\\\\d{6})\",\n      \"replacement\": \"{placeholder}\",\n      \"program\": {\n        \"op\": \"python_exec\",\n        \"code\": \"def forward(groups):\\n    date_part = groups[0]\\n    space_part = groups[1]\\n    time_part = groups[2]\\n    dt = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': [len(space_part)]}\\n\\ndef inverse(record):\\n    millis = int(record['stored'][0])\\n    space_length = record['layout'][0]\\n    dt = datetime.fromtimestamp(millis / 1000)\\n    formatted_time = dt.strftime('%y%m%d %H%M%S')\\n    return formatted_time[:6] + (' ' * space_length) + formatted_time[7:]\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 275,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 2201,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 2476
+  }
+}

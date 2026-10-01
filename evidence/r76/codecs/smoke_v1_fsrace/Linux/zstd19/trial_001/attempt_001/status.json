@@ -1,0 +1,68 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T02:43:30.342303+00:00",
+  "dataset": "Linux",
+  "codec": "zstd19",
+  "trial": 1,
+  "workers": 2,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Linux/Linux.log",
+    "bytes": 2349686,
+    "mtime_ns": 1789369143539147000,
+    "device": 1048818,
+    "inode": 199002808556005597
+  },
+  "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+  "raw_bytes": 2349686,
+  "records": 25567,
+  "codec_spec": {
+    "exe": "zstd",
+    "encode": [
+      "-19",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "decode": [
+      "-d",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "suffix": ".zst",
+    "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+    "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+    "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Linux/zstd19/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.zst",
+      "archive_bytes": 120226,
+      "block_encode_seconds": 1.2809083312749863,
+      "raw_bytes": 2349686,
+      "lf_count": 25567,
+      "records": 25567,
+      "ends_with_lf": true,
+      "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "archive_sha256": "451a97ffbe546cca1620792519049ddd29831dc798dd0fbae598dc772ed98815",
+      "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490"
+    }
+  ],
+  "encode_seconds": 1.2954221367835999,
+  "block_archive_bytes": 120226,
+  "archive_bytes": 120226,
+  "decode_seconds": 0.13262976706027985,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+  "audit_seconds": 0.015369400382041931,
+  "compression_ratio": 19.543908971437126,
+  "encode_MB_per_s": 1.8138380789400659,
+  "decode_MB_per_s": 17.71612852891519,
+  "finished_at": "2026-09-29T02:43:31.804863+00:00"
+}

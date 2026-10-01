@@ -1,0 +1,408 @@
+{
+  "families": [
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "composed_log_timestamp",
+            "tokens": [
+              "2017-05-16",
+              "00:00:14.329"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "request_id",
+            "tokens": [
+              "req-addc1839-2ed5-4778-b57e-5854eb7b8b09"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "host_endpoint",
+            "tokens": [
+              "cp-1.slowvm1.tcloud-pg0.utah.cloudlab.us:cp-1.slowvm1.tcloud-pg0.utah.cloudlab.us"
+            ],
+            "reason": "the captured value contains structured hostname and path with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines share a common prefix with timestamp, process ID, and module"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "timestamp is a key element of this log"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "request_id",
+          "host_endpoint"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "composed log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "date and time are parts of the same timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    from datetime import datetime\n    text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    from datetime import datetime\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "request_id",
+          "meaning": "request identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "request_id",
+            "context_source": null,
+            "why_not_merge_raw": "request ID is a single opaque variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\[req-([a-f0-9\\-]+)",
+          "replacement": "[req-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"req-{record['stored'][0]}\""
+          }
+        },
+        {
+          "tag": "host_endpoint",
+          "meaning": "host and endpoint",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "host_endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "hostname and endpoint are treated as one structured variable"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "for ((?:[a-zA-Z0-9\\-\\.]+:[a-zA-Z0-9\\-\\.]+))",
+          "replacement": "for {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "composed_log_timestamp",
+            "tokens": [
+              "2017-05-16",
+              "00:00:31.094"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "disk_usage",
+            "tokens": [
+              "15 GB",
+              "0.00 GB"
+            ],
+            "reason": "different displays of the same underlying storage value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "instance_id",
+            "tokens": [
+              "96abccce-8d1f-4e07-b6d1-4b2ab87e23b4"
+            ],
+            "reason": "the captured value itself contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines share a common prefix with timestamp, process ID, and module"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "timestamp is a key element of this log"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "disk_usage"
+        ],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "composed log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "date and time are parts of the same timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    from datetime import datetime\n    text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    from datetime import datetime\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "disk_usage",
+          "meaning": "disk usage in GB",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "disk_usage",
+            "context_source": null,
+            "why_not_merge_raw": "two displays represent the same underlying numeric value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Total disk: (\\d+) GB, used: ([\\d\\.]+) GB",
+          "replacement": "Total disk: {placeholder} GB, used: {group2} GB",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    total_disk = int(groups[0])\n    used_disk = float(groups[1])\n    return {'stored': [total_disk, int(used_disk * 100)], 'layout': []}\n\ndef inverse(record):\n    total_disk = record['stored'][0]\n    used_disk = record['stored'][1] / 100\n    return f\"{total_disk} {used_disk:.2f}\""
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance_id",
+            "context_source": null,
+            "why_not_merge_raw": "instance ID is a single opaque variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\[instance: ([a-f0-9\\-]+)\\]",
+          "replacement": "[instance: {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "composed_log_timestamp",
+            "tokens": [
+              "2017-05-16",
+              "00:00:31.095"
+            ],
+            "reason": "date and time together represent one timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "vcpu_usage",
+            "tokens": [
+              "16 VCPU",
+              "0.00 VCPU"
+            ],
+            "reason": "different displays of the same underlying VCPU count",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "instance_id",
+            "tokens": [
+              "96abccce-8d1f-4e07-b6d1-4b2ab87e23b4"
+            ],
+            "reason": "the captured value itself contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines share a common prefix with timestamp, process ID, and module"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "timestamp is a key element of this log"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "vcpu_usage"
+        ],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "composed log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "date and time are parts of the same timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    from datetime import datetime\n    text = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    from datetime import datetime\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "vcpu_usage",
+          "meaning": "vcpu usage",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "vcpu_usage",
+            "context_source": null,
+            "why_not_merge_raw": "different displays represent the same underlying VCPU count"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Total vcpu: (\\d+) VCPU, used: ([\\d\\.]+) VCPU",
+          "replacement": "Total vcpu: {placeholder} VCPU, used: {group2} VCPU",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    total_vcpu = int(groups[0])\n    used_vcpu = float(groups[1])\n    return {'stored': [total_vcpu, int(used_vcpu * 100)], 'layout': []}\n\ndef inverse(record):\n    total_vcpu = record['stored'][0]\n    used_vcpu = record['stored'][1] / 100\n    return f\"{total_vcpu} {used_vcpu:.2f}\""
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance_id",
+            "context_source": null,
+            "why_not_merge_raw": "instance ID is a single opaque variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\[instance: ([a-f0-9\\-]+)\\]",
+          "replacement": "[instance: {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

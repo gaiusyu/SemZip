@@ -1,0 +1,491 @@
+{
+  "families": [
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time",
+              "year"
+            ],
+            "reason": "These tokens together represent a complete timestamp.",
+            "target_value": "one timestamp-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "child_id",
+            "tokens": [
+              "5649",
+              "5650",
+              "16713",
+              "17401"
+            ],
+            "reason": "The values are numeric and represent child process IDs.",
+            "must_emit_function": true
+          },
+          {
+            "name": "scoreboard_slot",
+            "tokens": [
+              "8",
+              "9",
+              "10",
+              "11"
+            ],
+            "reason": "The values are numeric and represent scoreboard slot numbers.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "A repeated prefix contains a timestamp and log level."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0-S4",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log_timestamp",
+          "reason": "These slots form a complete timestamp for the log."
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW",
+          "meaning": "child process ID",
+          "reason": "Represents a numeric identifier for a child process."
+        },
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW",
+          "meaning": "scoreboard slot",
+          "reason": "Represents a numeric slot in the scoreboard."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "child_id",
+          "scoreboard_slot"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as one compact integer",
+            "context_source": null,
+            "why_not_merge_raw": "The tokens are composable into one timestamp."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    from datetime import datetime\n    text = f\"{groups[1]} {groups[2]} {groups[3]} {groups[4]} {groups[5]}\"\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    from datetime import datetime\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('[%a %b %d %H:%M:%S %Y]')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "child_id",
+          "meaning": "child process ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "child process ID",
+            "context_source": null,
+            "why_not_merge_raw": "The value is an opaque identifier."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "Found child (\\d+) in scoreboard",
+          "replacement": "Found child {placeholder} in scoreboard",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "scoreboard_slot",
+          "meaning": "scoreboard slot",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "scoreboard slot number",
+            "context_source": null,
+            "why_not_merge_raw": "The slot is an independent attribute."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "scoreboard slot (\\d+)",
+          "replacement": "scoreboard slot {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time",
+              "year"
+            ],
+            "reason": "These tokens together represent a complete timestamp.",
+            "target_value": "one timestamp-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "file_path",
+            "tokens": [
+              "/etc/httpd/conf/workers2.properties"
+            ],
+            "reason": "The value is a structured file path with multiple separators.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "A repeated prefix contains a timestamp and log level."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0-S4",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log_timestamp",
+          "reason": "These slots form a complete timestamp for the log."
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW",
+          "meaning": "file_path",
+          "reason": "Represents a structured file path."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "file_path"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as one compact integer",
+            "context_source": null,
+            "why_not_merge_raw": "The tokens are composable into one timestamp."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    from datetime import datetime\n    text = f\"{groups[1]} {groups[2]} {groups[3]} {groups[4]} {groups[5]}\"\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    from datetime import datetime\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('[%a %b %d %H:%M:%S %Y]')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "file_path",
+          "meaning": "structured file path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "exact file path",
+            "context_source": null,
+            "why_not_merge_raw": "The path is a single structured variable."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "workerEnv.init\\(\\) ok (.+)",
+          "replacement": "workerEnv.init() ok {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time",
+              "year"
+            ],
+            "reason": "These tokens together represent a complete timestamp.",
+            "target_value": "one timestamp-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "child_id",
+            "tokens": [
+              "5651",
+              "5652"
+            ],
+            "reason": "The value is a numeric identifier for a child process.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "A repeated prefix contains a timestamp and log level."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0-S4",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log_timestamp",
+          "reason": "These slots form a complete timestamp for the log."
+        },
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW",
+          "meaning": "child_id",
+          "reason": "Represents the child process ID."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "child_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as one compact integer",
+            "context_source": null,
+            "why_not_merge_raw": "The tokens are composable into one timestamp."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    from datetime import datetime\n    text = f\"{groups[1]} {groups[2]} {groups[3]} {groups[4]} {groups[5]}\"\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    from datetime import datetime\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('[%a %b %d %H:%M:%S %Y]')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "child_id",
+          "meaning": "child process ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "child process ID",
+            "context_source": null,
+            "why_not_merge_raw": "The value is an opaque identifier."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "find child (\\d+) in scoreboard",
+          "replacement": "find child {placeholder} in scoreboard",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "A repeated prefix contains a timestamp and log level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "A repeated prefix contains a timestamp and log level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "A repeated prefix contains a timestamp and log level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "A repeated prefix contains a timestamp and log level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "A repeated prefix contains a timestamp and log level."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

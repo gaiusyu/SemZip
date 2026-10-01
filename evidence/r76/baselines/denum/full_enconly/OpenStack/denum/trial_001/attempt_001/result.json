@@ -1,0 +1,115 @@
+{
+  "schema": "semzip.external-cli.v1",
+  "status": "ENCODE_ONLY_UNVERIFIED",
+  "started_at": "2026-09-29T20:39:44.441018+00:00",
+  "dataset": "OpenStack",
+  "codec": "denum",
+  "trial": 1,
+  "workers": 2,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/raw/OpenStack.log",
+    "bytes": 61442082,
+    "mtime_ns": 1789369656944920000,
+    "device": 1048818,
+    "inode": 199002808556008835
+  },
+  "raw_sha256": "94df6daec483b9285f63d58e7211dffa793c4eccea23fb45a347dec188f73897",
+  "raw_bytes": 61442082,
+  "records": 207820,
+  "codec_spec": {
+    "suffix": ".tar.xz",
+    "mode": "official-cli-independent-block-adapter+official-python-decompressor",
+    "commit": "a3a697564e378643461e27ab92ea44b098424c35",
+    "encoder": "<WORKDIR>/r76_additional_20260929/baselines/denum/bin/denum_compress",
+    "encoder_sha256": "1f2a9406a9f68d6b8b58d69603182cbee8d4a2598366f7e17b7cec0869c885e8",
+    "encoder_source_sha256": "b23a6ebff714337f498cf659a3a0569519c1cd9763aabb516c8cfeb63672a2db",
+    "decoder_files_sha256": {
+      "decompress.py": "c3becae288d140314a6db55c4b48f629ea3bde38cd18e6b77ee8738ea637bc5c",
+      "Denum_simplel.py": "8807c1cf60c862595be973697db1c1120bfabb21b466c8c0e11191c03100dde1"
+    },
+    "python": "/usr/bin/python3",
+    "pydeps": "<WORKDIR>/r76_additional_20260929/baselines/denum/pydeps",
+    "tar": "/bin/tar",
+    "tar_sha256": "8498b0a43e820b0f8ed5cc61accfdfadffc7bd43ff6b0a91256a09ffc19dad38",
+    "xz": "/usr/bin/xz",
+    "xz_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+    "encode_arguments": [
+      "DATASET",
+      "100000",
+      "1"
+    ],
+    "decode_arguments": [
+      "DATASET"
+    ],
+    "archive": "byte-for-byte official output/DATASET/compressed0.xz (tar -cJf of output/DATASET/0/)"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/baselines/denum/full_enconly/OpenStack/denum/trial_001/attempt_001",
+  "mode": "encode-only",
+  "timing_scope": "full-file-cli-split-and-encode-only-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.tar.xz",
+      "archive_bytes": 1418900,
+      "block_encode_seconds": 8.213254019618034,
+      "encoded_input_sha256": "a5e386451f1ad9e521026a9cb2a93d7341b7d4ebf8ad8d4f72325b8192d0f98f",
+      "raw_bytes": 29603861,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "a5e386451f1ad9e521026a9cb2a93d7341b7d4ebf8ad8d4f72325b8192d0f98f",
+      "archive_sha256": "97d127cdf8a47915fd555fa9961a0856c266ba1e97754e5f4c784fcdfddc1bfb"
+    },
+    {
+      "index": 1,
+      "archive": "archives/block_000001.tar.xz",
+      "archive_bytes": 1345284,
+      "block_encode_seconds": 7.514226123690605,
+      "encoded_input_sha256": "46399cf09ee6ae6144156ea73232cf6f403dfb0712031fa70a6e66742f0a27d4",
+      "raw_bytes": 29579809,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "46399cf09ee6ae6144156ea73232cf6f403dfb0712031fa70a6e66742f0a27d4",
+      "archive_sha256": "4a7b444fe378c001525ba4eb47af98d54c4085fd40f82334a7d51505b8b1f746"
+    },
+    {
+      "index": 2,
+      "archive": "archives/block_000002.tar.xz",
+      "archive_bytes": 13924,
+      "block_encode_seconds": 1.2100896090269089,
+      "encoded_input_sha256": "4bbb8eb871c102164bb8794977c0747193f8c9b4af0d2cc80780246ba7d7de0a",
+      "raw_bytes": 2258412,
+      "lf_count": 7820,
+      "records": 7820,
+      "ends_with_lf": true,
+      "raw_sha256": "4bbb8eb871c102164bb8794977c0747193f8c9b4af0d2cc80780246ba7d7de0a",
+      "archive_sha256": "75788b3639e82841554ec35035fd78112732f4aeee06dbb5cbd01a4531634f9a"
+    }
+  ],
+  "encode_seconds": 9.994577914476395,
+  "archive_bytes": 2778108,
+  "roundtrip": "not-attempted",
+  "archive_only_decode": false,
+  "lossless_verified": false,
+  "unverified_reason": "Denum archive format is proven lossy (baselines/denum/proofs/SUMMARY.json, 16/16 LOSSY_FORMAT_PROVEN); no decode attempted; compression-only size, not losslessly verifiable",
+  "block_input_sha256_verified": true,
+  "audit_seconds": 0.028698191046714783,
+  "block_count": 3,
+  "block_archive_bytes": [
+    1418900,
+    1345284,
+    13924
+  ],
+  "compression_ratio": 22.116520308065777,
+  "suffix_blocks": [
+    1,
+    2
+  ],
+  "suffix_raw_bytes": 31838221,
+  "suffix_archive_bytes": 1359208,
+  "suffix_compression_ratio": 23.42409770984279,
+  "encode_MB_per_s": 6.147541449549936,
+  "finished_at": "2026-09-29T20:39:54.487565+00:00"
+}

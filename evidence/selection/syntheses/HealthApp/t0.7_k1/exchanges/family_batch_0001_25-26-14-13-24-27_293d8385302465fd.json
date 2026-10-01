@@ -1,0 +1,528 @@
+{
+  "families": [
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_compound",
+            "tokens": [
+              "20171223",
+              "22:19:58:416"
+            ],
+            "reason": "timestamp is composed of date and time tokens",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "sync_times",
+            "tokens": [
+              "appSynTimes is",
+              "statsyncTimes is"
+            ],
+            "reason": "explicitly role-anchored by stable field-name literals in regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp and module name repeat in all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp and module identifier",
+          "reason": "serves as a primary identifier for log entry"
+        },
+        {
+          "slot": "S3",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "application sync times",
+          "reason": "sync times are context-dependent values"
+        },
+        {
+          "slot": "S6",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "statistics sync times",
+          "reason": "sync times are context-dependent values"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_compound"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "sync_times"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_compound",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time tokens as one value",
+            "context_source": null,
+            "why_not_merge_raw": "tokens together represent one timestamp-like value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{8})-(\\d{2}:\\d{2}:\\d{2}:\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]  # YYYYMMDD\n    time_part = groups[1]  # HH:MM:SS:MMM\n    dt = datetime.strptime(f\"{date_part} {time_part}\", \"%Y%m%d %H:%M:%S:%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y%m%d-%H:%M:%S:%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "sync_times",
+          "meaning": "sync times for app and statistics",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "sync times",
+            "context_source": null,
+            "why_not_merge_raw": "values are distinct and context-independent"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(appSynTimes is (\\d+)), statsyncTimes is (\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    app_sync = groups[1]\n    stat_sync = groups[2]\n    return {'stored': [app_sync, stat_sync], 'layout': []}\n\ndef inverse(record):\n    app_sync, stat_sync = record['stored']\n    return f\"appSynTimes is {app_sync}, statsyncTimes is {stat_sync}\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 26,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_compound",
+            "tokens": [
+              "20171223",
+              "22:19:58:417"
+            ],
+            "reason": "timestamp is composed of date and time tokens",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "step_sync_count",
+            "tokens": [
+              "first 500 steps"
+            ],
+            "reason": "explicitly role-anchored by stable field-name patterns",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp and module name repeat in all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp and module identifier",
+          "reason": "serves as a primary identifier for log entry"
+        },
+        {
+          "slot": "S2",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "number of steps in sync",
+          "reason": "value is context-dependent"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_compound"
+        ],
+        "class_2_formatted_numeric": [
+          "step_sync_count"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_compound",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time tokens as one value",
+            "context_source": null,
+            "why_not_merge_raw": "tokens together represent one timestamp-like value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{8})-(\\d{2}:\\d{2}:\\d{2}:\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]  # YYYYMMDD\n    time_part = groups[1]  # HH:MM:SS:MMM\n    dt = datetime.strptime(f\"{date_part} {time_part}\", \"%Y%m%d %H:%M:%S:%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y%m%d-%H:%M:%S:%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "step_sync_count",
+          "meaning": "number of steps in sync",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "step count",
+            "context_source": null,
+            "why_not_merge_raw": "no other tokens explicitly derive this count"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "first (\\d+) steps",
+          "replacement": "first {placeholder} steps",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    step_count = int(groups[0])\n    return {'stored': [step_count], 'layout': []}\n\ndef inverse(record):\n    return f\"{record['stored'][0]}\""
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_compound",
+            "tokens": [
+              "20171223",
+              "22:19:58:428"
+            ],
+            "reason": "timestamp is composed of date and time tokens",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "status_flag",
+            "tokens": [
+              "not!"
+            ],
+            "reason": "explicitly role-anchored by stable field-name literal in regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp and module name repeat in all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp and module identifier",
+          "reason": "serves as a primary identifier for log entry"
+        },
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "status flag",
+          "reason": "status flag is context-dependent"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_compound"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "status_flag"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_compound",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time tokens as one value",
+            "context_source": null,
+            "why_not_merge_raw": "tokens together represent one timestamp-like value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{8})-(\\d{2}:\\d{2}:\\d{2}:\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]  # YYYYMMDD\n    time_part = groups[1]  # HH:MM:SS:MMM\n    dt = datetime.strptime(f\"{date_part} {time_part}\", \"%Y%m%d %H:%M:%S:%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y%m%d-%H:%M:%S:%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "status_flag",
+          "meaning": "indicates status with emphasis",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "status flag",
+            "context_source": null,
+            "why_not_merge_raw": "value is standalone and not derived"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(not!)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_compound",
+            "tokens": [
+              "20171223",
+              "22:19:58:423"
+            ],
+            "reason": "timestamp is composed of date and time tokens",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp and module name repeat in all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp and module identifier",
+          "reason": "serves as a primary identifier for log entry"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_compound"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_compound",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time tokens as one value",
+            "context_source": null,
+            "why_not_merge_raw": "tokens together represent one timestamp-like value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{8})-(\\d{2}:\\d{2}:\\d{2}:\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]  # YYYYMMDD\n    time_part = groups[1]  # HH:MM:SS:MMM\n    dt = datetime.strptime(f\"{date_part} {time_part}\", \"%Y%m%d %H:%M:%S:%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y%m%d-%H:%M:%S:%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 24,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_compound",
+            "tokens": [
+              "20171223",
+              "22:19:58:415"
+            ],
+            "reason": "timestamp is composed of date and time tokens",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp and module name repeat in all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp and module identifier",
+          "reason": "serves as a primary identifier for log entry"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_compound"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_compound",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time tokens as one value",
+            "context_source": null,
+            "why_not_merge_raw": "tokens together represent one timestamp-like value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{8})-(\\d{2}:\\d{2}:\\d{2}:\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]  # YYYYMMDD\n    time_part = groups[1]  # HH:MM:SS:MMM\n    dt = datetime.strptime(f\"{date_part} {time_part}\", \"%Y%m%d %H:%M:%S:%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y%m%d-%H:%M:%S:%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 27,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_compound",
+            "tokens": [
+              "20171223",
+              "22:19:58:413"
+            ],
+            "reason": "timestamp is composed of date and time tokens",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp and module name repeat in all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log timestamp and module identifier",
+          "reason": "serves as a primary identifier for log entry"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_compound"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_compound",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time tokens as one value",
+            "context_source": null,
+            "why_not_merge_raw": "tokens together represent one timestamp-like value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{8})-(\\d{2}:\\d{2}:\\d{2}:\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]  # YYYYMMDD\n    time_part = groups[1]  # HH:MM:SS:MMM\n    dt = datetime.strptime(f\"{date_part} {time_part}\", \"%Y%m%d %H:%M:%S:%f\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000.0)\n    return dt.strftime(\"%Y%m%d-%H:%M:%S:%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

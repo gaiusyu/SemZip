@@ -1,0 +1,252 @@
+{
+  "version": "QG-V1",
+  "implementation": "qg_select2 (parallel evaluation, same decisions)",
+  "dataset": "OpenSSH",
+  "input_plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/train_k/OpenSSH/t0.7_k2/training_work/OpenSSH/replay_plan.json",
+  "input_plan_sha256": "74157090e9a66666b4a72455dfd6962e90040c945fc91f4b4c304039309df9f4",
+  "training_block_sha256": "99719ec0b6bbf6bc0912604ccc083b263e7b9353b42ba1fc5b71b28273dbed06",
+  "selected_plan_sha256": "bbbfa65ea11e0a074717d02a0ffe2ff8e71371e2598d5f80a26c2b47fd3909ba",
+  "original_train_archive_bytes": 77431,
+  "empty_train_archive_bytes": 152511,
+  "selected_train_archive_bytes": 76211,
+  "removed_tags": [
+    "G"
+  ],
+  "kept_tags": [
+    "TS",
+    "IP",
+    "PD",
+    "PT",
+    "US"
+  ],
+  "evaluations": 13,
+  "decisions": [
+    {
+      "stage": "B",
+      "tag": "G",
+      "before": 77431,
+      "after": 76211,
+      "accepted": true,
+      "all": {
+        "G": 76211,
+        "IP": 79151,
+        "PD": 78387,
+        "PT": 78835,
+        "TS": 143203,
+        "US": 81407
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "PD",
+      "before": 76211,
+      "after": 77303,
+      "accepted": false,
+      "all": {
+        "IP": 78091,
+        "PD": 77303,
+        "PT": 77675,
+        "TS": 142035,
+        "US": 80339
+      }
+    },
+    {
+      "stage": "C",
+      "tag": "G",
+      "before": 76211,
+      "after": 77431,
+      "accepted": false
+    }
+  ],
+  "eval_log": [
+    {
+      "eval": 2,
+      "key": "0b052c4dc7b7",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 152511,
+      "seconds": 8.93
+    },
+    {
+      "eval": 2,
+      "key": "e6bdf35e725c",
+      "label": "original",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "PT",
+        "US",
+        "G"
+      ],
+      "archive_bytes": 77431,
+      "seconds": 108.98
+    },
+    {
+      "eval": 5,
+      "key": "238e3b43b13c",
+      "label": "B:-PD",
+      "tags": [
+        "TS",
+        "IP",
+        "PT",
+        "US",
+        "G"
+      ],
+      "archive_bytes": 78387,
+      "seconds": 110.4
+    },
+    {
+      "eval": 6,
+      "key": "a163fffe440e",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "PD",
+        "PT",
+        "US",
+        "G"
+      ],
+      "archive_bytes": 79151,
+      "seconds": 130.7
+    },
+    {
+      "eval": 7,
+      "key": "7f093deb5a9d",
+      "label": "B:-G",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "PT",
+        "US"
+      ],
+      "archive_bytes": 76211,
+      "seconds": 130.89
+    },
+    {
+      "eval": 8,
+      "key": "15c24ed145fd",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "PD",
+        "PT",
+        "US",
+        "G"
+      ],
+      "archive_bytes": 143203,
+      "seconds": 89.89
+    },
+    {
+      "eval": 8,
+      "key": "f63454fe867c",
+      "label": "B:-PT",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "US",
+        "G"
+      ],
+      "archive_bytes": 78835,
+      "seconds": 145.08
+    },
+    {
+      "eval": 8,
+      "key": "1b8e1cd27513",
+      "label": "B:-US",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "PT",
+        "G"
+      ],
+      "archive_bytes": 81407,
+      "seconds": 169.58
+    },
+    {
+      "eval": 11,
+      "key": "a70f60c8f7d6",
+      "label": "B:-PD",
+      "tags": [
+        "TS",
+        "IP",
+        "PT",
+        "US"
+      ],
+      "archive_bytes": 77303,
+      "seconds": 140.3
+    },
+    {
+      "eval": 12,
+      "key": "5471f06c49c7",
+      "label": "B:-PT",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "US"
+      ],
+      "archive_bytes": 77675,
+      "seconds": 168.58
+    },
+    {
+      "eval": 13,
+      "key": "a4e541fb5ec0",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "PD",
+        "PT",
+        "US"
+      ],
+      "archive_bytes": 78091,
+      "seconds": 175.7
+    },
+    {
+      "eval": 13,
+      "key": "8fe37a88a424",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "PD",
+        "PT",
+        "US"
+      ],
+      "archive_bytes": 142035,
+      "seconds": 98.28
+    },
+    {
+      "eval": 13,
+      "key": "fa2e77120039",
+      "label": "B:-US",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "PT"
+      ],
+      "archive_bytes": 80339,
+      "seconds": 161.8
+    },
+    {
+      "eval": 2,
+      "key": "e6bdf35e725c",
+      "label": "C:+G",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "PT",
+        "US",
+        "G"
+      ],
+      "archive_bytes": 77431,
+      "seconds": 108.98,
+      "cached": true
+    }
+  ],
+  "llm_calls": 0
+}

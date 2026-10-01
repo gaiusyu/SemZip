@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:semzip:anonymous:final-results:v1",
+  "title": "Anonymous final result envelope",
+  "type": "object",
+  "required": [
+    "schema",
+    "protocol",
+    "input_sha256",
+    "integration_script_sha256",
+    "size_rows",
+    "training",
+    "main_blocks",
+    "formal_cells",
+    "formal_runs",
+    "representation",
+    "paired_block_certificates",
+    "sampling_replay"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "semzip.anonymous.final-results.v1"
+    },
+    "protocol": {
+      "type": "object"
+    },
+    "input_sha256": {
+      "type": "object",
+      "required": [
+        "snapshot",
+        "formal-summary",
+        "formal-status",
+        "formal-design",
+        "representation",
+        "parity",
+        "sampling-replay"
+      ],
+      "additionalProperties": {
+        "$ref": "#/$defs/sha256"
+      }
+    },
+    "integration_script_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "main_blocks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "sampling_replay": {
+      "type": "object",
+      "required": [
+        "scope",
+        "datasets"
+      ],
+      "properties": {
+        "scope": {
+          "type": "string"
+        },
+        "datasets": {
+          "type": "array",
+          "minItems": 16,
+          "maxItems": 16,
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "size_rows": {
+      "type": "array",
+      "minItems": 96,
+      "maxItems": 96,
+      "items": {
+        "type": "object"
+      }
+    },
+    "training": {
+      "type": "array",
+      "minItems": 16,
+      "maxItems": 16,
+      "items": {
+        "type": "object"
+      }
+    },
+    "formal_cells": {
+      "type": "array",
+      "minItems": 72,
+      "maxItems": 72,
+      "items": {
+        "type": "object"
+      }
+    },
+    "formal_runs": {
+      "type": "array",
+      "minItems": 216,
+      "maxItems": 216,
+      "items": {
+        "type": "object"
+      }
+    },
+    "representation": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object"
+      }
+    },
+    "paired_block_certificates": {
+      "type": "array",
+      "minItems": 29,
+      "maxItems": 29,
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

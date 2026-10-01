@@ -1,0 +1,64 @@
+{
+  "api_calls": 0,
+  "assembled_output_files_created": 0,
+  "byte_identical_public_archive_reconstruction_recipe_verified": true,
+  "candidates": [
+    {
+      "bytes": 2941224304,
+      "candidate_source": "direct lexical tar member stream",
+      "expected_bytes": 2941224304,
+      "expected_identity": "R71 Spark",
+      "expected_sha256": "cefaf6e396850cfa5efed051ecb9b3636dd4048b5f230e15c33bfdfc937267bb",
+      "match": true,
+      "name": "lexical_exact_bytes_no_separator",
+      "sha256": "cefaf6e396850cfa5efed051ecb9b3636dd4048b5f230e15c33bfdfc937267bb",
+      "verified_tar_payload_binding": true
+    },
+    {
+      "bytes": 2941228156,
+      "candidate_source": "direct lexical tar member stream",
+      "expected_bytes": 2941228156,
+      "expected_identity": "historical source-study Spark",
+      "expected_sha256": "f4aca8610fc015b4c33dd88865608e127adf44a713d0379447ee537e5da880d5",
+      "match": true,
+      "name": "lexical_member_bytes_then_single_LF_including_last",
+      "sha256": "f4aca8610fc015b4c33dd88865608e127adf44a713d0379447ee537e5da880d5",
+      "verified_tar_payload_binding": true
+    }
+  ],
+  "compression_experiments": 0,
+  "conclusion": "The historical input is reproduced by lexical original .log member bytes plus exactly one LF after each member, including the last. Existing original member-ending LFs remain unchanged.",
+  "diagnostic_full_content_read_seconds_not_compression_benchmark": 8.440715625000001,
+  "every_tar_member_hash_matches_reference": true,
+  "historical_extra_bytes": 0,
+  "historical_verified_member_and_single_lf_mapping": true,
+  "inputs": {
+    "archive": {
+      "bytes": 183474743,
+      "md5": "31ddaff179f6c1ae5203770138156b17",
+      "reference_identity_pass": true,
+      "sha256": "f11e5df5a98ce25d0f80adb7631b022ae6f1193f510079387447ef4e0fdccef7"
+    },
+    "historical": {
+      "bytes": 2941228156,
+      "expected_bytes": 2941228156,
+      "expected_sha256": "f4aca8610fc015b4c33dd88865608e127adf44a713d0379447ee537e5da880d5",
+      "identity_pass": true,
+      "sha256": "f4aca8610fc015b4c33dd88865608e127adf44a713d0379447ee537e5da880d5"
+    },
+    "reference_ledger_sha256": "4ae97394a4d7a950600c9bdadf14b7ffb5766aa9775e6ffd2a01c22ca2dd2fc5"
+  },
+  "member_count": 3852,
+  "member_set_pass": true,
+  "network_accesses": 0,
+  "original_historical_assembly_script_found": false,
+  "reference_member_count": 3852,
+  "remote_payload_downloaded_or_revalidated": false,
+  "scope": "Local read-only full-content hashing and member-boundary validation, not a compression experiment.",
+  "script_sha256": "faeb67ae602dbc35d95c9d331a9bb5f536784530799f3236b07dc4d5c7b03e08",
+  "source_archive_read": "streaming gzip/tar inflation to access member bytes",
+  "source_input_stat_unchanged": true,
+  "status": "PASS",
+  "tar_order_is_lexical": true,
+  "unexpected_archive_entries": []
+}

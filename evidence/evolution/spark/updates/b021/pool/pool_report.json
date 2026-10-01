@@ -1,0 +1,126 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "Spark",
+  "candidates": [
+    {
+      "cid": "c0",
+      "plan": "<WORKSPACE>/r75_fallback_evolution_20260927/spark_run/upd/b021/runs/qg/c0/Spark/selected_plan.json",
+      "train_cost": 144197
+    },
+    {
+      "cid": "c3",
+      "plan": "<WORKSPACE>/r75_fallback_evolution_20260927/spark_run/upd/b021/runs/qg/c3/Spark/selected_plan.json",
+      "train_cost": 145037
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKSPACE>/r75_fallback_evolution_20260927/spark_run/upd/b021/runs/qg/c4/Spark/selected_plan.json",
+      "train_cost": 151965
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKSPACE>/r75_fallback_evolution_20260927/spark_run/upd/b021/runs/qg/c2/Spark/selected_plan.json",
+      "train_cost": 152333
+    },
+    {
+      "cid": "c1",
+      "plan": "<WORKSPACE>/r75_fallback_evolution_20260927/spark_run/upd/b021/runs/qg/c1/Spark/selected_plan.json",
+      "train_cost": 152365
+    }
+  ],
+  "start": "c0",
+  "start_train_bytes": 144197,
+  "start_cost_reproduced": true,
+  "pool_groups": 17,
+  "duplicate_groups_skipped": 4,
+  "selected_train_bytes": 143561,
+  "selected_tags": [
+    "TS",
+    "D",
+    "F",
+    "H",
+    "X4E",
+    "X2J",
+    "X2I",
+    "X3E"
+  ],
+  "selected_plan_sha256": "c5922d1dcad15dc2b2ccc6e0218d33236b4e10144bed3b002a73ccd2626585d6",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 32,
+      "n_improving": 1,
+      "before": 144197,
+      "accepted": [
+        {
+          "move": "replace:I->X4E",
+          "screen_cost": 143917,
+          "applied_cost": 143917
+        }
+      ],
+      "after": 143917
+    },
+    {
+      "round": 1,
+      "n_moves": 28,
+      "n_improving": 1,
+      "before": 143917,
+      "accepted": [
+        {
+          "move": "add:X2J",
+          "screen_cost": 143821,
+          "applied_cost": 143821
+        }
+      ],
+      "after": 143821
+    },
+    {
+      "round": 2,
+      "n_moves": 28,
+      "n_improving": 2,
+      "before": 143821,
+      "accepted": [
+        {
+          "move": "add:X2I",
+          "screen_cost": 143565,
+          "applied_cost": 143565
+        }
+      ],
+      "after": 143565
+    },
+    {
+      "round": 3,
+      "n_moves": 28,
+      "n_improving": 1,
+      "before": 143565,
+      "accepted": [
+        {
+          "move": "add:X3E",
+          "screen_cost": 143561,
+          "applied_cost": 143561
+        }
+      ],
+      "after": 143561
+    },
+    {
+      "stage": "compile",
+      "tag": "X4E",
+      "variant": "width_agnostic",
+      "before": 143561,
+      "after": 143665,
+      "accepted": false
+    },
+    {
+      "stage": "eliminate",
+      "tag": "X3E",
+      "before": 143561,
+      "after": 143565,
+      "accepted": false
+    }
+  ],
+  "evaluations": 120,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "2590e7933718b75e29111d347766765746b67e8cdf5c5c140b525870f5046799"
+}

@@ -1,0 +1,99 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure containing a timestamp, log level, and client IP address, which should be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "header_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[(\\w{3})( +)(\\w{3})( +)(\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})( +)(\\d{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Parse and store the timestamp as epoch microseconds, preserving spacing and formatting for exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    weekday, sp1, month, sp2, day, sp3, time, sp4, year = groups\n    text = f\"{weekday} {month} {day} {time} {year}\"\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1), len(sp2), len(sp3), len(sp4)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1, sp2, sp3, sp4 = layout\n    dt = datetime.fromtimestamp(micros / 1000000)\n    weekday = dt.strftime('%a')\n    month = dt.strftime('%b')\n    day = dt.strftime('%d')\n    time = dt.strftime('%H:%M:%S')\n    year = dt.strftime('%Y')\n    return f\"{weekday}{' ' * sp1}{month}{' ' * sp2}{day}{' ' * sp3}{time}{' ' * sp4}{year}\""
+        }
+      },
+      {
+        "tag": "H1",
+        "meaning": "client_ipv4_address",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "\\[client( +)((?:\\d{1,3}\\.){3}\\d{1,3})\\]",
+        "replacement": "[client{group1}{placeholder}]",
+        "program": {
+          "intent": "Extract and store the client IPv4 address as a raw string for exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1+S2+S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log timestamp",
+      "reason": "The weekday, month, day, time, and year together form a single timestamp value that can be stored as epoch microseconds for efficient compression and exact reconstruction."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "client IPv4 address",
+      "reason": "The client IP address is a structured and bounded system variable that should be stored as a raw string for exact reconstruction."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "file path",
+      "reason": "The file path is a structured and variable string that should be stored as a raw string for exact reconstruction."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "log level",
+      "reason": "The log level is a stable literal that does not vary across examples and is better kept in the main template."
+    },
+    {
+      "slot": "S8+S9+S10+S11",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "error message",
+      "reason": "The error message is a stable literal structure that does not vary across examples and is better kept in the main template."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "file_path",
+      "meaning": "file_path_accessed",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": {
+        "code": "def project_context(line, groups):\n    m = re.search(r'\\[client( +)((?:\\d{1,3}\\.){3}\\d{1,3})\\]', line)\n    if m:\n        return m.group(2)\n    return None"
+      },
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "File( +)does( +)not( +)exist:( +)(/[^ ]+)",
+      "replacement": "File{group1}does{group2}not{group3}exist:{group4}{placeholder}",
+      "program": {
+        "intent": "Extract and store the file path as a raw string for exact reconstruction, with the client IP address as context.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[4]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

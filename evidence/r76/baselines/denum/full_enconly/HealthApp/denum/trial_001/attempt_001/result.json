@@ -1,0 +1,115 @@
+{
+  "schema": "semzip.external-cli.v1",
+  "status": "ENCODE_ONLY_UNVERIFIED",
+  "started_at": "2026-09-29T20:39:22.661803+00:00",
+  "dataset": "HealthApp",
+  "codec": "denum",
+  "trial": 1,
+  "workers": 2,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+    "bytes": 23529930,
+    "mtime_ns": 1789369303348633000,
+    "device": 1048818,
+    "inode": 199002808556006449
+  },
+  "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+  "raw_bytes": 23529930,
+  "records": 253395,
+  "codec_spec": {
+    "suffix": ".tar.xz",
+    "mode": "official-cli-independent-block-adapter+official-python-decompressor",
+    "commit": "a3a697564e378643461e27ab92ea44b098424c35",
+    "encoder": "<WORKDIR>/r76_additional_20260929/baselines/denum/bin/denum_compress",
+    "encoder_sha256": "1f2a9406a9f68d6b8b58d69603182cbee8d4a2598366f7e17b7cec0869c885e8",
+    "encoder_source_sha256": "b23a6ebff714337f498cf659a3a0569519c1cd9763aabb516c8cfeb63672a2db",
+    "decoder_files_sha256": {
+      "decompress.py": "c3becae288d140314a6db55c4b48f629ea3bde38cd18e6b77ee8738ea637bc5c",
+      "Denum_simplel.py": "8807c1cf60c862595be973697db1c1120bfabb21b466c8c0e11191c03100dde1"
+    },
+    "python": "/usr/bin/python3",
+    "pydeps": "<WORKDIR>/r76_additional_20260929/baselines/denum/pydeps",
+    "tar": "/bin/tar",
+    "tar_sha256": "8498b0a43e820b0f8ed5cc61accfdfadffc7bd43ff6b0a91256a09ffc19dad38",
+    "xz": "/usr/bin/xz",
+    "xz_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+    "encode_arguments": [
+      "DATASET",
+      "100000",
+      "1"
+    ],
+    "decode_arguments": [
+      "DATASET"
+    ],
+    "archive": "byte-for-byte official output/DATASET/compressed0.xz (tar -cJf of output/DATASET/0/)"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/baselines/denum/full_enconly/HealthApp/denum/trial_001/attempt_001",
+  "mode": "encode-only",
+  "timing_scope": "full-file-cli-split-and-encode-only-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.tar.xz",
+      "archive_bytes": 196336,
+      "block_encode_seconds": 3.44192236661911,
+      "encoded_input_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68",
+      "raw_bytes": 9343767,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68",
+      "archive_sha256": "3741a91ac14de8d7180c9ed16fd07a26870942c36acdbb5c543313c06e52429a"
+    },
+    {
+      "index": 1,
+      "archive": "archives/block_000001.tar.xz",
+      "archive_bytes": 197452,
+      "block_encode_seconds": 3.4778071641921997,
+      "encoded_input_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd",
+      "raw_bytes": 9260166,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd",
+      "archive_sha256": "c7cfc3f13d1415eff0b88843005f702a0f55c1e25bfa285a5190c5053d1efbff"
+    },
+    {
+      "index": 2,
+      "archive": "archives/block_000002.tar.xz",
+      "archive_bytes": 125984,
+      "block_encode_seconds": 2.1674290001392365,
+      "encoded_input_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1",
+      "raw_bytes": 4925997,
+      "lf_count": 53395,
+      "records": 53395,
+      "ends_with_lf": true,
+      "raw_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1",
+      "archive_sha256": "1083fe325f5052f2f7ff5d90147125cec1d3f7f57bc78a978ba872d4b9c46017"
+    }
+  ],
+  "encode_seconds": 6.05877123773098,
+  "archive_bytes": 519772,
+  "roundtrip": "not-attempted",
+  "archive_only_decode": false,
+  "lossless_verified": false,
+  "unverified_reason": "Denum archive format is proven lossy (baselines/denum/proofs/SUMMARY.json, 16/16 LOSSY_FORMAT_PROVEN); no decode attempted; compression-only size, not losslessly verifiable",
+  "block_input_sha256_verified": true,
+  "audit_seconds": 0.0045806169509887695,
+  "block_count": 3,
+  "block_archive_bytes": [
+    196336,
+    197452,
+    125984
+  ],
+  "compression_ratio": 45.26971441324273,
+  "suffix_blocks": [
+    1,
+    2
+  ],
+  "suffix_raw_bytes": 14186163,
+  "suffix_archive_bytes": 323436,
+  "suffix_compression_ratio": 43.86080399213446,
+  "encode_MB_per_s": 3.8836141977877348,
+  "finished_at": "2026-09-29T20:39:28.741924+00:00"
+}

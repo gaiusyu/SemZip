@@ -1,0 +1,89 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix: timestamp, log level, and source component are consistent across examples, which should be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "block_id",
+        "meaning": "block_identifier_with_stable_affixes",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "Block( +)([a-zA-Z0-9_]+)",
+        "replacement": "Block{group1}{placeholder}",
+        "program": {
+          "intent": "Store the block identifier with stable affixes but variable numeric components.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "estimated_size_kb",
+        "meaning": "estimated_size_in_kilobytes_with_unit",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "\\(estimated( +)size( +)(\\d+)\\.(\\d)( +)KB,",
+        "replacement": "(estimated{group1}size{group2}{placeholder}{group5}KB,",
+        "program": {
+          "intent": "Parse estimated size in KB, store as centi-units of KB, and reconstruct original text with unit and spacing.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    whole, frac = groups[2], groups[3]\n    return {\n        'stored': [int(whole) * 10 + int(frac)],\n        'layout': [len(groups[1]), len(groups[2])]\n    }\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, whole_width = layout\n    whole = str(value // 10).zfill(whole_width)\n    frac = str(value % 10)\n    return '(estimated' + (' ' * sp1_len) + 'size ' + whole + '.' + frac"
+        }
+      },
+      {
+        "tag": "free_memory_size",
+        "meaning": "free_memory_size_with_unit",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "(\\d+)\\.(\\d)( +)(KB|GB)\\)",
+        "replacement": "{placeholder}{group3}{group4})",
+        "program": {
+          "intent": "Parse free memory size as centi-units of KB or GB, store unit separately, and reconstruct original text with unit and spacing.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    whole, frac, sp1, unit = groups\n    value = int(whole) * 10 + int(frac)\n    unit_code = {'KB': 1, 'GB': 2}.get(unit, 0)\n    return {\n        'stored': [value, unit_code],\n        'layout': [len(sp1)]\n    }\n\ndef inverse(record):\n    value, unit_code = record['stored']\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    whole = str(value // 10)\n    frac = str(value % 10)\n    unit_names = {1: 'KB', 2: 'GB'}\n    unit = unit_names.get(unit_code, '')\n    return whole + '.' + frac + (' ' * sp1_len) + unit"
+        }
+      }
+    ],
+    "slot_actions": [
+      {
+        "slot": "S0+S1+S2+S3",
+        "action": "COMPOSE_FIELDS_TO_INT",
+        "meaning": "log timestamp and classification",
+        "reason": "Timestamp, log level, and source component form a unified header for each log line."
+      },
+      {
+        "slot": "S5",
+        "action": "STREAM_RAW",
+        "meaning": "block identifier for broadcast piece",
+        "reason": "Block ID with stable affixes and varying numeric components that may change across lines."
+      },
+      {
+        "slot": "S13+S14",
+        "action": "COMPOSE_FIELDS_TO_INT",
+        "meaning": "estimated size in KB",
+        "reason": "Numeric value with unit 'KB' forms a formatted numeric stream."
+      },
+      {
+        "slot": "S16+S17",
+        "action": "COMPOSE_FIELDS_TO_INT",
+        "meaning": "free memory size in GB or KB",
+        "reason": "Numeric value with unit 'GB' or 'KB' forms a formatted numeric stream."
+      }
+    ]
+  },
+  "_proposal_cache_mode": "api"
+}

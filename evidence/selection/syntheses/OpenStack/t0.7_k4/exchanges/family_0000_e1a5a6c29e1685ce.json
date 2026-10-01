@@ -1,0 +1,169 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled logs share a repeated prefix and have consistent key-value fields with varying values, indicating a unified structure suitable for systematic extraction.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "primary_log_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4}-(\\d{2})-(\\d{2}))( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Extract the log timestamp as epoch microseconds while preserving the exact formatting.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    date, month, day, sp1, time = groups\n    text = date + ' ' + time\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1 = ' ' * layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    formatted = dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\n    return formatted[:10] + sp1 + formatted[11:]"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "log file and initial timestamp",
+      "reason": "Appears to be a stable constant header structure; does not vary across examples except for timestamp."
+    },
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "primary log timestamp",
+      "reason": "Date and time form the primary log timestamp, suitable for composed numeric extraction."
+    },
+    {
+      "slot": "S3",
+      "action": "UINT_DELTA",
+      "meaning": "process_id",
+      "reason": "Represents a stable and frequently repeating numeric process ID."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "component and module",
+      "reason": "Appears to be stable structure for identifying the component and module; does not vary significantly across examples."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "request_id",
+      "reason": "Opaque UUID-like identifier with intrinsic structure; not suitable for numeric transformations."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "user_token",
+      "reason": "Opaque high-entropy identifier; should be stored as an exact raw stream."
+    },
+    {
+      "slot": "S8",
+      "action": "STREAM_RAW",
+      "meaning": "project_id",
+      "reason": "Opaque high-entropy identifier; should be stored as an exact raw stream."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "client_ips",
+      "reason": "Contains multiple IP addresses separated by a comma; matches intrinsic structure of IP addresses."
+    },
+    {
+      "slot": "S13",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "HTTP method",
+      "reason": "Appears to be a low-entropy constant with limited variability."
+    },
+    {
+      "slot": "S14",
+      "action": "STREAM_RAW",
+      "meaning": "HTTP path",
+      "reason": "Variable path structure with embedded identifiers; changes significantly across examples."
+    },
+    {
+      "slot": "S15",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "HTTP version",
+      "reason": "Appears to be a low-entropy constant value with limited variability."
+    },
+    {
+      "slot": "S16+S17",
+      "action": "UINT_DELTA",
+      "meaning": "http_status_code",
+      "reason": "Represents a stable numeric HTTP status code, suitable for delta encoding."
+    },
+    {
+      "slot": "S18+S19",
+      "action": "UINT_DELTA",
+      "meaning": "response_length",
+      "reason": "Represents a stable numeric value with locality and repetition, suitable for delta encoding."
+    },
+    {
+      "slot": "S20+S21",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "response_time_microseconds",
+      "reason": "Time field is numeric with a fixed format; suitable for composed numeric extraction."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "http_status_code",
+      "meaning": "numeric_http_status_code",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "status:( +)(\\d+)",
+      "replacement": "status:{group1}{placeholder}",
+      "program": {
+        "intent": "Extract HTTP status code as a numeric value.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': [len(groups[0])]}\n\ndef inverse(record):\n    return 'status:' + (' ' * record['layout'][0]) + str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "response_length",
+      "meaning": "response_payload_length_in_bytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "len:( +)(\\d+)",
+      "replacement": "len:{group1}{placeholder}",
+      "program": {
+        "intent": "Extract the response payload length as a numeric value.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': [len(groups[0])]}\n\ndef inverse(record):\n    return 'len:' + (' ' * record['layout'][0]) + str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "response_time",
+      "meaning": "response_time_in_microseconds",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "time:( +)(\\d+)\\.(\\d+)",
+      "replacement": "time:{group1}{placeholder}",
+      "program": {
+        "intent": "Extract response time as microseconds by scaling the fractional seconds.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    whole, frac = int(groups[1]), groups[2]\n    frac_width = len(frac)\n    micros = whole * (10 ** 6) + int(frac.ljust(6, '0'))\n    return {'stored': [micros], 'layout': [len(groups[0]), frac_width]}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    layout = record['layout']\n    sp1_len, frac_width = layout\n    whole = micros // (10 ** 6)\n    frac = str(micros % (10 ** 6)).zfill(6)[:frac_width]\n    return 'time:' + (' ' * sp1_len) + str(whole) + '.' + frac"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

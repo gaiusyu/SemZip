@@ -1,0 +1,568 @@
+[
+  {
+    "family_id": 3,
+    "kind": "open_function",
+    "meaning": "log_timestamp_epoch",
+    "reasons": [],
+    "regex": "(\\d{6,10})( +)",
+    "replacement": "{placeholder}{group2}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    return {'stored': [int(groups[0])], 'layout': [len(groups[1])]}\\n\\ndef inverse(record):\\n    timestamp = int(record['stored'][0])\\n    spacing = ' ' * record['layout'][0]\\n    return str(timestamp) + spacing\",\"group_regex\":\"^(?:(\\\\d{6,10})( +))$\",\"intent\":\"Extracts the timestamp as an integer and stores it as epoch seconds.\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "H0",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 12,
+    "tag": "A"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 3,
+    "meaning": "node_identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"node-D4 \", \"groups\": [\"node-D4\", \" \"], \"record\": {\"stored\": [\"node-D4\"], \"layout\": [1]}, \"inverse\": \"node-D4 \", \"restored_match\": \"node-D4  \", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "(node-[A-Z]\\d)( +)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}{group2}",
+    "source_tag": "H1",
+    "status": "verifier_repair_produced_candidates",
+    "support": 12
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "node_identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(node-[A-Z]\\d)( +)",
+    "replacement": "{placeholder}{group2}",
+    "source_tag": "H1",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "H1"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 3,
+    "meaning": "domain_name_value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"domain root13_domain\", \"groups\": [\" \", \"root13_domain\"], \"record\": {\"stored\": [\"root13_domain\"], \"layout\": [1]}, \"inverse\": \"domain root13_domain\", \"restored_match\": \"domain domain root13_domain\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "domain( +)([A-Za-z0-9_]+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "domain{group1}{placeholder}",
+    "source_tag": "domain_name",
+    "status": "verifier_repair_produced_candidates",
+    "support": 12
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "domain_name_value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "domain( +)([A-Za-z0-9_]+)",
+    "replacement": "domain{group1}{placeholder}",
+    "source_tag": "domain_name",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "domain_name"
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "node_identifier_with_suffix",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "node( +)(node-[A-Za-z0-9-]+)",
+    "replacement": "node{group1}{placeholder}",
+    "source_tag": "node_identifier",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "node_identifier"
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "node_identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(node-[A-Z]\\d)( +)",
+    "replacement": "{placeholder}{group2}",
+    "source_tag": "H1",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "H1"
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "domain_name_value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "domain( +)([A-Za-z0-9_]+)",
+    "replacement": "domain{group1}{placeholder}",
+    "source_tag": "domain_name",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "domain_name"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 1,
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"2558385 node-127 action start 1073118184\", \"groups\": [\"2558385\", \" \", \" \", \"1073118184\"], \"failure\": \"IndexError: list index out of range\"}"
+    ],
+    "regex": "(\\d{7})( +).*?( +)(\\d{10})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 12
+  },
+  {
+    "family_id": 1,
+    "kind": "python_exec",
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{7})( +).*?( +)(\\d{10})",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "composed_timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 1,
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"2558385 node-127 action start 1073118184\", \"groups\": [\"2558385\", \"1073118184\"], \"record\": {\"stored\": [25583851073118184], \"layout\": []}, \"inverse\": \"2558385 1073118184\", \"restored_match\": \"2558385 1073118184\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "(\\d{7}) .*? (\\d{10})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 12
+  },
+  {
+    "family_id": 1,
+    "kind": "python_exec",
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{7}) .*? (\\d{10})",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "composed_timestamp"
+  },
+  {
+    "family_id": 1,
+    "kind": "python_exec",
+    "meaning": "node field value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "node-(\\d+)",
+    "replacement": "node-{placeholder}",
+    "source_tag": "node_identifier",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "node_identifier"
+  },
+  {
+    "family_id": 1,
+    "kind": "python_exec",
+    "meaning": "command field value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\(command (\\d+)\\)",
+    "replacement": "(command {placeholder})",
+    "source_tag": "command_identifier",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "command_identifier"
+  },
+  {
+    "family_id": 1,
+    "kind": "python_exec",
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{7})( +).*?( +)(\\d{10})",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "composed_timestamp"
+  },
+  {
+    "family_id": 1,
+    "kind": "python_exec",
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{7}) .*? (\\d{10})",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 12,
+    "tag": "composed_timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 10,
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"2313342 full partition status 1061583461\", \"groups\": [\"2313342\", \" \", \" \", \"1061583461\"], \"failure\": \"IndexError: list index out of range\"}"
+    ],
+    "regex": "(\\d{7})( +).*?( +)(\\d{10})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 6
+  },
+  {
+    "family_id": 10,
+    "kind": "python_exec",
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{7})( +).*?( +)(\\d{10})",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 6,
+    "tag": "composed_timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 10,
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"2313342 full partition status 1061583461\", \"groups\": [\"2313342\", \"1061583461\"], \"record\": {\"stored\": [23133421061583461], \"layout\": []}, \"inverse\": \"2313342 1061583461\", \"restored_match\": \"2313342 1061583461\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "(\\d{7}) .*? (\\d{10})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 6
+  },
+  {
+    "family_id": 10,
+    "kind": "python_exec",
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{7}) .*? (\\d{10})",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 6,
+    "tag": "composed_timestamp"
+  },
+  {
+    "family_id": 10,
+    "kind": "python_exec",
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{7})( +).*?( +)(\\d{10})",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 6,
+    "tag": "composed_timestamp"
+  },
+  {
+    "family_id": 10,
+    "kind": "python_exec",
+    "meaning": "timestamp-like value",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{7}) .*? (\\d{10})",
+    "replacement": "{placeholder}",
+    "source_tag": "composed_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 6,
+    "tag": "composed_timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 0,
+    "meaning": "fan speed values",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"( 3552 3534 3375 **** 3515 3479 )\", \"groups\": [\"3552\", \"3534\", \"3375\", \"****\", \"3515\", \"3479\"], \"failure\": \"ValueError: unsafe generated Python node: ListComp\"}"
+    ],
+    "regex": "\\(\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+|\\*\\*\\*\\*)\\s+(\\d+)\\s+(\\d+)\\s*\\)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "({placeholder})",
+    "source_tag": "fan_speeds",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "fan speed values",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\(\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+|\\*\\*\\*\\*)\\s+(\\d+)\\s+(\\d+)\\s*\\)",
+    "replacement": "({placeholder})",
+    "source_tag": "fan_speeds",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "fan_speeds"
+  },
+  {
+    "family_id": 0,
+    "kind": "auto",
+    "meaning": "switch module identifier",
+    "reasons": [],
+    "regex": "(Interconnect-[0-9A-Za-z]+)",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "switch_module_id",
+    "status": "pruned_constant_local_stream",
+    "support": 4
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "fan speed values",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\(\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+|\\*\\*\\*\\*)\\s+(\\d+)\\s+(\\d+)\\s*\\)",
+    "replacement": "({placeholder})",
+    "source_tag": "fan_speeds",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "fan_speeds"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 7,
+    "meaning": "component identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Component \\\\042alt0\\\\042\", \"groups\": [\"\\\\042alt0\\\\042\"], \"record\": {\"stored\": [\"\\\\042alt0\\\\042\"], \"layout\": []}, \"inverse\": \"Component \\\\042alt0\\\\042\", \"restored_match\": \"Component Component \\\\042alt0\\\\042\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "Component (\\\\042.*?\\\\042)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "Component {placeholder}",
+    "source_tag": "component_id",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 7,
+    "kind": "python_exec",
+    "meaning": "component identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "Component (\\\\042.*?\\\\042)",
+    "replacement": "Component {placeholder}",
+    "source_tag": "component_id",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "component_id"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 7,
+    "meaning": "hardware identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"(HWID=1328)\", \"groups\": [\"1328\"], \"record\": {\"stored\": [\"1328\"], \"layout\": []}, \"inverse\": \"(HWID=1328)\", \"restored_match\": \"(HWID=(HWID=1328))\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "\\(HWID=(\\d+)\\)",
+    "repair_candidates": 0,
+    "repair_category": "executed_counterexample",
+    "replacement": "(HWID={placeholder})",
+    "source_tag": "hardware_id",
+    "status": "verifier_repair_no_candidate",
+    "support": 4
+  },
+  {
+    "family_id": 7,
+    "kind": "python_exec",
+    "meaning": "hardware identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\(HWID=(\\d+)\\)",
+    "replacement": "(HWID={placeholder})",
+    "source_tag": "hardware_id",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "hardware_id"
+  },
+  {
+    "family_id": 7,
+    "kind": "auto",
+    "meaning": "component identifier",
+    "reasons": [],
+    "regex": "Component (\\\\042.*?\\\\042)",
+    "replacement": "Component {placeholder}",
+    "semantic_key": "",
+    "source_tag": "component_id",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "B"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 5,
+    "meaning": "domain storage identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"domain storage1034\", \"groups\": [\"storage1034\"], \"record\": {\"stored\": [\"storage1034\"], \"layout\": []}, \"inverse\": \"domain storage1034\", \"restored_match\": \"domain domain storage1034\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "domain (\\S+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "domain {placeholder}",
+    "source_tag": "domain_storage",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 5,
+    "kind": "python_exec",
+    "meaning": "domain storage identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "domain (\\S+)",
+    "replacement": "domain {placeholder}",
+    "source_tag": "domain_storage",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "domain_storage"
+  },
+  {
+    "family_id": 5,
+    "kind": "auto",
+    "meaning": "domain storage identifier",
+    "reasons": [],
+    "regex": "domain (\\S+)",
+    "replacement": "domain {placeholder}",
+    "semantic_key": "domain:auto",
+    "source_tag": "domain_storage",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "C"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 8,
+    "meaning": "domain name",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"domain root1_local\", \"groups\": [\"root1_local\"], \"record\": {\"stored\": [\"root1_local\"], \"layout\": []}, \"inverse\": \"domain root1_local\", \"restored_match\": \"domain domain root1_local\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "domain (\\S+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "domain {placeholder}",
+    "source_tag": "domain_name",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "domain name",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "domain (\\S+)",
+    "replacement": "domain {placeholder}",
+    "source_tag": "domain_name",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "domain_name"
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "domain name",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "domain (\\S+)",
+    "replacement": "domain {placeholder}",
+    "source_tag": "domain_name",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "domain_name"
+  },
+  {
+    "family_id": 4,
+    "kind": "auto",
+    "meaning": "structured node identifier",
+    "reasons": [],
+    "regex": "node-\\d+",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "node_identifier",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "D"
+  },
+  {
+    "family_id": 20,
+    "kind": "auto",
+    "meaning": "structured node identifier",
+    "reasons": [],
+    "regex": "node-\\d+",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "node_identifier",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "E"
+  }
+]

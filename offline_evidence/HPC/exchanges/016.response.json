@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"families\": [\n    {\n      \"family_id\": 4,\n      \"family_analysis\": {\n        \"has_composable_tokens\": false,\n        \"composable_groups\": [],\n        \"has_semantic_equivalent_tokens\": false,\n        \"semantic_equivalent_groups\": [],\n        \"raw_variable_groups\": [\n          {\n            \"name\": \"intrinsically_structured_variable\",\n            \"tokens\": [\n              \"node-127\",\n              \"node-230\"\n            ],\n            \"reason\": \"the captured value itself contains at least two explicit structural separators encoded by the regex\",\n            \"must_emit_function\": true\n          }\n        ]\n      },\n      \"header\": {\n        \"has_unified_header\": false,\n        \"reason\": \"no repeated prefix/header detected\"\n      },\n      \"slot_actions\": [],\n      \"class_inventory\": {\n        \"class_1_composed_numeric\": [],\n        \"class_2_formatted_numeric\": [],\n        \"class_3_common_variable\": [\n          \"node_identifier\"\n        ]\n      },\n      \"class_1_functions\": [],\n      \"class_2_functions\": [],\n      \"class_3_functions\": [\n        {\n          \"tag\": \"node_identifier\",\n          \"meaning\": \"structured node identifier\",\n          \"class\": \"class_3_common_variable\",\n          \"value_type\": \"string\",\n          \"target_role\": \"ordinary_value\",\n          \"context\": null,\n          \"source_separation\": {\n            \"decision\": \"raw_single_source\",\n            \"stored_source\": \"node identifier\",\n            \"context_source\": null,\n            \"why_not_merge_raw\": \"the value is already structured and self-contained\"\n          },\n          \"general\": true,\n          \"order_hint\": \"global_atomic\",\n          \"regex\": \"node-\\\\d+\",\n          \"replacement\": \"{placeholder}\",\n          \"program\": {\n            \"op\": \"python_exec\",\n            \"code\": \"def forward(groups):\\n    return {'stored': [groups[0]], 'layout': []}\\n\\ndef inverse(record):\\n    return str(record['stored'][0])\"\n          }\n        }\n      ]\n    },\n    {\n      \"family_id\": 20,\n      \"family_analysis\": {\n        \"has_composable_tokens\": false,\n        \"composable_groups\": [],\n        \"has_semantic_equivalent_tokens\": false,\n        \"semantic_equivalent_groups\": [],\n        \"raw_variable_groups\": [\n          {\n            \"name\": \"intrinsically_structured_variable\",\n            \"tokens\": [\n              \"node-32\",\n              \"node-180\"\n            ],\n            \"reason\": \"the captured value itself contains at least two explicit structural separators encoded by the regex\",\n            \"must_emit_function\": true\n          }\n        ]\n      },\n      \"header\": {\n        \"has_unified_header\": false,\n        \"reason\": \"no repeated prefix/header detected\"\n      },\n      \"slot_actions\": [],\n      \"class_inventory\": {\n        \"class_1_composed_numeric\": [],\n        \"class_2_formatted_numeric\": [],\n        \"class_3_common_variable\": [\n          \"node_identifier\"\n        ]\n      },\n      \"class_1_functions\": [],\n      \"class_2_functions\": [],\n      \"class_3_functions\": [\n        {\n          \"tag\": \"node_identifier\",\n          \"meaning\": \"structured node identifier\",\n          \"class\": \"class_3_common_variable\",\n          \"value_type\": \"string\",\n          \"target_role\": \"ordinary_value\",\n          \"context\": null,\n          \"source_separation\": {\n            \"decision\": \"raw_single_source\",\n            \"stored_source\": \"node identifier\",\n            \"context_source\": null,\n            \"why_not_merge_raw\": \"the value is already structured and self-contained\"\n          },\n          \"general\": true,\n          \"order_hint\": \"global_atomic\",\n          \"regex\": \"node-\\\\d+\",\n          \"replacement\": \"{placeholder}\",\n          \"program\": {\n            \"op\": \"python_exec\",\n            \"code\": \"def forward(groups):\\n    return {'stored': [groups[0]], 'layout': []}\\n\\ndef inverse(record):\\n    return str(record['stored'][0])\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 868,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 5623,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 6491
+  }
+}

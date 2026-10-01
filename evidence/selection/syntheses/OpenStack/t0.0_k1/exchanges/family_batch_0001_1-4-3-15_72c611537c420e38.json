@@ -1,0 +1,466 @@
+{
+  "families": [
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "S1",
+              "S2"
+            ],
+            "reason": "S1 and S2 together represent a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "instance_id",
+            "tokens": [
+              "S13"
+            ],
+            "reason": "The captured value contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a common prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "S1 and S2 together form a timestamp"
+        },
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "instance identifier",
+          "reason": "S13 is a unique identifier for the instance"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as microseconds since epoch",
+            "context_source": null,
+            "why_not_merge_raw": "S1 and S2 together form a single timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%Y-%m-%d %H:%M:%S.%f\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S.%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance ID",
+            "context_source": null,
+            "why_not_merge_raw": "The instance ID is a standalone value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\[instance: ([a-f0-9-]+)\\]",
+          "replacement": "[instance: {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "S1",
+              "S2"
+            ],
+            "reason": "S1 and S2 together represent a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "file_path",
+            "tokens": [
+              "S15"
+            ],
+            "reason": "The captured value contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a common prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "S1 and S2 together form a timestamp"
+        },
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "file path",
+          "reason": "S15 is a structured file path"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "file_path"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as microseconds since epoch",
+            "context_source": null,
+            "why_not_merge_raw": "S1 and S2 together form a single timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%Y-%m-%d %H:%M:%S.%f\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S.%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "file_path",
+          "meaning": "file path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "file path",
+            "context_source": null,
+            "why_not_merge_raw": "The file path is a standalone value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "files: (.+)",
+          "replacement": "files: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "S1",
+              "S2"
+            ],
+            "reason": "S1 and S2 together represent a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "image_id",
+            "tokens": [
+              "S13"
+            ],
+            "reason": "The captured value contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "file_path",
+            "tokens": [
+              "S15"
+            ],
+            "reason": "The captured value contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a common prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "S1 and S2 together form a timestamp"
+        },
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "image identifier",
+          "reason": "S13 is a unique identifier for the image"
+        },
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "file path",
+          "reason": "S15 is a structured file path"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "image_id",
+          "file_path"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as microseconds since epoch",
+            "context_source": null,
+            "why_not_merge_raw": "S1 and S2 together form a single timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%Y-%m-%d %H:%M:%S.%f\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S.%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "image_id",
+          "meaning": "image identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "image ID",
+            "context_source": null,
+            "why_not_merge_raw": "The image ID is a standalone value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "image ([a-f0-9-]+) at",
+          "replacement": "image {placeholder} at",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "file_path",
+          "meaning": "file path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "file path",
+            "context_source": null,
+            "why_not_merge_raw": "The file path is a standalone value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "at \\((.+)\\):",
+          "replacement": "at ({placeholder}):",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "S1",
+              "S2"
+            ],
+            "reason": "S1 and S2 together represent a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "instance_id",
+            "tokens": [
+              "S13"
+            ],
+            "reason": "The captured value contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Log lines share a common prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "S1 and S2 together form a timestamp"
+        },
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "instance identifier",
+          "reason": "S13 is a unique identifier for the instance"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as microseconds since epoch",
+            "context_source": null,
+            "why_not_merge_raw": "S1 and S2 together form a single timestamp"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%Y-%m-%d %H:%M:%S.%f\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%Y-%m-%d %H:%M:%S.%f\")[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance ID",
+            "context_source": null,
+            "why_not_merge_raw": "The instance ID is a standalone value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\[instance: ([a-f0-9-]+)\\]",
+          "replacement": "[instance: {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

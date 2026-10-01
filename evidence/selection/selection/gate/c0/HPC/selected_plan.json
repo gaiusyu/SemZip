@@ -1,0 +1,83 @@
+{
+ "dataset": "HPC",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "node",
+     "node",
+     "status",
+     "active"
+    ],
+    "tags": [
+     "E"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "E": "<E>",
+  "TS": "<TS>"
+ },
+ "spec_count": 2,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "(\\d+)( +)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': [len(groups[1])]}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    spacing = ' ' * record['layout'][0]\n    return str(timestamp) + spacing",
+    "group_regex": "^(?:(\\d+)( +))$",
+    "intent": "Extracts the timestamp as an integer and stores it as epoch seconds.",
+    "op": "python_exec",
+    "_layout_polymorphic_shared_delta": true,
+    "_layout_placeholder_prefix": "",
+    "_layout_placeholder_suffix": ""
+   },
+   "proposal_tag": "h0",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    return {'stored': [int(groups[0])], 'layout': [len(groups[1])]}\\n\\ndef inverse(record):\\n    timestamp = int(record['stored'][0])\\n    spacing = ' ' * record['layout'][0]\\n    return str(timestamp) + spacing\",\"group_regex\":\"^(?:(\\\\d{6,10})( +))$\",\"intent\":\"Extracts the timestamp as an integer and stores it as epoch seconds.\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "node-\\d+",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "node_identifier",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "E",
+   "value_type": "string"
+  }
+ ],
+ "version": 1
+}

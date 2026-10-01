@@ -1,0 +1,622 @@
+{
+  "families": [
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_and_metric",
+            "tokens": [
+              "S0",
+              "S4"
+            ],
+            "reason": "S0 and S4 jointly describe a unique event with a timestamp and metric",
+            "target_value": "one compact integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "node_identifier",
+            "tokens": [
+              "S1"
+            ],
+            "reason": "node identifier contains intrinsic structured separators (e.g., '-')",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "template anchor key indicates repetitive structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "event timestamp and metric",
+          "reason": "unique event identifier combining timestamp and metric"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "event_timestamp_metric"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "event_timestamp_metric",
+          "meaning": "combined timestamp and metric",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "combined timestamp and metric",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp and metric describe one unified event"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{7})\\s\\S+\\s\\S+\\s\\S+\\s(\\d{10})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    timestamp = int(groups[0])\n    metric = int(groups[1])\n    return {'stored': [timestamp * 10**10 + metric], 'layout': []}\n\ndef inverse(record):\n    combined = int(record['stored'][0])\n    timestamp = combined // 10**10\n    metric = combined % 10**10\n    return f'{timestamp} {metric}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_identifier",
+          "meaning": "unique node ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "node identifier text",
+            "context_source": null,
+            "why_not_merge_raw": "node identifier is a structured variable with intrinsic separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\S+-(\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'node-{record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_and_network_interface",
+            "tokens": [
+              "S4",
+              "S19"
+            ],
+            "reason": "timestamp and interface identifier jointly describe network connection event",
+            "target_value": "one compact integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "network_address",
+            "tokens": [
+              "S16"
+            ],
+            "reason": "captured value is intrinsically structured with multiple separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "template anchor key indicates repetitive structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S4+S19",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp and network interface",
+          "reason": "network connection event uniquely described by timestamp and interface"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_interface"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "network_address"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_interface",
+          "meaning": "timestamp and interface identifier",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "combined timestamp and interface",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp and interface describe one unified event"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{10})\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s(alt\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    timestamp = int(groups[0])\n    interface = int(groups[1][3:])\n    return {'stored': [timestamp * 1000 + interface], 'layout': []}\n\ndef inverse(record):\n    combined = int(record['stored'][0])\n    timestamp = combined // 1000\n    interface = combined % 1000\n    return f'{timestamp} alt{interface}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "network_address",
+          "meaning": "IPv4 address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "IPv4 address",
+            "context_source": null,
+            "why_not_merge_raw": "IPv4 address is intrinsically structured"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(\\d+\\.\\d+\\.\\d+\\.\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_and_command",
+            "tokens": [
+              "S4",
+              "S1"
+            ],
+            "reason": "timestamp and command ID jointly describe the event",
+            "target_value": "one compact integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "template anchor key indicates repetitive structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S4+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp and command ID",
+          "reason": "event uniquely described by timestamp and command ID"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_command"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_command",
+          "meaning": "timestamp and command ID",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "combined timestamp and command ID",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp and command ID describe one unified event"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{10})\\s(\\d{4})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    timestamp = int(groups[0])\n    command_id = int(groups[1])\n    return {'stored': [timestamp * 10000 + command_id], 'layout': []}\n\ndef inverse(record):\n    combined = int(record['stored'][0])\n    timestamp = combined // 10000\n    command_id = combined % 10000\n    return f'{timestamp} {command_id}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_and_command",
+            "tokens": [
+              "S4",
+              "S1"
+            ],
+            "reason": "timestamp and command ID jointly describe the event",
+            "target_value": "one compact integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "template anchor key indicates repetitive structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S4+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp and command ID",
+          "reason": "event uniquely described by timestamp and command ID"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_command"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_command",
+          "meaning": "timestamp and command ID",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "combined timestamp and command ID",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp and command ID describe one unified event"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{10})\\s(\\d{4})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    timestamp = int(groups[0])\n    command_id = int(groups[1])\n    return {'stored': [timestamp * 10000 + command_id], 'layout': []}\n\ndef inverse(record):\n    combined = int(record['stored'][0])\n    timestamp = combined // 10000\n    command_id = combined % 10000\n    return f'{timestamp} {command_id}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_interconnect",
+            "tokens": [
+              "S11"
+            ],
+            "reason": "captured value is intrinsically structured with multiple separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "template anchor key indicates repetitive structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "structured interconnect identifier",
+          "reason": "describes specific interconnect endpoint"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "structured_interconnect"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "structured_interconnect",
+          "meaning": "interconnect identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "interconnect identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured value with separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(Interconnect-\\S+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_and_metric",
+            "tokens": [
+              "S4",
+              "S8"
+            ],
+            "reason": "timestamp and ambient temperature jointly describe the event",
+            "target_value": "one compact integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "template anchor key indicates repetitive structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S4+S8",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp and ambient temperature",
+          "reason": "event uniquely described by timestamp and ambient temperature"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_temperature"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_temperature",
+          "meaning": "timestamp and ambient temperature",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "combined timestamp and temperature",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp and temperature describe one unified event"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{10})\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\sambient=(\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    timestamp = int(groups[0])\n    temperature = int(groups[1])\n    return {'stored': [timestamp * 100 + temperature], 'layout': []}\n\ndef inverse(record):\n    combined = int(record['stored'][0])\n    timestamp = combined // 100\n    temperature = combined % 100\n    return f'{timestamp} ambient={temperature}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_and_temperature",
+            "tokens": [
+              "S4",
+              "S7"
+            ],
+            "reason": "timestamp and temperature jointly describe the event",
+            "target_value": "one compact integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "template anchor key indicates repetitive structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S4+S7",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp and temperature",
+          "reason": "event uniquely described by timestamp and temperature"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_temperature"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_temperature",
+          "meaning": "timestamp and temperature",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "combined timestamp and temperature",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp and temperature describe one unified event"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{10})\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\((\\d+)C\\)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    timestamp = int(groups[0])\n    temperature = int(groups[1])\n    return {'stored': [timestamp * 100 + temperature], 'layout': []}\n\ndef inverse(record):\n    combined = int(record['stored'][0])\n    timestamp = combined // 100\n    temperature = combined % 100\n    return f'{timestamp} ({temperature}C)'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 19,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "template anchor key indicates repetitive structure"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_and_status",
+            "tokens": [
+              "S4",
+              "S6"
+            ],
+            "reason": "timestamp and status jointly describe the event",
+            "target_value": "one compact integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "template anchor key indicates repetitive structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S4+S6",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp and status",
+          "reason": "event uniquely described by timestamp and status"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_status"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_status",
+          "meaning": "timestamp and status",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "combined timestamp and status",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp and status describe one unified event"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{10})\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s\\S+\\s(\\S+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    timestamp = int(groups[0])\n    status = groups[1]\n    return {'stored': [timestamp], 'layout': [status]}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    status = record['layout'][0]\n    return f'{timestamp} {status}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

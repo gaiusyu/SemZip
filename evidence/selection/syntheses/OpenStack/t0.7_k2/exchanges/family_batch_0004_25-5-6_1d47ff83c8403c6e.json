@@ -1,0 +1,272 @@
+{
+  "families": [
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "cp-1.slowvm1.tcloud-pg0.utah.cloudlab.us:cp-1.slowvm1.tcloud-pg0.utah.cloudlab.us",
+              "req-addc1839-2ed5-4778-b57e-5854eb7b8b09"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "structured_host_field",
+          "request_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "structured_host_field",
+          "meaning": "host identifier with structure",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "full host identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsic structure encoded by separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "for (.+:[^ ]+)",
+          "replacement": "for {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "request_id",
+          "meaning": "request identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "request ID",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsic structure encoded by separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\[(req-[a-z0-9-]+)",
+          "replacement": "[{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "disk_usage_units",
+            "tokens": [
+              "15 GB",
+              "0.00 GB"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "disk_usage_units"
+        ],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "disk_usage_units",
+          "meaning": "disk usage in GB with optional display",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "disk usage in GB",
+            "context_source": null,
+            "why_not_merge_raw": "display units are derivable from stored value"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "disk: ([0-9]+\\.?[0-9]*) GB,",
+          "replacement": "disk: {placeholder} GB,",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    value = float(groups[0])\n    return {'stored': [int(value * 100)], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0] / 100\n    return f'{value:.2f}'"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance ID",
+            "context_source": null,
+            "why_not_merge_raw": "explicitly introduced by field-name literal"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "instance: ([a-z0-9-]+)",
+          "replacement": "instance: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "vcpu_usage_units",
+            "tokens": [
+              "16 VCPU",
+              "0.00 VCPU"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "vcpu_usage_units"
+        ],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "vcpu_usage_units",
+          "meaning": "vcpu usage with units",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "vcpu usage",
+            "context_source": null,
+            "why_not_merge_raw": "display units are derivable from stored value"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "vcpu: ([0-9]+\\.?[0-9]*) VCPU",
+          "replacement": "vcpu: {placeholder} VCPU",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    value = float(groups[0])\n    return {'stored': [int(value * 100)], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0] / 100\n    return f'{value:.2f}'"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance ID",
+            "context_source": null,
+            "why_not_merge_raw": "explicitly introduced by field-name literal"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "instance: ([a-z0-9-]+)",
+          "replacement": "instance: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

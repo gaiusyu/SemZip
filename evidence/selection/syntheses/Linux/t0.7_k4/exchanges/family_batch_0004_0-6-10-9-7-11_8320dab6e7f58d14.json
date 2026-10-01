@@ -1,0 +1,390 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "log_timestamp",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "process_id",
+            "tokens": [
+              "28473",
+              "28474",
+              "17401",
+              "17411"
+            ],
+            "reason": "the captured value itself is uniquely numeric and independent",
+            "must_emit_function": true
+          },
+          {
+            "name": "process_name",
+            "tokens": [
+              "httpd"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix including timestamp and kernel process context"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log_timestamp",
+          "reason": "timestamp is a composed field"
+        },
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW",
+          "meaning": "process_id",
+          "reason": "process ID is an independent numeric value"
+        },
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW",
+          "meaning": "process_name",
+          "reason": "process name is an independent string value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "process_id",
+          "process_name"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_time",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp is a composed semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\w{3}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} combo kernel",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    from datetime import datetime\n    dt = datetime.strptime(f'{groups[0]} {groups[1].zfill(2)} {groups[2]}', '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    from datetime import datetime\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "process_id",
+          "meaning": "process_id",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "process_id",
+            "context_source": null,
+            "why_not_merge_raw": "process ID is uniquely numeric and independent"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "Killed process (\\d+)",
+          "replacement": "Killed process {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "process_name",
+          "meaning": "process_name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "process_name",
+            "context_source": null,
+            "why_not_merge_raw": "process name is introduced by a stable field-name literal"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\((\\w+)\\)\\.",
+          "replacement": "({placeholder}).",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "audit_event_id_timestamp",
+            "tokens": [
+              "audit",
+              "timestamp",
+              "event_id"
+            ],
+            "reason": "audit event IDs include timestamp and an integer ID",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix including timestamp and kernel process context"
+      },
+      "slot_actions": [
+        {
+          "slot": "S5",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "audit_event_id_timestamp",
+          "reason": "audit event ID and timestamp must be extracted as a composed semantic value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "audit_event_id_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "audit_event_id_timestamp",
+          "meaning": "audit_event_id_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "audit_event_id_timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp and event id are part of one structured attribute"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "audit\\((\\d+)\\.(\\d+):(\\d+)\\):",
+          "replacement": "audit({placeholder}):",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    seconds = int(groups[0])\n    micros = int(groups[1])\n    event_id = int(groups[2])\n    combined = seconds * 10**9 + micros * 10**3 + event_id\n    return {'stored': [combined], 'layout': []}\n\ndef inverse(record):\n    combined = record['stored'][0]\n    event_id = combined % 1000000\n    micros = (combined // 1000000) % 1000\n    seconds = combined // 1000000000\n    return f'{seconds}.{micros:03}:{event_id}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "ip_address",
+            "tokens": [
+              "84.154.104.207"
+            ],
+            "reason": "the captured value contains multiple structural separators (.)",
+            "must_emit_function": true
+          },
+          {
+            "name": "domain_name",
+            "tokens": [
+              "p549A68CF.dip.t-dialin.net"
+            ],
+            "reason": "the captured value contains multiple structural separators (.)",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix including timestamp and context"
+      },
+      "slot_actions": [
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW",
+          "meaning": "ip_address",
+          "reason": "IP address is an independent, structured variable"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW",
+          "meaning": "domain_name",
+          "reason": "domain name is an independent, structured variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "ip_address",
+          "domain_name"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "ip_address",
+          "meaning": "IPv4 address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "IP address",
+            "context_source": null,
+            "why_not_merge_raw": "IP address is a structured, independent variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})",
+          "replacement": "from {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "domain_name",
+          "meaning": "domain_name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "domain name",
+            "context_source": null,
+            "why_not_merge_raw": "domain name is a structured, independent variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(([^)]+)\\)",
+          "replacement": "({placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 9,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix including timestamp and kernel process context"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix including timestamp and kernel process context"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix including timestamp and kernel process context"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

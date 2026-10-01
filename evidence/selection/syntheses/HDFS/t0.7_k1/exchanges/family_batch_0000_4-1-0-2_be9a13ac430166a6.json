@@ -1,0 +1,424 @@
+{
+  "families": [
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "S0",
+              "S1",
+              "S2"
+            ],
+            "reason": "Multiple tokens together represent one timestamp.",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_id",
+            "tokens": [
+              "blk_7854771516489510256",
+              "blk_-2519617320378473615",
+              "blk_-3544583377289625738"
+            ],
+            "reason": "Intrinsic structure with explicit delimiters encoded in the regex.",
+            "must_emit_function": true
+          },
+          {
+            "name": "ip_address_with_port",
+            "tokens": [
+              "10.250.11.100:50010",
+              "10.250.19.102:50010",
+              "10.251.111.209:50010"
+            ],
+            "reason": "Intrinsic structure with explicit delimiters encoded in the regex.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "This family has a repeated prefix/header."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "Semantic timestamp constructed from multiple tokens."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id",
+          "ip_address_with_port"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp derived from S0+S1+S2",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Multiple tokens combine to form one timestamp value."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{6}) (\\d{6}) (\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date = groups[0]\n    time = groups[1]\n    subsec = int(groups[2])\n    dt = datetime.strptime(date + time, '%y%m%d%H%M%S')\n    micros = int(dt.timestamp() * 1000000) + subsec\n    return {'stored': [micros], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    subsec = micros % 1000000\n    return dt.strftime('%y%m%d %H%M%S') + f' {subsec:02}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block_id",
+            "context_source": null,
+            "why_not_merge_raw": "Unique identifier with intrinsic structure."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_[-\\d]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "ip_with_port",
+          "meaning": "IP address with port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "ip_with_port",
+            "context_source": null,
+            "why_not_merge_raw": "Intrinsic structure with explicit delimiters."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "S0",
+              "S1",
+              "S2"
+            ],
+            "reason": "Multiple tokens together represent one timestamp.",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_id",
+            "tokens": [
+              "blk_7503483334202473044",
+              "blk_-1608999687919862906"
+            ],
+            "reason": "Intrinsic structure with explicit delimiters encoded in the regex.",
+            "must_emit_function": true
+          },
+          {
+            "name": "ip_address_with_port",
+            "tokens": [
+              "10.251.106.10:50010",
+              "10.250.10.6:50010"
+            ],
+            "reason": "Intrinsic structure with explicit delimiters encoded in the regex.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "This family has a repeated prefix/header."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "Semantic timestamp constructed from multiple tokens."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id",
+          "ip_address_with_port"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp derived from S0+S1+S2",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Multiple tokens combine to form one timestamp value."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(\\d{6}) (\\d{6}) (\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date = groups[0]\n    time = groups[1]\n    subsec = int(groups[2])\n    dt = datetime.strptime(date + time, '%y%m%d%H%M%S')\n    micros = int(dt.timestamp() * 1000000) + subsec\n    return {'stored': [micros], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    subsec = micros % 1000000\n    return dt.strftime('%y%m%d %H%M%S') + f' {subsec:02}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block_id",
+            "context_source": null,
+            "why_not_merge_raw": "Unique identifier with intrinsic structure."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_[-\\d]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "ip_with_port",
+          "meaning": "IP address with port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "ip_with_port",
+            "context_source": null,
+            "why_not_merge_raw": "Intrinsic structure with explicit delimiters."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "This family has a repeated prefix/header."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "byte_size_display",
+            "tokens": [
+              "233217 bytes",
+              "233217 (formatted)"
+            ],
+            "reason": "Alternative displays of the same byte size value.",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "block_id",
+            "tokens": [
+              "blk_7503483334202473044",
+              "blk_-1608999687919862906"
+            ],
+            "reason": "Intrinsic structure with explicit delimiters encoded in the regex.",
+            "must_emit_function": true
+          },
+          {
+            "name": "ip_address",
+            "tokens": [
+              "10.251.215.16",
+              "10.250.19.102"
+            ],
+            "reason": "Intrinsic structure with explicit delimiters encoded in the regex.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "This family has a repeated prefix/header."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "byte_size_display"
+        ],
+        "class_3_common_variable": [
+          "block_id",
+          "ip_address"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "byte_size",
+          "meaning": "canonical byte size",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "byte_size",
+            "context_source": null,
+            "why_not_merge_raw": "Alternative displays of one value should be stored as one canonical integer."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "size (\\d+)",
+          "replacement": "size {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    return {'stored': [int(text)], 'layout': []}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    return f'size {value}'"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "unique block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block_id",
+            "context_source": null,
+            "why_not_merge_raw": "Unique identifier with intrinsic structure."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_[-\\d]+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "ip_address",
+          "meaning": "IP address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "ip_address",
+            "context_source": null,
+            "why_not_merge_raw": "Intrinsic structure with explicit delimiters."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "/(\\d+\\.\\d+\\.\\d+\\.\\d+)",
+          "replacement": "/{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,175 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure with consistent fields for timestamp, hostname, and process information.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "epoch_timestamp",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "-( +)(\\d{10})",
+        "replacement": "-{group1}{placeholder}",
+        "program": {
+          "intent": "Extract and store the epoch timestamp as an integer.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': [len(groups[0])]}\n\ndef inverse(record):\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    return '-' + (' ' * sp1_len) + str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "date",
+        "meaning": "log_date",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})\\.(\\d{2})\\.(\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack year, month, and day into a single integer for compact storage.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day = groups\n    return {'stored': [int(year) * 10000 + int(month) * 100 + int(day)], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0]\n    year = value // 10000\n    month = (value // 100) % 100\n    day = value % 100\n    return f\"{year:04}.{month:02}.{day:02}\""
+        }
+      },
+      {
+        "tag": "hostname",
+        "meaning": "host_identifier",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(\\w+-\\w+\\d+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Store the hostname as a raw string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+        }
+      },
+      {
+        "tag": "time",
+        "meaning": "log_time_hms",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{2}):(\\d{2}):(\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack hours, minutes, and seconds into a single integer for compact storage.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    hours, minutes, seconds = groups\n    return {'stored': [int(hours) * 3600 + int(minutes) * 60 + int(seconds)], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0]\n    hours = value // 3600\n    minutes = (value % 3600) // 60\n    seconds = value % 60\n    return f\"{hours:02}:{minutes:02}:{seconds:02}\""
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1",
+      "action": "UINT_DELTA",
+      "meaning": "epoch timestamp",
+      "reason": "The epoch timestamp is numeric and can be efficiently stored as a delta stream."
+    },
+    {
+      "slot": "S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "date in YYYY.MM.DD format",
+      "reason": "The date can be compactly stored as a single integer."
+    },
+    {
+      "slot": "S3",
+      "action": "STREAM_RAW",
+      "meaning": "hostname",
+      "reason": "The hostname is a structured string and should be stored as-is."
+    },
+    {
+      "slot": "S5+S6",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "time in HH:MM:SS format",
+      "reason": "The time can be compactly stored as a single integer."
+    },
+    {
+      "slot": "S7",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "email-like identifier",
+      "reason": "The email-like identifier is stable and does not disturb the template."
+    },
+    {
+      "slot": "S8",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "path to executable",
+      "reason": "The path is stable and does not disturb the template."
+    },
+    {
+      "slot": "S9",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "operation name",
+      "reason": "The operation name is stable and does not disturb the template."
+    },
+    {
+      "slot": "S10",
+      "action": "STREAM_RAW",
+      "meaning": "RRD file path",
+      "reason": "The RRD file path is structured and should be stored as-is."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "quoted RRD file path",
+      "reason": "The quoted RRD file path is structured and should be stored as-is."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "rrd_file_path",
+      "meaning": "RRD file path inside parentheses",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\(/var/lib/ganglia/rrds/__SummaryInfo__/(\\w+\\.rrd)\\)",
+      "replacement": "({placeholder})",
+      "program": {
+        "intent": "Store the RRD file path as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"({record['stored'][0]})\""
+      }
+    },
+    {
+      "tag": "quoted_rrd_file_path",
+      "meaning": "quoted RRD file path",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "'/var/lib/ganglia/rrds/__SummaryInfo__/(\\w+\\.rrd)'",
+      "replacement": "'{placeholder}'",
+      "program": {
+        "intent": "Store the quoted RRD file path as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"'{record['stored'][0]}'\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

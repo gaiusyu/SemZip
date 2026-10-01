@@ -1,0 +1,21 @@
+\begin{table}[t]\centering\small
+\caption{Throughput in decimal MB/s of original input (encode/decode; medians of three clean serialized trials, four block workers). Session A: the twelve files no larger than BGL, geometric mean. Session B: a later session on the same files for the new baselines, with \tool\ and DeLog re-timed as anchors; geometric mean. Large: byte-weighted over twenty systematically sampled blocks of each of the four larger files. --: not timed.}
+\label{tab:external-speed}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+ & \multicolumn{2}{c}{Session A} & \multicolumn{2}{c}{Session B} & \multicolumn{2}{c}{Large} \\
+Method & Enc. & Dec. & Enc. & Dec. & Enc. & Dec. \\
+\midrule
+\tool & 1.71 & 7.38 & -- & -- & -- & -- \\
+DeLog & 8.79 & 15.68 & -- & -- & -- & -- \\
+LogLite-BL* & 9.15 & 17.25 & -- & -- & -- & -- \\
+gzip6 & 16.64 & 26.78 & -- & -- & -- & -- \\
+XZ6 & 5.55 & 21.31 & -- & -- & -- & -- \\
+Zstd3 & 18.20 & 27.53 & -- & -- & -- & -- \\
+XZ9e & -- & -- & -- & -- & -- & -- \\
+Zstd19 & -- & -- & -- & -- & -- & -- \\
+LogShrink+R* & -- & -- & -- & -- & -- & -- \\
+LogReducer+R* & -- & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}\end{table}

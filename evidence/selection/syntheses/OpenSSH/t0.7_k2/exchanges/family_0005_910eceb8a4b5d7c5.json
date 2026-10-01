@@ -1,0 +1,121 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The lines share a common prefix consisting of a timestamp, hostname, and process-related metadata, which can be extracted into reusable side streams for more compact representation.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "syslog_style_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Parse syslog-style timestamps into a monotonic integer and reconstruct the original format with exact spacing.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    text = month + ' ' + day + ' ' + time\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    packed = (dt.month - 1) * 86400 + dt.day * 86400 + dt.hour * 3600 + dt.minute * 60 + dt.second\n    return {'stored': [packed], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    packed = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, day_width = layout\n    month = (packed // 86400) + 1\n    day = str((packed % 86400) // 86400).zfill(day_width)\n    hours = (packed % 86400) // 3600\n    minutes = (packed % 3600) // 60\n    seconds = packed % 60\n    dt = datetime(1900, month, int(day), hours, minutes, seconds)  # No year provided\n    return dt.strftime('%b') + (' ' * sp1_len) + day + (' ' * sp2_len) + dt.strftime('%H:%M:%S')"
+        }
+      },
+      {
+        "tag": "process_metadata",
+        "meaning": "sshd_process_id",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "sshd\\[(\\d+)\\]:",
+        "replacement": "sshd[{placeholder}]:",
+        "program": {
+          "intent": "Extract the process ID from sshd log lines.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "syslog_style_timestamp",
+      "reason": "The month, day, and time form a composed timestamp that can be stored as a single integer for compact representation."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "sshd_process_id",
+      "reason": "The process ID is a bounded variable with a stable structure, and it is extracted as a raw stream."
+    },
+    {
+      "slot": "S9",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "preauth_marker",
+      "reason": "The '[preauth]' marker is stable and does not vary across examples, so it remains in the main template."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "authentication_request_phrase",
+      "reason": "The phrase 'input_userauth_request:' is a stable part of the log template and does not vary across examples."
+    },
+    {
+      "slot": "S8",
+      "action": "STREAM_RAW",
+      "meaning": "username_field",
+      "reason": "The username is a changing variable with a clear semantic meaning and bounded structure, suitable for extraction as a raw stream."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "source_ipv4_address",
+      "reason": "The IPv4 address is a structured and bounded variable that can be extracted as a raw stream when present."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "username_field",
+      "meaning": "user_field_in_authentication_request",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "user( +)(\\w+)",
+      "replacement": "user{group1}{placeholder}",
+      "program": {
+        "intent": "Extract the username from the 'user' field in authentication-related log entries.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "source_ipv4",
+      "meaning": "source_ipv4_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "from( +)((?:\\d{1,3}\\.){3}\\d{1,3})",
+      "replacement": "from{group1}{placeholder}",
+      "program": {
+        "intent": "Extract the source IPv4 address from log entries.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

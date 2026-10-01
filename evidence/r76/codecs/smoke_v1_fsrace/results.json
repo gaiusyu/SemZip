@@ -1,0 +1,1870 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "updated_at": "2026-09-29T02:45:19.805708+00:00",
+  "runs": [
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:28.404506+00:00",
+      "dataset": "Linux",
+      "codec": "xz9e",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Linux/Linux.log",
+        "bytes": 2349686,
+        "mtime_ns": 1789369143539147000,
+        "device": 1048818,
+        "inode": 199002808556005597
+      },
+      "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "raw_bytes": 2349686,
+      "records": 25567,
+      "codec_spec": {
+        "exe": "xz",
+        "encode": [
+          "-9e",
+          "-T1",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-c"
+        ],
+        "suffix": ".xz",
+        "executable": "/usr/bin/xz",
+        "executable_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+        "version": "xz (XZ Utils) 5.2.5\nliblzma 5.2.5\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Linux/xz9e/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.xz",
+          "archive_bytes": 104032,
+          "block_encode_seconds": 1.560968965291977,
+          "raw_bytes": 2349686,
+          "lf_count": 25567,
+          "records": 25567,
+          "ends_with_lf": true,
+          "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+          "archive_sha256": "a76e7dd8ca3db5218e43557746f46eef56b498a6c9e1c682a2a076b098f38ece",
+          "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490"
+        }
+      ],
+      "encode_seconds": 1.5772116035223007,
+      "block_archive_bytes": 104032,
+      "archive_bytes": 104032,
+      "decode_seconds": 0.3070448040962219,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "audit_seconds": 0.011746913194656372,
+      "compression_ratio": 22.58618501999385,
+      "encode_MB_per_s": 1.489772199717891,
+      "decode_MB_per_s": 7.652583494829809,
+      "finished_at": "2026-09-29T02:43:30.326505+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:30.342303+00:00",
+      "dataset": "Linux",
+      "codec": "zstd19",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Linux/Linux.log",
+        "bytes": 2349686,
+        "mtime_ns": 1789369143539147000,
+        "device": 1048818,
+        "inode": 199002808556005597
+      },
+      "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "raw_bytes": 2349686,
+      "records": 25567,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Linux/zstd19/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 120226,
+          "block_encode_seconds": 1.2809083312749863,
+          "raw_bytes": 2349686,
+          "lf_count": 25567,
+          "records": 25567,
+          "ends_with_lf": true,
+          "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+          "archive_sha256": "451a97ffbe546cca1620792519049ddd29831dc798dd0fbae598dc772ed98815",
+          "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490"
+        }
+      ],
+      "encode_seconds": 1.2954221367835999,
+      "block_archive_bytes": 120226,
+      "archive_bytes": 120226,
+      "decode_seconds": 0.13262976706027985,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "audit_seconds": 0.015369400382041931,
+      "compression_ratio": 19.543908971437126,
+      "encode_MB_per_s": 1.8138380789400659,
+      "decode_MB_per_s": 17.71612852891519,
+      "finished_at": "2026-09-29T02:43:31.804863+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:31.824414+00:00",
+      "dataset": "Linux",
+      "codec": "zstd22long",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Linux/Linux.log",
+        "bytes": 2349686,
+        "mtime_ns": 1789369143539147000,
+        "device": 1048818,
+        "inode": 199002808556005597
+      },
+      "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "raw_bytes": 2349686,
+      "records": 25567,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "--ultra",
+          "-22",
+          "--long=27",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "--long=27",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Linux/zstd22long/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 120142,
+          "block_encode_seconds": 1.4934276342391968,
+          "raw_bytes": 2349686,
+          "lf_count": 25567,
+          "records": 25567,
+          "ends_with_lf": true,
+          "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+          "archive_sha256": "15cf7f41db7b5fe49d1bf92bab0223b3493a504da26785c89eff355d585a7299",
+          "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490"
+        }
+      ],
+      "encode_seconds": 1.5096794068813324,
+      "block_archive_bytes": 120142,
+      "archive_bytes": 120142,
+      "decode_seconds": 0.33128391206264496,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "audit_seconds": 0.015247970819473267,
+      "compression_ratio": 19.55757353798006,
+      "encode_MB_per_s": 1.5564138911147616,
+      "decode_MB_per_s": 7.092665579111129,
+      "finished_at": "2026-09-29T02:43:33.700488+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:33.725255+00:00",
+      "dataset": "Linux",
+      "codec": "zstd19dict",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Linux/Linux.log",
+        "bytes": 2349686,
+        "mtime_ns": 1789369143539147000,
+        "device": 1048818,
+        "inode": 199002808556005597
+      },
+      "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "raw_bytes": 2349686,
+      "records": 25567,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "mode": "block0-trained-dictionary-counted-once-per-file",
+        "train": [
+          "--train",
+          "-T1"
+        ],
+        "sample_records": 1000,
+        "dictionary_file": "dictionary.zdict",
+        "dictionary_size": "zstd-default(--maxdict unset)",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Linux/zstd19dict/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 109462,
+          "block_encode_seconds": 0.8850800395011902,
+          "raw_bytes": 2349686,
+          "lf_count": 25567,
+          "records": 25567,
+          "ends_with_lf": true,
+          "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+          "archive_sha256": "1b7459f6ac7accb7f48231e053be584eba47e69ece78053ca11e06c6a65a3161",
+          "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490"
+        }
+      ],
+      "encode_seconds": 1.323781579732895,
+      "block_archive_bytes": 109462,
+      "archive_bytes": 222102,
+      "samples": 26,
+      "sample_bytes": 2349686,
+      "dictionary_train_seconds": 0.3251997381448746,
+      "dictionary_archive": "archives/dictionary.zdict",
+      "dictionary_bytes": 112640,
+      "dictionary_sha256": "fd7b1c63f89d577e0872cfbeda76a17475194520d71fe2ba7bb1ef41d187e05f",
+      "archive_components": "block archives + one dictionary file (counted once per file)",
+      "decode_seconds": 0.13862177729606628,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "audit_seconds": 0.018588736653327942,
+      "compression_ratio": 10.57931040693015,
+      "encode_MB_per_s": 1.7749801296329462,
+      "decode_MB_per_s": 16.950338149117627,
+      "finished_at": "2026-09-29T02:43:35.231645+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:35.249221+00:00",
+      "dataset": "Linux",
+      "codec": "delog_generic",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Linux/Linux.log",
+        "bytes": 2349686,
+        "mtime_ns": 1789369143539147000,
+        "device": 1048818,
+        "inode": 199002808556005597
+      },
+      "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "raw_bytes": 2349686,
+      "records": 25567,
+      "codec_spec": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "variant": "official DeLog sources with empty dataset-name regex_map (R76 DeLog-generic)",
+        "encoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/Delog_compress",
+        "decoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/decompress",
+        "encoder_sha256": "bc357a51b83d0ea03310b0b0332f67bb989ccda7f3336879a9c9552491713a8a",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "192f6a3f910033f7e3ab00ea0962abd7b75f0b322e8bebd66042e99480bd643d"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Linux/delog_generic/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.tar.xz",
+          "archive_bytes": 97764,
+          "block_encode_seconds": 0.5617975443601608,
+          "raw_bytes": 2349686,
+          "lf_count": 25567,
+          "records": 25567,
+          "ends_with_lf": true,
+          "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+          "archive_sha256": "2dc40490ff1fe4f8c4ce5b4ab5600c0d64534270e3bd3dcc88c70df53a0af36f",
+          "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490"
+        }
+      ],
+      "encode_seconds": 0.5838896781206131,
+      "block_archive_bytes": 97764,
+      "archive_bytes": 97764,
+      "decode_seconds": 0.6463488787412643,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "audit_seconds": 0.011711806058883667,
+      "compression_ratio": 24.034266192054336,
+      "encode_MB_per_s": 4.024195131455346,
+      "decode_MB_per_s": 3.635321538076942,
+      "finished_at": "2026-09-29T02:43:36.510823+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:36.526720+00:00",
+      "dataset": "Linux",
+      "codec": "delog",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Linux/Linux.log",
+        "bytes": 2349686,
+        "mtime_ns": 1789369143539147000,
+        "device": 1048818,
+        "inode": 199002808556005597
+      },
+      "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "raw_bytes": 2349686,
+      "records": 25567,
+      "codec_spec": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "encoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/Delog_compress",
+        "decoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/decompress",
+        "encoder_sha256": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "d2f82b0b774a73096fe3bc60871a9b78e623f9253e516e764a5ae1fd7c4b0879"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Linux/delog/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.tar.xz",
+          "archive_bytes": 85140,
+          "block_encode_seconds": 0.5984169244766235,
+          "raw_bytes": 2349686,
+          "lf_count": 25567,
+          "records": 25567,
+          "ends_with_lf": true,
+          "raw_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+          "archive_sha256": "4119bb5d44ff0ee390570c5f807e6186ed8dc90a2ff0bb5167fdca30b6601a05",
+          "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490"
+        }
+      ],
+      "encode_seconds": 0.7126194536685944,
+      "block_archive_bytes": 85140,
+      "archive_bytes": 85140,
+      "decode_seconds": 0.3906261920928955,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+      "audit_seconds": 0.00949186086654663,
+      "compression_ratio": 27.597909325816303,
+      "encode_MB_per_s": 3.297252113878901,
+      "decode_MB_per_s": 6.015177803134146,
+      "finished_at": "2026-09-29T02:43:37.656366+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:37.672417+00:00",
+      "dataset": "Proxifier",
+      "codec": "zstd19",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Proxifier/Proxifier.log",
+        "bytes": 2541814,
+        "mtime_ns": 1789369147018069000,
+        "device": 1048818,
+        "inode": 199002808556005618
+      },
+      "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "raw_bytes": 2541814,
+      "records": 21329,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Proxifier/zstd19/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 120664,
+          "block_encode_seconds": 1.2336597740650177,
+          "raw_bytes": 2541814,
+          "lf_count": 21329,
+          "records": 21329,
+          "ends_with_lf": true,
+          "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+          "archive_sha256": "5a6c86b90c55def237966a51885de35c13b6524aaae0dafcf3759a15113f1474",
+          "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7"
+        }
+      ],
+      "encode_seconds": 1.2481735348701477,
+      "block_archive_bytes": 120664,
+      "archive_bytes": 120664,
+      "decode_seconds": 0.3787299692630768,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "audit_seconds": 0.018718361854553223,
+      "compression_ratio": 21.065222435854935,
+      "encode_MB_per_s": 2.0364267699879046,
+      "decode_MB_per_s": 6.7114150088143205,
+      "finished_at": "2026-09-29T02:43:39.336039+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:39.356552+00:00",
+      "dataset": "Proxifier",
+      "codec": "zstd22long",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Proxifier/Proxifier.log",
+        "bytes": 2541814,
+        "mtime_ns": 1789369147018069000,
+        "device": 1048818,
+        "inode": 199002808556005618
+      },
+      "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "raw_bytes": 2541814,
+      "records": 21329,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "--ultra",
+          "-22",
+          "--long=27",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "--long=27",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Proxifier/zstd22long/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 120295,
+          "block_encode_seconds": 2.4055466651916504,
+          "raw_bytes": 2541814,
+          "lf_count": 21329,
+          "records": 21329,
+          "ends_with_lf": true,
+          "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+          "archive_sha256": "1f194bc860cea2ad9985b0a7f0592231a58d14d037dda70da18f7f2a3393e1c2",
+          "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7"
+        }
+      ],
+      "encode_seconds": 2.4234778583049774,
+      "block_archive_bytes": 120295,
+      "archive_bytes": 120295,
+      "decode_seconds": 0.3371126502752304,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "audit_seconds": 0.01074989140033722,
+      "compression_ratio": 21.12983914543414,
+      "encode_MB_per_s": 1.0488290583260327,
+      "decode_MB_per_s": 7.539954368146005,
+      "finished_at": "2026-09-29T02:43:42.145718+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:42.167690+00:00",
+      "dataset": "Proxifier",
+      "codec": "zstd19dict",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Proxifier/Proxifier.log",
+        "bytes": 2541814,
+        "mtime_ns": 1789369147018069000,
+        "device": 1048818,
+        "inode": 199002808556005618
+      },
+      "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "raw_bytes": 2541814,
+      "records": 21329,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "mode": "block0-trained-dictionary-counted-once-per-file",
+        "train": [
+          "--train",
+          "-T1"
+        ],
+        "sample_records": 1000,
+        "dictionary_file": "dictionary.zdict",
+        "dictionary_size": "zstd-default(--maxdict unset)",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Proxifier/zstd19dict/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 116031,
+          "block_encode_seconds": 0.8321344554424286,
+          "raw_bytes": 2541814,
+          "lf_count": 21329,
+          "records": 21329,
+          "ends_with_lf": true,
+          "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+          "archive_sha256": "96734c8481156cb851959da9d8c56f113333db6f02e8feec827f2810b6eaf7a8",
+          "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7"
+        }
+      ],
+      "encode_seconds": 1.2109556645154953,
+      "block_archive_bytes": 116031,
+      "archive_bytes": 228671,
+      "samples": 22,
+      "sample_bytes": 2541814,
+      "dictionary_train_seconds": 0.310198575258255,
+      "dictionary_archive": "archives/dictionary.zdict",
+      "dictionary_bytes": 112640,
+      "dictionary_sha256": "740082aaad6e81a0ca9405741f7e531ed3f4c6bdbd1805013bcf79241bcfc9d9",
+      "archive_components": "block archives + one dictionary file (counted once per file)",
+      "decode_seconds": 0.13728885352611542,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "audit_seconds": 0.009927570819854736,
+      "compression_ratio": 11.115594019355319,
+      "encode_MB_per_s": 2.0990149139910774,
+      "decode_MB_per_s": 18.514350835601448,
+      "finished_at": "2026-09-29T02:43:43.544810+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:43.561906+00:00",
+      "dataset": "Proxifier",
+      "codec": "delog_generic",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Proxifier/Proxifier.log",
+        "bytes": 2541814,
+        "mtime_ns": 1789369147018069000,
+        "device": 1048818,
+        "inode": 199002808556005618
+      },
+      "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "raw_bytes": 2541814,
+      "records": 21329,
+      "codec_spec": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "variant": "official DeLog sources with empty dataset-name regex_map (R76 DeLog-generic)",
+        "encoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/Delog_compress",
+        "decoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/decompress",
+        "encoder_sha256": "bc357a51b83d0ea03310b0b0332f67bb989ccda7f3336879a9c9552491713a8a",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "192f6a3f910033f7e3ab00ea0962abd7b75f0b322e8bebd66042e99480bd643d"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Proxifier/delog_generic/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.tar.xz",
+          "archive_bytes": 99212,
+          "block_encode_seconds": 0.5393616706132889,
+          "raw_bytes": 2541814,
+          "lf_count": 21329,
+          "records": 21329,
+          "ends_with_lf": true,
+          "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+          "archive_sha256": "5092ce8e548ed30f86657196c26155f799c9443842ba859a751ebd215d736e60",
+          "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7"
+        }
+      ],
+      "encode_seconds": 0.5603313148021698,
+      "block_archive_bytes": 99212,
+      "archive_bytes": 99212,
+      "decode_seconds": 0.39774467051029205,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "audit_seconds": 0.010347232222557068,
+      "compression_ratio": 25.620025803330243,
+      "encode_MB_per_s": 4.536269761930781,
+      "decode_MB_per_s": 6.390567086012603,
+      "finished_at": "2026-09-29T02:43:44.552506+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:44.569554+00:00",
+      "dataset": "Proxifier",
+      "codec": "delog",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Proxifier/Proxifier.log",
+        "bytes": 2541814,
+        "mtime_ns": 1789369147018069000,
+        "device": 1048818,
+        "inode": 199002808556005618
+      },
+      "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "raw_bytes": 2541814,
+      "records": 21329,
+      "codec_spec": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "encoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/Delog_compress",
+        "decoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/decompress",
+        "encoder_sha256": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "d2f82b0b774a73096fe3bc60871a9b78e623f9253e516e764a5ae1fd7c4b0879"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Proxifier/delog/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.tar.xz",
+          "archive_bytes": 84180,
+          "block_encode_seconds": 0.5379417687654495,
+          "raw_bytes": 2541814,
+          "lf_count": 21329,
+          "records": 21329,
+          "ends_with_lf": true,
+          "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+          "archive_sha256": "fb0b36709780e4a51594e8a84fe01ffc585cbdb723327f50a45619211a0fce7e",
+          "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7"
+        }
+      ],
+      "encode_seconds": 0.65280482172966,
+      "block_archive_bytes": 84180,
+      "archive_bytes": 84180,
+      "decode_seconds": 0.3958563506603241,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "audit_seconds": 0.010557442903518677,
+      "compression_ratio": 30.194986932763126,
+      "encode_MB_per_s": 3.8936814119498306,
+      "decode_MB_per_s": 6.4210514641486105,
+      "finished_at": "2026-09-29T02:43:45.648138+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:45.666661+00:00",
+      "dataset": "Proxifier",
+      "codec": "xz9e",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Proxifier/Proxifier.log",
+        "bytes": 2541814,
+        "mtime_ns": 1789369147018069000,
+        "device": 1048818,
+        "inode": 199002808556005618
+      },
+      "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "raw_bytes": 2541814,
+      "records": 21329,
+      "codec_spec": {
+        "exe": "xz",
+        "encode": [
+          "-9e",
+          "-T1",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-c"
+        ],
+        "suffix": ".xz",
+        "executable": "/usr/bin/xz",
+        "executable_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+        "version": "xz (XZ Utils) 5.2.5\nliblzma 5.2.5\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Proxifier/xz9e/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.xz",
+          "archive_bytes": 112148,
+          "block_encode_seconds": 2.0122738033533096,
+          "raw_bytes": 2541814,
+          "lf_count": 21329,
+          "records": 21329,
+          "ends_with_lf": true,
+          "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+          "archive_sha256": "ad2dd1e0867149ad048d5be2dead8a8b39b93e8ca60b34105fc9cb3c5a63f3b0",
+          "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7"
+        }
+      ],
+      "encode_seconds": 2.0273728519678116,
+      "block_archive_bytes": 112148,
+      "archive_bytes": 112148,
+      "decode_seconds": 0.3375214636325836,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "audit_seconds": 0.012263566255569458,
+      "compression_ratio": 22.66481791917823,
+      "encode_MB_per_s": 1.2537476752403292,
+      "decode_MB_per_s": 7.53082181098547,
+      "finished_at": "2026-09-29T02:43:48.063427+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:48.083053+00:00",
+      "dataset": "Apache",
+      "codec": "zstd22long",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+        "bytes": 5135876,
+        "mtime_ns": 1789369148595142000,
+        "device": 1048818,
+        "inode": 199002808556005632
+      },
+      "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "raw_bytes": 5135876,
+      "records": 56482,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "--ultra",
+          "-22",
+          "--long=27",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "--long=27",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Apache/zstd22long/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 177067,
+          "block_encode_seconds": 4.680055677890778,
+          "raw_bytes": 5135876,
+          "lf_count": 56481,
+          "records": 56482,
+          "ends_with_lf": false,
+          "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+          "archive_sha256": "75ae23954c76a91e91d101d6b7d125b331c3ee5fa3b5fb8c19c555b58a959b6d",
+          "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b"
+        }
+      ],
+      "encode_seconds": 4.776918470859528,
+      "block_archive_bytes": 177067,
+      "archive_bytes": 177067,
+      "decode_seconds": 0.1383594125509262,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "audit_seconds": 0.023770108819007874,
+      "compression_ratio": 29.005269191887816,
+      "encode_MB_per_s": 1.0751441606822911,
+      "decode_MB_per_s": 37.11981646430906,
+      "finished_at": "2026-09-29T02:43:53.042036+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:53.063868+00:00",
+      "dataset": "Apache",
+      "codec": "zstd19dict",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+        "bytes": 5135876,
+        "mtime_ns": 1789369148595142000,
+        "device": 1048818,
+        "inode": 199002808556005632
+      },
+      "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "raw_bytes": 5135876,
+      "records": 56482,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "mode": "block0-trained-dictionary-counted-once-per-file",
+        "train": [
+          "--train",
+          "-T1"
+        ],
+        "sample_records": 1000,
+        "dictionary_file": "dictionary.zdict",
+        "dictionary_size": "zstd-default(--maxdict unset)",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Apache/zstd19dict/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 177975,
+          "block_encode_seconds": 1.3884100764989853,
+          "raw_bytes": 5135876,
+          "lf_count": 56481,
+          "records": 56482,
+          "ends_with_lf": false,
+          "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+          "archive_sha256": "ecf3fef43cd1039d62238751b33266594593aa559ee7b670f8f24c530d0ebc1e",
+          "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b"
+        }
+      ],
+      "encode_seconds": 1.899788573384285,
+      "block_archive_bytes": 177975,
+      "archive_bytes": 290615,
+      "samples": 57,
+      "sample_bytes": 5135876,
+      "dictionary_train_seconds": 0.48868876695632935,
+      "dictionary_archive": "archives/dictionary.zdict",
+      "dictionary_bytes": 112640,
+      "dictionary_sha256": "7a388033a4a681af670b5f383f75dc830618922fa43abf3a6f1e1eff742f4eed",
+      "archive_components": "block archives + one dictionary file (counted once per file)",
+      "decode_seconds": 0.1451106071472168,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "audit_seconds": 0.02317798137664795,
+      "compression_ratio": 17.672439481788622,
+      "encode_MB_per_s": 2.703393457541934,
+      "decode_MB_per_s": 35.3928365470181,
+      "finished_at": "2026-09-29T02:43:55.154615+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:55.173384+00:00",
+      "dataset": "Apache",
+      "codec": "delog_generic",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+        "bytes": 5135876,
+        "mtime_ns": 1789369148595142000,
+        "device": 1048818,
+        "inode": 199002808556005632
+      },
+      "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "raw_bytes": 5135876,
+      "records": 56482,
+      "codec_spec": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "variant": "official DeLog sources with empty dataset-name regex_map (R76 DeLog-generic)",
+        "encoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/Delog_compress",
+        "decoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/decompress",
+        "encoder_sha256": "bc357a51b83d0ea03310b0b0332f67bb989ccda7f3336879a9c9552491713a8a",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "192f6a3f910033f7e3ab00ea0962abd7b75f0b322e8bebd66042e99480bd643d"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Apache/delog_generic/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.tar.xz",
+          "archive_bytes": 111504,
+          "block_encode_seconds": 0.7406959980726242,
+          "raw_bytes": 5135876,
+          "lf_count": 56481,
+          "records": 56482,
+          "ends_with_lf": false,
+          "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+          "archive_sha256": "f22a0b7ce9469466a58a8ece7f85f7bc5de8c8d4df0538545e4ae8519981c5e5",
+          "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b"
+        }
+      ],
+      "encode_seconds": 0.7734060734510422,
+      "block_archive_bytes": 111504,
+      "archive_bytes": 111504,
+      "decode_seconds": 0.4502576142549515,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "audit_seconds": 0.019045308232307434,
+      "compression_ratio": 46.060015784187115,
+      "encode_MB_per_s": 6.640594347912254,
+      "decode_MB_per_s": 11.40652781296862,
+      "finished_at": "2026-09-29T02:43:56.438442+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:56.456503+00:00",
+      "dataset": "Apache",
+      "codec": "delog",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+        "bytes": 5135876,
+        "mtime_ns": 1789369148595142000,
+        "device": 1048818,
+        "inode": 199002808556005632
+      },
+      "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "raw_bytes": 5135876,
+      "records": 56482,
+      "codec_spec": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "encoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/Delog_compress",
+        "decoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/decompress",
+        "encoder_sha256": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "d2f82b0b774a73096fe3bc60871a9b78e623f9253e516e764a5ae1fd7c4b0879"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Apache/delog/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.tar.xz",
+          "archive_bytes": 85932,
+          "block_encode_seconds": 0.6901349425315857,
+          "raw_bytes": 5135876,
+          "lf_count": 56481,
+          "records": 56482,
+          "ends_with_lf": false,
+          "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+          "archive_sha256": "663b2a055b15311848f97555691055d01ff44602eff988a300ae89a86917e6db",
+          "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b"
+        }
+      ],
+      "encode_seconds": 0.7270929515361786,
+      "block_archive_bytes": 85932,
+      "archive_bytes": 85932,
+      "decode_seconds": 0.4454507380723953,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "audit_seconds": 0.026397064328193665,
+      "compression_ratio": 59.766745799003864,
+      "encode_MB_per_s": 7.0635755568102905,
+      "decode_MB_per_s": 11.529616096775463,
+      "finished_at": "2026-09-29T02:43:57.690597+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:43:57.718406+00:00",
+      "dataset": "Apache",
+      "codec": "xz9e",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+        "bytes": 5135876,
+        "mtime_ns": 1789369148595142000,
+        "device": 1048818,
+        "inode": 199002808556005632
+      },
+      "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "raw_bytes": 5135876,
+      "records": 56482,
+      "codec_spec": {
+        "exe": "xz",
+        "encode": [
+          "-9e",
+          "-T1",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-c"
+        ],
+        "suffix": ".xz",
+        "executable": "/usr/bin/xz",
+        "executable_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+        "version": "xz (XZ Utils) 5.2.5\nliblzma 5.2.5\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Apache/xz9e/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.xz",
+          "archive_bytes": 157260,
+          "block_encode_seconds": 3.873986631631851,
+          "raw_bytes": 5135876,
+          "lf_count": 56481,
+          "records": 56482,
+          "ends_with_lf": false,
+          "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+          "archive_sha256": "08659371e2c7c4c4c4c5072157efa8ca2d3278fd0d8673f16cb1e043947d6319",
+          "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b"
+        }
+      ],
+      "encode_seconds": 3.8976846486330032,
+      "block_archive_bytes": 157260,
+      "archive_bytes": 157260,
+      "decode_seconds": 0.1412808895111084,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "audit_seconds": 0.02233344316482544,
+      "compression_ratio": 32.658501844079865,
+      "encode_MB_per_s": 1.3176735582754893,
+      "decode_MB_per_s": 36.35223431684428,
+      "finished_at": "2026-09-29T02:44:01.801013+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:44:01.824595+00:00",
+      "dataset": "Apache",
+      "codec": "zstd19",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+        "bytes": 5135876,
+        "mtime_ns": 1789369148595142000,
+        "device": 1048818,
+        "inode": 199002808556005632
+      },
+      "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "raw_bytes": 5135876,
+      "records": 56482,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Apache/zstd19/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 177700,
+          "block_encode_seconds": 2.4571322053670883,
+          "raw_bytes": 5135876,
+          "lf_count": 56481,
+          "records": 56482,
+          "ends_with_lf": false,
+          "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+          "archive_sha256": "04a416c1c00689c75b90c980f1ff1152556005beb40107669045571325fd24c5",
+          "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b"
+        }
+      ],
+      "encode_seconds": 2.4817544519901276,
+      "block_archive_bytes": 177700,
+      "archive_bytes": 177700,
+      "decode_seconds": 0.1384599655866623,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "audit_seconds": 0.019519686698913574,
+      "compression_ratio": 28.90194710185706,
+      "encode_MB_per_s": 2.069453726931576,
+      "decode_MB_per_s": 37.09285913974497,
+      "finished_at": "2026-09-29T02:44:04.483310+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:44:04.503311+00:00",
+      "dataset": "HealthApp",
+      "codec": "zstd19dict",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+        "bytes": 23529930,
+        "mtime_ns": 1789369303348633000,
+        "device": 1048818,
+        "inode": 199002808556006449
+      },
+      "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "raw_bytes": 23529930,
+      "records": 253395,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "mode": "block0-trained-dictionary-counted-once-per-file",
+        "train": [
+          "--train",
+          "-T1"
+        ],
+        "sample_records": 1000,
+        "dictionary_file": "dictionary.zdict",
+        "dictionary_size": "zstd-default(--maxdict unset)",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/zstd19dict/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 567555,
+          "block_encode_seconds": 3.083706945180893,
+          "raw_bytes": 9343767,
+          "lf_count": 100000,
+          "records": 100000,
+          "ends_with_lf": true,
+          "raw_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68",
+          "archive_sha256": "521bb48040a08609d82d4fd3977342b65d7e7c7cc32e1f3631b8bca007775395",
+          "decoded_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68"
+        },
+        {
+          "index": 1,
+          "archive": "archives/block_000001.zst",
+          "archive_bytes": 565727,
+          "block_encode_seconds": 3.0918495059013367,
+          "raw_bytes": 9260166,
+          "lf_count": 100000,
+          "records": 100000,
+          "ends_with_lf": true,
+          "raw_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd",
+          "archive_sha256": "4a5189dd8d4ad3e6c7d0a08c007229699f9a8a2dcbc4e14bbd9eca24606cedec",
+          "decoded_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd"
+        },
+        {
+          "index": 2,
+          "archive": "archives/block_000002.zst",
+          "archive_bytes": 307743,
+          "block_encode_seconds": 1.8460572808980942,
+          "raw_bytes": 4925997,
+          "lf_count": 53395,
+          "records": 53395,
+          "ends_with_lf": true,
+          "raw_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1",
+          "archive_sha256": "0e06f38c818745dcd66b12387ddd4d86c6de8b6102b6505f4307a59f5e6006fa",
+          "decoded_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1"
+        }
+      ],
+      "encode_seconds": 5.905158743262291,
+      "block_archive_bytes": 1441025,
+      "archive_bytes": 1553665,
+      "samples": 100,
+      "sample_bytes": 9343767,
+      "dictionary_train_seconds": 0.9050587564706802,
+      "dictionary_archive": "archives/dictionary.zdict",
+      "dictionary_bytes": 112640,
+      "dictionary_sha256": "3b150fa94787ea878efc4289e84b868dc8d7ae66e1e70519c8ed4a6f03526c70",
+      "archive_components": "block archives + one dictionary file (counted once per file)",
+      "decode_seconds": 0.33976081013679504,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "audit_seconds": 0.10339829325675964,
+      "compression_ratio": 15.14478990001062,
+      "encode_MB_per_s": 3.9846397062309875,
+      "decode_MB_per_s": 69.25439691095139,
+      "finished_at": "2026-09-29T02:44:10.874742+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:44:10.892957+00:00",
+      "dataset": "HealthApp",
+      "codec": "delog_generic",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+        "bytes": 23529930,
+        "mtime_ns": 1789369303348633000,
+        "device": 1048818,
+        "inode": 199002808556006449
+      },
+      "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "raw_bytes": 23529930,
+      "records": 253395,
+      "codec_spec": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "variant": "official DeLog sources with empty dataset-name regex_map (R76 DeLog-generic)",
+        "encoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/Delog_compress",
+        "decoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/decompress",
+        "encoder_sha256": "bc357a51b83d0ea03310b0b0332f67bb989ccda7f3336879a9c9552491713a8a",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "192f6a3f910033f7e3ab00ea0962abd7b75f0b322e8bebd66042e99480bd643d"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/delog_generic/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.tar.xz",
+          "archive_bytes": 190964,
+          "block_encode_seconds": 1.23573999106884,
+          "raw_bytes": 9343767,
+          "lf_count": 100000,
+          "records": 100000,
+          "ends_with_lf": true,
+          "raw_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68",
+          "archive_sha256": "69d80cbd289bd0784d0bebace2dced032be437eb34825dd90cd7a48c0096038d",
+          "decoded_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68"
+        },
+        {
+          "index": 1,
+          "archive": "archives/block_000001.tar.xz",
+          "archive_bytes": 198652,
+          "block_encode_seconds": 1.1914360225200653,
+          "raw_bytes": 9260166,
+          "lf_count": 100000,
+          "records": 100000,
+          "ends_with_lf": true,
+          "raw_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd",
+          "archive_sha256": "9e2544e319392629b7c6e5c647911cec4164dadfa68a83006cc833a1cd0c1b40",
+          "decoded_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd"
+        },
+        {
+          "index": 2,
+          "archive": "archives/block_000002.tar.xz",
+          "archive_bytes": 115752,
+          "block_encode_seconds": 0.7868375182151794,
+          "raw_bytes": 4925997,
+          "lf_count": 53395,
+          "records": 53395,
+          "ends_with_lf": true,
+          "raw_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1",
+          "archive_sha256": "9c2cf5554d3bf7bfabfc804505067e432ab358ef5830538889bece2c50a89239",
+          "decoded_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1"
+        }
+      ],
+      "encode_seconds": 2.101017564535141,
+      "block_archive_bytes": 505368,
+      "archive_bytes": 505368,
+      "decode_seconds": 1.2910513430833817,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "audit_seconds": 0.10267698764801025,
+      "compression_ratio": 46.55999192667522,
+      "encode_MB_per_s": 11.199301898842572,
+      "decode_MB_per_s": 18.225402208872755,
+      "finished_at": "2026-09-29T02:44:14.408744+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:44:14.426882+00:00",
+      "dataset": "HealthApp",
+      "codec": "delog",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+        "bytes": 23529930,
+        "mtime_ns": 1789369303348633000,
+        "device": 1048818,
+        "inode": 199002808556006449
+      },
+      "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "raw_bytes": 23529930,
+      "records": 253395,
+      "codec_spec": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "encoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/Delog_compress",
+        "decoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/decompress",
+        "encoder_sha256": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "d2f82b0b774a73096fe3bc60871a9b78e623f9253e516e764a5ae1fd7c4b0879"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/delog/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.tar.xz",
+          "archive_bytes": 165976,
+          "block_encode_seconds": 1.151178002357483,
+          "raw_bytes": 9343767,
+          "lf_count": 100000,
+          "records": 100000,
+          "ends_with_lf": true,
+          "raw_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68",
+          "archive_sha256": "c439331f2e8ee3d86d43556f0bce9342030b093e8a741533090eeaec8ff848a0",
+          "decoded_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68"
+        },
+        {
+          "index": 1,
+          "archive": "archives/block_000001.tar.xz",
+          "archive_bytes": 176036,
+          "block_encode_seconds": 1.098924994468689,
+          "raw_bytes": 9260166,
+          "lf_count": 100000,
+          "records": 100000,
+          "ends_with_lf": true,
+          "raw_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd",
+          "archive_sha256": "bd5ed00cd0bbec2538170e6107381402c14a6d9519f32c9bde49d231e6273981",
+          "decoded_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd"
+        },
+        {
+          "index": 2,
+          "archive": "archives/block_000002.tar.xz",
+          "archive_bytes": 115752,
+          "block_encode_seconds": 0.7870307564735413,
+          "raw_bytes": 4925997,
+          "lf_count": 53395,
+          "records": 53395,
+          "ends_with_lf": true,
+          "raw_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1",
+          "archive_sha256": "9c2cf5554d3bf7bfabfc804505067e432ab358ef5830538889bece2c50a89239",
+          "decoded_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1"
+        }
+      ],
+      "encode_seconds": 2.1528009325265884,
+      "block_archive_bytes": 457764,
+      "archive_bytes": 457764,
+      "decode_seconds": 1.431218758225441,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "audit_seconds": 0.10103170573711395,
+      "compression_ratio": 51.401879571132724,
+      "encode_MB_per_s": 10.929914440525907,
+      "decode_MB_per_s": 16.440484632254687,
+      "finished_at": "2026-09-29T02:44:18.134685+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:44:18.159098+00:00",
+      "dataset": "HealthApp",
+      "codec": "xz9e",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+        "bytes": 23529930,
+        "mtime_ns": 1789369303348633000,
+        "device": 1048818,
+        "inode": 199002808556006449
+      },
+      "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "raw_bytes": 23529930,
+      "records": 253395,
+      "codec_spec": {
+        "exe": "xz",
+        "encode": [
+          "-9e",
+          "-T1",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-c"
+        ],
+        "suffix": ".xz",
+        "executable": "/usr/bin/xz",
+        "executable_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+        "version": "xz (XZ Utils) 5.2.5\nliblzma 5.2.5\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/xz9e/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.xz",
+          "archive_bytes": 488944,
+          "block_encode_seconds": 17.29977136850357,
+          "raw_bytes": 9343767,
+          "lf_count": 100000,
+          "records": 100000,
+          "ends_with_lf": true,
+          "raw_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68",
+          "archive_sha256": "29cc1c90314cfb317649502c39c3b39591770288b8441a1bd370eb06722db373",
+          "decoded_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68"
+        },
+        {
+          "index": 1,
+          "archive": "archives/block_000001.xz",
+          "archive_bytes": 486724,
+          "block_encode_seconds": 15.170318439602852,
+          "raw_bytes": 9260166,
+          "lf_count": 100000,
+          "records": 100000,
+          "ends_with_lf": true,
+          "raw_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd",
+          "archive_sha256": "01613009e0e64e27f62b11aafe58639ab10cd8d896de84b2c70b58abd9d03d4e",
+          "decoded_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd"
+        },
+        {
+          "index": 2,
+          "archive": "archives/block_000002.xz",
+          "archive_bytes": 269728,
+          "block_encode_seconds": 7.360675483942032,
+          "raw_bytes": 4925997,
+          "lf_count": 53395,
+          "records": 53395,
+          "ends_with_lf": true,
+          "raw_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1",
+          "archive_sha256": "d16efea2873c0fb3488b454181f46525b86f7d3c1d63b00bc3e4b926ddd3ba39",
+          "decoded_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1"
+        }
+      ],
+      "encode_seconds": 24.7278500944376,
+      "block_archive_bytes": 1245396,
+      "archive_bytes": 1245396,
+      "decode_seconds": 0.4591984897851944,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "audit_seconds": 0.10390853881835938,
+      "compression_ratio": 18.893532659491438,
+      "encode_MB_per_s": 0.9515558332057721,
+      "decode_MB_per_s": 51.241305281746286,
+      "finished_at": "2026-09-29T02:44:43.471065+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "PASS",
+      "started_at": "2026-09-29T02:44:43.496819+00:00",
+      "dataset": "HealthApp",
+      "codec": "zstd19",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+        "bytes": 23529930,
+        "mtime_ns": 1789369303348633000,
+        "device": 1048818,
+        "inode": 199002808556006449
+      },
+      "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "raw_bytes": 23529930,
+      "records": 253395,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/zstd19/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 568944,
+          "block_encode_seconds": 6.977869123220444,
+          "raw_bytes": 9343767,
+          "lf_count": 100000,
+          "records": 100000,
+          "ends_with_lf": true,
+          "raw_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68",
+          "archive_sha256": "d4ac71ee767aa2d233e5a7a7ee61aa8c27014ea33a5ea24a0cb0e51aa6580903",
+          "decoded_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68"
+        },
+        {
+          "index": 1,
+          "archive": "archives/block_000001.zst",
+          "archive_bytes": 563338,
+          "block_encode_seconds": 6.538726508617401,
+          "raw_bytes": 9260166,
+          "lf_count": 100000,
+          "records": 100000,
+          "ends_with_lf": true,
+          "raw_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd",
+          "archive_sha256": "76f2798d9645b19d5382541ba173f71a4c583bda2e79894b7e0af8ac2ca5100b",
+          "decoded_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd"
+        },
+        {
+          "index": 2,
+          "archive": "archives/block_000002.zst",
+          "archive_bytes": 307607,
+          "block_encode_seconds": 3.5512644946575165,
+          "raw_bytes": 4925997,
+          "lf_count": 53395,
+          "records": 53395,
+          "ends_with_lf": true,
+          "raw_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1",
+          "archive_sha256": "cdd8908f82984eecf960d8a5089ab3a986b9392efbfe6eb3ebcfeff99ef16dd5",
+          "decoded_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1"
+        }
+      ],
+      "encode_seconds": 10.605639070272446,
+      "block_archive_bytes": 1439889,
+      "archive_bytes": 1439889,
+      "decode_seconds": 0.36159849166870117,
+      "roundtrip": "byte-exact",
+      "archive_only_decode": true,
+      "decoded_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "audit_seconds": 0.11429658532142639,
+      "compression_ratio": 16.341488823096782,
+      "encode_MB_per_s": 2.2186244359337364,
+      "decode_MB_per_s": 65.0719805036086,
+      "finished_at": "2026-09-29T02:44:54.599886+00:00"
+    },
+    {
+      "schema": "semzip.external-cli.r76.v1",
+      "status": "FAIL",
+      "started_at": "2026-09-29T02:44:54.619219+00:00",
+      "dataset": "HealthApp",
+      "codec": "zstd22long",
+      "trial": 1,
+      "workers": 2,
+      "block_records": 100000,
+      "source": {
+        "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+        "bytes": 23529930,
+        "mtime_ns": 1789369303348633000,
+        "device": 1048818,
+        "inode": 199002808556006449
+      },
+      "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+      "raw_bytes": 23529930,
+      "records": 253395,
+      "codec_spec": {
+        "exe": "zstd",
+        "encode": [
+          "--ultra",
+          "-22",
+          "--long=27",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "--long=27",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/zstd22long/trial_001/attempt_001",
+      "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+      "blocks": [
+        {
+          "index": 0,
+          "archive": "archives/block_000000.zst",
+          "archive_bytes": 568750,
+          "block_encode_seconds": 16.710097417235374
+        },
+        {
+          "index": 1,
+          "archive": "archives/block_000001.zst",
+          "archive_bytes": 563159,
+          "block_encode_seconds": 14.354893401265144
+        },
+        {
+          "index": 2,
+          "archive": "archives/block_000002.zst",
+          "archive_bytes": 307294,
+          "block_encode_seconds": 7.756744384765625
+        }
+      ],
+      "encode_seconds": 24.540759205818176,
+      "block_archive_bytes": 1439203,
+      "archive_bytes": 1439203,
+      "decode_seconds": 0.35894596576690674,
+      "error": "source changed during inventory: <WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/zstd22long/trial_001/attempt_001/roundtrip.owned.log",
+      "traceback": "Traceback (most recent call last):\n  File \"<WORKDIR>/r76_additional_20260929/codecs/codec_baseline_r76.py\", line 443, in benchmark\n    recovered = inventory(restored)\n  File \"<WORKDIR>/r76_additional_20260929/codecs/codec_baseline_r76.py\", line 151, in inventory\n    raise RuntimeError(\"source changed during inventory: %s\" % source)\nRuntimeError: source changed during inventory: <WORKDIR>/r76_additional_20260929/codecs/smoke/HealthApp/zstd22long/trial_001/attempt_001/roundtrip.owned.log\n",
+      "finished_at": "2026-09-29T02:45:19.799526+00:00"
+    }
+  ],
+  "all_attempts_retained": true,
+  "complete": true
+}

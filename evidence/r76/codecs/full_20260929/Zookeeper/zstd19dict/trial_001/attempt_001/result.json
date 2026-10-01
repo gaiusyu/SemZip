@@ -1,0 +1,84 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T03:03:12.193466+00:00",
+  "dataset": "Zookeeper",
+  "codec": "zstd19dict",
+  "trial": 1,
+  "workers": 3,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Zookeeper/Zookeeper.log",
+    "bytes": 10426438,
+    "mtime_ns": 1789369165659907000,
+    "device": 1048818,
+    "inode": 199002808556005705
+  },
+  "raw_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a",
+  "raw_bytes": 10426438,
+  "records": 74380,
+  "codec_spec": {
+    "exe": "zstd",
+    "encode": [
+      "-19",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "decode": [
+      "-d",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "suffix": ".zst",
+    "mode": "block0-trained-dictionary-counted-once-per-file",
+    "train": [
+      "--train",
+      "-T1"
+    ],
+    "sample_records": 1000,
+    "dictionary_file": "dictionary.zdict",
+    "dictionary_size": "zstd-default(--maxdict unset)",
+    "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+    "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+    "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/full_20260929/Zookeeper/zstd19dict/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.zst",
+      "archive_bytes": 264551,
+      "block_encode_seconds": 6.250316739082336,
+      "raw_bytes": 10426438,
+      "lf_count": 74380,
+      "records": 74380,
+      "ends_with_lf": true,
+      "raw_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a",
+      "archive_sha256": "ab66725166575b8efcea8fb488fa0d93ef044c560104657ff273b9b98d211d64",
+      "decoded_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a"
+    }
+  ],
+  "encode_seconds": 7.199187234044075,
+  "block_archive_bytes": 264551,
+  "archive_bytes": 377191,
+  "samples": 75,
+  "sample_bytes": 10426438,
+  "dictionary_train_seconds": 0.9123679995536804,
+  "dictionary_archive": "archives/dictionary.zdict",
+  "dictionary_bytes": 112640,
+  "dictionary_sha256": "d87b7f0a3678a5be2a0dc89def63e05daf3228514a20002bc069d51966a254e3",
+  "archive_components": "block archives + one dictionary file (counted once per file)",
+  "decode_seconds": 0.19771534204483032,
+  "restored_settle_seconds": 2.0029405653476715,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a",
+  "audit_seconds": 0.03693772852420807,
+  "compression_ratio": 27.642329748058675,
+  "encode_MB_per_s": 1.4482798767470098,
+  "decode_MB_per_s": 52.73459253170091,
+  "finished_at": "2026-09-29T03:03:21.657912+00:00"
+}

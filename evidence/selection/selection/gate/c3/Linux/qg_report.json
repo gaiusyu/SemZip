@@ -1,0 +1,215 @@
+{
+  "version": "QG-V1",
+  "implementation": "qg_select2 (parallel evaluation, same decisions)",
+  "dataset": "Linux",
+  "input_plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/train_k/Linux/t0.7_k3/training_work/Linux/replay_plan.json",
+  "input_plan_sha256": "e9ac7673fb720ce89bde0b315c67045ab97b809788992cc8ac04e6103a1a9408",
+  "training_block_sha256": "b541078328bf5402c254e7e8971a95963c464858031889ff6e15b6d1a857d490",
+  "selected_plan_sha256": "bf6fffa8916f3838869446f51052be17cb01878ff832406cd7ebf4ac3cda8ac6",
+  "original_train_archive_bytes": 58613,
+  "empty_train_archive_bytes": 92357,
+  "selected_train_archive_bytes": 58613,
+  "removed_tags": [],
+  "kept_tags": [
+    "TS",
+    "IP",
+    "PD",
+    "H",
+    "D",
+    "E",
+    "RV0"
+  ],
+  "evaluations": 10,
+  "decisions": [
+    {
+      "stage": "A",
+      "spec_index": 0,
+      "tag": "TS",
+      "variant": "width_agnostic",
+      "before": 58613,
+      "after": 58669,
+      "accepted": false
+    },
+    {
+      "stage": "B",
+      "tag": "RV0",
+      "before": 58613,
+      "after": 58613,
+      "accepted": false,
+      "all": {
+        "D": 58885,
+        "E": 58841,
+        "H": 58697,
+        "IP": 59885,
+        "PD": 60385,
+        "RV0": 58613,
+        "TS": 89117
+      }
+    }
+  ],
+  "eval_log": [
+    {
+      "eval": 2,
+      "key": "e31f11b7d66f",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 92357,
+      "seconds": 11.21
+    },
+    {
+      "eval": 2,
+      "key": "def4a92975a5",
+      "label": "original",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "H",
+        "D",
+        "E",
+        "RV0"
+      ],
+      "archive_bytes": 58613,
+      "seconds": 36.3
+    },
+    {
+      "eval": 3,
+      "key": "eb1c317931cd",
+      "label": "A:TS:width_agnostic",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "H",
+        "D",
+        "E",
+        "RV0"
+      ],
+      "archive_bytes": 58669,
+      "seconds": 51.62
+    },
+    {
+      "eval": 3,
+      "key": "eb1c317931cd",
+      "label": "A:TS:width_agnostic",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "H",
+        "D",
+        "E",
+        "RV0"
+      ],
+      "archive_bytes": 58669,
+      "seconds": 51.62,
+      "cached": true
+    },
+    {
+      "eval": 6,
+      "key": "33fcb8eceb7c",
+      "label": "B:-H",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "D",
+        "E",
+        "RV0"
+      ],
+      "archive_bytes": 58697,
+      "seconds": 35.69
+    },
+    {
+      "eval": 7,
+      "key": "46f1124ed9ed",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "H",
+        "D",
+        "RV0"
+      ],
+      "archive_bytes": 58841,
+      "seconds": 38.01
+    },
+    {
+      "eval": 8,
+      "key": "bbb6d5517e21",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "H",
+        "E",
+        "RV0"
+      ],
+      "archive_bytes": 58885,
+      "seconds": 38.1
+    },
+    {
+      "eval": 9,
+      "key": "aeefe37d6177",
+      "label": "B:-PD",
+      "tags": [
+        "TS",
+        "IP",
+        "H",
+        "D",
+        "E",
+        "RV0"
+      ],
+      "archive_bytes": 60385,
+      "seconds": 33.23
+    },
+    {
+      "eval": 10,
+      "key": "c02189b5bdf1",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "PD",
+        "H",
+        "D",
+        "E",
+        "RV0"
+      ],
+      "archive_bytes": 59885,
+      "seconds": 36.09
+    },
+    {
+      "eval": 10,
+      "key": "be4a00e2efe3",
+      "label": "B:-RV0",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "H",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 58613,
+      "seconds": 35.48
+    },
+    {
+      "eval": 10,
+      "key": "9629027f574b",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "PD",
+        "H",
+        "D",
+        "E",
+        "RV0"
+      ],
+      "archive_bytes": 89117,
+      "seconds": 16.87
+    }
+  ],
+  "llm_calls": 0
+}

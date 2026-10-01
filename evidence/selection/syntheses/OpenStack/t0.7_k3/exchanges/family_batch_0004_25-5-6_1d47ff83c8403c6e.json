@@ -1,0 +1,376 @@
+{
+  "families": [
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "log_prefix_with_timestamp",
+            "tokens": [
+              "nova-compute.log.1.2017-05-16_13:55:31",
+              "2017-05-16",
+              "00:00:14.329"
+            ],
+            "reason": "timestamp components and log prefix together form a complete context key",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "req-addc1839-2ed5-4778-b57e-5854eb7b8b09",
+              "cp-1.slowvm1.tcloud-pg0.utah.cloudlab.us:cp-1.slowvm1.tcloud-pg0.utah.cloudlab.us"
+            ],
+            "reason": "captured values contain separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "the header repeats with stable prefix and structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "contextual timestamp and log identifier",
+          "reason": "stable prefix and time components are used for indexing or sequencing"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "request_id",
+          "host_endpoint"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "complete log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp components represent one semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^nova-compute\\.log\\.\\d+\\.\\d{4}-\\d{2}-\\d{2}_\\d{2}:\\d{2}:\\d{2} (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "nova-compute.log.{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt_str = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('nova-compute.log.%Y-%m-%d_%H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "request_id",
+          "meaning": "unique request identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "request_id",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable with separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\[req-([a-z0-9-]+)",
+          "replacement": "[req-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"req-{record['stored'][0]}\""
+          }
+        },
+        {
+          "tag": "host_endpoint",
+          "meaning": "host endpoint identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable with separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "for ([a-z0-9.-]+:[a-z0-9.-]+)",
+          "replacement": "for {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "disk_usage",
+            "tokens": [
+              "15 GB",
+              "0.00 GB"
+            ],
+            "reason": "numeric disk usage represented in multiple formats",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4"
+            ],
+            "reason": "plain value is introduced by stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "the header repeats with stable prefix and structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S16+S17 | S19+S20",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "disk size and usage",
+          "reason": "stable units and values for storage metrics"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "disk_size",
+          "disk_used"
+        ],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "disk_size",
+          "meaning": "total disk size in GB",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "disk_size",
+            "context_source": null,
+            "why_not_merge_raw": "numeric value and unit together form one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "Total disk: (\\d+) GB",
+          "replacement": "Total disk: {placeholder} GB",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    size = int(record['stored'][0])\n    return f\"{size} GB\""
+          }
+        },
+        {
+          "tag": "disk_used",
+          "meaning": "used disk size in GB",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "disk_used",
+            "context_source": null,
+            "why_not_merge_raw": "numeric value and unit together form one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "used: (\\d+\\.\\d+) GB",
+          "replacement": "used: {placeholder} GB",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [float(groups[0])], 'layout': []}\n\ndef inverse(record):\n    used = float(record['stored'][0])\n    return f\"{used:.2f} GB\""
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance_id",
+            "context_source": null,
+            "why_not_merge_raw": "role-anchored plain variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\[instance: ([a-z0-9-]+)]",
+          "replacement": "[instance: {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "vcpu_usage",
+            "tokens": [
+              "16 VCPU",
+              "0.00 VCPU"
+            ],
+            "reason": "numeric vCPU usage represented in multiple formats",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "instance: 96abccce-8d1f-4e07-b6d1-4b2ab87e23b4"
+            ],
+            "reason": "plain value is introduced by stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "the header repeats with stable prefix and structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S16+S17 | S19+S20",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "vCPU size and usage",
+          "reason": "stable units and values for resource metrics"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "total_vcpu",
+          "used_vcpu"
+        ],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "total_vcpu",
+          "meaning": "total vCPU count",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "total_vcpu",
+            "context_source": null,
+            "why_not_merge_raw": "numeric value and unit together form one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "Total vcpu: (\\d+) VCPU",
+          "replacement": "Total vcpu: {placeholder} VCPU",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    total_vcpu = int(record['stored'][0])\n    return f\"{total_vcpu} VCPU\""
+          }
+        },
+        {
+          "tag": "used_vcpu",
+          "meaning": "used vCPU count",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "used_vcpu",
+            "context_source": null,
+            "why_not_merge_raw": "numeric value and unit together form one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "used: (\\d+\\.\\d+) VCPU",
+          "replacement": "used: {placeholder} VCPU",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [float(groups[0])], 'layout': []}\n\ndef inverse(record):\n    used_vcpu = float(record['stored'][0])\n    return f\"{used_vcpu:.2f} VCPU\""
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance_id",
+            "context_source": null,
+            "why_not_merge_raw": "role-anchored plain variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\[instance: ([a-z0-9-]+)]",
+          "replacement": "[instance: {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

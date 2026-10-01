@@ -1,0 +1,140 @@
+[
+  {
+    "family_id": 1,
+    "kind": "open_function",
+    "meaning": "date_and_time_as_epoch_seconds",
+    "reasons": [],
+    "regex": "\\[(\\d{2})\\.(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2})\\]",
+    "replacement": "[{placeholder}]",
+    "semantic_key": "hostport:auto",
+    "source_tag": "header_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 52,
+    "tag": "A"
+  },
+  {
+    "family_id": 1,
+    "kind": "auto",
+    "meaning": "name_of_the_process",
+    "reasons": [],
+    "regex": "(\\w+\\.exe)",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "process_name",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 52,
+    "tag": "B"
+  },
+  {
+    "family_id": 1,
+    "kind": "open_function",
+    "meaning": "bytes_sent_with_optional_kb_display",
+    "reasons": [],
+    "regex": "(\\d+)( +)bytes(?:(( +)\\((\\d+)\\.(\\d+)( +)(KB|MB|GB)\\)))?( +)sent,",
+    "replacement": "{placeholder}{group2}bytes{group3}{group4}{group5}.{group6}{group7}{group8}{group9}sent,",
+    "semantic_key": "bytes_sent:auto",
+    "source_tag": "bytes_sent",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 52,
+    "tag": "C"
+  },
+  {
+    "family_id": 1,
+    "kind": "open_function",
+    "meaning": "bytes_received_with_optional_kb_display",
+    "reasons": [],
+    "regex": "(\\d+)( +)bytes(?:(( +)\\((\\d+)\\.(\\d+)( +)(KB|MB|GB)\\)))?( +)received,",
+    "replacement": "{placeholder}{group2}bytes{group3}{group4}{group5}.{group6}{group7}{group8}{group9}received,",
+    "semantic_key": "bytes_received:auto",
+    "source_tag": "bytes_received",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 52,
+    "tag": "D"
+  },
+  {
+    "family_id": 1,
+    "kind": "open_function",
+    "meaning": "connection_lifetime_in_seconds",
+    "reasons": [],
+    "regex": "lifetime( +)(<)?(\\d+):(\\d+)( +)?(sec)?",
+    "replacement": "lifetime{group1}{group2}{placeholder}{group5}{group6}",
+    "semantic_key": "duration:{\"code\":\"def forward(groups):\\n    sp1, less_than, minutes, seconds, sp2, sec_literal = groups\\n    is_less_than = 1 if less_than else 0\\n    is_sec_literal = 1 if sec_literal else 0\\n    total_seconds = int(minutes) * 60 + int(seconds)\\n    layout = [len(sp1), is_less_than, len(sp2 or ''), is_sec_literal]\\n    return {'stored': [total_seconds], 'layout': layout}\\n\\ndef inverse(record):\\n    total_seconds = int(record['stored'][0])\\n    layout = record.get('layout', [])\\n    sp1_len = int(layout[0])\\n    is_less_than = int(layout[1])\\n    sp2_len = int(layout[2])\\n    is_sec_literal = int(layout[3])\\n    minutes = total_seconds // 60\\n    seconds = total_seconds % 60\\n    less_than = '<' if is_less_than else ''\\n    sec_literal = ' sec' if is_sec_literal else ''\\n    return 'lifetime' + (' ' * sp1_len) + less_than + f'{minutes:02}:{seconds:02}' + (' ' * sp2_len) + sec_literal\",\"group_regex\":\"^(?:lifetime( +)(<)?(\\\\d+):(\\\\d+)( +)?(sec)?)$\",\"intent\":\"Parse lifetime duration into total seconds and reconstruct the original format.\",\"op\":\"python_exec\"}",
+    "source_tag": "lifetime_duration",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 52,
+    "tag": "E"
+  },
+  {
+    "family_id": 1,
+    "meaning": "proxy_or_endpoint_address",
+    "reasons": [],
+    "regex": "(\\w+(?:\\.\\w+)*:\\d+)",
+    "replacement": "{placeholder}",
+    "source_tag": "endpoint",
+    "status": "rejected_unsafe_regex",
+    "support": 52
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 0,
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"[10.30 16:49:06]\", \"groups\": [\"10\", \"30\", \"16\", \"49\", \"06\"], \"failure\": \"NameError: name 'map' is not defined\"}"
+    ],
+    "regex": "\\[(\\d{2})\\.(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})\\]",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 24
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\d{2})\\.(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 24,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 0,
+    "kind": "auto",
+    "meaning": "proxy server address",
+    "reasons": [],
+    "regex": "proxy\\.cse\\.cuhk\\.edu\\.hk:\\d+|[a-zA-Z0-9.-]+:\\d+",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "proxy_address",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 24,
+    "tag": "F"
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\d{2})\\.(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 24,
+    "tag": "timestamp"
+  }
+]

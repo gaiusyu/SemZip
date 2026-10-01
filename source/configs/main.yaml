@@ -1,0 +1,53 @@
+{
+  "method_id": "SEMZIP-V6-SPARSE-DISPLAY-COMPLEMENT-R30-20260915",
+  "campaign_id": "SEMZIP-R30-FRESH-API-20260915",
+  "trainer_id": "R21-counterexample-repair",
+  "semantic_runtime_id": "SEMZIP-V6-SPARSE-DISPLAY-COMPLEMENT-R30-20260915",
+  "backend_id": "SEMZIP-DELOG-ALLGROUP-OR20-ADMISSION-V6-20260718",
+  "model": "gpt-4o",
+  "temperature": 0.0,
+  "block_lines": 100000,
+  "workers": 8,
+  "offline_discovery": {
+    "prefix_ratio": 0.2,
+    "minimum_prefix_lines": 100000,
+    "sampler": "logbatcher",
+    "families_topk": 40,
+    "examples_per_family": 2,
+    "family_min_support": 50,
+    "batch_query": true,
+    "batch_max_examples": 20,
+    "maximum_api_calls": 80,
+    "verifier_repair_max_total": 24,
+    "verifier_repair_max_per_family": 2,
+    "empty_dataset_cache": true
+  },
+  "online": {
+    "api_calls": 0,
+    "evolution": false,
+    "residual_backend": "delog_empty_recognizer_plan",
+    "residual_admission": "support >= max(20, min(200, block_lines / 1000)) AND (distinct >= 30 OR average_value_bytes > 20)",
+    "semantic_stream_codecs": "trainer_verified_semzip_codecs",
+    "speed_warmups": 1,
+    "speed_trials": 3
+  },
+  "verification": {
+    "per_block_decode": true,
+    "full_file_sha256": true,
+    "archive_self_contained": true,
+    "ratio": "sum(raw_bytes) / sum(complete_archive_bytes)"
+  },
+  "api_provenance": {
+    "persist_redacted_request": true,
+    "persist_raw_response": true,
+    "persist_decoded_response_envelope": true,
+    "require_one_response_envelope_per_successful_call": true,
+    "require_provider_model_and_usage": true
+  },
+  "batch_1": [
+    "Linux",
+    "Proxifier",
+    "Apache",
+    "Zookeeper"
+  ]
+}

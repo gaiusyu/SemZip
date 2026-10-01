@@ -1,0 +1,236 @@
+{
+ "dataset": "Hadoop",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS0",
+   "PT"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "info",
+     "main",
+     "equator",
+     "kvi"
+    ],
+    "tags": [
+     "H"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "containerlauncher",
+     "processing",
+     "the",
+     "event",
+     "eventtype",
+     "for",
+     "container",
+     "container",
+     "taskattempt"
+    ],
+    "tags": [
+     "D"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "containerlauncher",
+     "launching"
+    ],
+    "tags": [
+     "J"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "ipc",
+     "server",
+     "handler",
+     "on",
+     "jvm",
+     "with",
+     "id",
+     "given",
+     "task"
+    ],
+    "tags": [
+     "F",
+     "G"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "D": "<D>",
+  "F": "<F>",
+  "G": "<G>",
+  "H": "<H>",
+  "J": "<J>",
+  "PT": "<PT>",
+  "TS0": "<TS0>"
+ },
+ "spec_count": 7,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "^([0-9]+-[0-9]+-[0-9]+)( +)([0-9]+:[0-9]+:[0-9]+,[0-9]+)",
+   "program": {
+    "_space_layout_repair": true,
+    "_timestamp_width_generalized": true,
+    "code": "def _orig_forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S,%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef _orig_inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]\n\ndef _space_lengths(text):\n    result = []\n    i = 0\n    while i < len(text):\n        if text[i] == ' ':\n            start = i\n            while i < len(text) and text[i] == ' ':\n                i = i + 1\n            result.append(i - start)\n        else:\n            i = i + 1\n    return result\n\ndef _digit_widths(text):\n    result = []\n    i = 0\n    while i < len(text):\n        if text[i].isdigit():\n            start = i\n            while i < len(text) and text[i].isdigit():\n                i = i + 1\n            result.append(i - start)\n        else:\n            i = i + 1\n    return result\n\ndef _apply_space_lengths(text, lengths):\n    out = ''\n    i = 0\n    j = 0\n    while i < len(text):\n        if text[i] == ' ':\n            start = i\n            while i < len(text) and text[i] == ' ':\n                i = i + 1\n            count = i - start\n            if j < len(lengths):\n                count = int(lengths[j])\n            out = out + (' ' * count)\n            j = j + 1\n        else:\n            out = out + text[i]\n            i = i + 1\n    return out\n\ndef _apply_digit_widths(text, widths):\n    out = ''\n    i = 0\n    j = 0\n    while i < len(text):\n        if text[i].isdigit():\n            start = i\n            while i < len(text) and text[i].isdigit():\n                i = i + 1\n            raw = text[start:i]\n            width = len(raw)\n            if j < len(widths):\n                width = int(widths[j])\n            value = int(raw)\n            out = out + str(value).zfill(width)\n            j = j + 1\n        else:\n            out = out + text[i]\n            i = i + 1\n    return out\n\ndef forward(groups):\n    raw = groups[0]\n    base = _orig_forward([raw])\n    base_layout = base.get('layout', [])\n    spaces = _space_lengths(raw)\n    widths = _digit_widths(raw)\n    layout = [len(base_layout)]\n    for item in base_layout:\n        layout.append(int(item))\n    layout.append(len(spaces))\n    for item in spaces:\n        layout.append(int(item))\n    layout.append(len(widths))\n    for item in widths:\n        layout.append(int(item))\n    return {'stored': base.get('stored', []), 'layout': layout}\n\ndef inverse(record):\n    layout = record.get('layout', [])\n    index = 0\n    base_count = int(layout[index])\n    index = index + 1\n    base_layout = layout[index:index + base_count]\n    index = index + base_count\n    space_count = int(layout[index])\n    index = index + 1\n    spaces = layout[index:index + space_count]\n    index = index + space_count\n    width_count = int(layout[index])\n    index = index + 1\n    widths = layout[index:index + width_count]\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\n    text = _apply_space_lengths(text, spaces)\n    text = _apply_digit_widths(text, widths)\n    return text\n",
+    "group_regex": "^(([0-9]+-[0-9]+-[0-9]+)( +)([0-9]+:[0-9]+:[0-9]+,[0-9]+))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "timestamp",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "raw_time:asctime_year:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S,%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]\",\"group_regex\":\"^(([0-9]{4}-[0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS0",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "",
+   "pattern": "(?<!\\w)(port\\s+)(\\d{1,5})(?=\\D|$)",
+   "program": {
+    "op": "auto_codec"
+   },
+   "proposal_tag": "",
+   "replacement": "{group1}{placeholder}",
+   "semantic_class": "",
+   "semantic_key": "port:auto",
+   "store_group": 2,
+   "tag": "PT",
+   "value_type": ""
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "(\\d+)\\((\\d+)\\)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    return f\"{value}({value * 4})\"",
+    "op": "python_exec"
+   },
+   "proposal_tag": "byte_size_display",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "H",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "container_\\d+_\\d+_\\d+_\\d+",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "container_id",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "D",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "attempt_\\d+_\\d+_[a-z]_\\d+_\\d+",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "attempt_id",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "J",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "jvm_\\d+_\\d+_[a-z]_\\d+",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "jvm_id",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "F",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "attempt_\\d+_\\d+_[a-z]_\\d+_\\d+",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "task_attempt_id",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "G",
+   "value_type": "string"
+  }
+ ],
+ "version": 1
+}

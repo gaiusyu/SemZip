@@ -1,0 +1,726 @@
+[
+  {
+    "family_id": 2,
+    "kind": "open_function",
+    "meaning": "syslog_timestamp",
+    "reasons": [],
+    "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    month, sp1, day, sp2, time = groups\\n    text = month + ' ' + day + ' ' + time\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    packed = (dt.month * 100000000) + (dt.day * 1000000) + (dt.hour * 10000) + (dt.minute * 100) + dt.second\\n    return {'stored': [packed], 'layout': [len(sp1), len(sp2), len(day)]}\\n\\ndef inverse(record):\\n    packed = int(record['stored'][0])\\n    layout = record.get('layout', [])\\n    sp1_len, sp2_len, day_width = layout\\n    month = packed // 100000000\\n    day = (packed // 1000000) % 100\\n    hour = (packed // 10000) % 100\\n    minute = (packed // 100) % 100\\n    second = packed % 100\\n    dt = datetime(1900, month, day, hour, minute, second)\\n    return dt.strftime('%b') + (' ' * sp1_len) + str(day).zfill(day_width) + (' ' * sp2_len) + dt.strftime('%H:%M:%S')\",\"group_regex\":\"^(?:([A-Z][a-z]{2})( +)(\\\\d{1,2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"intent\":\"Pack syslog-style timestamp into a monotonic integer for exact reconstruction.\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "H0",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 24,
+    "tag": "A"
+  },
+  {
+    "family_id": 2,
+    "kind": "auto",
+    "meaning": "process_info",
+    "reasons": [],
+    "regex": "(sshd\\(pam_unix\\)\\[\\d+\\]:)",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "H1",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 24,
+    "tag": "B"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 2,
+    "meaning": "user_id",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"uid=0\", \"groups\": [\"0\"], \"record\": {\"stored\": [0], \"layout\": []}, \"inverse\": \"uid=0\", \"restored_match\": \"uid=uid=0\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "uid=(\\d+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "uid={placeholder}",
+    "source_tag": "uid",
+    "status": "verifier_repair_produced_candidates",
+    "support": 24
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "user_id",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "uid=(\\d+)",
+    "replacement": "uid={placeholder}",
+    "source_tag": "uid",
+    "status": "rejected_semantic_three_class",
+    "support": 24,
+    "tag": "uid"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 2,
+    "meaning": "effective_user_id",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"euid=0\", \"groups\": [\"0\"], \"record\": {\"stored\": [0], \"layout\": []}, \"inverse\": \"euid=0\", \"restored_match\": \"euid=euid=0\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "euid=(\\d+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "euid={placeholder}",
+    "source_tag": "euid",
+    "status": "verifier_repair_produced_candidates",
+    "support": 24
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "effective_user_id",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "euid=(\\d+)",
+    "replacement": "euid={placeholder}",
+    "source_tag": "euid",
+    "status": "rejected_semantic_three_class",
+    "support": 24,
+    "tag": "euid"
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "remote_host",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "rhost=(\\S+)",
+    "replacement": "rhost={placeholder}",
+    "source_tag": "rhost",
+    "status": "rejected_semantic_three_class",
+    "support": 24,
+    "tag": "rhost"
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "username",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "user=(\\S+)",
+    "replacement": "user={placeholder}",
+    "source_tag": "user",
+    "status": "rejected_semantic_three_class",
+    "support": 24,
+    "tag": "user"
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "user_id",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "uid=(\\d+)",
+    "replacement": "uid={placeholder}",
+    "source_tag": "uid",
+    "status": "rejected_semantic_three_class",
+    "support": 24,
+    "tag": "uid"
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "effective_user_id",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "euid=(\\d+)",
+    "replacement": "euid={placeholder}",
+    "source_tag": "euid",
+    "status": "rejected_semantic_three_class",
+    "support": 24,
+    "tag": "euid"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 3,
+    "meaning": "month_day_time_as_monotonic_integer",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jan 10 10:12:58\", \"groups\": [\"Jan\", \" \", \"10\", \" \", \"10:12:58\"], \"record\": {\"stored\": [1101012], \"layout\": [1, 1, 2]}, \"inverse\": \"Jan 10 10:12:00\", \"restored_match\": \"Jan 10 10:12:00\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "header_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 14
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "month_day_time_as_monotonic_integer",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "header_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 14,
+    "tag": "header_timestamp"
+  },
+  {
+    "family_id": 3,
+    "kind": "auto",
+    "meaning": "process_name_and_id",
+    "reasons": [],
+    "regex": "([A-Za-z_]+\\([A-Za-z_]+\\)\\[\\d+\\]:)",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "process_name_id",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 14,
+    "tag": "C"
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "month_day_time_as_monotonic_integer",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "header_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 14,
+    "tag": "header_timestamp"
+  },
+  {
+    "family_id": 1,
+    "kind": "open_function",
+    "meaning": "syslog_timestamp",
+    "reasons": [],
+    "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    month, sp1, day, sp2, time = groups\\n    text = month + ' ' + day.zfill(2) + ' ' + time\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    monotonic = (dt.month - 1) * 31 * 86400 + (int(day) - 1) * 86400 + dt.hour * 3600 + dt.minute * 60 + dt.second\\n    return {'stored': [monotonic], 'layout': [len(sp1), len(sp2), len(day)]}\\n\\ndef inverse(record):\\n    monotonic = int(record['stored'][0])\\n    layout = record.get('layout', [])\\n    sp1_len, sp2_len, day_width = layout\\n    seconds = monotonic % 60\\n    minutes = (monotonic // 60) % 60\\n    hours = (monotonic // 3600) % 24\\n    days = (monotonic // 86400) % 31 + 1\\n    months = (monotonic // (31 * 86400)) + 1\\n    dt = datetime(1900, months, days, hours, minutes, seconds)\\n    month = dt.strftime('%b')\\n    day = str(dt.day).zfill(day_width)\\n    time = dt.strftime('%H:%M:%S')\\n    return month + (' ' * sp1_len) + day + (' ' * sp2_len) + time\",\"group_regex\":\"^(?:([A-Z][a-z]{2})( +)(\\\\d{1,2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"intent\":\"Parse syslog-like timestamp into a monotonic integer and reconstruct the exact original text.\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 11,
+    "tag": "D"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 1,
+    "meaning": "kernel_function_address_hex",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"[<0212ebf3>]\", \"groups\": [\"0212ebf3\"], \"record\": {\"stored\": [\"0212ebf3\"], \"layout\": []}, \"inverse\": \"<0212ebf3>\", \"restored_match\": \"[<<0212ebf3>>]\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "\\[<(\\w+)>\\]",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "[<{placeholder}>]",
+    "source_tag": "kernel_function_address",
+    "status": "verifier_repair_produced_candidates",
+    "support": 11
+  },
+  {
+    "family_id": 1,
+    "kind": "python_exec",
+    "meaning": "kernel_function_address_hex",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[<(\\w+)>\\]",
+    "replacement": "[<{placeholder}>]",
+    "source_tag": "kernel_function_address",
+    "status": "rejected_semantic_three_class",
+    "support": 11,
+    "tag": "kernel_function_address"
+  },
+  {
+    "family_id": 1,
+    "kind": "auto",
+    "meaning": "kernel_function_name_and_offsets",
+    "reasons": [],
+    "regex": "([a-zA-Z0-9_]+\\+[0-9a-fx]+/[0-9a-fx]+)",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "kernel_function_name_offsets",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 11,
+    "tag": "E"
+  },
+  {
+    "family_id": 1,
+    "kind": "python_exec",
+    "meaning": "kernel_function_address_hex",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[<(\\w+)>\\]",
+    "replacement": "[<{placeholder}>]",
+    "source_tag": "kernel_function_address",
+    "status": "rejected_semantic_three_class",
+    "support": 11,
+    "tag": "kernel_function_address"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 5,
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul 10 03:55:15\", \"groups\": [\"Jul\", \" \", \"10\", \" \", \"03:55:15\"], \"failure\": \"IndexError: list index out of range\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 10
+  },
+  {
+    "family_id": 5,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 10,
+    "tag": "log_timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 5,
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 07:57:30\", \"groups\": [\"Jul\", \"1\", \"07:57:30\"], \"record\": {\"stored\": [-2193350893000000], \"layout\": []}, \"inverse\": \"Jul 01 07:57:30\", \"restored_match\": \"Jul 01 07:57:30\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 10
+  },
+  {
+    "family_id": 5,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 10,
+    "tag": "log_timestamp"
+  },
+  {
+    "family_id": 5,
+    "kind": "auto",
+    "meaning": "IPv4 address",
+    "reasons": [],
+    "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})",
+    "replacement": "from {placeholder}",
+    "semantic_key": "ipv4:auto",
+    "source_tag": "ip_address",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 10,
+    "tag": "F"
+  },
+  {
+    "family_id": 5,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 10,
+    "tag": "log_timestamp"
+  },
+  {
+    "family_id": 5,
+    "kind": "open_function",
+    "meaning": "complete log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 10,
+    "tag": "G"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 4,
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Nov  5 06:40:45\", \"groups\": [\"Nov\", \"  \", \"5\", \" \", \"06:40:45\"], \"failure\": \"IndexError: list index out of range\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 4,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "log_timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 4,
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Nov  5 06:40:45\", \"groups\": [\"Nov\", \"5\", \"06:40:45\"], \"record\": {\"stored\": [-2182382698000000], \"layout\": []}, \"inverse\": \"Nov 05 06:40:45\", \"restored_match\": \"Nov 05 06:40:45\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 4,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "log_timestamp"
+  },
+  {
+    "family_id": 4,
+    "kind": "auto",
+    "meaning": "IPv4 address",
+    "reasons": [],
+    "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})",
+    "replacement": "from {placeholder}",
+    "semantic_key": "ipv4:auto",
+    "source_tag": "ip_address",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 4,
+    "tag": "H"
+  },
+  {
+    "family_id": 4,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "log_timestamp"
+  },
+  {
+    "family_id": 4,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "log_timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 8,
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jun 22 13:16:30\", \"groups\": [\"Jun\", \" \", \"22\", \" \", \"13:16:30\"], \"failure\": \"IndexError: list index out of range\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "log_timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 8,
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Aug  3 06:20:34\", \"groups\": [\"Aug\", \"3\", \"06:20:34\"], \"record\": {\"stored\": [-2190505509000000], \"layout\": []}, \"inverse\": \"Aug 03 06:20:34\", \"restored_match\": \"Aug 03 06:20:34\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "log_timestamp"
+  },
+  {
+    "family_id": 8,
+    "kind": "auto",
+    "meaning": "IPv4 address",
+    "reasons": [],
+    "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})",
+    "replacement": "from {placeholder}",
+    "semantic_key": "ipv4:auto",
+    "source_tag": "ip_address",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 4,
+    "tag": "I"
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "log_timestamp"
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "complete log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "log_timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 0,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Dec  1 18:30:28\", \"groups\": [\"Dec\", \"1\", \"18:30:28\"], \"record\": {\"stored\": [-2180093715000000], \"layout\": []}, \"inverse\": \"Dec 01 18:30:28\", \"restored_match\": \"Dec 01 18:30:28\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 0,
+    "kind": "auto",
+    "meaning": "numeric process ID",
+    "reasons": [],
+    "regex": "Killed process (\\d+)",
+    "replacement": "Killed process {placeholder}",
+    "semantic_key": "",
+    "source_tag": "process_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 4,
+    "tag": "J"
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 6,
+    "meaning": "audit timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"audit(1138278091.510:111925)\", \"groups\": [\"1138278091\", \"510\"], \"record\": {\"stored\": [1138278091510], \"layout\": []}, \"inverse\": \"1138278091.510\", \"restored_match\": \"audit(1138278091.510)\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "audit\\((\\d+)\\.(\\d+):\\d+\\)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "audit({placeholder})",
+    "source_tag": "audit_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 6,
+    "kind": "python_exec",
+    "meaning": "audit timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "audit\\((\\d+)\\.(\\d+):\\d+\\)",
+    "replacement": "audit({placeholder})",
+    "source_tag": "audit_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "audit_timestamp"
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "syscall identifier",
+    "reasons": [],
+    "regex": "syscall=(\\d+)",
+    "replacement": "syscall={placeholder}",
+    "semantic_key": "",
+    "source_tag": "syscall_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "K"
+  },
+  {
+    "family_id": 6,
+    "kind": "python_exec",
+    "meaning": "audit timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "audit\\((\\d+)\\.(\\d+):\\d+\\)",
+    "replacement": "audit({placeholder})",
+    "source_tag": "audit_timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "audit_timestamp"
+  },
+  {
+    "family_id": 10,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "at (\\w{3}) (\\w{3}) (\\d{1,2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})",
+    "replacement": "at {placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = f\\\"{groups[1]} {groups[2].zfill(2)} {groups[3]} {groups[4]}\\\"\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S %Y')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%a %b %d %H:%M:%S %Y')\",\"group_regex\":\"^(?:at (\\\\w{3}) (\\\\w{3}) (\\\\d{1,2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}) (\\\\d{4}))$\",\"op\":\"python_exec\"}:at {placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "L"
+  },
+  {
+    "family_id": 10,
+    "kind": "auto",
+    "meaning": "source IP address",
+    "reasons": [],
+    "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})",
+    "replacement": "from {placeholder}",
+    "semantic_key": "ipv4:auto",
+    "source_tag": "ip_address",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "M"
+  }
+]

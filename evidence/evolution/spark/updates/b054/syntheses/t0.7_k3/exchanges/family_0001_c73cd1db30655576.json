@@ -1,0 +1,133 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The log lines share a repeated prefix containing timestamp, component, and thread information, with changing fields extracted into side streams for compression.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "date_time_as_epoch_seconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{2})/(\\d{2})/(\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Parse date and time into one epoch seconds integer and reconstruct original text with exact formatting.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    day, month, year, sp1, time = groups\n    text = day + '/' + month + '/' + year + ' ' + time\n    dt = datetime.strptime(text, '%d/%m/%y %H:%M:%S')\n    return {'stored': [int(dt.timestamp())], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    epoch_seconds = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(epoch_seconds)\n    return dt.strftime('%d/%m/%y') + (' ' * sp1_len) + dt.strftime('%H:%M:%S')"
+        }
+      },
+      {
+        "tag": "component_name",
+        "meaning": "log_component_identifier",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "(INFO)( +)(storage\\.MemoryStore:)",
+        "replacement": "{group1}{group2}{placeholder}",
+        "program": {
+          "intent": "Capture the component name exactly and preserve the surrounding context.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[2]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "date_time_as_epoch_seconds",
+      "reason": "The date and time fields together describe one log timestamp and can be composed into an epoch integer for efficient storage."
+    },
+    {
+      "slot": "S3",
+      "action": "STREAM_RAW",
+      "meaning": "log_component_identifier",
+      "reason": "The component name is a recurring string with embedded separators, suitable for raw extraction."
+    },
+    {
+      "slot": "S5",
+      "action": "STREAM_RAW",
+      "meaning": "broadcast_block_identifier",
+      "reason": "The broadcast block identifier is a structured string with embedded delimiters, suitable for raw extraction."
+    },
+    {
+      "slot": "S13+S14",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "estimated_size_in_centi_kb",
+      "reason": "The size value and KB unit together describe one numeric quantity and can be stored as an integer in centi-KB units."
+    },
+    {
+      "slot": "S16+S17",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "free_size_in_centi_kb",
+      "reason": "The size value and KB unit together describe one numeric quantity and can be stored as an integer in centi-KB units."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "broadcast_block_identifier",
+      "meaning": "structured_block_id",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "Block( +)([A-Za-z0-9_]+)",
+      "replacement": "Block{group1}{placeholder}",
+      "program": {
+        "intent": "Extract the structured broadcast block identifier as an exact string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "estimated_size_kb",
+      "meaning": "estimated_size_in_centi_kb",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "\\(estimated( +)size( +)(\\d+)\\.(\\d{1,2})( +)KB",
+      "replacement": "(estimated{group1}size{group2}{placeholder}{group5}KB",
+      "program": {
+        "intent": "Convert the estimated size in KB into centi-KB units and reconstruct original text.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, sp2, whole, frac, sp3 = groups\n    return {'stored': [int(whole) * 100 + int(frac)], 'layout': [len(sp1), len(sp2), len(sp3)]}\n\ndef inverse(record):\n    stored_value = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, sp3_len = layout\n    whole = stored_value // 100\n    frac = stored_value % 100\n    return '(estimated' + (' ' * sp1_len) + 'size' + (' ' * sp2_len) + str(whole) + '.' + str(frac).zfill(2) + (' ' * sp3_len) + 'KB'"
+      }
+    },
+    {
+      "tag": "free_size_kb",
+      "meaning": "free_size_in_centi_kb",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "free( +)(\\d+)\\.(\\d{1,2})( +)KB",
+      "replacement": "free{group1}{placeholder}{group4}KB",
+      "program": {
+        "intent": "Convert the free size in KB into centi-KB units and reconstruct original text.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, whole, frac, sp2 = groups\n    return {'stored': [int(whole) * 100 + int(frac)], 'layout': [len(sp1), len(sp2)]}\n\ndef inverse(record):\n    stored_value = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len = layout\n    whole = stored_value // 100\n    frac = stored_value % 100\n    return 'free' + (' ' * sp1_len) + str(whole) + '.' + str(frac).zfill(2) + (' ' * sp2_len) + 'KB'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

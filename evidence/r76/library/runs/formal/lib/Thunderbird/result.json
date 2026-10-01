@@ -1,0 +1,196 @@
+{
+ "status": "PASS",
+ "version": "lib",
+ "dataset": "Thunderbird",
+ "plan": "<WORKDIR>/r76_additional_20260929/library/runs/publish/lib/Thunderbird/program.json",
+ "plan_sha256": "9b617ed3eaacc77d76a09250da14faa757778a52871a6b1473c126ed955e0f30",
+ "storage": "<WORKDIR>/r76_additional_20260929/library/runs/publish/lib/Thunderbird/storage/storage.json",
+ "storage_sha256": "23c8ce6fcf774c1417209edc2f81c7b840685ac7698ad8a6612a64e9c71c1ae5",
+ "started_unix": 1790717765.5163124,
+ "finished_unix": 1790744747.3497362,
+ "encode": {
+  "version": "SEMZIP-V6-EXPLICIT-EXECUTION-ENV-R36-20260915",
+  "dataset": "Thunderbird",
+  "archive_dir": "<WORKDIR>/r76_additional_20260929/library/runs/formal/lib/Thunderbird/archive",
+  "raw_bytes": 31788301041,
+  "archive_bytes": 850245662,
+  "semantic_archive_bytes": 571900868,
+  "delog_archive_bytes": 278281272,
+  "compression_ratio": 37.387195797301224,
+  "raw_sha256": "3e8659d6efdf048bca6d682d376c74cf742a43cac66cb2a514241a103284f289",
+  "block_size": 100000,
+  "workers": 3,
+  "blocks": {
+   "_compacted_list": true,
+   "count": 2113,
+   "first": {
+    "index": 0,
+    "raw_sha256": "d29842ff0bff7db3b2f7c7aa4add2ee57a83438f9cb34010f070cfb6408b2284",
+    "block": "block_00000.log",
+    "raw_bytes": 14533596,
+    "transformed_bytes": 14067914,
+    "semantic_archive": "block_00000.semantic.tar.xz",
+    "semantic_archive_bytes": 326048,
+    "spec_counts": {
+     "G1": 363227,
+     "TS1": 101077
+    },
+    "streams": [
+     {
+      "tag": "TS1",
+      "kind": "open_function",
+      "count": 101077,
+      "open_numeric_codec": null,
+      "string_codec": null,
+      "layout": true
+     },
+     {
+      "tag": "G1",
+      "kind": "open_function",
+      "count": 363227,
+      "open_numeric_codec": null,
+      "string_codec": null,
+      "layout": true
+     }
+    ],
+    "rejected_structure_tags": [
+     "TS0"
+    ],
+    "representation_decisions": [
+     {
+      "stage": "generic_representation",
+      "selected": "file_alias",
+      "offline": true
+     }
+    ],
+    "archive_cache": {
+     "requests": 1,
+     "compressions": 1,
+     "hits": 0
+    },
+    "direct_context": {
+     "declared": 0,
+     "activated": 0,
+     "matched_values": 0,
+     "missing_context_values": 0,
+     "runtime_errors": 0,
+     "alignment_errors": 0
+    },
+    "cross_context": {
+     "declared": 0,
+     "resolved": 0,
+     "activated": 0,
+     "matched_values": 0,
+     "missing_context_values": 0,
+     "unresolved": 0
+    },
+    "semantic_archive_verified_sha256": "d29842ff0bff7db3b2f7c7aa4add2ee57a83438f9cb34010f070cfb6408b2284",
+    "semantic_archive_cache_boundary": {
+     "version": "SEMZIP-STRICT-DATA-CACHE-BOUNDARY-V1-20260923",
+     "cold_inverse": true,
+     "reset_count": 2,
+     "clear_seconds": 0.027338042855262756
+    },
+    "semantic_guard": {
+     "version": "R69-SEMANTIC-ARCHIVE-GUARD-1",
+     "raw_block": "block_00000.log",
+     "plan_sha256": "9b617ed3eaacc77d76a09250da14faa757778a52871a6b1473c126ed955e0f30",
+     "fallback_used": false,
+     "archive_verified": true,
+     "failed_attempt_seconds": 0.0,
+     "recovery_seconds": 0.0,
+     "archive_guard_seconds": 2.31867253780365,
+     "semantic_stage_seconds": 28.644068881869316,
+     "errors": []
+    },
+    "cache_boundary": {
+     "version": "SEMZIP-STRICT-DATA-CACHE-BOUNDARY-V1-20260923",
+     "entry_empty": true,
+     "exit_empty": true,
+     "clear_seconds": 0.2403843104839325,
+     "data_lru_count": 12,
+     "mutable_dict_count": 4
+    }
+   },
+   "sha256_of_canonical_json": "7ee8f076220c587f587e04094afed3feffeda34b2f7d2e53881cefe579b05dae"
+  },
+  "online_compression_seconds": 24455.724914610386,
+  "online_compression_mbps": 1.2998306593647106,
+  "online_compression_scope": "Original bounded encode timer includes semantic attempts, actual archive inverse guard, residual-only recovery, native encoding, logs, scratch cleanup and manifest; excludes imports, offline work, standalone full decode and summary serialization; includes data-cache/callable clearing at every original block entry/exit, before each semantic attempt and before each actual archive inverse, plus trace logging",
+  "plan_sha256": "9b617ed3eaacc77d76a09250da14faa757778a52871a6b1473c126ed955e0f30",
+  "compressor_sha256": "518e88aa2b75e6caf76fc571bbf617cc21f1b27f9d155b793e80b74c36a0ae3c",
+  "max_inflight_blocks": 3,
+  "llm_api_calls": 0,
+  "api_mode": "frozen-plan-with-fixed-semantic-failure-recovery",
+  "guard_version": "R71-SEMANTIC-GUARD-STRICT-BLOCK-STATE-V2",
+  "semantic_guard_verified_blocks": 2113,
+  "semantic_fallback_blocks": 0,
+  "semantic_failed_attempt_seconds_sum": 0.0,
+  "semantic_recovery_seconds_sum": 0.0,
+  "semantic_archive_guard_seconds_sum": 5908.42449042201,
+  "guard_timing_note": "Per-worker wall durations overlap; never add their sum to dataset wall time",
+  "guard_boundary": "Semantic archives are checked before native compression; native errors fail closed, full archive verification remains a separate benchmark decode",
+  "cache_boundary_version": "SEMZIP-STRICT-DATA-CACHE-BOUNDARY-V1-20260923",
+  "cache_boundary_verified_blocks": 2113
+ },
+ "decode": {
+  "cache_boundary_verified_blocks": 2113,
+  "cache_boundary_version": "SEMZIP-STRICT-DATA-CACHE-BOUNDARY-V1-20260923",
+  "decode_mbps": 14.111957695006364,
+  "decode_seconds": 2252.5791054666042,
+  "decode_sink": "file",
+  "decode_timing_scope": "Existing decode timer includes worker cache clearing, trace logging, native+semantic decode and output sink; excludes interpreter import and summary serialization",
+  "decoded_blocks": 2113,
+  "decoded_bytes": 31788301041,
+  "decoded_sha256": "3e8659d6efdf048bca6d682d376c74cf742a43cac66cb2a514241a103284f289",
+  "failed_blocks": [],
+  "verified_blocks": 0
+ },
+ "decode_process_seconds": 2260.621526569128,
+ "audit_seconds": 262.3080087900162,
+ "independent_materialized_file_sha_pass": true,
+ "block_audit": {
+  "_compacted_list": true,
+  "count": 2113,
+  "first": {
+   "index": 0,
+   "sha256": "d29842ff0bff7db3b2f7c7aa4add2ee57a83438f9cb34010f070cfb6408b2284",
+   "bytes": 14533596,
+   "records": 100000
+  },
+  "sha256_of_canonical_json": "31189fe50d02b483c324e0b87e0ca64ab7a9ffd8cb2ffa0f86fad5fe4f1788af"
+ },
+ "archive_files": {
+  "chunk_0.tar.xz": {
+   "bytes": 156200,
+   "sha256": "cfe164c5434a1a6cae9da32e6582d7203c3a38bb3f93802a78c7ee0a27305ebf"
+  },
+  "semantic_manifest.json": {
+   "bytes": 63522,
+   "sha256": "a27ee1f16ffc84925eaf248b65f4a71ae66bd55758fa03964bab2244e580f54a"
+  },
+  "semantic/block_00000.semantic.tar.xz": {
+   "bytes": 326048,
+   "sha256": "f87e345d9a66ad3d48deacbe4f2fd543366deb80304af8cb379de4c95e08d800"
+  },
+  "_compacted_map": {
+   "count": 4227,
+   "total_bytes": 850245662,
+   "sha256_of_canonical_json": "c6980116696ce4bfc3a4e24bbd38324ece0635f6cbbac28000a6d9031035e267"
+  }
+ },
+ "encode_MB_per_s": 1.2998306593647106,
+ "decode_MB_per_s": 14.111957695006366,
+ "heldout": {
+  "raw_bytes": 31773767445,
+  "archive_bytes": 849763384,
+  "manifest_bytes": 63492,
+  "ratio": 37.39131156185473,
+  "scope": "Original blocks 1 onward; same independently verified block payloads and recomputed sequential suffix manifest (R71 accounting)."
+ },
+ "_compaction": {
+  "original_bytes": 6938308,
+  "original_sha256": "d1bb1a40099ae3a379c8067fde2734a3ccf69c7a824b7350db8e8c9e249bfc91",
+  "rule": "Lists/maps with >50 entries replaced by count + SHA-256 of their canonical JSON; block-0 archive entries and every scalar kept. Original exceeds the 5 MB per-file limit."
+ }
+}

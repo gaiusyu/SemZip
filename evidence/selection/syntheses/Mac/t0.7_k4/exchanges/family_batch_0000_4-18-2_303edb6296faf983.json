@@ -1,0 +1,347 @@
+{
+  "families": [
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_combination",
+            "tokens": [
+              "Jul",
+              "1",
+              "09:01:05"
+            ],
+            "reason": "tokens represent a single timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_variable",
+            "tokens": [
+              "calvisitor-10-105-160-95",
+              "com.apple.cts[258]:",
+              "com.apple.icloud.fmfd.heartbeat:",
+              "scheduler_evaluate_activity"
+            ],
+            "reason": "contains explicit structural separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "numeric_duration",
+            "tokens": [
+              "440122",
+              "1121",
+              "14646"
+            ],
+            "reason": "numeric durations are stable and structured",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix with timestamp and hostname"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "timestamp is composed of multiple tokens"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp",
+          "duration_seconds"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hostname",
+          "component",
+          "activity_type"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "tokens are semantically one value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]} {groups[2]}', '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        },
+        {
+          "tag": "duration_seconds",
+          "meaning": "duration in seconds",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "numeric duration value",
+            "context_source": null,
+            "why_not_merge_raw": "raw capture is sufficient"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "isn't for (\\d+) seconds\\.",
+          "replacement": "isn't for {placeholder} seconds.",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f'{record['stored'][0]} seconds.'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "hostname",
+          "meaning": "hostname with embedded structure",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured hostname",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(calvisitor-\\d+-\\d+-\\d+-\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 18,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_combination",
+            "tokens": [
+              "Jul",
+              "1",
+              "09:00:55"
+            ],
+            "reason": "tokens represent a single timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_variable",
+            "tokens": [
+              "calvisitor-10-105-160-95",
+              "kernel[0]:",
+              "AppleCamIn::wakeEventHandlerThread"
+            ],
+            "reason": "contains explicit structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix with timestamp and hostname"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hostname",
+          "component"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "tokens are semantically one value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]} {groups[2]}', '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "hostname",
+          "meaning": "hostname with embedded structure",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured hostname",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(calvisitor-\\d+-\\d+-\\d+-\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_combination",
+            "tokens": [
+              "Jul",
+              "1",
+              "09:00:55"
+            ],
+            "reason": "tokens represent a single timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_variable",
+            "tokens": [
+              "calvisitor-10-105-160-95",
+              "kernel[0]:",
+              "AppleCamIn::systemWakeCall"
+            ],
+            "reason": "contains explicit structural separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "message_type",
+            "tokens": [
+              "0xE0000340"
+            ],
+            "reason": "numeric-looking opaque identifier with a clear role anchor",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "consistent prefix with timestamp and hostname"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hostname",
+          "component",
+          "message_type"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "tokens are semantically one value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^([A-Z][a-z]{2}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]} {groups[2]}', '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "message_type",
+          "meaning": "hexadecimal message type",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hexadecimal message type",
+            "context_source": null,
+            "why_not_merge_raw": "unique role and format"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "messageType = (0x[A-Fa-f0-9]+)",
+          "replacement": "messageType = {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

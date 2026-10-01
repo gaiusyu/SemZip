@@ -1,0 +1,881 @@
+[
+  {
+    "family_id": 4,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(([0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "A"
+  },
+  {
+    "family_id": 4,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "B:no surviving matches for tag B"
+    ],
+    "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 4,
+    "tag": "B"
+  },
+  {
+    "family_id": 4,
+    "kind": "auto",
+    "meaning": "socket identifier",
+    "reasons": [],
+    "regex": "sock=(\\d+)",
+    "replacement": "sock={placeholder}",
+    "semantic_key": "",
+    "source_tag": "sock_value",
+    "status": "pruned_constant_local_stream",
+    "support": 4
+  },
+  {
+    "family_id": 4,
+    "kind": "auto",
+    "meaning": "send buffer size",
+    "reasons": [],
+    "regex": "sndbuf=(\\d+)",
+    "replacement": "sndbuf={placeholder}",
+    "semantic_key": "",
+    "source_tag": "sndbuf_value",
+    "status": "pruned_constant_local_stream",
+    "support": 4
+  },
+  {
+    "family_id": 4,
+    "kind": "auto",
+    "meaning": "output queue size",
+    "reasons": [],
+    "regex": "outq=(\\d+)",
+    "replacement": "outq={placeholder}",
+    "semantic_key": "",
+    "source_tag": "outq_value",
+    "status": "pruned_constant_local_stream",
+    "support": 4
+  },
+  {
+    "family_id": 4,
+    "kind": "auto",
+    "meaning": "send length",
+    "reasons": [],
+    "regex": "send_len=(\\d+)",
+    "replacement": "send_len={placeholder}",
+    "semantic_key": "",
+    "source_tag": "send_len_value",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 4,
+    "tag": "B"
+  },
+  {
+    "family_id": 15,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(([0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "C"
+  },
+  {
+    "family_id": 15,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "D:no surviving matches for tag D"
+    ],
+    "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 4,
+    "tag": "D"
+  },
+  {
+    "family_id": 15,
+    "kind": "auto",
+    "meaning": "RTT measurement",
+    "reasons": [],
+    "regex": "RTT\\[(-?\\d+)\\]=(\\d+)",
+    "replacement": "RTT[{group1}]={placeholder}",
+    "semantic_key": "pid:auto",
+    "source_tag": "RTT_value",
+    "status": "admitted",
+    "store_group": 2,
+    "support": 4,
+    "tag": "D"
+  },
+  {
+    "family_id": 15,
+    "kind": "auto",
+    "meaning": "volume measurement",
+    "reasons": [],
+    "regex": "volume=(\\d+)",
+    "replacement": "volume={placeholder}",
+    "semantic_key": "",
+    "source_tag": "volume_value",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 4,
+    "tag": "E"
+  },
+  {
+    "family_id": 26,
+    "kind": "auto",
+    "meaning": "hexdump data",
+    "reasons": [],
+    "regex": "hexdump\\(len=(\\d+)\\): ([0-9a-f ]+)",
+    "replacement": "hexdump(len={group1}): {placeholder}",
+    "semantic_key": "",
+    "source_tag": "hexdump_value",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 3,
+    "tag": "F"
+  },
+  {
+    "family_id": 5,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "G"
+  },
+  {
+    "family_id": 5,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "H:no surviving matches for tag H"
+    ],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "H"
+  },
+  {
+    "family_id": 5,
+    "kind": "auto",
+    "meaning": "type and length attributes",
+    "reasons": [],
+    "regex": "type=(0x[0-9a-fA-F]+) len=(\\d+)",
+    "replacement": "type={group1} len={placeholder}",
+    "semantic_key": "",
+    "source_tag": "type_and_length",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "H"
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "I"
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "J:no surviving matches for tag J"
+    ],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "J"
+  },
+  {
+    "family_id": 13,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "J"
+  },
+  {
+    "family_id": 13,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "K:no surviving matches for tag K"
+    ],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "K"
+  },
+  {
+    "family_id": 13,
+    "kind": "auto",
+    "meaning": "network interface",
+    "reasons": [],
+    "regex": "interface: (wlan\\d+)",
+    "replacement": "interface: {placeholder}",
+    "semantic_key": "",
+    "source_tag": "interface",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 25,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "K"
+  },
+  {
+    "family_id": 25,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "L:no surviving matches for tag L"
+    ],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "L"
+  },
+  {
+    "family_id": 25,
+    "kind": "auto",
+    "meaning": "process record details",
+    "reasons": [],
+    "regex": "ProcessRecord\\{([0-9a-f]+ \\d+:\\w+/\\d+)\\}",
+    "replacement": "ProcessRecord{{{placeholder}}}",
+    "semantic_key": "",
+    "source_tag": "process_record",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 27,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "L"
+  },
+  {
+    "family_id": 27,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "M:no surviving matches for tag M"
+    ],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "M"
+  },
+  {
+    "family_id": 28,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "M"
+  },
+  {
+    "family_id": 28,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "N:no surviving matches for tag N"
+    ],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "N"
+  },
+  {
+    "family_id": 14,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "N"
+  },
+  {
+    "family_id": 14,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "O:no surviving matches for tag O"
+    ],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "O"
+  },
+  {
+    "family_id": 14,
+    "kind": "auto",
+    "meaning": "socket path",
+    "reasons": [],
+    "regex": "to (/data/misc/wifi/sockets/wpa_ctrl_\\d+-\\d+\\\\x00)",
+    "replacement": "to {placeholder}",
+    "semantic_key": "",
+    "source_tag": "socket_path",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 16,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "O"
+  },
+  {
+    "family_id": 16,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "P:no surviving matches for tag P"
+    ],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "P"
+  },
+  {
+    "family_id": 17,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "P"
+  },
+  {
+    "family_id": 17,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "Q:no surviving matches for tag Q"
+    ],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "Q"
+  },
+  {
+    "family_id": 20,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "Q"
+  },
+  {
+    "family_id": 20,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "R:no surviving matches for tag R"
+    ],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "R"
+  },
+  {
+    "family_id": 22,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(([0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "R"
+  },
+  {
+    "family_id": 22,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "S:no surviving matches for tag S"
+    ],
+    "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "S"
+  },
+  {
+    "family_id": 24,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(([0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "S"
+  },
+  {
+    "family_id": 24,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "T:no surviving matches for tag T"
+    ],
+    "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "T"
+  },
+  {
+    "family_id": 18,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(([0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "T"
+  },
+  {
+    "family_id": 18,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "U:no surviving matches for tag U"
+    ],
+    "regex": "^([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "U"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 8,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"12-17 19:31:36.298\", \"groups\": [\"12-17\", \" \", \"19:31:36.298\"], \"failure\": \"ValueError: not enough values to unpack (expected 2, got 1)\"}"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 8,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date, time = groups\\n    dt = datetime.strptime(f'2023-{date} {time}', '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(?:^(\\\\d{2}-\\\\d{2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "U"
+  },
+  {
+    "family_id": 8,
+    "kind": "auto",
+    "meaning": "fully qualified class name",
+    "reasons": [],
+    "regex": "class ([a-zA-Z0-9_.]+)",
+    "replacement": "class {placeholder}",
+    "semantic_key": "",
+    "source_tag": "class_name",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 11,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"12-17 19:31:36.789\", \"groups\": [\"12-17\", \" \", \"19:31:36.789\"], \"failure\": \"ValueError: not enough values to unpack (expected 2, got 1)\"}"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 11,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 11,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date, time = groups\\n    dt = datetime.strptime(f'2023-{date} {time}', '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(?:^(\\\\d{2}-\\\\d{2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "V"
+  },
+  {
+    "family_id": 11,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 29,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"12-17 19:31:46.210\", \"groups\": [\"12-17\", \" \", \"19:31:46.210\"], \"failure\": \"ValueError: not enough values to unpack (expected 2, got 1)\"}"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 1
+  },
+  {
+    "family_id": 29,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 1,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 29,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date, time = groups\\n    dt = datetime.strptime(f'2023-{date} {time}', '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(?:^(\\\\d{2}-\\\\d{2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 1,
+    "tag": "W"
+  },
+  {
+    "family_id": 29,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 1,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 34,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"12-17 19:31:36.777\", \"groups\": [\"12-17\", \" \", \"19:31:36.777\"], \"failure\": \"ValueError: not enough values to unpack (expected 2, got 1)\"}"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 1
+  },
+  {
+    "family_id": 34,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 1,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 34,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date, time = groups\\n    dt = datetime.strptime(f'2023-{date} {time}', '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(?:^(\\\\d{2}-\\\\d{2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 1,
+    "tag": "X"
+  },
+  {
+    "family_id": 34,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 1,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 35,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"12-17 19:31:36.777\", \"groups\": [\"12-17\", \" \", \"19:31:36.777\"], \"failure\": \"ValueError: not enough values to unpack (expected 2, got 1)\"}"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 1
+  },
+  {
+    "family_id": 35,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 1,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 35,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date, time = groups\\n    dt = datetime.strptime(f'2023-{date} {time}', '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(?:^(\\\\d{2}-\\\\d{2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 1,
+    "tag": "Y"
+  },
+  {
+    "family_id": 35,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 1,
+    "tag": "timestamp"
+  }
+]

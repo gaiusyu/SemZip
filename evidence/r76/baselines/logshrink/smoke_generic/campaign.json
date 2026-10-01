@@ -1,0 +1,248 @@
+{
+  "schema": "semzip.r76.logshrink.v1",
+  "started_at": "2026-09-29T03:46:41.498226+00:00",
+  "argv": [
+    "adapter/ls_run.py",
+    "--datasets",
+    "Proxifier",
+    "Linux",
+    "Apache",
+    "Zookeeper",
+    "HealthApp",
+    "--output",
+    "smoke_generic",
+    "--workers",
+    "1",
+    "--L-mode",
+    "generic",
+    "--resume"
+  ],
+  "pid": 1397731,
+  "static_hashes": {
+    "parser/THULR": "c8d50742309159dc8baa52804be2103b00ecf24ad4547ce29e560813f91117c4",
+    "parser/Elastic": "6d0085ef8f30c6d462bb234c96ca4827cdb069e606047429eac925927bfcea0f",
+    "decompression/restore.py": "ae6c93bde7aa369d02eba073e174ee63d0a1cdbc7660dfd164445c0dc1a15e6f",
+    "decompression/restore_r76.py": "55d052579bb973ae4a8d6d71378033f9baf5a2c000ca383998c913fb7836307c",
+    "decompression/decompress.py": "b8932e4aeac780c6a805b32b976b1b4387db02facea061783621e810d1c2c1a8",
+    "decompression/decompress_r76.py": "130c7bd2f89534805a8334b2d9eccbc46c9b523c02a3f01599ecf30eaa36d21c",
+    "logshrink.py": "61a363bf4a69c8e50afa7903be3c59de5a35c5c7295b7838d7e0d1de24831227",
+    "compression/compress.py": "54809dab86f15a9c92cb3f808bfba915a79b051d8ed41136cdb153e4b78d0fea",
+    "preprocess.py": "92a32d50e66bf964c8b40057de9d2315580cc453503b22106975327383ac7b0f",
+    "parser/training.py": "60ae7cb2099cfbbfc18173d798c6ac45e04b3ac2215735e9f68c26d2bafa8793",
+    "parser/sampler.py": "4aec236a22ab5480d25db1ceaae8999a6326492fb8738789964c324f07104052",
+    "run.py": "8e735c39b1c9dc36cf5de7a5e7d5a3d28dd50787a652bec9c02c2c5a34dd3959",
+    "analyzer/property_miner.py": "211b08b97b2ad45a9fb32b180d4bdf0a5e910f7ebeffe623123d4d822934a5e8",
+    "adapter/ls_run.py": "withheld: file contained a machine-specific path",
+    "adapter/ls_seg_runner.py": "1fb277853474c6413307a74c80140a4bf2e93eea66250be2db3a8bd46f64d157",
+    "adapter/ls_segment.py": "121a5e74a4e473c6c51a8edadb68b9f92d50f6922db77bfbb900cab390854a76",
+    "adapter/make_restore_r76.py": "4083d970c631d6f58a328fe670301c3368d2129881a3f02b278c6e13b4bf3018"
+  },
+  "datasets": {
+    "Proxifier": {
+      "blocks": 1,
+      "blocks_status_ok": 1,
+      "native": {
+        "archive_bytes": 90793,
+        "ratio": 27.995704514665228,
+        "suffix_raw_bytes": 0,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "lossless_blocks": 0,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 90224,
+        "model_7z_bytes": 559,
+        "model_raw_bytes": 1920,
+        "header_bytes": 10
+      },
+      "repaired": {
+        "archive_bytes": 102677,
+        "ratio": 24.755436952774232,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "residual_bytes": 11884,
+        "lossless_blocks": 1,
+        "full_sha256_match": true,
+        "lossless": true,
+        "fallback_blocks": 0,
+        "differing_lines": 21329
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 50.992250084877014,
+        "sum_block_encode_seconds": 68.95009814202785,
+        "sum_block_decode_seconds": 50.46477614343166,
+        "sum_residual_seconds": 0.3660438060760498,
+        "sum_patch_seconds": 0.08008834719657898,
+        "encode_MB_per_s_single_worker": 0.03686454506220148,
+        "decode_MB_per_s_single_worker": 0.05036808233877075,
+        "resumed_blocks": 1
+      },
+      "header_length_L": 5
+    },
+    "Linux": {
+      "blocks": 1,
+      "blocks_status_ok": 1,
+      "native": {
+        "archive_bytes": 82775,
+        "ratio": 28.386421020839627,
+        "suffix_raw_bytes": 0,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "lossless_blocks": 0,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 81186,
+        "model_7z_bytes": 1579,
+        "model_raw_bytes": 2782,
+        "header_bytes": 10
+      },
+      "repaired": {
+        "archive_bytes": 85499,
+        "ratio": 27.482029029579294,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "residual_bytes": 2724,
+        "lossless_blocks": 1,
+        "full_sha256_match": true,
+        "lossless": true,
+        "fallback_blocks": 0,
+        "differing_lines": 10628
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 26.128383681178093,
+        "sum_block_encode_seconds": 39.53212934732437,
+        "sum_block_decode_seconds": 25.706279531121254,
+        "sum_residual_seconds": 0.2526540458202362,
+        "sum_patch_seconds": 0.0723905861377716,
+        "encode_MB_per_s_single_worker": 0.05943737508688062,
+        "decode_MB_per_s_single_worker": 0.091405136910433,
+        "resumed_blocks": 1
+      },
+      "header_length_L": 5
+    },
+    "Apache": {
+      "blocks": 1,
+      "blocks_status_ok": 1,
+      "native": {
+        "archive_bytes": 110919,
+        "ratio": 46.3029417863486,
+        "suffix_raw_bytes": 0,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "lossless_blocks": 1,
+        "full_sha256_match": true,
+        "lossless": true,
+        "payload_7z_bytes": 110081,
+        "model_7z_bytes": 828,
+        "model_raw_bytes": 1269,
+        "header_bytes": 10
+      },
+      "repaired": {
+        "archive_bytes": 110919,
+        "ratio": 46.3029417863486,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "residual_bytes": 0,
+        "lossless_blocks": 1,
+        "full_sha256_match": true,
+        "lossless": true,
+        "fallback_blocks": 0,
+        "differing_lines": 0
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 14.599405601620674,
+        "sum_block_encode_seconds": 30.78304959833622,
+        "sum_block_decode_seconds": 14.490942016243935,
+        "sum_residual_seconds": 0.0005923211574554443,
+        "sum_patch_seconds": 0.0007953941822052002,
+        "encode_MB_per_s_single_worker": 0.16684103969600161,
+        "decode_MB_per_s_single_worker": 0.3544197467799422,
+        "resumed_blocks": 1
+      },
+      "header_length_L": 5
+    },
+    "Zookeeper": {
+      "blocks": 1,
+      "blocks_status_ok": 1,
+      "native": {
+        "archive_bytes": 83313,
+        "ratio": 125.14779206126295,
+        "suffix_raw_bytes": 0,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "lossless_blocks": 0,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 82184,
+        "model_7z_bytes": 1119,
+        "model_raw_bytes": 1895,
+        "header_bytes": 10
+      },
+      "repaired": {
+        "archive_bytes": 86597,
+        "ratio": 120.40183840086839,
+        "suffix_archive_bytes": 0,
+        "suffix_ratio": null,
+        "residual_bytes": 3284,
+        "lossless_blocks": 1,
+        "full_sha256_match": true,
+        "lossless": true,
+        "fallback_blocks": 0,
+        "differing_lines": 74380
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 38.18052937090397,
+        "sum_block_encode_seconds": 52.984294801950455,
+        "sum_block_decode_seconds": 36.92794622480869,
+        "sum_residual_seconds": 0.6696599274873734,
+        "sum_patch_seconds": 0.3091907203197479,
+        "encode_MB_per_s_single_worker": 0.19678355707050352,
+        "decode_MB_per_s_single_worker": 0.2823454609830258,
+        "resumed_blocks": 1
+      },
+      "header_length_L": 5
+    },
+    "HealthApp": {
+      "blocks": 3,
+      "blocks_status_ok": 3,
+      "native": {
+        "archive_bytes": 1719641,
+        "ratio": 13.683047798930126,
+        "suffix_raw_bytes": 14186163,
+        "suffix_archive_bytes": 1044620,
+        "suffix_ratio": 13.580213857670731,
+        "lossless_blocks": 0,
+        "full_sha256_match": false,
+        "lossless": false,
+        "payload_7z_bytes": 1715707,
+        "model_7z_bytes": 3904,
+        "model_raw_bytes": 14776,
+        "header_bytes": 30
+      },
+      "repaired": {
+        "archive_bytes": 1724721,
+        "ratio": 13.64274569626044,
+        "suffix_archive_bytes": 1048256,
+        "suffix_ratio": 13.53310927864949,
+        "residual_bytes": 5080,
+        "lossless_blocks": 3,
+        "full_sha256_match": true,
+        "lossless": true,
+        "fallback_blocks": 0,
+        "differing_lines": 253395
+      },
+      "timing": {
+        "wall_seconds_encode_decode_audit": 42.88945308327675,
+        "sum_block_encode_seconds": 78.59607441723347,
+        "sum_block_decode_seconds": 40.31753459572792,
+        "sum_residual_seconds": 1.2072889655828476,
+        "sum_patch_seconds": 0.5520529597997665,
+        "encode_MB_per_s_single_worker": 0.29937792917098516,
+        "decode_MB_per_s_single_worker": 0.5836152988008659,
+        "resumed_blocks": 3
+      },
+      "header_length_L": 5
+    }
+  },
+  "finished_at": "2026-09-29T03:49:34.475895+00:00"
+}

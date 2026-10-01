@@ -1,0 +1,339 @@
+{
+  "families": [
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "1131563677",
+              "2005.11.09",
+              "Nov",
+              "9",
+              "11:14:37"
+            ],
+            "reason": "several tokens together represent one timestamp",
+            "target_value": "one packed timestamp-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_sysctl_variable",
+            "tokens": [
+              "net.ipv4.conf.default.rp_filter",
+              "net.core.rmem_max",
+              "kernel.sysrq"
+            ],
+            "reason": "intrinsically structured variable with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix with timestamp and host information"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2+S4+S5+S6",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "composed tokens form one timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "structured_sysctl_variable"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp components",
+            "context_source": null,
+            "why_not_merge_raw": "components together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(- )?(\\d{10}) (\\d{4}\\.\\d{2}\\.\\d{2}) ([A-Za-z]{3}) (\\d{1,2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[2]} {groups[3]} {groups[4]} {groups[5]}\", '%Y.%m.%d %b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "structured_sysctl_variable",
+          "meaning": "sysctl_variable",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "sysctl variable",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "sysctl: (\\S+)",
+          "replacement": "sysctl: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "1131566461",
+              "2005.11.09",
+              "Nov",
+              "9",
+              "12:01:01"
+            ],
+            "reason": "several tokens together represent one timestamp",
+            "target_value": "one packed timestamp-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "user root"
+            ],
+            "reason": "role-anchor explicit in regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix with timestamp and host information"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2+S4+S5+S6",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "composed tokens form one timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "explicitly_role_anchored_plain_variable"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp components",
+            "context_source": null,
+            "why_not_merge_raw": "components together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(- )?(\\d{10}) (\\d{4}\\.\\d{2}\\.\\d{2}) ([A-Za-z]{3}) (\\d{1,2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[2]} {groups[3]} {groups[4]} {groups[5]}\", '%Y.%m.%d %b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "user_name",
+          "meaning": "role_anchored_user_value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "user field value",
+            "context_source": null,
+            "why_not_merge_raw": "role-anchor explicit in regex"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "user( +)([A-Za-z][A-Za-z0-9._-]*)",
+          "replacement": "user{group1}{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 32,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "1131571453",
+              "2005.11.09",
+              "Nov",
+              "9",
+              "13:24:13"
+            ],
+            "reason": "several tokens together represent one timestamp",
+            "target_value": "one packed timestamp-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_gid_variable",
+            "tokens": [
+              "GID=0x000000fe800000000005ad000004cd51"
+            ],
+            "reason": "intrinsically structured variable with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix with timestamp and host information"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2+S4+S5+S6",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "timestamp",
+          "reason": "composed tokens form one timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "structured_gid_variable"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "log_timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp components",
+            "context_source": null,
+            "why_not_merge_raw": "components together form one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "(- )?(\\d{10}) (\\d{4}\\.\\d{2}\\.\\d{2}) ([A-Za-z]{3}) (\\d{1,2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[2]} {groups[3]} {groups[4]} {groups[5]}\", '%Y.%m.%d %b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "gid_variable",
+          "meaning": "structured_gid_value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "GID variable",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "GID=(0x[0-9a-fA-F]+)",
+          "replacement": "GID={placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 22,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no clearly repeated prefix/header"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

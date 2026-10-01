@@ -1,0 +1,72 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T02:43:44.569554+00:00",
+  "dataset": "Proxifier",
+  "codec": "delog",
+  "trial": 1,
+  "workers": 2,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Proxifier/Proxifier.log",
+    "bytes": 2541814,
+    "mtime_ns": 1789369147018069000,
+    "device": 1048818,
+    "inode": 199002808556005618
+  },
+  "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+  "raw_bytes": 2541814,
+  "records": 21329,
+  "codec_spec": {
+    "suffix": ".tar.xz",
+    "mode": "official-cli-independent-block-adapter",
+    "encoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/Delog_compress",
+    "decoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/decompress",
+    "encoder_sha256": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739",
+    "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+    "encode_arguments": [
+      "DATASET",
+      "text",
+      "100000",
+      "1",
+      "0",
+      "lzma",
+      "normal"
+    ],
+    "decode_arguments": [
+      "ARCHIVE_DIRECTORY",
+      "OUTPUT_FILE",
+      "1"
+    ],
+    "compressor_source_sha256": "d2f82b0b774a73096fe3bc60871a9b78e623f9253e516e764a5ae1fd7c4b0879"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Proxifier/delog/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.tar.xz",
+      "archive_bytes": 84180,
+      "block_encode_seconds": 0.5379417687654495,
+      "raw_bytes": 2541814,
+      "lf_count": 21329,
+      "records": 21329,
+      "ends_with_lf": true,
+      "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "archive_sha256": "fb0b36709780e4a51594e8a84fe01ffc585cbdb723327f50a45619211a0fce7e",
+      "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7"
+    }
+  ],
+  "encode_seconds": 0.65280482172966,
+  "block_archive_bytes": 84180,
+  "archive_bytes": 84180,
+  "decode_seconds": 0.3958563506603241,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+  "audit_seconds": 0.010557442903518677,
+  "compression_ratio": 30.194986932763126,
+  "encode_MB_per_s": 3.8936814119498306,
+  "decode_MB_per_s": 6.4210514641486105,
+  "finished_at": "2026-09-29T02:43:45.648138+00:00"
+}

@@ -1,0 +1,132 @@
+{
+  "header": {
+    "has_unified_header": false,
+    "reason": "The sampled lines do not share a common repeated prefix/header. Each line's structure varies based on the semantic values, so there is no unified header to extract.",
+    "functions": []
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "Unique identifier or timestamp-like field",
+      "reason": "Appears to be a high-entropy unique identifier or timestamp-like value with no clear semantic role."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "Source node identifier",
+      "reason": "A structured token with a stable 'node-' prefix followed by a variable alphanumeric ID."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Cluster filesystem status",
+      "reason": "Static and does not vary across examples; part of the main template."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "Monotonic numeric value",
+      "reason": "Appears to be a timestamp or a similar strictly increasing monotonic numeric field."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Static value",
+      "reason": "Always present as a constant and does not vary across examples."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Static field label",
+      "reason": "Static across all examples; part of the main template."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "Domain identifier",
+      "reason": "Structured token with stable affixes and variable components, including digits and underscores."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "Target node identifier",
+      "reason": "A structured token with a stable 'node-' prefix followed by a variable numeric ID."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "S4_timestamp",
+      "meaning": "Monotonic numeric timestamp",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{10})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Parse a 10-digit numeric timestamp and preserve it as an integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    ts = int(groups[0])\n    return {'stored': [ts], 'layout': []}\n\ndef inverse(record):\n    ts = record['stored'][0]\n    return str(ts)"
+      }
+    },
+    {
+      "tag": "S1_source_node",
+      "meaning": "Source node identifier with 'node-' prefix",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "(node-[A-Z]\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Preserve the source node identifier with its exact structure.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "S9_domain_id",
+      "meaning": "Domain identifier with variable and structured components",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "(\\w+[\\w_]*\\w+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Preserve the domain identifier with its exact structure, including underscores and alphanumeric components.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "S16_target_node",
+      "meaning": "Target node identifier with 'node-' prefix",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "(node-\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Preserve the target node identifier with its exact structure.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,471 @@
+{
+ "dataset": "Windows",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS0"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "info",
+     "cbs",
+     "component",
+     "elevate"
+    ],
+    "tags": [
+     "D"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "cbs",
+     "appl",
+     "selfupdate",
+     "component",
+     "elevation",
+     "lower",
+     "version",
+     "revision",
+     "holder"
+    ],
+    "tags": [
+     "B"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "cbs",
+     "read",
+     "out",
+     "cached",
+     "package",
+     "applicability",
+     "for",
+     "package",
+     "applicablestate",
+     "currentstate"
+    ],
+    "tags": [
+     "L"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "cbs",
+     "appl",
+     "detectparent",
+     "package",
+     "no",
+     "parent",
+     "found",
+     "go",
+     "absent"
+    ],
+    "tags": [
+     "N"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "cbs",
+     "appl",
+     "detect",
+     "parent",
+     "package",
+     "parent",
+     "disposition",
+     "detect",
+     "versioncomp",
+     "eq",
+     "servicecomp",
+     "eq",
+     "buildcomp",
+     "eq",
+     "distributioncomp",
+     "ge",
+     "revisioncomp",
+     "ge",
+     "exist",
+     "present"
+    ],
+    "tags": [
+     "H",
+     "I"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "cbs",
+     "appl",
+     "detect",
+     "parent",
+     "package",
+     "disposition",
+     "state",
+     "from",
+     "detectparent",
+     "installed"
+    ],
+    "tags": [
+     "R"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "cbs",
+     "evaluateapplicability",
+     "package",
+     "package",
+     "applicability",
+     "absent"
+    ],
+    "tags": [
+     "S"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "cbs",
+     "appl",
+     "selfupdate",
+     "detect",
+     "component",
+     "elevation",
+     "applicable"
+    ],
+    "tags": [
+     "P"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "cbs",
+     "appl",
+     "package",
+     "update",
+     "trigger",
+     "applicable",
+     "notapplicable",
+     "disposition",
+     "staged"
+    ],
+    "tags": [
+     "J"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "cbs",
+     "external",
+     "evaluateapplicability",
+     "package",
+     "package",
+     "applicable",
+     "state",
+     "installed",
+     "highest",
+     "update",
+     "applicable",
+     "state",
+     "installed",
+     "resulting",
+     "applicable"
+    ],
+    "tags": [
+     "Q"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "B": "<B>",
+  "D": "<D>",
+  "H": "<H>",
+  "I": "<I>",
+  "J": "<J>",
+  "L": "<L>",
+  "N": "<N>",
+  "P": "<P>",
+  "Q": "<Q>",
+  "R": "<R>",
+  "S": "<S>",
+  "TS0": "<TS0>"
+ },
+ "spec_count": 12,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}),",
+   "program": {
+    "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%Y-%m-%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S,')",
+    "group_regex": "^(?:^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}),)$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "log_timestamp",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    dt = datetime.strptime(f'{groups[0]} {groups[1]}', '%Y-%m-%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S,')\",\"group_regex\":\"^(?:^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}),)$\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS0",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "Component:( +)(.+?),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "group_regex": "^(?:Component:( +)(.+?),)$",
+    "intent": "Preserve the exact raw string of the component identifier.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "component_identifier",
+   "replacement": "Component:{group1}{placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "D",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_atomic",
+   "pattern": "Component:( +)([\\w\\-.]+_[\\w\\-.]+_[\\d\\.]+_[\\w\\-.]+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "group_regex": "^(?:Component:( +)([\\w\\-.]+_[\\w\\-.]+_[\\d\\.]+_[\\w\\-.]+))$",
+    "intent": "Preserve component identifier with exact structure.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "component_identifier",
+   "replacement": "Component:{group1}{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "B",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "package: ([^,]+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "package_variable",
+   "replacement": "package: {placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "L",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "package: ([^,]+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "package_variable",
+   "replacement": "package: {placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "N",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "Package: ([^,]+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "package_name",
+   "replacement": "Package: {placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "H",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "Parent: ([^,]+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "parent_package",
+   "replacement": "Parent: {placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "I",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "Package: ([^,]+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "package_variable",
+   "replacement": "Package: {placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "R",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "package: ([^,]+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "package_variable",
+   "replacement": "package: {placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "S",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "component: ([^,]+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "component_variable",
+   "replacement": "component: {placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "P",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "Package: ([^,]+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "package_name",
+   "replacement": "Package: {placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "J",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "package: ([^,]+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "package_variable",
+   "replacement": "package: {placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "Q",
+   "value_type": "string"
+  }
+ ],
+ "version": 1
+}

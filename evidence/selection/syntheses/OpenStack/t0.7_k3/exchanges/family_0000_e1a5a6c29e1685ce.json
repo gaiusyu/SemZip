@@ -1,0 +1,121 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The examples share a repeated prefix structure containing a log file identifier, timestamp, PID, log level, and component name fields. These fields are stable and should be extracted into side streams for compression.",
+    "functions": [
+      {
+        "tag": "log_header_timestamp",
+        "meaning": "log_file_identifier_and_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(nova-api\\.log(?:\\.\\d+)?\\.\\d{4}-\\d{2}-\\d{2}_\\d{2}:\\d{2}:\\d{2})( +)(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+        "replacement": "{placeholder}{group2}{group3}{group4}{group5}",
+        "program": {
+          "intent": "Pack file identifier and timestamp into one monotonic integer, preserving spacing and format.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    file_id, sp1, date, sp2, time = groups\n    dt_text = date + ' ' + time\n    dt = datetime.strptime(dt_text, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1), len(sp2)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len = layout\n    dt = datetime.fromtimestamp(micros / 1000000)\n    date = dt.strftime('%Y-%m-%d')\n    time = dt.strftime('%H:%M:%S.%f')[:-3]\n    return file_id + (' ' * sp1_len) + date + (' ' * sp2_len) + time"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log_file_identifier_and_timestamp",
+      "reason": "The log file identifier and timestamp provide stable context for each log entry and can be composed into a single monotonic integer for compression."
+    },
+    {
+      "slot": "S3",
+      "action": "STREAM_RAW",
+      "meaning": "process_id",
+      "reason": "The PID is stable and numeric but varies across examples. It should be extracted as a raw stream."
+    },
+    {
+      "slot": "S5",
+      "action": "STREAM_RAW",
+      "meaning": "component_name",
+      "reason": "The component name is a stable identifier and varies across examples. It should be extracted as a raw stream."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "syslog_timestamp",
+      "meaning": "pid_and_timestamp_integer",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "(\\d{5})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+      "replacement": "{placeholder}{group2}{group3}",
+      "program": {
+        "intent": "Pack PID and timestamp into one monotonic integer, preserving spacing and format.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    pid, sp1, time = groups\n    dt = datetime.strptime(time, '%H:%M:%S.%f')\n    packed_time = int(dt.hour * 3600000 + dt.minute * 60000 + dt.second * 1000 + dt.microsecond // 1000)\n    return {'stored': [int(pid), packed_time], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    pid, packed_time = record['stored']\n    sp1_len = record['layout'][0]\n    hour = packed_time // 3600000\n    minute = (packed_time % 3600000) // 60000\n    second = (packed_time % 60000) // 1000\n    millis = packed_time % 1000\n    time = f'{hour:02}:{minute:02}:{second:02}.{millis:03}'\n    return str(pid) + (' ' * sp1_len) + time"
+      }
+    },
+    {
+      "tag": "component_name",
+      "meaning": "component_name_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(nova\\.[a-z_]+\\.wsgi\\.server)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Preserve the component name exactly as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "request_id",
+      "meaning": "unique_request_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\[req-([a-z0-9-]+)\\]",
+      "replacement": "[req-{placeholder}]",
+      "program": {
+        "intent": "Preserve the request ID exactly as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "endpoint_ipv4",
+      "meaning": "source_and_destination_ipv4_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{1,3}(?:\\.\\d{1,3}){3},?\\d{1,3}(?:\\.\\d{1,3}){3})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Preserve the exact representation of IPv4 pair as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

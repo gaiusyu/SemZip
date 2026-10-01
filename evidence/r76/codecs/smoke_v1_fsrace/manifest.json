@@ -1,0 +1,195 @@
+{
+  "created_at": "2026-09-29T02:43:28.032546+00:00",
+  "protocol": {
+    "schema": "semzip.external-cli.r76.v1",
+    "block_records": 100000,
+    "workers": 2,
+    "trials": 1,
+    "order": "rotate",
+    "timeout_per_block_seconds": 3600,
+    "codecs": {
+      "xz9e": {
+        "exe": "xz",
+        "encode": [
+          "-9e",
+          "-T1",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-c"
+        ],
+        "suffix": ".xz",
+        "executable": "/usr/bin/xz",
+        "executable_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+        "version": "xz (XZ Utils) 5.2.5\nliblzma 5.2.5\n"
+      },
+      "zstd19": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "zstd22long": {
+        "exe": "zstd",
+        "encode": [
+          "--ultra",
+          "-22",
+          "--long=27",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "--long=27",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "zstd19dict": {
+        "exe": "zstd",
+        "encode": [
+          "-19",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "decode": [
+          "-d",
+          "-T1",
+          "-q",
+          "-c"
+        ],
+        "suffix": ".zst",
+        "mode": "block0-trained-dictionary-counted-once-per-file",
+        "train": [
+          "--train",
+          "-T1"
+        ],
+        "sample_records": 1000,
+        "dictionary_file": "dictionary.zdict",
+        "dictionary_size": "zstd-default(--maxdict unset)",
+        "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+        "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+        "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+      },
+      "delog_generic": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "variant": "official DeLog sources with empty dataset-name regex_map (R76 DeLog-generic)",
+        "encoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/Delog_compress",
+        "decoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/decompress",
+        "encoder_sha256": "bc357a51b83d0ea03310b0b0332f67bb989ccda7f3336879a9c9552491713a8a",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "192f6a3f910033f7e3ab00ea0962abd7b75f0b322e8bebd66042e99480bd643d"
+      },
+      "delog": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter",
+        "encoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/Delog_compress",
+        "decoder": "<WORKDIR>/r68_external_20260923/artifacts/DeLog/decompress",
+        "encoder_sha256": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739",
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encode_arguments": [
+          "DATASET",
+          "text",
+          "100000",
+          "1",
+          "0",
+          "lzma",
+          "normal"
+        ],
+        "decode_arguments": [
+          "ARCHIVE_DIRECTORY",
+          "OUTPUT_FILE",
+          "1"
+        ],
+        "compressor_source_sha256": "d2f82b0b774a73096fe3bc60871a9b78e623f9253e516e764a5ae1fd7c4b0879"
+      }
+    },
+    "inputs": [
+      {
+        "dataset": "Linux",
+        "source": {
+          "path": "<WORKDIR>/data/loghub1/original/Linux/Linux.log",
+          "bytes": 2349686,
+          "mtime_ns": 1789369143539147000,
+          "device": 1048818,
+          "inode": 199002808556005597
+        }
+      },
+      {
+        "dataset": "Proxifier",
+        "source": {
+          "path": "<WORKDIR>/data/loghub1/original/Proxifier/Proxifier.log",
+          "bytes": 2541814,
+          "mtime_ns": 1789369147018069000,
+          "device": 1048818,
+          "inode": 199002808556005618
+        }
+      },
+      {
+        "dataset": "Apache",
+        "source": {
+          "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+          "bytes": 5135876,
+          "mtime_ns": 1789369148595142000,
+          "device": 1048818,
+          "inode": 199002808556005632
+        }
+      },
+      {
+        "dataset": "HealthApp",
+        "source": {
+          "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+          "bytes": 23529930,
+          "mtime_ns": 1789369303348633000,
+          "device": 1048818,
+          "inode": 199002808556006449
+        }
+      }
+    ],
+    "script_sha256": "54706452aabb03ec8f552550b49e8e5e5b18acd2f2ab804f59ac7c5da539cffc",
+    "decode_output": "materialized-file",
+    "keep_decoded": false
+  },
+  "host": "<DEV_HOST>",
+  "platform": "Linux-<KERNEL>-x86_64-with-glibc2.31",
+  "python": "3.9.2 (default, Feb 28 2021, 17:03:44) \n[GCC 10.2.1 20210110]",
+  "logical_cpus": 128,
+  "timing_notes": "Full streaming split and CLI process wall, all archive writes; decode all CLI outputs and ordered full-file assembly. SHA/inventory audits excluded. OS buffered I/O; no fsync or cache drop. Historical R59 internal timers are not directly comparable."
+}

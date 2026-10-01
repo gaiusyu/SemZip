@@ -1,0 +1,175 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The logs share a consistent prefix structure that includes a timestamp, process ID, log level, and component, which can be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "log_header_timestamp",
+        "meaning": "log_file_generation_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(nova-api\\.log\\.).(\\d{4})-(\\d{2})-(\\d{2})_(\\d{2}):(\\d{2}):(\\d{2})",
+        "replacement": "{group1}{placeholder}",
+        "program": {
+          "intent": "Extracts and compresses the timestamp from the log header.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    prefix, year, month, day, hour, minute, second = groups\n    dt = datetime.strptime(year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second, '%Y-%m-%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp())], 'layout': []}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    dt = datetime.fromtimestamp(timestamp)\n    return 'nova-api.log.' + dt.strftime('%Y-%m-%d_%H:%M:%S')"
+        }
+      },
+      {
+        "tag": "log_process_id",
+        "meaning": "process_id_from_log",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(\\d{5}) INFO",
+        "replacement": "{placeholder} INFO",
+        "program": {
+          "intent": "Extracts the process ID as a numeric value.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "log_component",
+        "meaning": "log_component_name",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(nova\\.[a-z_]+\\.wsgi\\.server)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Extracts the component name as a raw string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log file generation timestamp",
+      "reason": "The timestamp is part of the log header and can be extracted as a composed numeric value for compact storage."
+    },
+    {
+      "slot": "S3",
+      "action": "UINT_DELTA",
+      "meaning": "process ID",
+      "reason": "The process ID is a stable numeric value with locality in its distribution, making it suitable for delta compression."
+    },
+    {
+      "slot": "S5",
+      "action": "STREAM_RAW",
+      "meaning": "log component name",
+      "reason": "The component name is a structured string with consistent format, suitable for raw extraction."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "log_record_timestamp",
+      "meaning": "record_timestamp_in_epoch_microseconds",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{3})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Converts the record timestamp into epoch microseconds.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    year, month, day, sp1, hour, minute, second, millis = groups\n    dt = datetime.strptime(f'{year}-{month}-{day} {hour}:{minute}:{second}.{millis}', '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    sp1_len = record['layout'][0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d') + (' ' * sp1_len) + dt.strftime('%H:%M:%S.%f')[:-3]"
+      }
+    },
+    {
+      "tag": "http_status",
+      "meaning": "http_response_status_code",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "status:( +)(\\d+)",
+      "replacement": "status:{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the HTTP response status code as a numeric value.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': [len(groups[0])]}\n\ndef inverse(record):\n    return 'status:' + (' ' * record['layout'][0]) + str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "response_time",
+      "meaning": "response_time_in_microseconds",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "time:( +)(\\d+)\\.(\\d+)",
+      "replacement": "time:{group1}{placeholder}",
+      "program": {
+        "intent": "Converts response time in seconds to microseconds for compact storage.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, seconds, fraction = groups\n    microseconds = int(seconds) * 1000000 + int(fraction.ljust(6, '0'))\n    return {'stored': [microseconds], 'layout': [len(sp1), len(fraction)]}\n\ndef inverse(record):\n    microseconds = record['stored'][0]\n    sp1_len, fraction_len = record['layout']\n    seconds = microseconds // 1000000\n    fraction = str(microseconds % 1000000).zfill(6)[:fraction_len]\n    return 'time:' + (' ' * sp1_len) + f'{seconds}.{fraction}'"
+      }
+    },
+    {
+      "tag": "content_length",
+      "meaning": "response_content_length_bytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "len:( +)(\\d+)",
+      "replacement": "len:{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the content length in bytes as a numeric value.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': [len(groups[0])]}\n\ndef inverse(record):\n    return 'len:' + (' ' * record['layout'][0]) + str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "client_ip",
+      "meaning": "client_ipv4_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{1,3}(\\.\\d{1,3}){3})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extracts the client IPv4 address as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

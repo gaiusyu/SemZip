@@ -1,0 +1,103 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure that includes a timestamp and a component identifier, which can be extracted and stored as side streams.",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "date_time_month_day_time",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack syslog-like yearless timestamp into one monotonic integer and preserve spacing for exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    text = month + ' ' + day.zfill(2) + ' ' + time\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    monotonic = dt.month * 100000000 + dt.day * 1000000 + dt.hour * 10000 + dt.minute * 100 + dt.second\n    layout = [len(sp1), len(sp2), len(day)]\n    return {'stored': [monotonic], 'layout': layout}\n\ndef inverse(record):\n    monotonic = record['stored'][0]\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, day_width = layout\n    month = (monotonic // 100000000) % 100\n    day = (monotonic // 1000000) % 100\n    hour = (monotonic // 10000) % 100\n    minute = (monotonic // 100) % 100\n    second = monotonic % 100\n    dt = datetime(2000, month, day, hour, minute, second)  # Use year 2000 as placeholder\n    return dt.strftime('%b') + (' ' * sp1_len) + str(day).zfill(day_width) + (' ' * sp2_len) + dt.strftime('%H:%M:%S')"
+        }
+      },
+      {
+        "tag": "H1",
+        "meaning": "component_identifier_with_bracketed_pid",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(sshd\\(pam_unix\\)|unix_chkpwd)\\[(\\d+)\\]:",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Capture component identifier including process ID and render the exact text.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    component, pid = groups\n    return {'stored': [component, pid], 'layout': []}\n\ndef inverse(record):\n    component, pid = record['stored']\n    return f\"{component}[{pid}]:\""
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "date_time_month_day_time",
+      "reason": "The month, day, and time together form a syslog-like timestamp that can be packed into a single monotonic integer for efficient storage and exact reconstruction."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "component_identifier_with_bracketed_pid",
+      "reason": "The component identifier and process ID form a structured string that is well-suited for a raw stream, as it contains a stable format with a bracketed numeric ID."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "pass; literal token",
+      "reason": "The token 'pass;' is stable and does not vary across examples; keeping it in the main template simplifies the structure without loss of compression."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "TS",
+      "meaning": "date_time_month_day_time",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Pack syslog-like yearless timestamp into one monotonic integer and preserve spacing for exact reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    text = month + ' ' + day.zfill(2) + ' ' + time\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    monotonic = dt.month * 100000000 + dt.day * 1000000 + dt.hour * 10000 + dt.minute * 100 + dt.second\n    layout = [len(sp1), len(sp2), len(day)]\n    return {'stored': [monotonic], 'layout': layout}\n\ndef inverse(record):\n    monotonic = record['stored'][0]\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, day_width = layout\n    month = (monotonic // 100000000) % 100\n    day = (monotonic // 1000000) % 100\n    hour = (monotonic // 10000) % 100\n    minute = (monotonic // 100) % 100\n    second = monotonic % 100\n    dt = datetime(2000, month, day, hour, minute, second)  # Use year 2000 as placeholder\n    return dt.strftime('%b') + (' ' * sp1_len) + str(day).zfill(day_width) + (' ' * sp2_len) + dt.strftime('%H:%M:%S')"
+      }
+    },
+    {
+      "tag": "PID_COMPONENT",
+      "meaning": "component_identifier_with_bracketed_pid",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(sshd\\(pam_unix\\)|unix_chkpwd)\\[(\\d+)\\]:",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Capture component identifier including process ID and render the exact text.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    component, pid = groups\n    return {'stored': [component, pid], 'layout': []}\n\ndef inverse(record):\n    component, pid = record['stored']\n    return f\"{component}[{pid}]:\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

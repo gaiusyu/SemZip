@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"kernel_function_address\",\n      \"meaning\": \"kernel_function_address_hex\",\n      \"class\": \"class_3_common_variable\",\n      \"value_type\": \"string\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"regex\": \"\\\\[<(\\\\w+)>\\\\]\",\n      \"replacement\": \"[<{placeholder}>]\",\n      \"program\": {\n        \"intent\": \"Extract the hexadecimal kernel function address as a raw string.\",\n        \"op\": \"python_exec\",\n        \"parameters\": {},\n        \"code\": \"def forward(groups):\\n    return {'stored': [groups[0]], 'layout': []}\\n\\ndef inverse(record):\\n    return '[<' + str(record['stored'][0]) + '>]'\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 174,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1118,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1292
+  }
+}

@@ -1,0 +1,364 @@
+{
+  "families": [
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "log_timestamp",
+            "tokens": [
+              "S1",
+              "S2"
+            ],
+            "reason": "S1 (date) and S2 (time) together represent a complete timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "request_id",
+            "tokens": [
+              "S6"
+            ],
+            "reason": "value contains multiple explicit separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "compute_service_host",
+            "tokens": [
+              "S16"
+            ],
+            "reason": "value contains multiple explicit separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "line starts with a repeated prefix containing file name, date, and time"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "S1 and S2 represent the complete timestamp"
+        },
+        {
+          "slot": "S6",
+          "action": "STREAM_RAW",
+          "meaning": "request ID",
+          "reason": "identifies a request uniquely and contains structural separators"
+        },
+        {
+          "slot": "S16",
+          "action": "STREAM_RAW",
+          "meaning": "compute service host",
+          "reason": "identifies the compute service host and contains structural separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "request_id",
+          "compute_service_host"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp as one integer",
+            "context_source": null,
+            "why_not_merge_raw": "S1 and S2 represent one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_time_str = f\"{groups[0]} {groups[1]}\"\n    dt = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "request_id",
+          "meaning": "unique request identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "request ID",
+            "context_source": null,
+            "why_not_merge_raw": "this value is already a standalone unique identifier"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\[req-([a-f0-9\\-]+)",
+          "replacement": "[req-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"req-{record['stored'][0]}\""
+          }
+        },
+        {
+          "tag": "compute_service_host",
+          "meaning": "compute service host",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "compute service host",
+            "context_source": null,
+            "why_not_merge_raw": "this value is already a standalone structured value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "for ((?:[a-zA-Z0-9\\.-]+):(?:[a-zA-Z0-9\\.-]+))",
+          "replacement": "for {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "disk_usage",
+            "tokens": [
+              "S16",
+              "S17",
+              "S19",
+              "S20"
+            ],
+            "reason": "different displays of the same byte-size values",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "instance_id",
+            "tokens": [
+              "S13"
+            ],
+            "reason": "value contains multiple explicit separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "line starts with a repeated prefix containing file name, date, and time"
+      },
+      "slot_actions": [
+        {
+          "slot": "S16+S17+S19+S20",
+          "action": "MERGE_EQUIVALENT",
+          "meaning": "disk usage",
+          "reason": "S16, S17, S19, S20 represent the same byte-size value in different displays"
+        },
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW",
+          "meaning": "instance ID",
+          "reason": "identifies the instance uniquely and contains structural separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "disk_usage"
+        ],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "disk_usage",
+          "meaning": "disk usage in bytes",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "used GB as an integer in bytes",
+            "context_source": null,
+            "why_not_merge_raw": "canonical integer representation needed for compression"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "Total disk: (\\d+) GB, used: ([\\d\\.]+) GB",
+          "replacement": "Total disk: {placeholder} GB, used: {group1} GB",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    total_gb = int(groups[0])\n    used_gb = float(groups[1])\n    return {'stored': [int(used_gb * (1024 ** 3))], 'layout': []}\n\ndef inverse(record):\n    used_bytes = record['stored'][0]\n    used_gb = used_bytes / (1024 ** 3)\n    return f\"Total disk: {used_bytes} GB, used: {used_gb:.2f} GB\""
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance ID",
+            "context_source": null,
+            "why_not_merge_raw": "this value is already a standalone structured value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\[instance: ([a-f0-9\\-]+)\\]",
+          "replacement": "[instance: {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "vcpu_usage",
+            "tokens": [
+              "S16",
+              "S17",
+              "S19",
+              "S20"
+            ],
+            "reason": "different displays of the same vCPU values",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "instance_id",
+            "tokens": [
+              "S13"
+            ],
+            "reason": "value contains multiple explicit separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "line starts with a repeated prefix containing file name, date, and time"
+      },
+      "slot_actions": [
+        {
+          "slot": "S16+S17+S19+S20",
+          "action": "MERGE_EQUIVALENT",
+          "meaning": "vcpu usage",
+          "reason": "S16, S17, S19, S20 represent the same vCPU count in different displays"
+        },
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW",
+          "meaning": "instance ID",
+          "reason": "identifies the instance uniquely and contains structural separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "vcpu_usage"
+        ],
+        "class_3_common_variable": [
+          "instance_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "vcpu_usage",
+          "meaning": "vCPU usage",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "used vCPUs as an integer",
+            "context_source": null,
+            "why_not_merge_raw": "canonical integer representation needed for compression"
+          },
+          "general": true,
+          "order_hint": "family_structured",
+          "regex": "Total vcpu: (\\d+) VCPU, used: ([\\d\\.]+) VCPU",
+          "replacement": "Total vcpu: {placeholder} VCPU, used: {group1} VCPU",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    total_vcpu = int(groups[0])\n    used_vcpu = float(groups[1])\n    return {'stored': [int(used_vcpu * 100)], 'layout': []}\n\ndef inverse(record):\n    used_vcpu = record['stored'][0] / 100.0\n    return f\"Total vcpu: {used_vcpu:.2f} VCPU, used: {used_vcpu:.2f} VCPU\""
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "instance_id",
+          "meaning": "instance identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "instance ID",
+            "context_source": null,
+            "why_not_merge_raw": "this value is already a standalone structured value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\[instance: ([a-f0-9\\-]+)\\]",
+          "replacement": "[instance: {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

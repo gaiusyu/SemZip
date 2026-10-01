@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"timestamp\",\n      \"meaning\": \"log timestamp\",\n      \"class\": \"class_1_composed_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"log_timestamp\",\n      \"context\": null,\n      \"regex\": \"^([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})\",\n      \"replacement\": \"{placeholder}\",\n      \"program\": {\n        \"op\": \"python_exec\",\n        \"code\": \"def forward(groups):\\n    dt = datetime.strptime(f\\\"{groups[0]} {groups[1]}\\\", \\\"%Y-%m-%d %H:%M:%S,%f\\\")\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime(\\\"%Y-%m-%d %H:%M:%S,%f\\\")[:-3]\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 267,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1115,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1382
+  }
+}

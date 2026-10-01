@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"response_time\",\n      \"meaning\": \"response_time_in_seconds\",\n      \"class\": \"class_2_formatted_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"regex\": \"time:( +)(\\\\d+\\\\.\\\\d+)\",\n      \"replacement\": \"time:{group1}{placeholder}\",\n      \"program\": {\n        \"intent\": \"Extract the response time in seconds as a numeric value.\",\n        \"op\": \"python_exec\",\n        \"parameters\": {},\n        \"code\": \"def forward(groups):\\n    return {'stored': [round(float(groups[1]) * 1000000)], 'layout': [len(groups[0])]}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    sp1_len = layout[0]\\n    micros = record['stored'][0]\\n    return 'time:' + (' ' * sp1_len) + f\\\"{micros / 1000000:.7f}\\\"\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 238,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1944,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 2182
+  }
+}

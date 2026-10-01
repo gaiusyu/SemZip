@@ -1,0 +1,482 @@
+{
+  "families": [
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2005.11.09",
+              "1131563677",
+              "Nov",
+              "9",
+              "11:14:37"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "net.ipv4.conf.default.rp_filter",
+              "net.ipv4.neigh.default.gc_thresh1",
+              "net.core.rmem_max",
+              "kernel.sysrq"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Logs have a consistent prefix structure."
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "semantic role of Unix timestamp",
+          "reason": "S1 represents a Unix timestamp in numeric form."
+        },
+        {
+          "slot": "S2+S4+S5+S6",
+          "action": "COMPOSE_FIELDS_TO_INT | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "S2, S4, S5, and S6 together represent a complete timestamp."
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "sysctl variable",
+          "reason": "S9 represents a sysctl setting."
+        },
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "sysctl value",
+          "reason": "S11 represents the value assigned to the sysctl setting."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "sysctl variable",
+          "sysctl value"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "composed timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp pieces",
+            "context_source": null,
+            "why_not_merge_raw": "A composed timestamp is more compact and semantically meaningful."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}\\.\\d{2}\\.\\d{2}) ([A-Za-z]{3}) (\\d{1,2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_str = groups[0]\n    time_str = groups[3]\n    dt = datetime.strptime(f\"{date_str} {time_str}\", \"%Y.%m.%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    ts = int(record['stored'][0]) / 1000\n    dt = datetime.fromtimestamp(ts)\n    return dt.strftime(\"%Y.%m.%d %b %d %H:%M:%S\")"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "sysctl_variable",
+          "meaning": "sysctl variable name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "sysctl variable",
+            "context_source": null,
+            "why_not_merge_raw": "The variable itself is a structured entity."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "sysctl: ([a-zA-Z0-9._]+)",
+          "replacement": "sysctl: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "sysctl_value",
+          "meaning": "sysctl value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "sysctl value",
+            "context_source": null,
+            "why_not_merge_raw": "A clean value is needed for compression and context."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "= ([^ ]+)$",
+          "replacement": "= {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "2005.11.09",
+              "1131566461",
+              "Nov",
+              "9",
+              "12:01:01"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "user root",
+              "uid=0"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Logs have a consistent prefix structure."
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "semantic role of Unix timestamp",
+          "reason": "S1 represents a Unix timestamp in numeric form."
+        },
+        {
+          "slot": "S2+S4+S5+S6",
+          "action": "COMPOSE_FIELDS_TO_INT | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "S2, S4, S5, and S6 together represent a complete timestamp."
+        },
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "uid value",
+          "reason": "S15 includes a specific field anchor and value."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "user",
+          "uid"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "composed timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp pieces",
+            "context_source": null,
+            "why_not_merge_raw": "A composed timestamp is more compact and semantically meaningful."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}\\.\\d{2}\\.\\d{2}) ([A-Za-z]{3}) (\\d{1,2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_str = groups[0]\n    time_str = groups[3]\n    dt = datetime.strptime(f\"{date_str} {time_str}\", \"%Y.%m.%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    ts = int(record['stored'][0]) / 1000\n    dt = datetime.fromtimestamp(ts)\n    return dt.strftime(\"%Y.%m.%d %b %d %H:%M:%S\")"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "user_name",
+          "meaning": "user field value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "user",
+            "context_source": null,
+            "why_not_merge_raw": "The user field value is a structured entity."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "user ([a-zA-Z0-9]+)",
+          "replacement": "user {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "uid_value",
+          "meaning": "uid field value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "uid",
+            "context_source": null,
+            "why_not_merge_raw": "The uid field is a structured entity."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "uid=(\\d+)",
+          "replacement": "uid={placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 32,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "1131571453",
+              "2005.11.09",
+              "Nov",
+              "9",
+              "13:24:13"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "GID=0x000000fe800000000005ad000004cd51",
+              "GID=0x000000fe800000000005ad000004bb89"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Logs have a consistent prefix structure."
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "semantic role of Unix timestamp",
+          "reason": "S1 represents a Unix timestamp in numeric form."
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "log level",
+          "reason": "S9 represents a log level with a fixed structure."
+        },
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "GID value",
+          "reason": "S15 represents a globally unique identifier (GID) with structural separators."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "GID value"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "composed timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp pieces",
+            "context_source": null,
+            "why_not_merge_raw": "A composed timestamp is more compact and semantically meaningful."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}\\.\\d{2}\\.\\d{2}) ([A-Za-z]{3}) (\\d{1,2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_str = groups[0]\n    time_str = groups[3]\n    dt = datetime.strptime(f\"{date_str} {time_str}\", \"%Y.%m.%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    ts = int(record['stored'][0]) / 1000\n    dt = datetime.fromtimestamp(ts)\n    return dt.strftime(\"%Y.%m.%d %b %d %H:%M:%S\")"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "gid_value",
+          "meaning": "GID field value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "GID",
+            "context_source": null,
+            "why_not_merge_raw": "The GID itself is a structured entity."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "GID=(0x[a-fA-F0-9]+)",
+          "replacement": "GID={placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"GID={record['stored'][0]}\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 22,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "1131567053",
+              "2005.11.09",
+              "Nov",
+              "9",
+              "12:10:53"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Logs have a consistent prefix structure."
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "semantic role of Unix timestamp",
+          "reason": "S1 represents a Unix timestamp in numeric form."
+        },
+        {
+          "slot": "S2+S4+S5+S6",
+          "action": "COMPOSE_FIELDS_TO_INT | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "S2, S4, S5, and S6 together represent a complete timestamp."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "composed timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp pieces",
+            "context_source": null,
+            "why_not_merge_raw": "A composed timestamp is more compact and semantically meaningful."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{4}\\.\\d{2}\\.\\d{2}) ([A-Za-z]{3}) (\\d{1,2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_str = groups[0]\n    time_str = groups[3]\n    dt = datetime.strptime(f\"{date_str} {time_str}\", \"%Y.%m.%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    ts = int(record['stored'][0]) / 1000\n    dt = datetime.fromtimestamp(ts)\n    return dt.strftime(\"%Y.%m.%d %b %d %H:%M:%S\")"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

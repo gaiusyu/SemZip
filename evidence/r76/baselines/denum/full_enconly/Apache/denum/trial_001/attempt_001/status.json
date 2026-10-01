@@ -1,0 +1,84 @@
+{
+  "schema": "semzip.external-cli.v1",
+  "status": "ENCODE_ONLY_UNVERIFIED",
+  "started_at": "2026-09-29T20:39:12.559200+00:00",
+  "dataset": "Apache",
+  "codec": "denum",
+  "trial": 1,
+  "workers": 2,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+    "bytes": 5135876,
+    "mtime_ns": 1789369148595142000,
+    "device": 1048818,
+    "inode": 199002808556005632
+  },
+  "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+  "raw_bytes": 5135876,
+  "records": 56482,
+  "codec_spec": {
+    "suffix": ".tar.xz",
+    "mode": "official-cli-independent-block-adapter+official-python-decompressor",
+    "commit": "a3a697564e378643461e27ab92ea44b098424c35",
+    "encoder": "<WORKDIR>/r76_additional_20260929/baselines/denum/bin/denum_compress",
+    "encoder_sha256": "1f2a9406a9f68d6b8b58d69603182cbee8d4a2598366f7e17b7cec0869c885e8",
+    "encoder_source_sha256": "b23a6ebff714337f498cf659a3a0569519c1cd9763aabb516c8cfeb63672a2db",
+    "decoder_files_sha256": {
+      "decompress.py": "c3becae288d140314a6db55c4b48f629ea3bde38cd18e6b77ee8738ea637bc5c",
+      "Denum_simplel.py": "8807c1cf60c862595be973697db1c1120bfabb21b466c8c0e11191c03100dde1"
+    },
+    "python": "/usr/bin/python3",
+    "pydeps": "<WORKDIR>/r76_additional_20260929/baselines/denum/pydeps",
+    "tar": "/bin/tar",
+    "tar_sha256": "8498b0a43e820b0f8ed5cc61accfdfadffc7bd43ff6b0a91256a09ffc19dad38",
+    "xz": "/usr/bin/xz",
+    "xz_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+    "encode_arguments": [
+      "DATASET",
+      "100000",
+      "1"
+    ],
+    "decode_arguments": [
+      "DATASET"
+    ],
+    "archive": "byte-for-byte official output/DATASET/compressed0.xz (tar -cJf of output/DATASET/0/)"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/baselines/denum/full_enconly/Apache/denum/trial_001/attempt_001",
+  "mode": "encode-only",
+  "timing_scope": "full-file-cli-split-and-encode-only-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.tar.xz",
+      "archive_bytes": 87532,
+      "block_encode_seconds": 2.1618740260601044,
+      "encoded_input_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "raw_bytes": 5135876,
+      "lf_count": 56481,
+      "records": 56482,
+      "ends_with_lf": false,
+      "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "archive_sha256": "d3a256316b41973f14db7e5797aaf1c83ea0f1930b66771ec436c40c3ee7540c"
+    }
+  ],
+  "encode_seconds": 2.249022662639618,
+  "archive_bytes": 87532,
+  "roundtrip": "not-attempted",
+  "archive_only_decode": false,
+  "lossless_verified": false,
+  "unverified_reason": "Denum archive format is proven lossy (baselines/denum/proofs/SUMMARY.json, 16/16 LOSSY_FORMAT_PROVEN); no decode attempted; compression-only size, not losslessly verifiable",
+  "block_input_sha256_verified": true,
+  "audit_seconds": 0.001184508204460144,
+  "block_count": 1,
+  "block_archive_bytes": [
+    87532
+  ],
+  "compression_ratio": 58.67426769638532,
+  "suffix_blocks": null,
+  "suffix_raw_bytes": null,
+  "suffix_archive_bytes": null,
+  "suffix_compression_ratio": null,
+  "encode_MB_per_s": 2.2836034893361896,
+  "finished_at": "2026-09-29T20:39:14.842457+00:00"
+}

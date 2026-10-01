@@ -1,0 +1,363 @@
+You are generating reversible extraction programs for several Windows log-line families in one batch.
+Return JSON only. The top-level object must be {"families": [...]}.
+Return exactly 8 family objects, one for each input family_id in this exact set: [3, 5, 12, 13, 16, 9, 11, 14].
+Do not omit a family. If a family has no safe function, still return it with all three class function arrays empty.
+Each output family must preserve its input family_id exactly and follow this schema:
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "1234 bytes",
+              "1.20 KB"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "10.0.0.5",
+              "/var/log/app",
+              "api.example.net",
+              "550e8400-e29b-41d4-a716-446655440000"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "user Alice",
+              "username=Alice"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "semantic role if known",
+          "reason": "why this slot is extracted, composed, or kept"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_2_formatted_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_3_common_variable": [
+          "semantic names found in this family, or an empty list"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+Class-wise completion contract:
+- Inspect Class 1, Class 2, and Class 3 independently for every family before emitting JSON.
+- class_inventory must contain all three class keys and briefly name every candidate category found; use [] when none is present.
+- Put executable proposals only in class_1_functions, class_2_functions, or class_3_functions. Always emit all three arrays, even when empty.
+- Do not emit a flat functions array or header.functions. A changing header field belongs in the class array matching its semantics.
+- The class bucket is authoritative: Class 1 and Class 2 store numeric values; Class 3 stores exact strings.
+
+For every family, fill family_analysis before writing functions. This is a short machine-readable plan, not chain-of-thought.
+- has_composable_tokens means several tokens/pieces jointly represent one value, such as weekday + month + day + time + year forming one timestamp-like value.
+- has_semantic_equivalent_tokens means two displays represent the same value, such as '1234 bytes' and '(1.20 KB)' describing the same byte count.
+- If has_composable_tokens=true, at least one function should implement the best composable_group unless exact reconstruction is impossible.
+- If has_semantic_equivalent_tokens=true, at least one function should implement the best semantic_equivalent_group unless exact reconstruction is impossible.
+- raw_variable_groups are Class 3 candidates through either of two evidence routes: (A) the captured value itself contains at least two non-alphanumeric separator occurrences explicitly encoded by the regex; or (B) a plain value is immediately introduced by a stable, unambiguous field-name literal explicitly present in the regex, such as user( +)([A-Za-z0-9]+) or username=([A-Za-z0-9]+). Whitespace alone and generic words such as for, from, to, or by do not qualify. Unanchored broad captures such as ([A-Za-z0-9]+), (\w+), or ([^ ]+) must be left to residual.
+- This planning step is meant to prevent skipping high-value fusion opportunities before regex writing.
+
+Direct per-line context schema:
+- Every function must include tag, class, value_type, target_role, context, regex, replacement, and program.
+- class must be one of class_1_composed_numeric, class_2_formatted_numeric, class_3_common_variable.
+- value_type must be numeric for class_1_composed_numeric and class_2_formatted_numeric. Use string for class_3_common_variable.
+- target_role must be log_timestamp only when the stored target itself is the primary timestamp of the log record. Use ordinary_value for every other stored target.
+- Use context=null when no other field in the same physical line should partition the target's distribution. A log_timestamp normally uses context=null.
+- Otherwise context must contain code defining project_context(line, groups). It returns the actual per-line context value as str/int, or None when absent; it must not return a semantic label.
+- line is the complete original physical log line and groups are the target regex groups. The target regex does not need to capture the context, and the context may be adjacent or non-adjacent.
+- Context only routes an already reversible target. forward(groups) and inverse(record) must reconstruct the target without context. Numeric streams use delta within each returned context; string streams use dictionary ranks within each returned context.
+- project_context must be deterministic, must not import modules, and may use provided re.search/re.match/re.fullmatch with literal safe regexes.
+- Direct projector example for 'Failed password from 173.234.31.186 port 38926 ssh2': the source_port target regex is 'port( +)(\\d+)', its target program stores int(groups[1]), and context.code is: def project_context(line, groups): m = re.search(r'from( +)((?:\\d{1,3}\\.){3}\\d{1,3})', line); return m.group(2) if m else None.
+- The example returns the concrete IP bytes, not the words source_ip and not another function tag.
+- Before writing each function, fill source_separation. This is a machine-readable audit, not a long chain-of-thought. Use decision=merge_equivalent only when the captured pieces are one semantic quantity or one piece is exactly derivable from another. Use decision=split_context_value when a textual span contains independent sources and one source predicts/groups the other. Use decision=raw_single_source only for one bounded opaque variable. Use decision=leave_to_residual when the LLM should not create a function.
+- If a target's distribution depends on another field anywhere in the same line, attach a projector to the target. Example: source_port stores only the port and project_context returns the concrete source IP from the complete line.
+- Contrastive source-separation example. Bad: store '10.10.34.12:3888' as one raw endpoint string; this repeats the IP many times and mixes address entropy with port entropy. Good: capture IP as context and store only the port as numeric value, with source_separation.decision='split_context_value', stored_source='port', context_source='ip'.
+- Contrastive source-separation example. Good merge: '1234 bytes (1.20 KB)' has two displays of one byte-size value, so use source_separation.decision='merge_equivalent' and store one canonical integer plus layout/display flags.
+
+Executable program forms:
+- Raw python_exec: store the captured raw value exactly as a string; downstream codec chooses rank/delta/raw.
+- {"op":"python_exec", "code":"..."}: real Python code defining forward(groups) and inverse(record). Use this for exact date/time, unit, duration, tuple, and compound numeric transforms.
+- python_exec code must not import modules. The verifier already provides datetime, re, math, and calendar-like helpers. Any import/from-import statement is rejected.
+- Use only the verifier-aligned Python subset: ordinary assignments, arithmetic, indexing/slicing, simple if/for/while, int/str/len/float/round/abs/min/max, datetime/timedelta/re helpers, f-strings, lists, tuples, and dicts.
+- Do not use augmented assignment such as +=, -=, *=, //=, or %=; write ordinary assignment instead. Example: write `v = v // 1000`, not `v //= 1000`.
+- Do not use comprehensions, lambda, try/except, with, class definitions, file/network/system calls, eval/exec/compile, globals/locals/vars, or double-underscore names.
+- python_exec forward(groups) must return a dict exactly shaped like {'stored': [one_value], 'layout': [optional_small_integers]}. Use layout for variable spaces or widths needed by inverse(record).
+- python_exec inverse(record) must read record['stored'] and return the exact original captured bytes as a string.
+- Do not return datetime objects, ISO strings, tuples, or plain integers from forward(). Do not make inverse(record) expect a datetime object directly.
+
+Placeholder routing contract:
+- Use exactly one {placeholder} in every replacement. The decoder uses that route to choose this function's side stream.
+- If a function consumes several capture groups that together describe one attribute, they still map to one {placeholder}, not multiple placeholders.
+- If a span contains independent attributes, emit separate functions with separate tags.
+- Do not duplicate storage: bytes consumed into {placeholder} must not also remain as {groupN}.
+
+For each family:
+- Every function must include class and target_role. Use class_1_composed_numeric for multi-piece values that become one compressible semantic integer, class_2_formatted_numeric for text or formatted tokens that express numeric meaning and can be converted into one compressible integer, and class_3_common_variable for an exact string supported by either intrinsic structure or an explicit adjacent field-name anchor. Use target_role=log_timestamp only for the primary log timestamp; otherwise use ordinary_value.
+- If a date/time-like span is present, prefer class_1_composed_numeric and write python_exec that stores one integer timestamp-like value. Do not use class_3_common_variable or raw identity for a timestamp merely because spaces or display widths vary; store those reversible display details in layout.
+- Choose class_2 not only for visibly numeric tokens, but for non-numeric or formatted text that carries numeric meaning and has a deterministic numeric representation: units, durations, byte-size displays, ordinal/state counters, severity-like levels, port-like roles, process/thread ids, slots, or structured subfields. Do not classify random-looking session ids, hashes, request ids, or opaque hex strings as class_1/class_2 merely because they can be parsed as integers.
+- Strategy switch for numbers: leave anonymous/simple numbers to deterministic residual coders, but extract semantically stable numbers whose surrounding words vary across templates. A port near an IP/host should be a class_2 target whose context projector returns the concrete IP/host when that field predicts the port distribution.
+- For every ordinary_value target, ask whether another field anywhere in the same physical line predicts or partitions its distribution. If yes, provide context.code defining project_context(line, groups); otherwise use context=null.
+- project_context returns the actual value found on this line, not a field name or another function tag. A log_timestamp normally uses context=null.
+- Context routing is available to every class. Numeric targets use context-local delta and string targets use context-local dictionary ranks, while target reconstruction remains independent of context.
+- Prefer class_3_common_variable only after one evidence route passes. Intrinsic route: the captured value has at least two separator occurrences explicit in the regex. Role-anchor route: a plain value is immediately introduced by a stable, unambiguous field-name literal explicit in the regex, such as user or username=. A semantic explanation, whitespace, or a generic word such as for/from/to/by is insufficient. Numeric-looking opaque identifiers may use class_3 only when they satisfy one route and lack semantic magnitude/order.
+- First decide whether there is a unified log header. Headers can use brackets, punctuation, or component fields, not just whitespace.
+- Put changing header fields in header.functions.
+- Then propose normal value functions for hard formats such as session ids, stable-affix ids, derived date/time text, unit-bearing values, and compound numeric fields.
+- Prefer one reversible function for a complete real-world attribute over several substring functions. If adjacent tokens or neighboring pieces describe the same underlying value, capture the complete span and store one compact value when exact rendering is possible.
+- Do not split one attribute into independent streams just because it appears as several tokens or contains punctuation. A date/time-like attribute, unit-bearing display, bracketed identifier, endpoint-like text, or stable-affix id should be considered as a complete reversible span first.
+- If one displayed piece is derivable from another captured value, store the source value and render the derived text instead of creating a separate stream. If exact derivation is not safe, store the complete formatted span with raw python_exec.
+- Prefer executable python_exec for complete composed attributes when a deterministic parse/render relation is clear. Use raw python_exec when the exact bytes are opaque or when a compact inverse renderer is not safe.
+- Set general=true when the function likely applies across many families/templates, such as a repeated header attribute, address-like value, endpoint-like value, bracketed process/context id, port-like number, user/domain-like token, or other recurring value format. Set general=false for message-specific variables.
+- Set order_hint=global_composed for a global function that consumes a complete multi-piece attribute or starts at a repeated line prefix; set family_structured for context-scoped message variables; set global_atomic for simple intrinsic global values.
+- Constants remain literal. Store changing bytes once: either as {placeholder} or as preserved {groupN}, never both.
+- Unit-bearing variants must be byte-exact. If examples include both plain and displayed forms such as '123 bytes' and '123 bytes (1.20 KB)', do not consume the optional display and drop it from replacement. Store the complete formatted value span or render all captured pieces exactly.
+- Use numeric scalar programs only after checking that the scalar render reconstructs the whole matched value, including optional unit displays and alternate units.
+- Regexes must be Python re compatible, local to the matched substring, and under 220 characters.
+- Avoid broad tail captures like (.+) or (.*). Avoid bare all-number regexes unless tightly scoped by literals. For Class 3, forbid unanchored plain-token captures such as ([A-Za-z0-9]+), (\w+), and ([^ ]+). A narrow plain-token capture is allowed only when a stable, unambiguous field-name literal immediately introduces it in the same regex; whitespace or generic for/from/to/by does not qualify.
+- If functions overlap, order most specific first.
+
+Executable examples, for style only and not a closed type list:
+Example exact raw value:
+{"tag": "dot_value", "meaning": "recurring dotted value", "class": "class_3_common_variable", "general": true, "order_hint": "global_atomic", "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})", "replacement": "from {placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example exact raw plain value with an explicit role anchor:
+{"tag": "user_name", "meaning": "user_field_value", "class": "class_3_common_variable", "general": false, "order_hint": "family_structured", "regex": "user( +)([A-Za-z][A-Za-z0-9._-]*)", "replacement": "user{group1}{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example fixed-width integer:
+{"tag": "bracket_number", "meaning": "recurring bracketed numeric id", "class": "class_2_formatted_numeric", "general": true, "order_hint": "global_composed", "regex": "worker\\[(\\d{5})\\]", "replacement": "worker[{placeholder}]", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    return {'stored': [int(text)], 'layout': []}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    return str(value).zfill(5)"}}
+Example composed date/time-like attribute with a fixed exact layout:
+{"tag": "composed_time", "meaning": "complete repeated date/time-like prefix", "class": "class_1_composed_numeric", "general": true, "order_hint": "global_composed", "regex": "^([A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2})", "replacement": "{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"}}
+If exact reconstruction needs variable width, variable spaces, optional text, or any other layout bytes, either capture the complete span with raw python_exec, or emit a python_exec that stores the required layout bytes and inverse reconstructs exactly.
+
+Open executable transducer mode:
+- Prefer LLM-generated executable Python transforms for structured numeric fields, including timestamps, dates, durations, sizes, tuple-like IDs, and compound numeric tokens.
+- The transform must define forward(groups) and inverse(record). forward receives the captured value bytes; inverse reconstructs exactly the captured bytes from the stored integer.
+- A timestamp does not need true Unix time. A monotonic packed integer is acceptable if inverse renders the exact original bytes and deltas are locally small.
+- For YYYY-MM-DD HH:MM:SS,mmm, write Python that parses the seven numeric fields, packs them into one integer, and inverse-unpacks with the same zero padding and punctuation.
+- For bracketed or prefixed fields, capture only the value span and preserve stable punctuation in replacement groups.
+- Stable text is an anchor, not a side-stream value. Never store the same bytes twice: if a captured group is represented by {placeholder}, do not also keep that group as {groupN} in replacement.
+
+
+Focus function budget on complete formatted spans and semantic dependencies. Plain leftover numbers can be handled by generic residual coders unless local context gives them a stable role.
+
+### FAMILY 3
+support=4
+template_anchor_key=info cbs read out cached package applicability for package applicablestate currentstate
+examples_and_shapes:
+Example 0: 2016-09-28 04:30:33, Info                  CBS    Read out cached package applicability for package: Package_for_KB3121255~31bf3856ad364e35~amd64~~6.1.1.0, ApplicableState: 112, CurrentState:112
+Tokens: S0='2016-09-28':D4-D2-D2 | S1='04:30:33,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Read':A4 | S5='out':A3 | S6='cached':A6 | S7='package':A7 | S8='applicability':A13 | S9='for':A3 | S10='package:':A7: | S11='Package_for_KB3121255~31bf3856ad364e35~amd64~~6.1.1.0,':A7_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S12='ApplicableState:':A15: | S13='112,':D3, | S14='CurrentState:112':A12:D3
+Example 1: 2016-09-28 04:30:33, Info                  CBS    Read out cached package applicability for package: Package_for_KB2656356~31bf3856ad364e35~amd64~~6.1.1.1, ApplicableState: 80, CurrentState:112
+Tokens: S0='2016-09-28':D4-D2-D2 | S1='04:30:33,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Read':A4 | S5='out':A3 | S6='cached':A6 | S7='package':A7 | S8='applicability':A13 | S9='for':A3 | S10='package:':A7: | S11='Package_for_KB2656356~31bf3856ad364e35~amd64~~6.1.1.1,':A7_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S12='ApplicableState:':A15: | S13='80,':D2, | S14='CurrentState:112':A12:D3
+Example 2: 2016-09-28 04:30:37, Info                  CBS    Read out cached package applicability for package: Microsoft-Hyper-V-Integration-Services-Package~31bf3856ad364e35~amd64~~6.3.9600.17681, ApplicableState: 112, CurrentState:0
+Tokens: S0='2016-09-28':D4-D2-D2 | S1='04:30:37,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Read':A4 | S5='out':A3 | S6='cached':A6 | S7='package':A7 | S8='applicability':A13 | S9='for':A3 | S10='package:':A7: | S11='Microsoft-Hyper-V-Integration-Services-Package~31bf3856ad364e35~amd64~~6.3.9600.17681,':A9-A5-A1-A11-A8-A7~D2A2D4A2D3A1D2~A3D2~D1.D1.D4.D5, | S12='ApplicableState:':A15: | S13='112,':D3, | S14='CurrentState:0':A12:D1
+Example 3: 2016-09-28 04:30:39, Info                  CBS    Read out cached package applicability for package: Microsoft-Windows-RDP-BlueIP-Package-TopLevel~31bf3856ad364e35~amd64~~7.2.7601.16415, ApplicableState: 112, CurrentState:112
+Tokens: S0='2016-09-28':D4-D2-D2 | S1='04:30:39,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Read':A4 | S5='out':A3 | S6='cached':A6 | S7='package':A7 | S8='applicability':A13 | S9='for':A3 | S10='package:':A7: | S11='Microsoft-Windows-RDP-BlueIP-Package-TopLevel~31bf3856ad364e35~amd64~~7.2.7601.16415,':A9-A7-A3-A6-A7-A8~D2A2D4A2D3A1D2~A3D2~D1.D1.D4.D5, | S12='ApplicableState:':A15: | S13='112,':D3, | S14='CurrentState:112':A12:D3
+required_value_like_slots (28 sampled occurrences):
+Example 0: S0='2016-09-28':D4-D2-D2 | S1='04:30:33,':D2:D2:D2, | S10='package:':A7: | S11='Package_for_KB3121255~31bf3856ad364e35~amd64~~6.1.1.0,':A7_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S12='ApplicableState:':A15: | S13='112,':D3, | S14='CurrentState:112':A12:D3
+Example 1: S0='2016-09-28':D4-D2-D2 | S1='04:30:33,':D2:D2:D2, | S10='package:':A7: | S11='Package_for_KB2656356~31bf3856ad364e35~amd64~~6.1.1.1,':A7_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S12='ApplicableState:':A15: | S13='80,':D2, | S14='CurrentState:112':A12:D3
+Example 2: S0='2016-09-28':D4-D2-D2 | S1='04:30:37,':D2:D2:D2, | S10='package:':A7: | S11='Microsoft-Hyper-V-Integration-Services-Package~31bf3856ad364e35~amd64~~6.3.9600.17681,':A9-A5-A1-A11-A8-A7~D2A2D4A2D3A1D2~A3D2~D1.D1.D4.D5, | S12='ApplicableState:':A15: | S13='112,':D3, | S14='CurrentState:0':A12:D1
+Example 3: S0='2016-09-28':D4-D2-D2 | S1='04:30:39,':D2:D2:D2, | S10='package:':A7: | S11='Microsoft-Windows-RDP-BlueIP-Package-TopLevel~31bf3856ad364e35~amd64~~7.2.7601.16415,':A9-A7-A3-A6-A7-A8~D2A2D4A2D3A1D2~A3D2~D1.D1.D4.D5, | S12='ApplicableState:':A15: | S13='112,':D3, | S14='CurrentState:112':A12:D3
+
+### FAMILY 5
+support=4
+template_anchor_key=info cbs appl detectparent package no parent found go absent
+examples_and_shapes:
+Example 0: 2016-10-11 03:01:18, Info                  CBS    Appl: detectParent: package: Package_2_for_KB2952664~31bf3856ad364e35~amd64~~6.1.20.1, no parent found, go absent
+Tokens: S0='2016-10-11':D4-D2-D2 | S1='03:01:18,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Appl:':A4: | S5='detectParent:':A12: | S6='package:':A7: | S7='Package_2_for_KB2952664~31bf3856ad364e35~amd64~~6.1.20.1,':A7_D1_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D2.D1, | S8='no':A2 | S9='parent':A6 | S10='found,':A5, | S11='go':A2 | S12='absent':A6
+Example 1: 2016-10-11 03:02:32, Info                  CBS    Appl: detectParent: package: Package_for_KB3121255_RTM~31bf3856ad364e35~amd64~~6.1.1.0, no parent found, go absent
+Tokens: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Appl:':A4: | S5='detectParent:':A12: | S6='package:':A7: | S7='Package_for_KB3121255_RTM~31bf3856ad364e35~amd64~~6.1.1.0,':A7_A3_A2D7_A3~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S8='no':A2 | S9='parent':A6 | S10='found,':A5, | S11='go':A2 | S12='absent':A6
+Example 2: 2016-10-11 03:02:32, Info                  CBS    Appl: detectParent: package: Package_for_KB3121255~31bf3856ad364e35~amd64~~6.1.1.0, no parent found, go absent
+Tokens: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Appl:':A4: | S5='detectParent:':A12: | S6='package:':A7: | S7='Package_for_KB3121255~31bf3856ad364e35~amd64~~6.1.1.0,':A7_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S8='no':A2 | S9='parent':A6 | S10='found,':A5, | S11='go':A2 | S12='absent':A6
+Example 3: 2016-10-11 03:02:35, Info                  CBS    Appl: detectParent: package: Package_for_KB3108664~31bf3856ad364e35~amd64~~6.1.1.0, no parent found, go absent
+Tokens: S0='2016-10-11':D4-D2-D2 | S1='03:02:35,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Appl:':A4: | S5='detectParent:':A12: | S6='package:':A7: | S7='Package_for_KB3108664~31bf3856ad364e35~amd64~~6.1.1.0,':A7_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S8='no':A2 | S9='parent':A6 | S10='found,':A5, | S11='go':A2 | S12='absent':A6
+required_value_like_slots (28 sampled occurrences):
+Example 0: S0='2016-10-11':D4-D2-D2 | S1='03:01:18,':D2:D2:D2, | S4='Appl:':A4: | S5='detectParent:':A12: | S6='package:':A7: | S7='Package_2_for_KB2952664~31bf3856ad364e35~amd64~~6.1.20.1,':A7_D1_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D2.D1, | S10='found,':A5,
+Example 1: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S4='Appl:':A4: | S5='detectParent:':A12: | S6='package:':A7: | S7='Package_for_KB3121255_RTM~31bf3856ad364e35~amd64~~6.1.1.0,':A7_A3_A2D7_A3~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S10='found,':A5,
+Example 2: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S4='Appl:':A4: | S5='detectParent:':A12: | S6='package:':A7: | S7='Package_for_KB3121255~31bf3856ad364e35~amd64~~6.1.1.0,':A7_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S10='found,':A5,
+Example 3: S0='2016-10-11':D4-D2-D2 | S1='03:02:35,':D2:D2:D2, | S4='Appl:':A4: | S5='detectParent:':A12: | S6='package:':A7: | S7='Package_for_KB3108664~31bf3856ad364e35~amd64~~6.1.1.0,':A7_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S10='found,':A5,
+
+### FAMILY 12
+support=2
+template_anchor_key=info cbs appl evaluating applicability detectupdate part disposition is staged applicability applicable result applicability state installed
+examples_and_shapes:
+Example 0: 2016-10-05 21:52:22, Info                  CBS    Appl: Evaluating applicability block(non detectUpdate part), disposition is: Staged, applicability: Applicable, result applicability state: Installed
+Tokens: S0='2016-10-05':D4-D2-D2 | S1='21:52:22,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Appl:':A4: | S5='Evaluating':A10 | S6='applicability':A13 | S7='block(non':A5(A3 | S8='detectUpdate':A12 | S9='part),':A4), | S10='disposition':A11 | S11='is:':A2: | S12='Staged,':A6, | S13='applicability:':A13: | S14='Applicable,':A10, | S15='result':A6 | S16='applicability':A13 | S17='state:':A5: | S18='Installed':A9
+Example 1: 2016-10-11 03:01:17, Info                  CBS    Appl: Evaluating applicability block(non detectUpdate part), disposition is: Staged, applicability: Applicable, result applicability state: Installed
+Tokens: S0='2016-10-11':D4-D2-D2 | S1='03:01:17,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Appl:':A4: | S5='Evaluating':A10 | S6='applicability':A13 | S7='block(non':A5(A3 | S8='detectUpdate':A12 | S9='part),':A4), | S10='disposition':A11 | S11='is:':A2: | S12='Staged,':A6, | S13='applicability:':A13: | S14='Applicable,':A10, | S15='result':A6 | S16='applicability':A13 | S17='state:':A5: | S18='Installed':A9
+required_value_like_slots (20 sampled occurrences):
+Example 0: S0='2016-10-05':D4-D2-D2 | S1='21:52:22,':D2:D2:D2, | S4='Appl:':A4: | S7='block(non':A5(A3 | S9='part),':A4), | S11='is:':A2: | S12='Staged,':A6, | S13='applicability:':A13: | S14='Applicable,':A10, | S17='state:':A5:
+Example 1: S0='2016-10-11':D4-D2-D2 | S1='03:01:17,':D2:D2:D2, | S4='Appl:':A4: | S7='block(non':A5(A3 | S9='part),':A4), | S11='is:':A2: | S12='Staged,':A6, | S13='applicability:':A13: | S14='Applicable,':A10, | S17='state:':A5:
+
+### FAMILY 13
+support=2
+template_anchor_key=info cbs appl selfupdate detect component elevation applicable
+examples_and_shapes:
+Example 0: 2016-10-11 03:02:32, Info                  CBS    Appl: SelfUpdate detect, component: amd64_microsoft-windows-ntfs_31bf3856ad364e35_6.1.7601.23318_none_052499dd4ca564c7, elevation: 2, applicable: 0
+Tokens: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Appl:':A4: | S5='SelfUpdate':A10 | S6='detect,':A6, | S7='component:':A9: | S8='amd64_microsoft-windows-ntfs_31bf3856ad364e35_6.1.7601.23318_none_052499dd4ca564c7,':A3D2_A9-A7-A4_D2A2D4A2D3A1D2_D1.D1.D4.D5_A4_D6A2D1A2D3A1D1, | S9='elevation:':A9: | S10='2,':D1, | S11='applicable:':A10: | S12='0':D1
+Example 1: 2016-10-11 03:02:32, Info                  CBS    Appl: SelfUpdate detect, component: amd64_microsoft-windows-ntfs_31bf3856ad364e35_6.1.7601.19116_none_0498fa9833899528, elevation: 2, applicable: 1
+Tokens: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Appl:':A4: | S5='SelfUpdate':A10 | S6='detect,':A6, | S7='component:':A9: | S8='amd64_microsoft-windows-ntfs_31bf3856ad364e35_6.1.7601.19116_none_0498fa9833899528,':A3D2_A9-A7-A4_D2A2D4A2D3A1D2_D1.D1.D4.D5_A4_D4A2D10, | S9='elevation:':A9: | S10='2,':D1, | S11='applicable:':A10: | S12='1':D1
+required_value_like_slots (20 sampled occurrences):
+Example 0: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S4='Appl:':A4: | S6='detect,':A6, | S7='component:':A9: | S8='amd64_microsoft-windows-ntfs_31bf3856ad364e35_6.1.7601.23318_none_052499dd4ca564c7,':A3D2_A9-A7-A4_D2A2D4A2D3A1D2_D1.D1.D4.D5_A4_D6A2D1A2D3A1D1, | S9='elevation:':A9: | S10='2,':D1, | S11='applicable:':A10: | S12='0':D1
+Example 1: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S4='Appl:':A4: | S6='detect,':A6, | S7='component:':A9: | S8='amd64_microsoft-windows-ntfs_31bf3856ad364e35_6.1.7601.19116_none_0498fa9833899528,':A3D2_A9-A7-A4_D2A2D4A2D3A1D2_D1.D1.D4.D5_A4_D4A2D10, | S9='elevation:':A9: | S10='2,':D1, | S11='applicable:':A10: | S12='1':D1
+
+### FAMILY 16
+support=2
+template_anchor_key=info cbs external evaluateapplicability package package applicable state installed highest update applicable state installed resulting applicable
+examples_and_shapes:
+Example 0: 2016-10-05 21:52:22, Info                  CBS    External EvaluateApplicability, package: Package_1_for_KB2952664~31bf3856ad364e35~amd64~~6.1.20.1, package applicable State: Installed, highest update applicable state: Installed, resulting applicable state:Installed
+Tokens: S0='2016-10-05':D4-D2-D2 | S1='21:52:22,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='External':A8 | S5='EvaluateApplicability,':A21, | S6='package:':A7: | S7='Package_1_for_KB2952664~31bf3856ad364e35~amd64~~6.1.20.1,':A7_D1_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D2.D1, | S8='package':A7 | S9='applicable':A10 | S10='State:':A5: | S11='Installed,':A9, | S12='highest':A7 | S13='update':A6 | S14='applicable':A10 | S15='state:':A5: | S16='Installed,':A9, | S17='resulting':A9 | S18='applicable':A10 | S19='state:Installed':A5:A9
+Example 1: 2016-10-05 21:52:22, Info                  CBS    External EvaluateApplicability, package: Package_for_KB2952664_SP1~31bf3856ad364e35~amd64~~6.1.20.1, package applicable State: Installed, highest update applicable state: Installed, resulting applicable state:Installed
+Tokens: S0='2016-10-05':D4-D2-D2 | S1='21:52:22,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='External':A8 | S5='EvaluateApplicability,':A21, | S6='package:':A7: | S7='Package_for_KB2952664_SP1~31bf3856ad364e35~amd64~~6.1.20.1,':A7_A3_A2D7_A2D1~D2A2D4A2D3A1D2~A3D2~D1.D1.D2.D1, | S8='package':A7 | S9='applicable':A10 | S10='State:':A5: | S11='Installed,':A9, | S12='highest':A7 | S13='update':A6 | S14='applicable':A10 | S15='state:':A5: | S16='Installed,':A9, | S17='resulting':A9 | S18='applicable':A10 | S19='state:Installed':A5:A9
+required_value_like_slots (20 sampled occurrences):
+Example 0: S0='2016-10-05':D4-D2-D2 | S1='21:52:22,':D2:D2:D2, | S5='EvaluateApplicability,':A21, | S6='package:':A7: | S7='Package_1_for_KB2952664~31bf3856ad364e35~amd64~~6.1.20.1,':A7_D1_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D2.D1, | S10='State:':A5: | S11='Installed,':A9, | S15='state:':A5: | S16='Installed,':A9, | S19='state:Installed':A5:A9
+Example 1: S0='2016-10-05':D4-D2-D2 | S1='21:52:22,':D2:D2:D2, | S5='EvaluateApplicability,':A21, | S6='package:':A7: | S7='Package_for_KB2952664_SP1~31bf3856ad364e35~amd64~~6.1.20.1,':A7_A3_A2D7_A2D1~D2A2D4A2D3A1D2~A3D2~D1.D1.D2.D1, | S10='State:':A5: | S11='Installed,':A9, | S15='state:':A5: | S16='Installed,':A9, | S19='state:Installed':A5:A9
+
+### FAMILY 9
+support=2
+template_anchor_key=info cbs appl detect parent package disposition state from detectparent installed
+examples_and_shapes:
+Example 0: 2016-10-05 21:52:22, Info                  CBS    Appl: detect Parent, Package: Package_for_KB2952664_SP1~31bf3856ad364e35~amd64~~6.1.20.1, disposition state from detectParent: Installed
+Tokens: S0='2016-10-05':D4-D2-D2 | S1='21:52:22,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Appl:':A4: | S5='detect':A6 | S6='Parent,':A6, | S7='Package:':A7: | S8='Package_for_KB2952664_SP1~31bf3856ad364e35~amd64~~6.1.20.1,':A7_A3_A2D7_A2D1~D2A2D4A2D3A1D2~A3D2~D1.D1.D2.D1, | S9='disposition':A11 | S10='state':A5 | S11='from':A4 | S12='detectParent:':A12: | S13='Installed':A9
+Example 1: 2016-10-05 21:52:22, Info                  CBS    Appl: detect Parent, Package: Package_1_for_KB2952664~31bf3856ad364e35~amd64~~6.1.20.1, disposition state from detectParent: Installed
+Tokens: S0='2016-10-05':D4-D2-D2 | S1='21:52:22,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Appl:':A4: | S5='detect':A6 | S6='Parent,':A6, | S7='Package:':A7: | S8='Package_1_for_KB2952664~31bf3856ad364e35~amd64~~6.1.20.1,':A7_D1_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D2.D1, | S9='disposition':A11 | S10='state':A5 | S11='from':A4 | S12='detectParent:':A12: | S13='Installed':A9
+required_value_like_slots (14 sampled occurrences):
+Example 0: S0='2016-10-05':D4-D2-D2 | S1='21:52:22,':D2:D2:D2, | S4='Appl:':A4: | S6='Parent,':A6, | S7='Package:':A7: | S8='Package_for_KB2952664_SP1~31bf3856ad364e35~amd64~~6.1.20.1,':A7_A3_A2D7_A2D1~D2A2D4A2D3A1D2~A3D2~D1.D1.D2.D1, | S12='detectParent:':A12:
+Example 1: S0='2016-10-05':D4-D2-D2 | S1='21:52:22,':D2:D2:D2, | S4='Appl:':A4: | S6='Parent,':A6, | S7='Package:':A7: | S8='Package_1_for_KB2952664~31bf3856ad364e35~amd64~~6.1.20.1,':A7_D1_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D2.D1, | S12='detectParent:':A12:
+
+### FAMILY 11
+support=2
+template_anchor_key=info cbs evaluateapplicability package package applicability absent
+examples_and_shapes:
+Example 0: 2016-10-11 03:02:32, Info                  CBS    EvaluateApplicability, package: Package_for_KB3121255_RTM~31bf3856ad364e35~amd64~~6.1.1.0, Package applicability: Absent.
+Tokens: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='EvaluateApplicability,':A21, | S5='package:':A7: | S6='Package_for_KB3121255_RTM~31bf3856ad364e35~amd64~~6.1.1.0,':A7_A3_A2D7_A3~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S7='Package':A7 | S8='applicability:':A13: | S9='Absent.':A6.
+Example 1: 2016-10-11 03:02:32, Info                  CBS    EvaluateApplicability, package: Package_3_for_KB3121255~31bf3856ad364e35~amd64~~6.1.1.0, Package applicability: Absent.
+Tokens: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='EvaluateApplicability,':A21, | S5='package:':A7: | S6='Package_3_for_KB3121255~31bf3856ad364e35~amd64~~6.1.1.0,':A7_D1_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S7='Package':A7 | S8='applicability:':A13: | S9='Absent.':A6.
+required_value_like_slots (14 sampled occurrences):
+Example 0: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S4='EvaluateApplicability,':A21, | S5='package:':A7: | S6='Package_for_KB3121255_RTM~31bf3856ad364e35~amd64~~6.1.1.0,':A7_A3_A2D7_A3~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S8='applicability:':A13: | S9='Absent.':A6.
+Example 1: S0='2016-10-11':D4-D2-D2 | S1='03:02:32,':D2:D2:D2, | S4='EvaluateApplicability,':A21, | S5='package:':A7: | S6='Package_3_for_KB3121255~31bf3856ad364e35~amd64~~6.1.1.0,':A7_D1_A3_A2D7~D2A2D4A2D3A1D2~A3D2~D1.D1.D1.D1, | S8='applicability:':A13: | S9='Absent.':A6.
+
+### FAMILY 14
+support=2
+template_anchor_key=info cbs failed to internally open package hresult
+examples_and_shapes:
+Example 0: 2016-09-28 04:30:32, Info                  CBS    Failed to internally open package. [HRESULT = 0x800f0805 - CBS_E_INVALID_PACKAGE]
+Tokens: S0='2016-09-28':D4-D2-D2 | S1='04:30:32,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Failed':A6 | S5='to':A2 | S6='internally':A10 | S7='open':A4 | S8='package.':A7. | S9='[HRESULT':[A7 | S10='=':= | S11='0x800f0805':D1A1D3A1D4 | S12='-':- | S13='CBS_E_INVALID_PACKAGE]':A3_A1_A7_A7]
+Example 1: 2016-09-28 04:30:33, Info                  CBS    Failed to internally open package. [HRESULT = 0x800f0805 - CBS_E_INVALID_PACKAGE]
+Tokens: S0='2016-09-28':D4-D2-D2 | S1='04:30:33,':D2:D2:D2, | S2='Info':A4 | S3='CBS':A3 | S4='Failed':A6 | S5='to':A2 | S6='internally':A10 | S7='open':A4 | S8='package.':A7. | S9='[HRESULT':[A7 | S10='=':= | S11='0x800f0805':D1A1D3A1D4 | S12='-':- | S13='CBS_E_INVALID_PACKAGE]':A3_A1_A7_A7]
+required_value_like_slots (12 sampled occurrences):
+Example 0: S0='2016-09-28':D4-D2-D2 | S1='04:30:32,':D2:D2:D2, | S8='package.':A7. | S9='[HRESULT':[A7 | S11='0x800f0805':D1A1D3A1D4 | S13='CBS_E_INVALID_PACKAGE]':A3_A1_A7_A7]
+Example 1: S0='2016-09-28':D4-D2-D2 | S1='04:30:33,':D2:D2:D2, | S8='package.':A7. | S9='[HRESULT':[A7 | S11='0x800f0805':D1A1D3A1D4 | S13='CBS_E_INVALID_PACKAGE]':A3_A1_A7_A7]

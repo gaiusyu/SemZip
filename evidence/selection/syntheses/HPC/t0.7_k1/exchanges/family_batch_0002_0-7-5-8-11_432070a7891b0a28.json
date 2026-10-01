@@ -1,0 +1,252 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "fan_speeds_compound",
+            "tokens": [
+              "3552",
+              "3534",
+              "3375",
+              "****",
+              "3515",
+              "3479"
+            ],
+            "reason": "Multiple numeric values represent fan speeds collectively",
+            "target_value": "list of integer-like values",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Repeated prefix structure with consistent fields"
+      },
+      "slot_actions": [
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW",
+          "meaning": "some sort of timestamp or unique ID",
+          "reason": "frequent occurrence of a 10-digit number in a consistent position"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "fan_speeds_compound"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "fan_speeds",
+          "meaning": "fan speeds as a list of integers",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "fan speeds as a list of integers",
+            "context_source": null,
+            "why_not_merge_raw": "The speeds are semantically one collective attribute"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Fan speeds \\(\\s*(\\d{4})\\s+(\\d{4})\\s+(\\d{4})\\s+(\\*{4}|\\d{4})\\s+(\\d{4})\\s+(\\d{4})\\s*\\)",
+          "replacement": "Fan speeds ({placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    speeds = [int(s) if s != '****' else None for s in groups]\n    return {'stored': speeds, 'layout': []}\n\ndef inverse(record):\n    speeds = record['stored']\n    return ' '.join([str(s) if s is not None else '****' for s in speeds])"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "component_name",
+            "tokens": [
+              "\\042alt0\\042",
+              "\\042SCSI-WWID:01000010:6005-08b4-0001-4048-0008-a000-0047-0000\\042"
+            ],
+            "reason": "String values contain structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Repeated prefix structure with consistent fields"
+      },
+      "slot_actions": [
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "component name",
+          "reason": "captured as raw structured variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "component_name"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "component_name",
+          "meaning": "component identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "exact captured component name",
+            "context_source": null,
+            "why_not_merge_raw": "Complete structural value stored as is"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Component (\\\\\\\".*?\\\\\\\")",
+          "replacement": "Component {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'\\\"{record['stored'][0]}\\\"'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "No common prefix or repeated field structure"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "domain_name",
+            "tokens": [
+              "root1_local",
+              "storage232",
+              "storage842"
+            ],
+            "reason": "String values contain explicit structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Repeated prefix structure with consistent fields"
+      },
+      "slot_actions": [
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "domain name",
+          "reason": "captured as raw structured variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "domain_name"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "domain_name",
+          "meaning": "domain name with structure",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "exact captured domain name",
+            "context_source": null,
+            "why_not_merge_raw": "Complete structured value stored as is"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "domain (\\S+)",
+          "replacement": "domain {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Repeated prefix structure with consistent fields"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

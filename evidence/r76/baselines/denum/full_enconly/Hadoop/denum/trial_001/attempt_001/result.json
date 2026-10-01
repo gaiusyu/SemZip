@@ -1,0 +1,129 @@
+{
+  "schema": "semzip.external-cli.v1",
+  "status": "ENCODE_ONLY_UNVERIFIED",
+  "started_at": "2026-09-29T20:39:36.386642+00:00",
+  "dataset": "Hadoop",
+  "codec": "denum",
+  "trial": 1,
+  "workers": 2,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/raw/Hadoop.log",
+    "bytes": 48595595,
+    "mtime_ns": 1789369517402558000,
+    "device": 1048818,
+    "inode": 199002808556008278
+  },
+  "raw_sha256": "e31aa21eed52aa4fc4945255b35c71295b0a49feedb052c192c4968644d9daf5",
+  "raw_bytes": 48595595,
+  "records": 394308,
+  "codec_spec": {
+    "suffix": ".tar.xz",
+    "mode": "official-cli-independent-block-adapter+official-python-decompressor",
+    "commit": "a3a697564e378643461e27ab92ea44b098424c35",
+    "encoder": "<WORKDIR>/r76_additional_20260929/baselines/denum/bin/denum_compress",
+    "encoder_sha256": "1f2a9406a9f68d6b8b58d69603182cbee8d4a2598366f7e17b7cec0869c885e8",
+    "encoder_source_sha256": "b23a6ebff714337f498cf659a3a0569519c1cd9763aabb516c8cfeb63672a2db",
+    "decoder_files_sha256": {
+      "decompress.py": "c3becae288d140314a6db55c4b48f629ea3bde38cd18e6b77ee8738ea637bc5c",
+      "Denum_simplel.py": "8807c1cf60c862595be973697db1c1120bfabb21b466c8c0e11191c03100dde1"
+    },
+    "python": "/usr/bin/python3",
+    "pydeps": "<WORKDIR>/r76_additional_20260929/baselines/denum/pydeps",
+    "tar": "/bin/tar",
+    "tar_sha256": "8498b0a43e820b0f8ed5cc61accfdfadffc7bd43ff6b0a91256a09ffc19dad38",
+    "xz": "/usr/bin/xz",
+    "xz_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+    "encode_arguments": [
+      "DATASET",
+      "100000",
+      "1"
+    ],
+    "decode_arguments": [
+      "DATASET"
+    ],
+    "archive": "byte-for-byte official output/DATASET/compressed0.xz (tar -cJf of output/DATASET/0/)"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/baselines/denum/full_enconly/Hadoop/denum/trial_001/attempt_001",
+  "mode": "encode-only",
+  "timing_scope": "full-file-cli-split-and-encode-only-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.tar.xz",
+      "archive_bytes": 302260,
+      "block_encode_seconds": 4.043985545635223,
+      "encoded_input_sha256": "8d13beb9b0ff65a4dd7136f18dd2713f58e0c1ff408e1b9f811f842fd0f72d19",
+      "raw_bytes": 17185963,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "8d13beb9b0ff65a4dd7136f18dd2713f58e0c1ff408e1b9f811f842fd0f72d19",
+      "archive_sha256": "9860082314463f202126c9984974c1a3b8fab9cb8037f103a9e73e89ba6d532c"
+    },
+    {
+      "index": 1,
+      "archive": "archives/block_000001.tar.xz",
+      "archive_bytes": 63480,
+      "block_encode_seconds": 2.184199705719948,
+      "encoded_input_sha256": "adfc92a221f7a4f2226abb4d382e4e340a3f68258bf7387396edcc74d43e149e",
+      "raw_bytes": 9548627,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "adfc92a221f7a4f2226abb4d382e4e340a3f68258bf7387396edcc74d43e149e",
+      "archive_sha256": "c12586cb3160071468c61248827934b7ab3db997491608dda3872050e07fc8e7"
+    },
+    {
+      "index": 2,
+      "archive": "archives/block_000002.tar.xz",
+      "archive_bytes": 57920,
+      "block_encode_seconds": 2.298716112971306,
+      "encoded_input_sha256": "fcb603befdc60cb4345f0172be0dcedd0a5ed740db4b94da17e420e1e36742d4",
+      "raw_bytes": 9595107,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "fcb603befdc60cb4345f0172be0dcedd0a5ed740db4b94da17e420e1e36742d4",
+      "archive_sha256": "7ddae5ed822bc48a01862014e6b9889913d46499eb5f187dfe4d8f708d513675"
+    },
+    {
+      "index": 3,
+      "archive": "archives/block_000003.tar.xz",
+      "archive_bytes": 163696,
+      "block_encode_seconds": 2.8713225573301315,
+      "encoded_input_sha256": "1f6ecaa64fb06abda3e16695d3392675e6792bd5c0e852afa46444dda208c682",
+      "raw_bytes": 12265898,
+      "lf_count": 94308,
+      "records": 94308,
+      "ends_with_lf": true,
+      "raw_sha256": "1f6ecaa64fb06abda3e16695d3392675e6792bd5c0e852afa46444dda208c682",
+      "archive_sha256": "50ba395e5d13b83d9867075504ec920a33d95b22e619ea82c1abdb200b929b02"
+    }
+  ],
+  "encode_seconds": 7.994028180837631,
+  "archive_bytes": 587356,
+  "roundtrip": "not-attempted",
+  "archive_only_decode": false,
+  "lossless_verified": false,
+  "unverified_reason": "Denum archive format is proven lossy (baselines/denum/proofs/SUMMARY.json, 16/16 LOSSY_FORMAT_PROVEN); no decode attempted; compression-only size, not losslessly verifiable",
+  "block_input_sha256_verified": true,
+  "audit_seconds": 0.022521808743476868,
+  "block_count": 4,
+  "block_archive_bytes": [
+    302260,
+    63480,
+    57920,
+    163696
+  ],
+  "compression_ratio": 82.73618555016039,
+  "suffix_blocks": [
+    1,
+    3
+  ],
+  "suffix_raw_bytes": 31409632,
+  "suffix_archive_bytes": 285096,
+  "suffix_compression_ratio": 110.17212447736902,
+  "encode_MB_per_s": 6.078987201532239,
+  "finished_at": "2026-09-29T20:39:44.416399+00:00"
+}

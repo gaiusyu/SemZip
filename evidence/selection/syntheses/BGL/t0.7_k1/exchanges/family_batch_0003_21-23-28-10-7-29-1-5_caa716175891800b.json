@@ -1,0 +1,354 @@
+{
+  "families": [
+    {
+      "family_id": 21,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "composed_timestamp",
+            "tokens": [
+              "2005.06.05",
+              "2005-06-05-01.55.02.368820"
+            ],
+            "reason": "Date and time tokens together represent a single timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_id",
+            "tokens": [
+              "R11-M0-NB-C:J07-U11",
+              "R22-M0-NE-C:J13-U01"
+            ],
+            "reason": "Structured IDs with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Consistent log prefix with timestamp and identifiers"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "composed_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "structured_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "composed_timestamp",
+          "meaning": "Unified timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "merged timestamp in microseconds",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens describe the same timestamp, merging reduces redundancy"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "2005\\.06\\.05[- ](\\d{2})\\.(\\d{2})\\.(\\d{2})\\.(\\d{6})",
+          "replacement": "2005-06-05-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    h, m, s, micros = map(int, groups)\n    return {'stored': [h * 3600000000 + m * 60000000 + s * 1000000 + micros], 'layout': []}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    h = micros // 3600000000\n    micros %= 3600000000\n    m = micros // 60000000\n    micros %= 60000000\n    s = micros // 1000000\n    micros %= 1000000\n    return f'2005-06-05-{h:02}.{m:02}.{s:02}.{micros:06}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "structured_id",
+          "meaning": "Node and unit identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured identifier",
+            "context_source": null,
+            "why_not_merge_raw": "Value is already structured with explicit separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(R[0-9]+-[A-Z0-9]+-[A-Z]+-[A-Z]:[A-Z0-9]+-[A-Z0-9]+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 23,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "composed_timestamp",
+            "tokens": [
+              "2005.06.05",
+              "2005-06-05-04.22.58.763608"
+            ],
+            "reason": "Date and time tokens together represent a single timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_id",
+            "tokens": [
+              "R11-M0-NB-C:J07-U11",
+              "R22-M0-NE-C:J13-U01"
+            ],
+            "reason": "Structured IDs with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Consistent log prefix with timestamp and identifiers"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "composed_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "structured_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "composed_timestamp",
+          "meaning": "Unified timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "merged timestamp in microseconds",
+            "context_source": null,
+            "why_not_merge_raw": "Tokens describe the same timestamp, merging reduces redundancy"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "2005\\.06\\.05[- ](\\d{2})\\.(\\d{2})\\.(\\d{2})\\.(\\d{6})",
+          "replacement": "2005-06-05-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    h, m, s, micros = map(int, groups)\n    return {'stored': [h * 3600000000 + m * 60000000 + s * 1000000 + micros], 'layout': []}\n\ndef inverse(record):\n    micros = record['stored'][0]\n    h = micros // 3600000000\n    micros %= 3600000000\n    m = micros // 60000000\n    micros %= 60000000\n    s = micros // 1000000\n    micros %= 1000000\n    return f'2005-06-05-{h:02}.{m:02}.{s:02}.{micros:06}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "structured_id",
+          "meaning": "Node and unit identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "structured identifier",
+            "context_source": null,
+            "why_not_merge_raw": "Value is already structured with explicit separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(R[0-9]+-[A-Z0-9]+-[A-Z]+-[A-Z]:[A-Z0-9]+-[A-Z0-9]+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 28,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Consistent log prefix with timestamp and identifiers"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Consistent log prefix with timestamp and identifiers"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 7,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Consistent log prefix with timestamp and identifiers"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 29,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Consistent log prefix with timestamp and identifiers"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Consistent log prefix with timestamp and identifiers"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Consistent log prefix with timestamp and identifiers"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Consistent log prefix with timestamp and identifiers"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

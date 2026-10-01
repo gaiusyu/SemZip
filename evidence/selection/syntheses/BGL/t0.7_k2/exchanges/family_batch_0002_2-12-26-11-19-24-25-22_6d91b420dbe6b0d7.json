@@ -1,0 +1,458 @@
+{
+  "families": [
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_combination",
+            "tokens": [
+              "S2",
+              "S4"
+            ],
+            "reason": "S2 and S4 together provide date and time information for a possible timestamp.",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "structured_location_codes",
+            "tokens": [
+              "S3",
+              "S5"
+            ],
+            "reason": "The captured values for location codes contain explicit structural separators.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "RAS KERNEL INFO is a repeated prefix."
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Unique identifier or timestamp",
+          "reason": "S1 appears to be a unique identifier or timestamp."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_combination"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "structured_location_codes"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "combined_timestamp",
+          "meaning": "composed timestamp from date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S2 and S4 together form the full timestamp."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "([0-9]{4}\\.[0-9]{2}\\.[0-9]{2}) ([0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}\\.[0-9]{2}\\.[0-9]{2}\\.[0-9]{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date = groups[0].replace('.', '-')\n    time_part = groups[1].replace('.', ':')\n    full_datetime = f\"{date}T{time_part}\"\n    dt = datetime.strptime(full_datetime, '%Y-%m-%dT%H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %Y-%m-%d-%H.%M.%S.%f')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "location_code",
+          "meaning": "structured machine location code",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "location code",
+            "context_source": null,
+            "why_not_merge_raw": "Each location code is independent."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "([A-Z][0-9]{2}-[A-Z][0-9]-[A-Z]+-[A-Z]:[A-Z][0-9]{2}-[A-Z][0-9]{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_combination",
+            "tokens": [
+              "S2",
+              "S4"
+            ],
+            "reason": "S2 and S4 together provide date and time information for a possible timestamp.",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "RAS KERNEL INFO is a repeated prefix."
+      },
+      "slot_actions": [
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "DDR error count",
+          "reason": "S11 is a numeric representation of DDR errors."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_combination"
+        ],
+        "class_2_formatted_numeric": [
+          "DDR_error_count"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "combined_timestamp",
+          "meaning": "composed timestamp from date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S2 and S4 together form the full timestamp."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "([0-9]{4}\\.[0-9]{2}\\.[0-9]{2}) ([0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}\\.[0-9]{2}\\.[0-9]{2}\\.[0-9]{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date = groups[0].replace('.', '-')\n    time_part = groups[1].replace('.', ':')\n    full_datetime = f\"{date}T{time_part}\"\n    dt = datetime.strptime(full_datetime, '%Y-%m-%dT%H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %Y-%m-%d-%H.%M.%S.%f')"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "DDR_error_count",
+          "meaning": "count of DDR errors detected",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "error count",
+            "context_source": null,
+            "why_not_merge_raw": "Error count is standalone."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "total of ([0-9]+) ddr error\\(s\\)",
+          "replacement": "total of {placeholder} ddr error(s)",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"total of {record['stored'][0]} ddr error(s)\""
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 26,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "hex_register_value",
+            "tokens": [
+              "S12"
+            ],
+            "reason": "The value is a hexadecimal representation with a fixed prefix.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "RAS KERNEL FATAL is a repeated prefix."
+      },
+      "slot_actions": [
+        {
+          "slot": "S12",
+          "action": "STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "Machine state register value",
+          "reason": "S12 is a hexadecimal register value."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hex_register_value"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "machine_state_register",
+          "meaning": "hexadecimal machine state register value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hex value",
+            "context_source": null,
+            "why_not_merge_raw": "The value is a standalone hexadecimal representation."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "register: (0x[0-9a-fA-F]+)",
+          "replacement": "register: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"register: {record['stored'][0]}\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "RAS KERNEL FATAL is a repeated prefix."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 19,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "RAS KERNEL FATAL is a repeated prefix."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 24,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "RAS KERNEL FATAL is a repeated prefix."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 25,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "RAS KERNEL FATAL is a repeated prefix."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 22,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "RAS KERNEL FATAL is a repeated prefix."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_combination",
+            "tokens": [
+              "S2",
+              "S4"
+            ],
+            "reason": "S2 and S4 together provide date and time information for a possible timestamp.",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "RAS KERNEL INFO is a repeated prefix."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_combination"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "combined_timestamp",
+          "meaning": "composed timestamp from date and time",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S2 and S4 together form the full timestamp."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "([0-9]{4}\\.[0-9]{2}\\.[0-9]{2}) ([0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}\\.[0-9]{2}\\.[0-9]{2}\\.[0-9]{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date = groups[0].replace('.', '-')\n    time_part = groups[1].replace('.', ':')\n    full_datetime = f\"{date}T{time_part}\"\n    dt = datetime.strptime(full_datetime, '%Y-%m-%dT%H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %Y-%m-%d-%H.%M.%S.%f')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "RAS KERNEL FATAL is a repeated prefix."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

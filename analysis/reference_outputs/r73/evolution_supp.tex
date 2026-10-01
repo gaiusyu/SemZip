@@ -1,0 +1,75 @@
+\section{Online evolution: complete-file records}\label{sec:supp-evolution}
+\textbf{Chronology.} The protocol was designed after the main comparison (Thunderbird was the only file larger than DeLog's) and after the historical single-synthesis cohorts below. Its numeric constants were recorded in a design note before any run; three implementation clarifications (trigger window from block 1, publication-gap anchoring, and requiring a served block) were added after the program-free measurements and before any evolution run; nothing was changed afterwards. It was first screened on Thunderbird blocks 0--99; the prespecified rule extended it to the full file when blocks after the first publication shrank by at least 1\% relative to the frozen deployment with the program-free choice (they shrank by 22.2\%). Running it unchanged on Spark was decided after that window result and before any Spark update; the other files were decided from the trigger replay below.
+\par\textbf{Protocol.} A block is a \emph{loss} when the best published program is not at least 1\% smaller than the empty program (residual processing only) on that block. An update triggers when at least 3 of the last 5 completed blocks (from block 1) are losses, at least 10 blocks after the latest publication (the initial deployment counts as block 0; an update counts from the block it serves first), not within a 10-block cooldown after a rejected or failed attempt, and only if block $b+2$ exists, so that a publication serves at least one block (files with fewer than 13 blocks cannot trigger). Each update runs the unchanged training pipeline (one greedy and four temperature-0.7 fresh syntheses, gate, cost-guided selection, storage fit) on the trigger block $b$; already published programs are not re-pooled. The candidate is encoded on block $b+1$ through the same semantic-archive guard and must be at least 1\% smaller than the minimum over published programs and the empty program; it serves blocks from $b+2$. At most 5 publications and 8 attempts. Every block stores the smallest payload among the published programs and the empty program; blocks are self-describing, and assembled archives are decoded archive-only. Time is counted in blocks: synthesis latency is not modeled.
+\begin{longtable}{lrrrrrr}
+\caption{Trigger replay and program-free choice on every file. Loss blocks: blocks from 1 on where the frozen program is not at least 1\% smaller than the empty program. First trigger: first block at which the rule fires for the frozen deployment; n/a: fewer than 13 blocks, so the rule cannot fire; --: eligible, never fires. Ratios: frozen deployment and per-block minimum of frozen and empty program, assembled and decoded archive-only (SHA-256 match) on every file where they differ. Empty s: wall seconds of the full-file empty-program encode (four workers, shared host), the monitoring cost.}\label{tab:supp-evo-replay}\\
+\toprule
+Dataset & Blocks & Loss blocks & First trigger & Frozen & Frozen+empty & Empty s \\
+\midrule\endfirsthead
+\caption[]{(continued)}\\
+\toprule
+Dataset & Blocks & Loss blocks & First trigger & Frozen & Frozen+empty & Empty s \\
+\midrule\endhead
+Linux & 1 & 0 & n/a & 40.09 & 40.09 & 1 \\
+Proxifier & 1 & 0 & n/a & 36.13 & 36.13 & 2 \\
+Apache & 1 & 0 & n/a & 73.74 & 73.74 & 2 \\
+Zookeeper & 1 & 0 & n/a & 189.42 & 189.42 & 2 \\
+Mac & 2 & 0 & n/a & 54.13 & 54.13 & 3 \\
+HealthApp & 3 & 0 & n/a & 59.53 & 59.53 & 3 \\
+HPC & 5 & 2 & n/a & 45.79 & 46.08 & 3 \\
+Hadoop & 4 & 0 & n/a & 85.03 & 85.03 & 3 \\
+OpenStack & 3 & 0 & n/a & 25.24 & 25.24 & 6 \\
+OpenSSH & 7 & 0 & n/a & 117.78 & 117.78 & 5 \\
+Android & 16 & 0 & -- & 34.55 & 34.55 & 11 \\
+BGL & 48 & 0 & -- & 52.32 & 52.32 & 56 \\
+HDFS & 112 & 0 & -- & 31.05 & 31.05 & 82 \\
+Spark & 333 & 68 & 21 & 62.35 & 62.48 & 175 \\
+Windows & 1147 & 5 & -- & 618.58 & 618.70 & 802 \\
+Thunderbird & 2113 & 1662 & 13 & 64.86 & 65.06 & 1,358 \\
+\bottomrule
+\end{longtable}
+\begin{longtable}{llrrrrl}
+\caption{Every update attempt. Bytes: candidate and current minimum (published programs and empty program) on validation block $b+1$. Seconds: synthesis, gate, selection and publication wall time. Spark blocks 32--86 consist of at least 90\% non-Spark \texttt{Update row} records (98.9--100.0\% on the six rejected attempt blocks). The six rejected candidates share a byte-identical empty extraction program with separately fitted storage policies; zero LLM calls means the block yielded no example group eligible for the proposer. Candidate encodes are cached per bank slot, so the last five reuse the first rejected candidate's validation encode; all six equal the current minimum.}\label{tab:supp-evo-attempts}\\
+\toprule
+Dataset & Block $b$ & LLM calls & Seconds & Candidate & Current min & Outcome \\
+\midrule\endfirsthead
+\caption[]{(continued)}\\
+\toprule
+Dataset & Block $b$ & LLM calls & Seconds & Candidate & Current min & Outcome \\
+\midrule\endhead
+Thunderbird & 13 & 27 & 2213 & 140,032 & 176,212 & published from 15 \\
+Spark & 21 & 36 & 1554 & 146,836 & 155,932 & published from 23 \\
+ & 34 & 0 & 11 & 277,512 & 277,512 & rejected \\
+ & 44 & 0 & 11 & 278,568 & 278,568 & rejected \\
+ & 54 & 11 & 120 & 277,696 & 277,696 & rejected \\
+ & 64 & 10 & 109 & 277,528 & 277,528 & rejected \\
+ & 74 & 0 & 11 & 277,632 & 277,632 & rejected \\
+ & 84 & 0 & 11 & 277,652 & 277,652 & rejected \\
+\bottomrule
+\end{longtable}
+\begin{longtable}{lrr}
+\caption{Complete-file outcomes of the triggered files; the first five rows are compression ratios. Evolution: per-block minimum over published programs and the empty program (assembled archive, archive-only decode, SHA-256 match). Newest only: after each publication, only the newest program. Later: blocks from the first served block on. Encode seconds: additional wall time of the evolution runs, summed over the 100-block part encodes, on the shared host concurrently with other jobs, not in the serialized timing session; frozen-program payloads are reused from the formal run. The new Thunderbird program is 16.1\% smaller than the frozen one on block 0 (237,788 vs 283,484 bytes).}\label{tab:supp-evo-results}\\
+\toprule
+Quantity & Thunderbird & Spark \\
+\midrule\endfirsthead
+\caption[]{(continued)}\\
+\toprule
+Quantity & Thunderbird & Spark \\
+\midrule\endhead
+Frozen deployment & 64.86 & 62.35 \\
+Frozen + empty program & 65.06 & 62.48 \\
+Evolution & 78.66 & 63.29 \\
+Evolution, newest only & 78.66 & 63.12 \\
+DeLog & 67.68 & 59.05 \\
+First served block & 15 & 23 \\
+Later bytes vs frozen+empty & $-$17.41\% & $-$1.40\% \\
+Later bytes vs DeLog & $-$14.07\% & $-$6.77\% \\
+Blocks smaller than DeLog & 2,070/2,113 & 282/333 \\
+Assembled archive bytes & 404,119,462 & 46,472,727 \\
+Program-free encode seconds & 1,572 & 210 \\
+Published-program encode seconds & 5,112 & 927 \\
+Rejected-candidate encode seconds & 0 & 34 \\
+Frozen first-pass encode seconds & 8,537 & 2,076 \\
+\bottomrule
+\end{longtable}
+A fallback to upstream DeLog chunks was not evaluated as a SemZip variant because it would import DeLog's per-dataset recognizer map. The historical single-synthesis evolution cohorts follow unchanged in the next sections.

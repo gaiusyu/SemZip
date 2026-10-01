@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"hardware_id\",\n      \"meaning\": \"hardware identifier\",\n      \"class\": \"class_1_composed_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"regex\": \"\\\\(HWID=(\\\\d+)\\\\)\",\n      \"replacement\": \"(HWID={placeholder})\",\n      \"program\": {\n        \"op\": \"python_exec\",\n        \"code\": \"def forward(groups):\\n    return {'stored': [int(groups[0])], 'layout': []}\\n\\ndef inverse(record):\\n    return f'(HWID={record[\\\"stored\\\"][0]})'\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 157,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1172,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1329
+  }
+}

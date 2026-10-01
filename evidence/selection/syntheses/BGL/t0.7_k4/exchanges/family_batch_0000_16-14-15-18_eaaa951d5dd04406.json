@@ -1,0 +1,211 @@
+{
+  "families": [
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "combined_timestamp",
+            "tokens": [
+              "2005-06-05-01.55.02.856836",
+              "2005-06-05-04.22.59.978127"
+            ],
+            "reason": "The date, time, and microseconds together form a single timestamp.",
+            "target_value": "a single integer timestamp with microsecond precision",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "node_identifier",
+            "tokens": [
+              "R11-M0-NB-C:J07-U11",
+              "R22-M0-NE-C:J13-U01"
+            ],
+            "reason": "Both tokens describe the same node identifier and are semantically equivalent.",
+            "target_value": "one canonical representation of the node identifier",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "structured_event_type",
+            "tokens": [
+              "enable............0",
+              "enable.................0",
+              "enable...0",
+              "enable...1"
+            ],
+            "reason": "The captured values contain structured separators with varying lengths.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "No repeated prefix/header detected."
+      },
+      "slot_actions": [
+        {
+          "slot": "S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Timestamp field containing date, time, and microseconds",
+          "reason": "This slot is extracted to provide a precise timestamp."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "combined_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node_identifier",
+          "structured_event_type"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_microsec",
+          "meaning": "combined timestamp with microseconds",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "All components form one timestamp."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "([0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}\\.[0-9]{2}\\.[0-9]{2}\\.[0-9]{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "from datetime import datetime\n\ndef forward(groups):\n    dt = datetime.strptime(groups[0], '%Y-%m-%d-%H.%M.%S.%f')\n    timestamp = int(dt.timestamp() * 1000000)\n    return {'stored': [timestamp], 'layout': []}\n\ndef inverse(record):\n    timestamp = record['stored'][0]\n    dt = datetime.fromtimestamp(timestamp / 1000000)\n    return dt.strftime('%Y-%m-%d-%H.%M.%S.%f')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_id",
+          "meaning": "node identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "node_identifier",
+            "context_source": null,
+            "why_not_merge_raw": "Both forms describe the same node."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(R[0-9]{2}-M[0-9]-[A-Z]{2}-C:J[0-9]{2}-U[0-9]{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "event_type",
+          "meaning": "structured event type",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "event_type",
+            "context_source": null,
+            "why_not_merge_raw": "Structured separators require exact reproduction."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(enable\\.{3,})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "No repeated prefix/header detected."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "No repeated prefix/header detected."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 18,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "No repeated prefix/header detected."
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

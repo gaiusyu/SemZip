@@ -1,0 +1,109 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The examples share a common structure with a repeated prefix containing a timestamp, component, and process id, which can be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "syslog_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack syslog-like timestamp (month, day, time) into one monotonic integer for compact storage.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month_str, sp1, day, sp2, time = groups\n    month_map = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}\n    month = month_map[month_str]\n    hour, minute, second = map(int, time.split(':'))\n    text = f'{day} {hour}:{minute}:{second}'\n    return {'stored': [((month - 1) * 31 * 86400) + (int(day) - 1) * 86400 + hour * 3600 + minute * 60 + second],\n            'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    monotonic_seconds = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1, sp2, day_width = layout\n    month_map = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}\n    month = monotonic_seconds // (31 * 86400) + 1\n    remaining_seconds = monotonic_seconds % (31 * 86400)\n    day = remaining_seconds // 86400 + 1\n    remaining_seconds %= 86400\n    hour = remaining_seconds // 3600\n    remaining_seconds %= 3600\n    minute = remaining_seconds // 60\n    second = remaining_seconds % 60\n    day_str = str(day).zfill(day_width)\n    return month_map[month] + (' ' * sp1) + day_str + (' ' * sp2) + f'{hour:02}:{minute:02}:{second:02}'"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "syslog timestamp (day + time) in seconds since start of month",
+      "reason": "Compact storage of timestamp as integer while preserving exact layout."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "process and thread id",
+      "reason": "Bracketed process id has stable structure with high entropy and is not numeric/quantitative."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "username or identifier",
+      "reason": "Username values vary widely and cannot be compactly represented as numeric or composed fields."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "IP address of source",
+      "reason": "The IP address has a clear structure but is high-entropy, making it suitable for raw string streaming."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "process_id",
+      "meaning": "process_id_within_sshd",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "sshd\\[(\\d+)\\]:",
+      "replacement": "sshd[{placeholder}]:",
+      "program": {
+        "intent": "Extract process id from bracketed sshd field for reuse or compression.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "source_ip",
+      "meaning": "source_ipv4_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "from( +)((?:\\d{1,3}\\.){3}\\d{1,3})",
+      "replacement": "from{group1}{placeholder}",
+      "program": {
+        "intent": "Extract IPv4 address from 'from' prefix for raw string compression.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "username",
+      "meaning": "username_or_identifier_in_invalid_user_field",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "user( +)([A-Za-z0-9._-]+)",
+      "replacement": "user{group1}{placeholder}",
+      "program": {
+        "intent": "Extract username or identifier following 'user' in the log line for raw string compression.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

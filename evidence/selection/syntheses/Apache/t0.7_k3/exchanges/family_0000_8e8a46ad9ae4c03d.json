@@ -1,0 +1,97 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure, including a timestamp, log level, and client IP address.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "weekday_month_day_time_year_as_epoch_microseconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[([A-Z][a-z]{2})( +)([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})( +)(\\d{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Convert a composed timestamp to epoch microseconds and back.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    weekday, sp1, month, sp2, day, sp3, hms, sp4, year = groups\n    text = weekday + ' ' + month + ' ' + day + ' ' + hms + ' ' + year\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1), len(sp2), len(sp3), len(sp4), len(day)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    s1, s2, s3, s4, day_width = layout\n    dt = datetime.fromtimestamp(micros / 1000000)\n    weekday = dt.strftime('%a')\n    month = dt.strftime('%b')\n    day = str(dt.day).zfill(int(day_width))\n    hms = dt.strftime('%H:%M:%S')\n    year = dt.strftime('%Y')\n    return weekday + (' ' * int(s1)) + month + (' ' * int(s2)) + day + (' ' * int(s3)) + hms + (' ' * int(s4)) + year"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "IPv4 address of client",
+      "reason": "The client IP address has a bounded structure and satisfies the Class 3 intrinsic structure route."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "nonexistent file path",
+      "reason": "File paths are variable-length strings with structure and are better stored as raw streams for exact reconstruction."
+    },
+    {
+      "slot": "S2+S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "composed timestamp (day, time, year)",
+      "reason": "These fields form a single semantic timestamp value when combined and can be compactly stored as epoch microseconds."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "log level",
+      "reason": "The log level [error] is stable and does not vary between examples, making it suitable as part of the literal template."
+    },
+    {
+      "slot": "S11",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "fixed phrase 'exist:'",
+      "reason": "The phrase 'exist:' is a stable literal marker and does not vary across examples."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "client_ipv4",
+      "meaning": "recurring_client_ipv4_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\[client( +)((?:\\d{1,3}\\.){3}\\d{1,3})\\]",
+      "replacement": "[client{group1}{placeholder}]",
+      "program": {
+        "intent": "Capture and store client IPv4 address as a raw string for exact reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "nonexistent_file_path",
+      "meaning": "file_path_not_found",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "exist:( +)(/[^\\s]+)",
+      "replacement": "exist:{group1}{placeholder}",
+      "program": {
+        "intent": "Capture and store the file path of the nonexistent file as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

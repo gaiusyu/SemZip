@@ -1,0 +1,82 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T03:06:07.613370+00:00",
+  "dataset": "Mac",
+  "codec": "zstd19",
+  "trial": 1,
+  "workers": 3,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Mac/Mac.log",
+    "bytes": 16879552,
+    "mtime_ns": 1789369362428610000,
+    "device": 1048818,
+    "inode": 199002808556006643
+  },
+  "raw_sha256": "1508444de3c5ae538db936e5d52b41551e2a76cf38904886a0eed570e893de17",
+  "raw_bytes": 16879552,
+  "records": 117283,
+  "codec_spec": {
+    "exe": "zstd",
+    "encode": [
+      "-19",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "decode": [
+      "-d",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "suffix": ".zst",
+    "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+    "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+    "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/full_20260929/Mac/zstd19/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.zst",
+      "archive_bytes": 535710,
+      "block_encode_seconds": 17.497469156980515,
+      "raw_bytes": 14418870,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "53e407728d4d34f1aacabe138d70e9a1390d0d6d3e026c47fddaf96e97777444",
+      "archive_sha256": "d17c1cf4f241488774eaca77d1387c216f4461435c1f3cd7f6a19d4cda0c2e77",
+      "decoded_sha256": "53e407728d4d34f1aacabe138d70e9a1390d0d6d3e026c47fddaf96e97777444"
+    },
+    {
+      "index": 1,
+      "archive": "archives/block_000001.zst",
+      "archive_bytes": 115018,
+      "block_encode_seconds": 2.4448559135198593,
+      "raw_bytes": 2460682,
+      "lf_count": 17283,
+      "records": 17283,
+      "ends_with_lf": true,
+      "raw_sha256": "f0f2eacf8242f661093ab02fd5c8d4d6aef7aa8b6793dbdd7f145a291037a2c7",
+      "archive_sha256": "4c47e9ae020324ecd49d1bade3118a38733cc62c976012545340a3b8b21b123f",
+      "decoded_sha256": "f0f2eacf8242f661093ab02fd5c8d4d6aef7aa8b6793dbdd7f145a291037a2c7"
+    }
+  ],
+  "encode_seconds": 17.554774314165115,
+  "block_archive_bytes": 650728,
+  "archive_bytes": 650728,
+  "decode_seconds": 0.29104024171829224,
+  "restored_settle_seconds": 2.0278810262680054,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "1508444de3c5ae538db936e5d52b41551e2a76cf38904886a0eed570e893de17",
+  "audit_seconds": 0.07119917869567871,
+  "compression_ratio": 25.939489310433853,
+  "encode_MB_per_s": 0.9615362577677645,
+  "decode_MB_per_s": 57.99731301878966,
+  "finished_at": "2026-09-29T03:06:27.636333+00:00"
+}

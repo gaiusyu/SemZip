@@ -1,0 +1,81 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "Apache",
+  "candidates": [
+    {
+      "cid": "c1",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c1/Apache/selected_plan.json",
+      "train_cost": 69710
+    },
+    {
+      "cid": "c3",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c3/Apache/selected_plan.json",
+      "train_cost": 69766
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c2/Apache/selected_plan.json",
+      "train_cost": 69834
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c4/Apache/selected_plan.json",
+      "train_cost": 71046
+    },
+    {
+      "cid": "c0",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c0/Apache/selected_plan.json",
+      "train_cost": 71110
+    }
+  ],
+  "start": "c1",
+  "start_train_bytes": 69710,
+  "start_cost_reproduced": true,
+  "pool_groups": 12,
+  "duplicate_groups_skipped": 3,
+  "selected_train_bytes": 69646,
+  "selected_tags": [
+    "IP",
+    "G",
+    "H",
+    "I",
+    "X4TS"
+  ],
+  "selected_plan_sha256": "a181559060560d43e3a834cbd456518c4bdf41a5722f9f1f80317f57fb90755f",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 28,
+      "n_improving": 5,
+      "before": 69710,
+      "accepted": [
+        {
+          "move": "replace:TS0->X4TS",
+          "screen_cost": 69646,
+          "applied_cost": 69646
+        }
+      ],
+      "after": 69646
+    },
+    {
+      "round": 1,
+      "n_moves": 23,
+      "n_improving": 0,
+      "before": 69646,
+      "accepted": [],
+      "after": 69646
+    },
+    {
+      "stage": "eliminate",
+      "tag": "I",
+      "before": 69646,
+      "after": 69874,
+      "accepted": false
+    }
+  ],
+  "evaluations": 51,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b"
+}

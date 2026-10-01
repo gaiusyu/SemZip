@@ -1,0 +1,273 @@
+{
+  "checked_date": "2026-09-23",
+  "contract": {
+    "block_records": 100000,
+    "byte_exact_decode_required": true,
+    "count_decoder_required_metadata": true,
+    "cross_block_mutable_state": false,
+    "preserve_original_tail": true,
+    "record_separator_hex": "0a"
+  },
+  "generic_codecs": {
+    "gzip6": [
+      "gzip",
+      "-6",
+      "-n"
+    ],
+    "xz6": [
+      "xz",
+      "-6",
+      "-T1"
+    ],
+    "zstd3": [
+      "zstd",
+      "-3",
+      "-T1"
+    ]
+  },
+  "limitations": [
+    "Recorded executable hashes identify measured builds. Rebuilding with a different compiler, dependency, CPU flags or debug path need not produce the same executable hash.",
+    "The NUL regression remains a known counterexample; actual dataset runs require independent SHA verification.",
+    "This inventory does not include private host paths, raw research inputs, credentials, or original stdout paths."
+  ],
+  "loglite_build": {
+    "adapter_file": "loglite_adapter.py",
+    "adapter_sha256": "73fbc851b33ce3d15a47e6fadadcd47d91250eeb9e1adbdbdb563bcfc9a07b77",
+    "archive": "One counted tail flag byte plus xz -6 -T1 --check=crc64 of LogLite-B bytes; empty input is only flag 2",
+    "binary_sha256_recorded": "2e207d6977a75ee3f59f6e9afc1c14dc44185c291fcf822deb7ee7db336c64b4",
+    "command_recorded": "g++ -Ofast -march=native -fdiagnostics-color=always -g ./src/compress/*.cc ./src/common/*.cc ./src/tools/*.cc -I ./src -o BINARY -mavx512f",
+    "compiler_recorded": "g++ (Debian 10.2.1-6) 10.2.1 20210110",
+    "fixed_constants": {
+      "HEAD_BIT_LEN": 16,
+      "ORIGINAL_LENGTH_COUNT": 23,
+      "Reserved_Memory": 0
+    },
+    "known_failure": "known_failure_nul/result.json",
+    "official_source_files": [
+      {
+        "path": "src/common/constants.h",
+        "sha256": "3008e5541f2b57ca6870a5ffc2ccb30a95d21f5ca1f18a152356d107e3fb8f8b"
+      },
+      {
+        "path": "src/common/file.cc",
+        "sha256": "f6f46cf92016a86958576bb17d62f7957a7af94af46f1106cfe60a10f79b422d"
+      },
+      {
+        "path": "src/common/file.h",
+        "sha256": "bc10e9b0dc95cfc77be7ac8718733fa1ca2a54f75cd02b2900951d1c0cb9cb93"
+      },
+      {
+        "path": "src/common/rle.cc",
+        "sha256": "ad016e3e32751b0f90fcfc479abc1435a53bd9a18d4c618d999c54a18f179146"
+      },
+      {
+        "path": "src/common/rle.h",
+        "sha256": "05edd608154e9b0a0f93799e965f80973a77f4be77a3329ccd7ef9edcacf0b81"
+      },
+      {
+        "path": "src/common/xor_string.cc",
+        "sha256": "57e08e8f10972d1ada96671167b7001f9f8138dad966175f6de3f24167251a64"
+      },
+      {
+        "path": "src/common/xor_string.h",
+        "sha256": "9e1b5a5067639974fab6d4f1aecc835a517a4c143ab2ee5ae2b232fddf37c360"
+      },
+      {
+        "path": "src/compress/stream_compress.cc",
+        "sha256": "0ad15abc07f4a6b97b53cdc3b608dd25a02a054fe946836770a0df890f87d2b9"
+      },
+      {
+        "path": "src/compress/stream_compress.h",
+        "sha256": "284c5b5b1c0806a212582e004a335d2432d68716c95038becbd097be4d94bc21"
+      },
+      {
+        "path": "src/tools/xorc-cli.cc",
+        "sha256": "b620ce2959a9bcec1e5d1123c1ff753acb2837ff567c32fb34b8b36485f79cee"
+      }
+    ],
+    "patch": "loglite_wide_reserve.patch",
+    "patch_sha256": "be21761947d3c0044ad20377b61f01d677a9334470aefe6d9f9bcb4303598865",
+    "patched_source_files": [
+      {
+        "path": "src/common/constants.h",
+        "sha256": "7ccda60f8eebb788d283acd1969326652d09a7a30ce1868b22300b14d9b27b0a"
+      },
+      {
+        "path": "src/common/file.cc",
+        "sha256": "f6f46cf92016a86958576bb17d62f7957a7af94af46f1106cfe60a10f79b422d"
+      },
+      {
+        "path": "src/common/file.h",
+        "sha256": "bc10e9b0dc95cfc77be7ac8718733fa1ca2a54f75cd02b2900951d1c0cb9cb93"
+      },
+      {
+        "path": "src/common/rle.cc",
+        "sha256": "ad016e3e32751b0f90fcfc479abc1435a53bd9a18d4c618d999c54a18f179146"
+      },
+      {
+        "path": "src/common/rle.h",
+        "sha256": "05edd608154e9b0a0f93799e965f80973a77f4be77a3329ccd7ef9edcacf0b81"
+      },
+      {
+        "path": "src/common/xor_string.cc",
+        "sha256": "57e08e8f10972d1ada96671167b7001f9f8138dad966175f6de3f24167251a64"
+      },
+      {
+        "path": "src/common/xor_string.h",
+        "sha256": "9e1b5a5067639974fab6d4f1aecc835a517a4c143ab2ee5ae2b232fddf37c360"
+      },
+      {
+        "path": "src/compress/stream_compress.cc",
+        "sha256": "0ad15abc07f4a6b97b53cdc3b608dd25a02a054fe946836770a0df890f87d2b9"
+      },
+      {
+        "path": "src/compress/stream_compress.h",
+        "sha256": "284c5b5b1c0806a212582e004a335d2432d68716c95038becbd097be4d94bc21"
+      },
+      {
+        "path": "src/tools/xorc-cli.cc",
+        "sha256": "b620ce2959a9bcec1e5d1123c1ff753acb2837ff567c32fb34b8b36485f79cee"
+      }
+    ],
+    "profile": "LogLite-BL-wide+tail+reservefix",
+    "repair_or_raw_fallback_for_NUL": false,
+    "source_selection": "Upstream commented large-dataset constants fixed before raw-data census; one profile for every dataset",
+    "source_subdirectory": "LogLite-B",
+    "xz_recorded": [
+      "xz (XZ Utils) 5.2.5",
+      "liblzma 5.2.5"
+    ]
+  },
+  "original_harness_source_hashes": {
+    "check_delog_adapter.py": "f4d0913ed89c3458bf67cbd7b09a170b55cc17b46d3e81825e8c0a746f07719c",
+    "codec_baseline.py": "0b0c15f6f33ce2180201f11e07606373417dd78087aef2f5a8125075e757c26d",
+    "loglite_adapter.py": "73fbc851b33ce3d15a47e6fadadcd47d91250eeb9e1adbdbdb563bcfc9a07b77",
+    "loglite_smoke.py": "6feca8daba6a90447c655aea16e1204114b6cc775d97dcef7324efb14f960931"
+  },
+  "repositories": [
+    {
+      "build_commands": [
+        "g++ -std=c++17 -O3 -o Delog_compress compressor.cpp -lpcre2-8 -lstdc++fs -pthread -larchive",
+        "g++ -std=c++17 -O2 -o decompress decompressor.cpp -lstdc++fs -pthread -larchive"
+      ],
+      "build_commands_source": "pinned upstream README, not a claim of a newly executed reproducible build",
+      "commit": "64a074f6b6559fbfcd809f201fc3540442151749",
+      "compress_arguments": [
+        "DATASET",
+        "text",
+        "100000",
+        "1",
+        "0",
+        "lzma",
+        "normal"
+      ],
+      "dataset_specific_recognizers": "official supplied recognizers unchanged; actual dataset names passed; report separately from SemZip programs",
+      "decode_arguments": [
+        "ARCHIVE_DIRECTORY",
+        "OUTPUT_FILE",
+        "1"
+      ],
+      "measured_binary_sha256": {
+        "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+        "encoder_sha256": "f4c624240ebf2e54e10da925a9c904bd22ecdd300bc8492b78b25b4301d71739"
+      },
+      "name": "DeLog",
+      "official_repository": "DeLog repository cited in the paper (DELOG_REPO_URL in external/upstreams.conf)",
+      "source_files": [
+        {
+          "bytes": 63242,
+          "file": "compressor.cpp",
+          "sha256": "d2f82b0b774a73096fe3bc60871a9b78e623f9253e516e764a5ae1fd7c4b0879",
+          "url": "compressor.cpp at commit 64a074f6b6559fbfcd809f201fc3540442151749 of the DeLog repository"
+        },
+        {
+          "bytes": 61377,
+          "file": "decompressor.cpp",
+          "sha256": "74c4cc609fcf227f334b37bfe72289b99911642dbcef86e1237e851c0a899a8a",
+          "url": "decompressor.cpp at commit 64a074f6b6559fbfcd809f201fc3540442151749 of the DeLog repository"
+        },
+        {
+          "bytes": 123347,
+          "file": "BS_thread_pool.hpp",
+          "sha256": "50e9f4ebd7b479417e34361e411f7973f3b23274f09a988e8ca287df878f707b",
+          "url": "BS_thread_pool.hpp at commit 64a074f6b6559fbfcd809f201fc3540442151749 of the DeLog repository"
+        },
+        {
+          "bytes": 27686,
+          "file": "README.md",
+          "sha256": "51d592747c7856925d6cce6156070a14cf3dfac194071aa3a6e03cc58a1b7eeb",
+          "url": "README.md at commit 64a074f6b6559fbfcd809f201fc3540442151749 of the DeLog repository"
+        }
+      ],
+      "source_patch": null,
+      "status": "pinned_official_CLI_used_via_independent_original_block_adapter"
+    },
+    {
+      "commit": "1832f4f380e360dd12d098d987e8c0f6dcc1f3cf",
+      "name": "LogFold",
+      "official_repository": "LogFold repository cited in the paper",
+      "status": "no_implementation_in_linked_repository"
+    },
+    {
+      "commit": null,
+      "name": "LogPrism",
+      "official_repository": "LogPrism repository cited in the paper",
+      "status": "linked_repository_empty"
+    },
+    {
+      "commit": "59ce49434eec06c709c7e16027a46214a6c37961",
+      "name": "LogShrink",
+      "official_repository": "LogShrink repository cited in the paper (LOGSHRINK_REPO_URL in external/upstreams.conf)",
+      "status": "source_available_needs_dependencies_and_byte_preflight"
+    },
+    {
+      "commit": "40005419022c02454eca7b027d76b99b3dfad543",
+      "name": "LogReducer",
+      "official_repository": "LogReducer repository cited in the paper (LOGREDUCER_REPO_URL in external/upstreams.conf)",
+      "status": "source_available_needs_byte_correctness_preflight"
+    },
+    {
+      "commit": "a3a697564e378643461e27ab92ea44b098424c35",
+      "name": "Denum",
+      "official_repository": "Denum repository cited in the paper (DENUM_REPO_URL in external/upstreams.conf)",
+      "status": "official_decoder_incomplete_for_generic_tags"
+    },
+    {
+      "commit": "e3663520d609020d0cf0fe74917b65f9086c1a6f",
+      "name": "LogZip",
+      "official_repository": "LogZip repository cited in the paper",
+      "status": "no_official_decoder_in_checked_tree"
+    },
+    {
+      "archive_shape": "one counted tail byte plus actual XZ-6 one-thread stream of official LogLite-B bytes",
+      "commit": "68f851ef673ac6fa45f26513df08613151624bd2",
+      "core_algorithm_modified": false,
+      "generic_arbitrary_byte_correctness_proven": false,
+      "name": "LogLite",
+      "official_repository": "LogLite repository cited in the paper (LOGLITE_REPO_URL in external/upstreams.conf)",
+      "preflight_cases": 14,
+      "preflight_failures": [
+        "embedded_nul_change",
+        "run_header_overflow",
+        "length_32768"
+      ],
+      "preflight_passes": 11,
+      "source_parameter_selection": "upstream commented large-dataset profile, fixed before raw census",
+      "standalone_profile": "LogLite-BL-wide+tail+reservefix",
+      "status": "fixed_wide_profile_ready_for_full_campaign_with_retained_synthetic_NUL_failure",
+      "wide_preflight_cases": 14,
+      "wide_preflight_failures": [
+        "embedded_nul_change"
+      ],
+      "wide_preflight_passes": 13
+    },
+    {
+      "commit": "0f4b24c795427cbc85efd8c23a3897ee7101f28f",
+      "name": "CLP",
+      "official_repository": "CLP repository cited in the paper",
+      "status": "source_available_not_built"
+    }
+  ],
+  "schema": "anonymous-external-source-inventory-v1",
+  "scope": "Public repository pins and declared adapters; availability is not a compression measurement"
+}

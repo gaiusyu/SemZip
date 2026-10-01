@@ -1,0 +1,932 @@
+{
+  "version": "QG-V1",
+  "implementation": "qg_select2 (parallel evaluation, same decisions)",
+  "dataset": "Windows",
+  "input_plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/train_k/Windows/t0.7_k4/training_work/Windows/replay_plan.json",
+  "input_plan_sha256": "c0b7a74f5ead07c437b4583cf859fbc7eeafc1b46d1a5f5971d57b998b0312be",
+  "training_block_sha256": "3bb5d9d306ca90d5b1dcc1178f087e259138b260877e72c5e60174bca1598fbc",
+  "selected_plan_sha256": "8771355927f9d296329f18d60443010e8b0abdb08ab6fe063e00058c4fa555ff",
+  "original_train_archive_bytes": 47979,
+  "empty_train_archive_bytes": 57807,
+  "selected_train_archive_bytes": 47091,
+  "removed_tags": [
+    "A",
+    "J",
+    "B"
+  ],
+  "kept_tags": [
+    "TS0",
+    "M",
+    "K",
+    "L",
+    "G",
+    "H",
+    "N",
+    "I"
+  ],
+  "evaluations": 42,
+  "decisions": [
+    {
+      "stage": "A",
+      "spec_index": 0,
+      "tag": "TS0",
+      "variant": "width_agnostic",
+      "before": 47979,
+      "after": 48099,
+      "accepted": false
+    },
+    {
+      "stage": "B",
+      "tag": "A",
+      "before": 47979,
+      "after": 47395,
+      "accepted": true,
+      "all": {
+        "A": 47395,
+        "B": 47743,
+        "G": 48031,
+        "H": 49535,
+        "I": 47979,
+        "J": 47847,
+        "K": 48087,
+        "L": 50875,
+        "M": 48127,
+        "N": 48115,
+        "TS0": 56555
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "J",
+      "before": 47395,
+      "after": 47215,
+      "accepted": true,
+      "all": {
+        "B": 47259,
+        "G": 47399,
+        "H": 48967,
+        "I": 47395,
+        "J": 47215,
+        "K": 47371,
+        "L": 49963,
+        "M": 47675,
+        "N": 47491,
+        "TS0": 56379
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "B",
+      "before": 47215,
+      "after": 47091,
+      "accepted": true,
+      "all": {
+        "B": 47091,
+        "G": 47235,
+        "H": 48815,
+        "I": 47215,
+        "K": 47291,
+        "L": 48843,
+        "M": 47571,
+        "N": 47267,
+        "TS0": 56095
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "I",
+      "before": 47091,
+      "after": 47091,
+      "accepted": false,
+      "all": {
+        "G": 47095,
+        "H": 48591,
+        "I": 47091,
+        "K": 47163,
+        "L": 48723,
+        "M": 47367,
+        "N": 47175,
+        "TS0": 56007
+      }
+    },
+    {
+      "stage": "C",
+      "tag": "A",
+      "before": 47091,
+      "after": 47623,
+      "accepted": false
+    },
+    {
+      "stage": "C",
+      "tag": "J",
+      "before": 47091,
+      "after": 47259,
+      "accepted": false
+    },
+    {
+      "stage": "C",
+      "tag": "B",
+      "before": 47091,
+      "after": 47215,
+      "accepted": false
+    }
+  ],
+  "eval_log": [
+    {
+      "eval": 2,
+      "key": "335eb305524b",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 57807,
+      "seconds": 11.81
+    },
+    {
+      "eval": 2,
+      "key": "db82f287c76a",
+      "label": "original",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 47979,
+      "seconds": 59.63
+    },
+    {
+      "eval": 3,
+      "key": "30832f987b14",
+      "label": "A:TS0:width_agnostic",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 48099,
+      "seconds": 105.97
+    },
+    {
+      "eval": 3,
+      "key": "30832f987b14",
+      "label": "A:TS0:width_agnostic",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 48099,
+      "seconds": 105.97,
+      "cached": true
+    },
+    {
+      "eval": 6,
+      "key": "562c1f0b24e6",
+      "label": "B:-A",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 47395,
+      "seconds": 62.47
+    },
+    {
+      "eval": 7,
+      "key": "cf8d4fe81d9d",
+      "label": "B:-B",
+      "tags": [
+        "TS0",
+        "A",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 47743,
+      "seconds": 77.56
+    },
+    {
+      "eval": 8,
+      "key": "87f2f6f05069",
+      "label": "B:-G",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "M",
+        "K",
+        "L",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 48031,
+      "seconds": 84.89
+    },
+    {
+      "eval": 9,
+      "key": "f1338b2c5559",
+      "label": "B:-H",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 49535,
+      "seconds": 93.13
+    },
+    {
+      "eval": 10,
+      "key": "fcc65f32a6fa",
+      "label": "B:-I",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "J"
+      ],
+      "archive_bytes": 47979,
+      "seconds": 90.82
+    },
+    {
+      "eval": 11,
+      "key": "1981dd578d33",
+      "label": "B:-J",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47847,
+      "seconds": 89.2
+    },
+    {
+      "eval": 12,
+      "key": "ef20de650794",
+      "label": "B:-L",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "M",
+        "K",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 50875,
+      "seconds": 72.0
+    },
+    {
+      "eval": 13,
+      "key": "5e998cf7b4a3",
+      "label": "B:-K",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "M",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 48087,
+      "seconds": 86.34
+    },
+    {
+      "eval": 14,
+      "key": "2fe24c3b09cc",
+      "label": "B:-M",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 48127,
+      "seconds": 76.0
+    },
+    {
+      "eval": 14,
+      "key": "754a16b445d3",
+      "label": "B:-TS0",
+      "tags": [
+        "A",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 56555,
+      "seconds": 56.13
+    },
+    {
+      "eval": 14,
+      "key": "d388cc5d5af9",
+      "label": "B:-N",
+      "tags": [
+        "TS0",
+        "A",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 48115,
+      "seconds": 80.41
+    },
+    {
+      "eval": 17,
+      "key": "307c275874b2",
+      "label": "B:-B",
+      "tags": [
+        "TS0",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 47259,
+      "seconds": 53.56
+    },
+    {
+      "eval": 18,
+      "key": "facf3361021a",
+      "label": "B:-H",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 48967,
+      "seconds": 58.04
+    },
+    {
+      "eval": 19,
+      "key": "235d9b055130",
+      "label": "B:-G",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 47399,
+      "seconds": 60.06
+    },
+    {
+      "eval": 20,
+      "key": "cbd85b2501fd",
+      "label": "B:-I",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "J"
+      ],
+      "archive_bytes": 47395,
+      "seconds": 55.62
+    },
+    {
+      "eval": 21,
+      "key": "2fb8206b8d1e",
+      "label": "B:-K",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 47371,
+      "seconds": 53.59
+    },
+    {
+      "eval": 22,
+      "key": "1d082d9637ac",
+      "label": "B:-J",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47215,
+      "seconds": 55.84
+    },
+    {
+      "eval": 23,
+      "key": "677166bf5173",
+      "label": "B:-L",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 49963,
+      "seconds": 49.75
+    },
+    {
+      "eval": 24,
+      "key": "cb7e7da26270",
+      "label": "B:-M",
+      "tags": [
+        "TS0",
+        "B",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 47675,
+      "seconds": 48.6
+    },
+    {
+      "eval": 24,
+      "key": "b3b67ac184a0",
+      "label": "B:-N",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 47491,
+      "seconds": 55.76
+    },
+    {
+      "eval": 24,
+      "key": "5fd7aa2d23a5",
+      "label": "B:-TS0",
+      "tags": [
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 56379,
+      "seconds": 31.55
+    },
+    {
+      "eval": 27,
+      "key": "e8672ff835a1",
+      "label": "B:-B",
+      "tags": [
+        "TS0",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47091,
+      "seconds": 49.21
+    },
+    {
+      "eval": 28,
+      "key": "3c77fda88965",
+      "label": "B:-G",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47235,
+      "seconds": 52.79
+    },
+    {
+      "eval": 29,
+      "key": "f7c226afb439",
+      "label": "B:-H",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 48815,
+      "seconds": 53.52
+    },
+    {
+      "eval": 30,
+      "key": "35c1c3151bed",
+      "label": "B:-I",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N"
+      ],
+      "archive_bytes": 47215,
+      "seconds": 51.91
+    },
+    {
+      "eval": 31,
+      "key": "b25cf27a7132",
+      "label": "B:-K",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47291,
+      "seconds": 52.03
+    },
+    {
+      "eval": 32,
+      "key": "18bc6727c86e",
+      "label": "B:-L",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 48843,
+      "seconds": 52.68
+    },
+    {
+      "eval": 33,
+      "key": "0eb97f7b008c",
+      "label": "B:-TS0",
+      "tags": [
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 56095,
+      "seconds": 33.57
+    },
+    {
+      "eval": 33,
+      "key": "d6e3f088ffb0",
+      "label": "B:-M",
+      "tags": [
+        "TS0",
+        "B",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47571,
+      "seconds": 47.01
+    },
+    {
+      "eval": 33,
+      "key": "78dafec7fd5b",
+      "label": "B:-N",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "I"
+      ],
+      "archive_bytes": 47267,
+      "seconds": 50.24
+    },
+    {
+      "eval": 36,
+      "key": "724c2c089f75",
+      "label": "B:-H",
+      "tags": [
+        "TS0",
+        "M",
+        "K",
+        "L",
+        "G",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 48591,
+      "seconds": 40.46
+    },
+    {
+      "eval": 37,
+      "key": "3824b534b401",
+      "label": "B:-G",
+      "tags": [
+        "TS0",
+        "M",
+        "K",
+        "L",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47095,
+      "seconds": 41.29
+    },
+    {
+      "eval": 38,
+      "key": "e2f694e7df69",
+      "label": "B:-I",
+      "tags": [
+        "TS0",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N"
+      ],
+      "archive_bytes": 47091,
+      "seconds": 42.15
+    },
+    {
+      "eval": 39,
+      "key": "f601351a5f4c",
+      "label": "B:-M",
+      "tags": [
+        "TS0",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47367,
+      "seconds": 40.1
+    },
+    {
+      "eval": 40,
+      "key": "0908d677b583",
+      "label": "B:-K",
+      "tags": [
+        "TS0",
+        "M",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47163,
+      "seconds": 43.08
+    },
+    {
+      "eval": 41,
+      "key": "8d5a665397e7",
+      "label": "B:-L",
+      "tags": [
+        "TS0",
+        "M",
+        "K",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 48723,
+      "seconds": 45.15
+    },
+    {
+      "eval": 41,
+      "key": "b9693777a32e",
+      "label": "B:-TS0",
+      "tags": [
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 56007,
+      "seconds": 23.58
+    },
+    {
+      "eval": 41,
+      "key": "de2fb62b3c33",
+      "label": "B:-N",
+      "tags": [
+        "TS0",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "I"
+      ],
+      "archive_bytes": 47175,
+      "seconds": 40.42
+    },
+    {
+      "eval": 42,
+      "key": "834f4088cedb",
+      "label": "C:+A",
+      "tags": [
+        "TS0",
+        "A",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47623,
+      "seconds": 80.08
+    },
+    {
+      "eval": 17,
+      "key": "307c275874b2",
+      "label": "C:+J",
+      "tags": [
+        "TS0",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I",
+        "J"
+      ],
+      "archive_bytes": 47259,
+      "seconds": 53.56,
+      "cached": true
+    },
+    {
+      "eval": 22,
+      "key": "1d082d9637ac",
+      "label": "C:+B",
+      "tags": [
+        "TS0",
+        "B",
+        "M",
+        "K",
+        "L",
+        "G",
+        "H",
+        "N",
+        "I"
+      ],
+      "archive_bytes": 47215,
+      "seconds": 55.84,
+      "cached": true
+    }
+  ],
+  "llm_calls": 0
+}

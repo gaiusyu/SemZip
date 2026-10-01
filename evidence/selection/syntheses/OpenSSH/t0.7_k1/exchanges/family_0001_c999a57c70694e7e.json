@@ -1,0 +1,159 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix composed of a timestamp, a hostname, and a process identifier that should be extracted as side streams for efficient compression.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "syslog-like timestamp without year",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack syslog-style timestamp fields into an integer for compact storage while preserving exact spacing and formatting.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    text = month + ' ' + day + ' ' + time\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    packed = (dt.month * 100000000 + dt.day * 1000000 + dt.hour * 10000 + dt.minute * 100 + dt.second)\n    return {'stored': [packed], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    packed = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, day_width = layout\n    month = packed // 100000000\n    day = (packed // 1000000) % 100\n    hour = (packed // 10000) % 100\n    minute = (packed // 100) % 100\n    second = packed % 100\n    dt = datetime.strptime(f'{month} {day:0{day_width}} {hour:02}:{minute:02}:{second:02}', '%m %d %H:%M:%S')\n    return dt.strftime('%b') + (' ' * sp1_len) + dt.strftime('%d').zfill(day_width) + (' ' * sp2_len) + dt.strftime('%H:%M:%S')"
+        }
+      },
+      {
+        "tag": "header_hostname",
+        "meaning": "hostname in log header",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(\\w+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Store the exact hostname for the log source.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "header_process_id",
+        "meaning": "process id in log header",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "sshd\\[(\\d+)\\]:",
+        "replacement": "sshd[{placeholder}]:",
+        "program": {
+          "intent": "Store the process ID as a compact integer and render the exact original format.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "syslog-like timestamp without year",
+      "reason": "These tokens together describe one semantic timestamp value that can be compactly stored as an integer."
+    },
+    {
+      "slot": "S3",
+      "action": "STREAM_RAW",
+      "meaning": "hostname in log header",
+      "reason": "The hostname is a stable string variable with low entropy."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "process id in log header",
+      "reason": "The process id is a stable numeric variable and suitable for compact compression."
+    },
+    {
+      "slot": "S10",
+      "action": "STREAM_RAW",
+      "meaning": "source IP address",
+      "reason": "The IP address is a structured variable with intrinsic delimiters."
+    },
+    {
+      "slot": "S12",
+      "action": "UINT_DELTA",
+      "meaning": "source port",
+      "reason": "The port is a numeric variable, often conditioned by the associated IP address context."
+    },
+    {
+      "slot": "S13",
+      "action": "STREAM_RAW",
+      "meaning": "protocol version",
+      "reason": "The protocol version is a stable string variable with low entropy."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "source_ip",
+      "meaning": "source IPv4 address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "from( +)((?:\\d{1,3}\\.){3}\\d{1,3})",
+      "replacement": "from{group1}{placeholder}",
+      "program": {
+        "intent": "Store the exact source IP address as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "source_port",
+      "meaning": "source port conditioned by source IP address",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": {
+        "code": "def project_context(line, groups):\n    m = re.search(r'from( +)((?:\\d{1,3}\\.){3}\\d{1,3})', line)\n    if m:\n        return m.group(2)\n    return None"
+      },
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "port( +)(\\d+)",
+      "replacement": "port{group1}{placeholder}",
+      "program": {
+        "intent": "Store the source port as a compact integer, conditioned by the associated source IP address.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    },
+    {
+      "tag": "protocol_version",
+      "meaning": "protocol version",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(ssh2)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Store the exact protocol version as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"elevation_level\",\n      \"meaning\": \"elevation_level_value\",\n      \"class\": \"class_2_formatted_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"regex\": \"elevation:(\\\\d+),\",\n      \"replacement\": \"elevation:{placeholder},\",\n      \"program\": {\n        \"intent\": \"Store the elevation level as an integer and reconstruct the original format.\",\n        \"op\": \"python_exec\",\n        \"parameters\": {},\n        \"code\": \"def forward(groups):\\n    return {'stored': [int(groups[0])], 'layout': ['elevation:', ',']}\\n\\ndef inverse(record):\\n    return f\\\"{record['layout'][0]}{record['stored'][0]}{record['layout'][1]}\\\"\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 197,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1473,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1670
+  }
+}

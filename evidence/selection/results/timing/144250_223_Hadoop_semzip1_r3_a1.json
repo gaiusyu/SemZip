@@ -1,0 +1,78 @@
+{
+ "dataset": "Hadoop",
+ "method": "semzip1",
+ "repeat": 3,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/144250_223_Hadoop_semzip1_r3_a1",
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "encode",
+   "--input",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/raw/Hadoop.log",
+   "--plan",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/deployments/Hadoop/program.json",
+   "--dataset",
+   "Hadoop",
+   "--semzip-source",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/144250_223_Hadoop_semzip1_r3_a1/work",
+   "--block-size",
+   "100000",
+   "--workers",
+   "4"
+  ],
+  "seconds": 17.529222428798676,
+  "returncode": 0,
+  "load_average": [
+   43.57,
+   38.61,
+   35.07
+  ],
+  "own_cpu_seconds": 29.642916000000696,
+  "other_cpu_seconds": 0.8567118149993043,
+  "other_cores": 0.04887334954411991
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "decode",
+   "--archive",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/144250_223_Hadoop_semzip1_r3_a1/work/archive",
+   "--output",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/144250_223_Hadoop_semzip1_r3_a1/restored.owned.log",
+   "--semzip-source",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/144250_223_Hadoop_semzip1_r3_a1/decode",
+   "--workers",
+   "4"
+  ],
+  "seconds": 3.304002031683922,
+  "returncode": 0,
+  "load_average": [
+   43.57,
+   38.61,
+   35.07
+  ],
+  "own_cpu_seconds": 4.632858999999371,
+  "other_cpu_seconds": 0.06173799300062921,
+  "other_cores": 0.018685821742416953
+ },
+ "archive_bytes": 574908,
+ "fallback_blocks": 0,
+ "sha_pass": true,
+ "raw_bytes": 48595595,
+ "encode_MB_per_s": 2.772261872846255,
+ "decode_MB_per_s": 14.708100822575071,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.011211467751336057
+ },
+ "max_other_cores": 0.04887334954411991,
+ "contaminated": false
+}

@@ -1,0 +1,26 @@
+\begin{longtable}{lrrrrrrrrr}
+\caption{Supplementary external measurements. Left: further general-purpose settings (Zstd19+D: dictionary trained on block 0 and counted once per file) and DeLog without its dataset-specific regular expressions, all byte-exact from archives alone. Zstd22L: zstd --ultra -22 --long=27. Right: compression-only ratios of LogShrink and LogReducer as released (not byte-exact; exact files marked e), the number of LogShrink blocks that failed to encode or decode, and Denum\textquotesingle s compression-only ratio (its format cannot restore the input; not losslessly verifiable).}\label{tab:supp-external}\\
+\toprule
+Dataset & Zstd3 & Zstd22L & Zstd19+D & DeLog-gen & LS native & LS failed & LR native & LR status & Denum \\
+\midrule\endfirsthead
+\toprule
+Dataset & Zstd3 & Zstd22L & Zstd19+D & DeLog-gen & LS native & LS failed & LR native & LR status & Denum \\
+\midrule\endhead
+Android & 12.56 & 21.07 & 19.07 & 25.28 & 21.48 & 0 & 23.32 & PASS & 32.67 \\
+Apache & 18.85 & 29.01 & 17.67 & 46.06 & 44.07$^e$ & 0 & 40.15$^e$ & PASS & 58.67 \\
+BGL & 10.57 & 21.25 & 20.19 & 34.56 & 46.15 & 0 & 33.16 & PASS & 41.39 \\
+Hadoop & 26.17 & 42.12 & 38.20 & 61.79 & 64.07 & 0 & 59.78 & PASS & 82.74 \\
+HDFS & 10.27 & 15.83 & 14.50 & 28.33 & 24.90 & 0 & 23.37 & PASS & 25.32 \\
+HealthApp & 9.92 & 16.35 & 15.14 & 46.56 & 32.34 & 0 & 14.80 & PASS & 45.27 \\
+HPC & 9.79 & 16.98 & 16.11 & 44.60 & 40.04 & 0 & 32.43 & PASS & 44.90 \\
+Linux & 12.24 & 19.56 & 10.58 & 24.03 & 28.39 & 0 & 27.38 & PASS & 30.87 \\
+Mac & 16.95 & 26.06 & 22.25 & 38.69 & 38.24 & 0 & 39.28 & PASS & 40.17 \\
+OpenSSH & 14.32 & 24.39 & 23.48 & 66.05 & 102.87 & 0 & 83.48 & PASS & 101.42 \\
+OpenStack & 12.14 & 16.31 & 15.74 & 20.22 & 22.55 & 0 & 22.99$^e$ & PASS & 22.12 \\
+Proxifier & 13.59 & 21.13 & 11.12 & 25.62 & 26.95 & 0 & 27.34 & PASS & 27.32 \\
+Spark & 15.24 & 25.15 & 24.81 & 49.40 & -- & 48 & -- & FAIL & 59.66 \\
+Thunderbird & 18.82 & 29.46 & 27.71 & 60.34 & 58.37 & 0 & -- & -- & 62.75 \\
+Windows & 145.95 & 291.39 & 247.41 & 493.23 & -- & 42 & 327.42 & PASS & 480.96 \\
+Zookeeper & 23.03 & 38.80 & 27.64 & 116.67 & 111.87 & 0 & -- & -- & 135.40 \\
+\bottomrule
+\end{longtable}

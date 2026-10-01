@@ -1,0 +1,354 @@
+You are generating reversible extraction programs for several Android log-line families in one batch.
+Return JSON only. The top-level object must be {"families": [...]}.
+Return exactly 7 family objects, one for each input family_id in this exact set: [4, 15, 26, 3, 19, 9, 2].
+Do not omit a family. If a family has no safe function, still return it with all three class function arrays empty.
+Each output family must preserve its input family_id exactly and follow this schema:
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "1234 bytes",
+              "1.20 KB"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "10.0.0.5",
+              "/var/log/app",
+              "api.example.net",
+              "550e8400-e29b-41d4-a716-446655440000"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "user Alice",
+              "username=Alice"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "semantic role if known",
+          "reason": "why this slot is extracted, composed, or kept"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_2_formatted_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_3_common_variable": [
+          "semantic names found in this family, or an empty list"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+Class-wise completion contract:
+- Inspect Class 1, Class 2, and Class 3 independently for every family before emitting JSON.
+- class_inventory must contain all three class keys and briefly name every candidate category found; use [] when none is present.
+- Put executable proposals only in class_1_functions, class_2_functions, or class_3_functions. Always emit all three arrays, even when empty.
+- Do not emit a flat functions array or header.functions. A changing header field belongs in the class array matching its semantics.
+- The class bucket is authoritative: Class 1 and Class 2 store numeric values; Class 3 stores exact strings.
+
+For every family, fill family_analysis before writing functions. This is a short machine-readable plan, not chain-of-thought.
+- has_composable_tokens means several tokens/pieces jointly represent one value, such as weekday + month + day + time + year forming one timestamp-like value.
+- has_semantic_equivalent_tokens means two displays represent the same value, such as '1234 bytes' and '(1.20 KB)' describing the same byte count.
+- If has_composable_tokens=true, at least one function should implement the best composable_group unless exact reconstruction is impossible.
+- If has_semantic_equivalent_tokens=true, at least one function should implement the best semantic_equivalent_group unless exact reconstruction is impossible.
+- raw_variable_groups are Class 3 candidates through either of two evidence routes: (A) the captured value itself contains at least two non-alphanumeric separator occurrences explicitly encoded by the regex; or (B) a plain value is immediately introduced by a stable, unambiguous field-name literal explicitly present in the regex, such as user( +)([A-Za-z0-9]+) or username=([A-Za-z0-9]+). Whitespace alone and generic words such as for, from, to, or by do not qualify. Unanchored broad captures such as ([A-Za-z0-9]+), (\w+), or ([^ ]+) must be left to residual.
+- This planning step is meant to prevent skipping high-value fusion opportunities before regex writing.
+
+Direct per-line context schema:
+- Every function must include tag, class, value_type, target_role, context, regex, replacement, and program.
+- class must be one of class_1_composed_numeric, class_2_formatted_numeric, class_3_common_variable.
+- value_type must be numeric for class_1_composed_numeric and class_2_formatted_numeric. Use string for class_3_common_variable.
+- target_role must be log_timestamp only when the stored target itself is the primary timestamp of the log record. Use ordinary_value for every other stored target.
+- Use context=null when no other field in the same physical line should partition the target's distribution. A log_timestamp normally uses context=null.
+- Otherwise context must contain code defining project_context(line, groups). It returns the actual per-line context value as str/int, or None when absent; it must not return a semantic label.
+- line is the complete original physical log line and groups are the target regex groups. The target regex does not need to capture the context, and the context may be adjacent or non-adjacent.
+- Context only routes an already reversible target. forward(groups) and inverse(record) must reconstruct the target without context. Numeric streams use delta within each returned context; string streams use dictionary ranks within each returned context.
+- project_context must be deterministic, must not import modules, and may use provided re.search/re.match/re.fullmatch with literal safe regexes.
+- Direct projector example for 'Failed password from 173.234.31.186 port 38926 ssh2': the source_port target regex is 'port( +)(\\d+)', its target program stores int(groups[1]), and context.code is: def project_context(line, groups): m = re.search(r'from( +)((?:\\d{1,3}\\.){3}\\d{1,3})', line); return m.group(2) if m else None.
+- The example returns the concrete IP bytes, not the words source_ip and not another function tag.
+- Before writing each function, fill source_separation. This is a machine-readable audit, not a long chain-of-thought. Use decision=merge_equivalent only when the captured pieces are one semantic quantity or one piece is exactly derivable from another. Use decision=split_context_value when a textual span contains independent sources and one source predicts/groups the other. Use decision=raw_single_source only for one bounded opaque variable. Use decision=leave_to_residual when the LLM should not create a function.
+- If a target's distribution depends on another field anywhere in the same line, attach a projector to the target. Example: source_port stores only the port and project_context returns the concrete source IP from the complete line.
+- Contrastive source-separation example. Bad: store '10.10.34.12:3888' as one raw endpoint string; this repeats the IP many times and mixes address entropy with port entropy. Good: capture IP as context and store only the port as numeric value, with source_separation.decision='split_context_value', stored_source='port', context_source='ip'.
+- Contrastive source-separation example. Good merge: '1234 bytes (1.20 KB)' has two displays of one byte-size value, so use source_separation.decision='merge_equivalent' and store one canonical integer plus layout/display flags.
+
+Executable program forms:
+- Raw python_exec: store the captured raw value exactly as a string; downstream codec chooses rank/delta/raw.
+- {"op":"python_exec", "code":"..."}: real Python code defining forward(groups) and inverse(record). Use this for exact date/time, unit, duration, tuple, and compound numeric transforms.
+- python_exec code must not import modules. The verifier already provides datetime, re, math, and calendar-like helpers. Any import/from-import statement is rejected.
+- Use only the verifier-aligned Python subset: ordinary assignments, arithmetic, indexing/slicing, simple if/for/while, int/str/len/float/round/abs/min/max, datetime/timedelta/re helpers, f-strings, lists, tuples, and dicts.
+- Do not use augmented assignment such as +=, -=, *=, //=, or %=; write ordinary assignment instead. Example: write `v = v // 1000`, not `v //= 1000`.
+- Do not use comprehensions, lambda, try/except, with, class definitions, file/network/system calls, eval/exec/compile, globals/locals/vars, or double-underscore names.
+- python_exec forward(groups) must return a dict exactly shaped like {'stored': [one_value], 'layout': [optional_small_integers]}. Use layout for variable spaces or widths needed by inverse(record).
+- python_exec inverse(record) must read record['stored'] and return the exact original captured bytes as a string.
+- Do not return datetime objects, ISO strings, tuples, or plain integers from forward(). Do not make inverse(record) expect a datetime object directly.
+
+Placeholder routing contract:
+- Use exactly one {placeholder} in every replacement. The decoder uses that route to choose this function's side stream.
+- If a function consumes several capture groups that together describe one attribute, they still map to one {placeholder}, not multiple placeholders.
+- If a span contains independent attributes, emit separate functions with separate tags.
+- Do not duplicate storage: bytes consumed into {placeholder} must not also remain as {groupN}.
+
+For each family:
+- Every function must include class and target_role. Use class_1_composed_numeric for multi-piece values that become one compressible semantic integer, class_2_formatted_numeric for text or formatted tokens that express numeric meaning and can be converted into one compressible integer, and class_3_common_variable for an exact string supported by either intrinsic structure or an explicit adjacent field-name anchor. Use target_role=log_timestamp only for the primary log timestamp; otherwise use ordinary_value.
+- If a date/time-like span is present, prefer class_1_composed_numeric and write python_exec that stores one integer timestamp-like value. Do not use class_3_common_variable or raw identity for a timestamp merely because spaces or display widths vary; store those reversible display details in layout.
+- Choose class_2 not only for visibly numeric tokens, but for non-numeric or formatted text that carries numeric meaning and has a deterministic numeric representation: units, durations, byte-size displays, ordinal/state counters, severity-like levels, port-like roles, process/thread ids, slots, or structured subfields. Do not classify random-looking session ids, hashes, request ids, or opaque hex strings as class_1/class_2 merely because they can be parsed as integers.
+- Strategy switch for numbers: leave anonymous/simple numbers to deterministic residual coders, but extract semantically stable numbers whose surrounding words vary across templates. A port near an IP/host should be a class_2 target whose context projector returns the concrete IP/host when that field predicts the port distribution.
+- For every ordinary_value target, ask whether another field anywhere in the same physical line predicts or partitions its distribution. If yes, provide context.code defining project_context(line, groups); otherwise use context=null.
+- project_context returns the actual value found on this line, not a field name or another function tag. A log_timestamp normally uses context=null.
+- Context routing is available to every class. Numeric targets use context-local delta and string targets use context-local dictionary ranks, while target reconstruction remains independent of context.
+- Prefer class_3_common_variable only after one evidence route passes. Intrinsic route: the captured value has at least two separator occurrences explicit in the regex. Role-anchor route: a plain value is immediately introduced by a stable, unambiguous field-name literal explicit in the regex, such as user or username=. A semantic explanation, whitespace, or a generic word such as for/from/to/by is insufficient. Numeric-looking opaque identifiers may use class_3 only when they satisfy one route and lack semantic magnitude/order.
+- First decide whether there is a unified log header. Headers can use brackets, punctuation, or component fields, not just whitespace.
+- Put changing header fields in header.functions.
+- Then propose normal value functions for hard formats such as session ids, stable-affix ids, derived date/time text, unit-bearing values, and compound numeric fields.
+- Prefer one reversible function for a complete real-world attribute over several substring functions. If adjacent tokens or neighboring pieces describe the same underlying value, capture the complete span and store one compact value when exact rendering is possible.
+- Do not split one attribute into independent streams just because it appears as several tokens or contains punctuation. A date/time-like attribute, unit-bearing display, bracketed identifier, endpoint-like text, or stable-affix id should be considered as a complete reversible span first.
+- If one displayed piece is derivable from another captured value, store the source value and render the derived text instead of creating a separate stream. If exact derivation is not safe, store the complete formatted span with raw python_exec.
+- Prefer executable python_exec for complete composed attributes when a deterministic parse/render relation is clear. Use raw python_exec when the exact bytes are opaque or when a compact inverse renderer is not safe.
+- Set general=true when the function likely applies across many families/templates, such as a repeated header attribute, address-like value, endpoint-like value, bracketed process/context id, port-like number, user/domain-like token, or other recurring value format. Set general=false for message-specific variables.
+- Set order_hint=global_composed for a global function that consumes a complete multi-piece attribute or starts at a repeated line prefix; set family_structured for context-scoped message variables; set global_atomic for simple intrinsic global values.
+- Constants remain literal. Store changing bytes once: either as {placeholder} or as preserved {groupN}, never both.
+- Unit-bearing variants must be byte-exact. If examples include both plain and displayed forms such as '123 bytes' and '123 bytes (1.20 KB)', do not consume the optional display and drop it from replacement. Store the complete formatted value span or render all captured pieces exactly.
+- Use numeric scalar programs only after checking that the scalar render reconstructs the whole matched value, including optional unit displays and alternate units.
+- Regexes must be Python re compatible, local to the matched substring, and under 220 characters.
+- Avoid broad tail captures like (.+) or (.*). Avoid bare all-number regexes unless tightly scoped by literals. For Class 3, forbid unanchored plain-token captures such as ([A-Za-z0-9]+), (\w+), and ([^ ]+). A narrow plain-token capture is allowed only when a stable, unambiguous field-name literal immediately introduces it in the same regex; whitespace or generic for/from/to/by does not qualify.
+- If functions overlap, order most specific first.
+
+Executable examples, for style only and not a closed type list:
+Example exact raw value:
+{"tag": "dot_value", "meaning": "recurring dotted value", "class": "class_3_common_variable", "general": true, "order_hint": "global_atomic", "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})", "replacement": "from {placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example exact raw plain value with an explicit role anchor:
+{"tag": "user_name", "meaning": "user_field_value", "class": "class_3_common_variable", "general": false, "order_hint": "family_structured", "regex": "user( +)([A-Za-z][A-Za-z0-9._-]*)", "replacement": "user{group1}{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example fixed-width integer:
+{"tag": "bracket_number", "meaning": "recurring bracketed numeric id", "class": "class_2_formatted_numeric", "general": true, "order_hint": "global_composed", "regex": "worker\\[(\\d{5})\\]", "replacement": "worker[{placeholder}]", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    return {'stored': [int(text)], 'layout': []}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    return str(value).zfill(5)"}}
+Example composed date/time-like attribute with a fixed exact layout:
+{"tag": "composed_time", "meaning": "complete repeated date/time-like prefix", "class": "class_1_composed_numeric", "general": true, "order_hint": "global_composed", "regex": "^([A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2})", "replacement": "{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"}}
+If exact reconstruction needs variable width, variable spaces, optional text, or any other layout bytes, either capture the complete span with raw python_exec, or emit a python_exec that stores the required layout bytes and inverse reconstructs exactly.
+
+Open executable transducer mode:
+- Prefer LLM-generated executable Python transforms for structured numeric fields, including timestamps, dates, durations, sizes, tuple-like IDs, and compound numeric tokens.
+- The transform must define forward(groups) and inverse(record). forward receives the captured value bytes; inverse reconstructs exactly the captured bytes from the stored integer.
+- A timestamp does not need true Unix time. A monotonic packed integer is acceptable if inverse renders the exact original bytes and deltas are locally small.
+- For YYYY-MM-DD HH:MM:SS,mmm, write Python that parses the seven numeric fields, packs them into one integer, and inverse-unpacks with the same zero padding and punctuation.
+- For bracketed or prefixed fields, capture only the value span and preserve stable punctuation in replacement groups.
+- Stable text is an anchor, not a side-stream value. Never store the same bytes twice: if a captured group is represented by {placeholder}, do not also keep that group as {groupN} in replacement.
+
+
+Focus function budget on complete formatted spans and semantic dependencies. Plain leftover numbers can be handled by generic residual coders unless local context gives them a stable role.
+
+### FAMILY 4
+support=4
+template_anchor_key=d sock sndbuf outq
+examples_and_shapes:
+Example 0: 12-17 19:31:36.456  5215  5215 D wpa_supplicant: CTRL-DEBUG: global_ctrl_sock-sendto: sock=16 sndbuf=229376 outq=0 send_len=34
+Tokens: S0='12-17':D2-D2 | S1='19:31:36.456':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S4='D':A1 | S5='wpa_supplicant:':A3_A10: | S6='CTRL-DEBUG:':A4-A5: | S7='global_ctrl_sock-sendto:':A6_A4_A4-A6: | S8='sock=16':A4=D2 | S9='sndbuf=229376':A6=D6 | S10='outq=0':A4=D1 | S11='send_len=34':A4_A3=D2
+Example 1: 12-17 19:31:36.864  5215  5215 D wpa_supplicant: CTRL-DEBUG: global_ctrl_sock-sendto: sock=16 sndbuf=229376 outq=0 send_len=3
+Tokens: S0='12-17':D2-D2 | S1='19:31:36.864':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S4='D':A1 | S5='wpa_supplicant:':A3_A10: | S6='CTRL-DEBUG:':A4-A5: | S7='global_ctrl_sock-sendto:':A6_A4_A4-A6: | S8='sock=16':A4=D2 | S9='sndbuf=229376':A6=D6 | S10='outq=0':A4=D1 | S11='send_len=3':A4_A3=D1
+Example 2: 12-17 19:31:45.795  5215  5215 D wpa_supplicant: CTRL-DEBUG: ctrl_sock-sendmsg: sock=16 sndbuf=229376 outq=0 send_len=24
+Tokens: S0='12-17':D2-D2 | S1='19:31:45.795':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S4='D':A1 | S5='wpa_supplicant:':A3_A10: | S6='CTRL-DEBUG:':A4-A5: | S7='ctrl_sock-sendmsg:':A4_A4-A7: | S8='sock=16':A4=D2 | S9='sndbuf=229376':A6=D6 | S10='outq=0':A4=D1 | S11='send_len=24':A4_A3=D2
+Example 3: 12-17 19:31:46.212  5215  5215 D wpa_supplicant: CTRL-DEBUG: ctrl_sock-sendmsg: sock=16 sndbuf=229376 outq=0 send_len=42
+Tokens: S0='12-17':D2-D2 | S1='19:31:46.212':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S4='D':A1 | S5='wpa_supplicant:':A3_A10: | S6='CTRL-DEBUG:':A4-A5: | S7='ctrl_sock-sendmsg:':A4_A4-A7: | S8='sock=16':A4=D2 | S9='sndbuf=229376':A6=D6 | S10='outq=0':A4=D1 | S11='send_len=42':A4_A3=D2
+required_value_like_slots (44 sampled occurrences):
+Example 0: S0='12-17':D2-D2 | S1='19:31:36.456':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S5='wpa_supplicant:':A3_A10: | S6='CTRL-DEBUG:':A4-A5: | S7='global_ctrl_sock-sendto:':A6_A4_A4-A6: | S8='sock=16':A4=D2 | S9='sndbuf=229376':A6=D6 | S10='outq=0':A4=D1 | S11='send_len=34':A4_A3=D2
+Example 1: S0='12-17':D2-D2 | S1='19:31:36.864':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S5='wpa_supplicant:':A3_A10: | S6='CTRL-DEBUG:':A4-A5: | S7='global_ctrl_sock-sendto:':A6_A4_A4-A6: | S8='sock=16':A4=D2 | S9='sndbuf=229376':A6=D6 | S10='outq=0':A4=D1 | S11='send_len=3':A4_A3=D1
+Example 2: S0='12-17':D2-D2 | S1='19:31:45.795':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S5='wpa_supplicant:':A3_A10: | S6='CTRL-DEBUG:':A4-A5: | S7='ctrl_sock-sendmsg:':A4_A4-A7: | S8='sock=16':A4=D2 | S9='sndbuf=229376':A6=D6 | S10='outq=0':A4=D1 | S11='send_len=24':A4_A3=D2
+Example 3: S0='12-17':D2-D2 | S1='19:31:46.212':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S5='wpa_supplicant:':A3_A10: | S6='CTRL-DEBUG:':A4-A5: | S7='ctrl_sock-sendmsg:':A4_A4-A7: | S8='sock=16':A4=D2 | S9='sndbuf=229376':A6=D6 | S10='outq=0':A4=D1 | S11='send_len=42':A4_A3=D2
+
+### FAMILY 15
+support=4
+template_anchor_key=d huaweiwifiwatchdogstatemachine rtt volume
+examples_and_shapes:
+Example 0: 12-17 19:56:53.878  1795  2739 D HuaweiWifiWatchdogStateMachine:  RTT[-90]=732, volume=31
+Tokens: S0='12-17':D2-D2 | S1='19:56:53.878':D2:D2:D2.D3 | S2='1795':D4 | S3='2739':D4 | S4='D':A1 | S5='HuaweiWifiWatchdogStateMachine:':A30: | S6='RTT[-90]=732,':A3[-D2]=D3, | S7='volume=31':A6=D2
+Example 1: 12-17 19:56:53.878  1795  2739 D HuaweiWifiWatchdogStateMachine:  RTT[-89]=0, volume=0
+Tokens: S0='12-17':D2-D2 | S1='19:56:53.878':D2:D2:D2.D3 | S2='1795':D4 | S3='2739':D4 | S4='D':A1 | S5='HuaweiWifiWatchdogStateMachine:':A30: | S6='RTT[-89]=0,':A3[-D2]=D1, | S7='volume=0':A6=D1
+Example 2: 12-17 19:56:53.878  1795  2739 D HuaweiWifiWatchdogStateMachine:  loss[-89]=100%, volume=10
+Tokens: S0='12-17':D2-D2 | S1='19:56:53.878':D2:D2:D2.D3 | S2='1795':D4 | S3='2739':D4 | S4='D':A1 | S5='HuaweiWifiWatchdogStateMachine:':A30: | S6='loss[-89]=100%,':A4[-D2]=D3%, | S7='volume=10':A6=D2
+Example 3: 12-17 19:56:53.878  1795  2739 D HuaweiWifiWatchdogStateMachine:  loss[-88]=0%, volume=0
+Tokens: S0='12-17':D2-D2 | S1='19:56:53.878':D2:D2:D2.D3 | S2='1795':D4 | S3='2739':D4 | S4='D':A1 | S5='HuaweiWifiWatchdogStateMachine:':A30: | S6='loss[-88]=0%,':A4[-D2]=D1%, | S7='volume=0':A6=D1
+required_value_like_slots (28 sampled occurrences):
+Example 0: S0='12-17':D2-D2 | S1='19:56:53.878':D2:D2:D2.D3 | S2='1795':D4 | S3='2739':D4 | S5='HuaweiWifiWatchdogStateMachine:':A30: | S6='RTT[-90]=732,':A3[-D2]=D3, | S7='volume=31':A6=D2
+Example 1: S0='12-17':D2-D2 | S1='19:56:53.878':D2:D2:D2.D3 | S2='1795':D4 | S3='2739':D4 | S5='HuaweiWifiWatchdogStateMachine:':A30: | S6='RTT[-89]=0,':A3[-D2]=D1, | S7='volume=0':A6=D1
+Example 2: S0='12-17':D2-D2 | S1='19:56:53.878':D2:D2:D2.D3 | S2='1795':D4 | S3='2739':D4 | S5='HuaweiWifiWatchdogStateMachine:':A30: | S6='loss[-89]=100%,':A4[-D2]=D3%, | S7='volume=10':A6=D2
+Example 3: S0='12-17':D2-D2 | S1='19:56:53.878':D2:D2:D2.D3 | S2='1795':D4 | S3='2739':D4 | S5='HuaweiWifiWatchdogStateMachine:':A30: | S6='loss[-88]=0%,':A4[-D2]=D1%, | S7='volume=0':A6=D1
+
+### FAMILY 26
+support=3
+template_anchor_key=d ies e c e e b c
+examples_and_shapes:
+Example 0: 12-17 19:31:46.210  5215  5215 D wpa_supplicant: IEs - hexdump(len=193): 00 0e 77 6c 61 6e 61 63 63 65 73 73 76 32 2e 30 01 08 82 84 0b 16 0c 12 18 24 03 01 09 05 04 00 ...
+Tokens: S0='12-17':D2-D2 | S1='19:31:46.210':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S4='D':A1 | S5='wpa_supplicant:':A3_A10: | S6='IEs':A3 | S7='-':- | S8='hexdump(len=193):':A7(A3=D3): | S9='00':D2 | S10='0e':D1A1 | S11='77':D2 | S12='6c':D1A1 | S13='61':D2 | S14='6e':D1A1 | S15='61':D2 | S16='63':D2 | S17='63':D2 | S18='65':D2 | S19='73':D2 | S20='73':D2 | S21='76':D2 | S22='32':D2 | S23='2e':D1A1 | S24='30':D2 | S25='01':D2 | S26='08':D2 | S27='82':D2 | S28='84':D2 | S29='0b':D1A1 | S30='16':D2 | S31='0c':D1A1 | S32='12':D2 | S33='18':D2 | S34='24':D2 | S35='03':D2 | S36='01':D2 | S37='09':D2 | S38='05':D2 | S39='04':D2 | S40='00':D2 | S41='...':.
+Example 1: 12-17 19:31:46.210  5215  5215 D wpa_supplicant: IEs - hexdump(len=194): 00 0f 48 75 61 77 65 69 2d 45 6d 70 6c 6f 79 65 65 01 08 82 84 0b 16 0c 12 18 24 03 01 09 05 04 ...
+Tokens: S0='12-17':D2-D2 | S1='19:31:46.210':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S4='D':A1 | S5='wpa_supplicant:':A3_A10: | S6='IEs':A3 | S7='-':- | S8='hexdump(len=194):':A7(A3=D3): | S9='00':D2 | S10='0f':D1A1 | S11='48':D2 | S12='75':D2 | S13='61':D2 | S14='77':D2 | S15='65':D2 | S16='69':D2 | S17='2d':D1A1 | S18='45':D2 | S19='6d':D1A1 | S20='70':D2 | S21='6c':D1A1 | S22='6f':D1A1 | S23='79':D2 | S24='65':D2 | S25='65':D2 | S26='01':D2 | S27='08':D2 | S28='82':D2 | S29='84':D2 | S30='0b':D1A1 | S31='16':D2 | S32='0c':D1A1 | S33='12':D2 | S34='18':D2 | S35='24':D2 | S36='03':D2 | S37='01':D2 | S38='09':D2 | S39='05':D2 | S40='04':D2 | S41='...':.
+Example 2: 12-17 19:31:46.210  5215  5215 D wpa_supplicant: Beacon IEs - hexdump(len=193): 00 0e 77 6c 61 6e 61 63 63 65 73 73 76 32 2e 30 01 08 82 84 0b 16 0c 12 18 24 03 01 09 05 04 00 ...
+Tokens: S0='12-17':D2-D2 | S1='19:31:46.210':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S4='D':A1 | S5='wpa_supplicant:':A3_A10: | S6='Beacon':A6 | S7='IEs':A3 | S8='-':- | S9='hexdump(len=193):':A7(A3=D3): | S10='00':D2 | S11='0e':D1A1 | S12='77':D2 | S13='6c':D1A1 | S14='61':D2 | S15='6e':D1A1 | S16='61':D2 | S17='63':D2 | S18='63':D2 | S19='65':D2 | S20='73':D2 | S21='73':D2 | S22='76':D2 | S23='32':D2 | S24='2e':D1A1 | S25='30':D2 | S26='01':D2 | S27='08':D2 | S28='82':D2 | S29='84':D2 | S30='0b':D1A1 | S31='16':D2 | S32='0c':D1A1 | S33='12':D2 | S34='18':D2 | S35='24':D2 | S36='03':D2 | S37='01':D2 | S38='09':D2 | S39='05':D2 | S40='04':D2 | S41='00':D2 | S42='...':.
+required_value_like_slots (114 sampled occurrences):
+Example 0: S0='12-17':D2-D2 | S1='19:31:46.210':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S5='wpa_supplicant:':A3_A10: | S8='hexdump(len=193):':A7(A3=D3): | S9='00':D2 | S10='0e':D1A1 | S11='77':D2 | S12='6c':D1A1 | S13='61':D2 | S14='6e':D1A1 | S15='61':D2 | S16='63':D2 | S17='63':D2 | S18='65':D2 | S19='73':D2 | S20='73':D2 | S21='76':D2 | S22='32':D2 | S23='2e':D1A1 | S24='30':D2 | S25='01':D2 | S26='08':D2 | S27='82':D2 | S28='84':D2 | S29='0b':D1A1 | S30='16':D2 | S31='0c':D1A1 | S32='12':D2 | S33='18':D2 | S34='24':D2 | S35='03':D2 | S36='01':D2 | S37='09':D2 | S38='05':D2 | S39='04':D2 | S40='00':D2
+Example 1: S0='12-17':D2-D2 | S1='19:31:46.210':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S5='wpa_supplicant:':A3_A10: | S8='hexdump(len=194):':A7(A3=D3): | S9='00':D2 | S10='0f':D1A1 | S11='48':D2 | S12='75':D2 | S13='61':D2 | S14='77':D2 | S15='65':D2 | S16='69':D2 | S17='2d':D1A1 | S18='45':D2 | S19='6d':D1A1 | S20='70':D2 | S21='6c':D1A1 | S22='6f':D1A1 | S23='79':D2 | S24='65':D2 | S25='65':D2 | S26='01':D2 | S27='08':D2 | S28='82':D2 | S29='84':D2 | S30='0b':D1A1 | S31='16':D2 | S32='0c':D1A1 | S33='12':D2 | S34='18':D2 | S35='24':D2 | S36='03':D2 | S37='01':D2 | S38='09':D2 | S39='05':D2 | S40='04':D2
+Example 2: S0='12-17':D2-D2 | S1='19:31:46.210':D2:D2:D2.D3 | S2='5215':D4 | S3='5215':D4 | S5='wpa_supplicant:':A3_A10: | S9='hexdump(len=193):':A7(A3=D3): | S10='00':D2 | S11='0e':D1A1 | S12='77':D2 | S13='6c':D1A1 | S14='61':D2 | S15='6e':D1A1 | S16='61':D2 | S17='63':D2 | S18='63':D2 | S19='65':D2 | S20='73':D2 | S21='73':D2 | S22='76':D2 | S23='32':D2 | S24='2e':D1A1 | S25='30':D2 | S26='01':D2 | S27='08':D2 | S28='82':D2 | S29='84':D2 | S30='0b':D1A1 | S31='16':D2 | S32='0c':D1A1 | S33='12':D2 | S34='18':D2 | S35='24':D2 | S36='03':D2 | S37='01':D2 | S38='09':D2 | S39='05':D2 | S40='04':D2 | S41='00':D2
+
+### FAMILY 3
+support=2
+template_anchor_key=i sdk warn sdk magic getting a socket from the failed
+examples_and_shapes:
+Example 0: 12-17 19:47:16.481   633 31870 I SDK     : <2016-12-17 19:47:16> [WARN] SDK: UE-SeC 2016-12-17 19:47:16:480 Level[WARN] magic[3362781472 684]:PubEvt_Close Getting a socket[1] from the Socket-table Failed!
+Tokens: S0='12-17':D2-D2 | S1='19:47:16.481':D2:D2:D2.D3 | S2='633':D3 | S3='31870':D5 | S4='I':A1 | S5='SDK':A3 | S6=':':: | S7='<2016-12-17':<D4-D2-D2 | S8='19:47:16>':D2:D2:D2> | S9='[WARN]':[A4] | S10='SDK:':A3: | S11='UE-SeC':A2-A3 | S12='2016-12-17':D4-D2-D2 | S13='19:47:16:480':D2:D2:D2:D3 | S14='Level[WARN]':A5[A4] | S15='magic[3362781472':A5[D10 | S16='684]:PubEvt_Close':D3]:A6_A5 | S17='Getting':A7 | S18='a':A1 | S19='socket[1]':A6[D1] | S20='from':A4 | S21='the':A3 | S22='Socket-table':A6-A5 | S23='Failed!':A6!
+Example 1: 12-17 19:47:16.481   633 31870 I SDK     : <2016-12-17 19:47:16> [WARN] SDK: UE-SeC 2016-12-17 19:47:16:481 Level[WARN] magic[3362781472 684]:PubEvt_Close Getting a socket[2] from the Socket-table Failed!
+Tokens: S0='12-17':D2-D2 | S1='19:47:16.481':D2:D2:D2.D3 | S2='633':D3 | S3='31870':D5 | S4='I':A1 | S5='SDK':A3 | S6=':':: | S7='<2016-12-17':<D4-D2-D2 | S8='19:47:16>':D2:D2:D2> | S9='[WARN]':[A4] | S10='SDK:':A3: | S11='UE-SeC':A2-A3 | S12='2016-12-17':D4-D2-D2 | S13='19:47:16:481':D2:D2:D2:D3 | S14='Level[WARN]':A5[A4] | S15='magic[3362781472':A5[D10 | S16='684]:PubEvt_Close':D3]:A6_A5 | S17='Getting':A7 | S18='a':A1 | S19='socket[2]':A6[D1] | S20='from':A4 | S21='the':A3 | S22='Socket-table':A6-A5 | S23='Failed!':A6!
+required_value_like_slots (34 sampled occurrences):
+Example 0: S0='12-17':D2-D2 | S1='19:47:16.481':D2:D2:D2.D3 | S2='633':D3 | S3='31870':D5 | S7='<2016-12-17':<D4-D2-D2 | S8='19:47:16>':D2:D2:D2> | S9='[WARN]':[A4] | S10='SDK:':A3: | S11='UE-SeC':A2-A3 | S12='2016-12-17':D4-D2-D2 | S13='19:47:16:480':D2:D2:D2:D3 | S14='Level[WARN]':A5[A4] | S15='magic[3362781472':A5[D10 | S16='684]:PubEvt_Close':D3]:A6_A5 | S19='socket[1]':A6[D1] | S22='Socket-table':A6-A5 | S23='Failed!':A6!
+Example 1: S0='12-17':D2-D2 | S1='19:47:16.481':D2:D2:D2.D3 | S2='633':D3 | S3='31870':D5 | S7='<2016-12-17':<D4-D2-D2 | S8='19:47:16>':D2:D2:D2> | S9='[WARN]':[A4] | S10='SDK:':A3: | S11='UE-SeC':A2-A3 | S12='2016-12-17':D4-D2-D2 | S13='19:47:16:481':D2:D2:D2:D3 | S14='Level[WARN]':A5[A4] | S15='magic[3362781472':A5[D10 | S16='684]:PubEvt_Close':D3]:A6_A5 | S19='socket[2]':A6[D1] | S22='Socket-table':A6-A5 | S23='Failed!':A6!
+
+### FAMILY 19
+support=2
+template_anchor_key=i before compensate cache step
+examples_and_shapes:
+Example 0: 12-17 19:31:37.709  5224  5283 I Step_ExtendStepDataManager: 20002302|before compensate: cache step_4180
+Tokens: S0='12-17':D2-D2 | S1='19:31:37.709':D2:D2:D2.D3 | S2='5224':D4 | S3='5283':D4 | S4='I':A1 | S5='Step_ExtendStepDataManager:':A4_A21: | S6='20002302|before':D8|A6 | S7='compensate:':A10: | S8='cache':A5 | S9='step_4180':A4_D4
+Example 1: 12-17 19:31:37.712  5224  5283 I Step_ExtendStepDataManager: 20002302|after compensate: cache step_4181
+Tokens: S0='12-17':D2-D2 | S1='19:31:37.712':D2:D2:D2.D3 | S2='5224':D4 | S3='5283':D4 | S4='I':A1 | S5='Step_ExtendStepDataManager:':A4_A21: | S6='20002302|after':D8|A5 | S7='compensate:':A10: | S8='cache':A5 | S9='step_4181':A4_D4
+required_value_like_slots (16 sampled occurrences):
+Example 0: S0='12-17':D2-D2 | S1='19:31:37.709':D2:D2:D2.D3 | S2='5224':D4 | S3='5283':D4 | S5='Step_ExtendStepDataManager:':A4_A21: | S6='20002302|before':D8|A6 | S7='compensate:':A10: | S9='step_4180':A4_D4
+Example 1: S0='12-17':D2-D2 | S1='19:31:37.712':D2:D2:D2.D3 | S2='5224':D4 | S3='5283':D4 | S5='Step_ExtendStepDataManager:':A4_A21: | S6='20002302|after':D8|A5 | S7='compensate:':A10: | S9='step_4181':A4_D4
+
+### FAMILY 9
+support=2
+template_anchor_key=w activitymanager getrunningappprocesses caller does not hold limiting output
+examples_and_shapes:
+Example 0: 12-17 19:31:36.386  1795 11747 W ActivityManager: getRunningAppProcesses: caller 10105 does not hold REAL_GET_TASKS; limiting output
+Tokens: S0='12-17':D2-D2 | S1='19:31:36.386':D2:D2:D2.D3 | S2='1795':D4 | S3='11747':D5 | S4='W':A1 | S5='ActivityManager:':A15: | S6='getRunningAppProcesses:':A22: | S7='caller':A6 | S8='10105':D5 | S9='does':A4 | S10='not':A3 | S11='hold':A4 | S12='REAL_GET_TASKS;':A4_A3_A5; | S13='limiting':A8 | S14='output':A6
+Example 1: 12-17 19:31:37.131  1795 11746 W ActivityManager: getRunningAppProcesses: caller 10105 does not hold REAL_GET_TASKS; limiting output
+Tokens: S0='12-17':D2-D2 | S1='19:31:37.131':D2:D2:D2.D3 | S2='1795':D4 | S3='11746':D5 | S4='W':A1 | S5='ActivityManager:':A15: | S6='getRunningAppProcesses:':A22: | S7='caller':A6 | S8='10105':D5 | S9='does':A4 | S10='not':A3 | S11='hold':A4 | S12='REAL_GET_TASKS;':A4_A3_A5; | S13='limiting':A8 | S14='output':A6
+required_value_like_slots (16 sampled occurrences):
+Example 0: S0='12-17':D2-D2 | S1='19:31:36.386':D2:D2:D2.D3 | S2='1795':D4 | S3='11747':D5 | S5='ActivityManager:':A15: | S6='getRunningAppProcesses:':A22: | S8='10105':D5 | S12='REAL_GET_TASKS;':A4_A3_A5;
+Example 1: S0='12-17':D2-D2 | S1='19:31:37.131':D2:D2:D2.D3 | S2='1795':D4 | S3='11746':D5 | S5='ActivityManager:':A15: | S6='getRunningAppProcesses:':A22: | S8='10105':D5 | S12='REAL_GET_TASKS;':A4_A3_A5;
+
+### FAMILY 2
+support=2
+template_anchor_key=d presently interface not achieved
+examples_and_shapes:
+Example 0: 12-17 19:31:36.285  1795  2750 D HW_DISPLAY_EFFECT: presently, hw_update_color_temp_for_rg_led interface not achieved.
+Tokens: S0='12-17':D2-D2 | S1='19:31:36.285':D2:D2:D2.D3 | S2='1795':D4 | S3='2750':D4 | S4='D':A1 | S5='HW_DISPLAY_EFFECT:':A2_A7_A6: | S6='presently,':A9, | S7='hw_update_color_temp_for_rg_led':A2_A6_A5_A4_A3_A2_A3 | S8='interface':A9 | S9='not':A3 | S10='achieved.':A8.
+Example 1: 12-17 19:31:36.480  1795  2750 D HW_DISPLAY_EFFECT: presently, hw_update_color_temp_for_rg_led interface not achieved.
+Tokens: S0='12-17':D2-D2 | S1='19:31:36.480':D2:D2:D2.D3 | S2='1795':D4 | S3='2750':D4 | S4='D':A1 | S5='HW_DISPLAY_EFFECT:':A2_A7_A6: | S6='presently,':A9, | S7='hw_update_color_temp_for_rg_led':A2_A6_A5_A4_A3_A2_A3 | S8='interface':A9 | S9='not':A3 | S10='achieved.':A8.
+required_value_like_slots (16 sampled occurrences):
+Example 0: S0='12-17':D2-D2 | S1='19:31:36.285':D2:D2:D2.D3 | S2='1795':D4 | S3='2750':D4 | S5='HW_DISPLAY_EFFECT:':A2_A7_A6: | S6='presently,':A9, | S7='hw_update_color_temp_for_rg_led':A2_A6_A5_A4_A3_A2_A3 | S10='achieved.':A8.
+Example 1: S0='12-17':D2-D2 | S1='19:31:36.480':D2:D2:D2.D3 | S2='1795':D4 | S3='2750':D4 | S5='HW_DISPLAY_EFFECT:':A2_A7_A6: | S6='presently,':A9, | S7='hw_update_color_temp_for_rg_led':A2_A6_A5_A4_A3_A2_A3 | S10='achieved.':A8.

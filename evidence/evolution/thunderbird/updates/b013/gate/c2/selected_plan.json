@@ -1,0 +1,173 @@
+{
+ "dataset": "Thunderbird",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS0",
+   "TS"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "bn",
+     "nov",
+     "crond",
+     "crond",
+     "shutdown",
+     "failed"
+    ],
+    "tags": [
+     "E"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "E": "<E>",
+  "RV0": "<RV0>",
+  "RV1": "<RV1>",
+  "TS": "<TS>",
+  "TS0": "<TS0>"
+ },
+ "residual_schema_plan": {
+  "passes": [
+   {
+    "alpha_contexts": [],
+    "groups": [
+     {
+      "group_key": [
+       "context",
+       "<A_A>",
+       "(/A/A/A/A/__A__/A_A.A):",
+       "opening"
+      ],
+      "tag_base": "RV0"
+     },
+     {
+      "group_key": [
+       "context",
+       "opening",
+       "'/A/A/A/A/__A__/A_A.A':",
+       "too"
+      ],
+      "tag_base": "RV1"
+     }
+    ],
+    "mode": "context"
+   }
+  ]
+ },
+ "spec_count": 5,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "(\\d{2})(:)(\\d{2})(:)(\\d{2})",
+   "program": {
+    "code": "def forward(groups):\n    hour, colon1, minute, colon2, second = groups\n    return {'stored': [int(hour) * 3600 + int(minute) * 60 + int(second)], 'layout': []}\n\ndef inverse(record):\n    packed_time = record['stored'][0]\n    hour = packed_time // 3600\n    minute = (packed_time % 3600) // 60\n    second = packed_time % 60\n    return f\"{str(hour).zfill(2)}:{str(minute).zfill(2)}:{str(second).zfill(2)}\"",
+    "group_regex": "^(?:(\\d{2})(:)(\\d{2})(:)(\\d{2}))$",
+    "intent": "Pack hour, minute, and second fields into a single monotonic integer for exact rendering.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "header_time",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    hour, colon1, minute, colon2, second = groups\\n    return {'stored': [int(hour) * 3600 + int(minute) * 60 + int(second)], 'layout': []}\\n\\ndef inverse(record):\\n    packed_time = record['stored'][0]\\n    hour = packed_time // 3600\\n    minute = (packed_time % 3600) // 60\\n    second = packed_time % 60\\n    return f\\\"{str(hour).zfill(2)}:{str(minute).zfill(2)}:{str(second).zfill(2)}\\\"\",\"group_regex\":\"^(?:(\\\\d{2})(:)(\\\\d{2})(:)(\\\\d{2}))$\",\"intent\":\"Pack hour, minute, and second fields into a single monotonic integer for exact rendering.\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS0",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "-( +)(\\d{10})",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': [len(groups[0])]}\n\ndef inverse(record):\n    layout = record.get('layout', [])\n    return '-' + (' ' * int(layout[0])) + str(record['stored'][0])",
+    "group_regex": "^(?:-( +)(\\d{10}))$",
+    "intent": "Convert epoch timestamp to integer and preserve layout for exact rendering.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "header_timestamp_epoch",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    return {'stored': [int(groups[1])], 'layout': [len(groups[0])]}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    return '-' + (' ' * int(layout[0])) + str(record['stored'][0])\",\"group_regex\":\"^(?:-( +)(\\\\d{10}))$\",\"intent\":\"Convert epoch timestamp to integer and preserve layout for exact rendering.\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "(bn\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]",
+    "op": "python_exec"
+   },
+   "proposal_tag": "node_identifier",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "E",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "",
+   "pattern": "residual-variable:[\"context\", \"<A_A>\", \"(/A/A/A/A/__A__/A_A.A):\", \"opening\"]",
+   "program": {},
+   "proposal_tag": "",
+   "replacement": "{placeholder}",
+   "semantic_class": "",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "RV0",
+   "value_type": ""
+  },
+  {
+   "context_group": 0,
+   "context_policy": "",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "",
+   "pattern": "residual-variable:[\"context\", \"opening\", \"'/A/A/A/A/__A__/A_A.A':\", \"too\"]",
+   "program": {},
+   "proposal_tag": "",
+   "replacement": "{placeholder}",
+   "semantic_class": "",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "RV1",
+   "value_type": ""
+  }
+ ],
+ "version": 1
+}

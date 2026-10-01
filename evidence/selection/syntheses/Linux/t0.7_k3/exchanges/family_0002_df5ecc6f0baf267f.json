@@ -1,0 +1,155 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure containing date, time, host, and process identifier, which are stable across multiple log entries.",
+    "functions": [
+      {
+        "tag": "remote_host_ip",
+        "meaning": "remote_ipv4_address",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "rhost=( +)((?:\\d{1,3}\\.){3}\\d{1,3})",
+        "replacement": "rhost={group1}{placeholder}",
+        "program": {
+          "intent": "Extract and store the IPv4 address exactly as a string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "user_name_field",
+        "meaning": "user_field_value",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "user( +)([A-Za-z][A-Za-z0-9._-]*)",
+        "replacement": "user{group1}{placeholder}",
+        "program": {
+          "intent": "Extract and store the user name exactly as a string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "process_identifier_field",
+        "meaning": "process_identifier_with_brackets",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "sshd\\(pam_unix\\)\\[(\\d+)\\]:",
+        "replacement": "sshd(pam_unix)[{placeholder}]:",
+        "program": {
+          "intent": "Extract and store the numeric process identifier inside brackets.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return '[' + str(record['stored'][0]) + ']'"
+        }
+      },
+      {
+        "tag": "user_id_field",
+        "meaning": "user_id",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "uid=(\\d+)",
+        "replacement": "uid={placeholder}",
+        "program": {
+          "intent": "Extract and store the numeric user ID for delta compression.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return 'uid=' + str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "effective_user_id_field",
+        "meaning": "effective_user_id",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "euid=(\\d+)",
+        "replacement": "euid={placeholder}",
+        "program": {
+          "intent": "Extract and store the numeric effective user ID for delta compression.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return 'euid=' + str(record['stored'][0])"
+        }
+      }
+    ],
+    "slot_actions": [
+      {
+        "slot": "S0+S1+S2",
+        "action": "COMPOSE_FIELDS_TO_INT",
+        "meaning": "log header timestamp",
+        "reason": "The combination of month, day, and time forms one coherent timestamp value that can be compressed into epoch seconds."
+      },
+      {
+        "slot": "S4",
+        "action": "STREAM_RAW",
+        "meaning": "process_identifier",
+        "reason": "Includes structured brackets and numeric identifiers that are stable across examples and affect the template structure."
+      },
+      {
+        "slot": "S6",
+        "action": "KEEP_IN_MAIN",
+        "meaning": "authentication message",
+        "reason": "This is a constant message across examples; extracting it would not improve compression."
+      },
+      {
+        "slot": "S8",
+        "action": "UINT_DELTA",
+        "meaning": "user_id",
+        "reason": "UID is a numeric field stable across examples, suitable for delta-based compression."
+      },
+      {
+        "slot": "S9",
+        "action": "UINT_DELTA",
+        "meaning": "effective_user_id",
+        "reason": "EUID is a numeric field stable across examples, suitable for delta-based compression."
+      },
+      {
+        "slot": "S10",
+        "action": "STREAM_RAW",
+        "meaning": "tty_device_name",
+        "reason": "Contains structured information with a stable format and semantic meaning."
+      },
+      {
+        "slot": "S11",
+        "action": "KEEP_IN_MAIN",
+        "meaning": "remote_user",
+        "reason": "This slot is constant and empty across examples."
+      },
+      {
+        "slot": "S12",
+        "action": "STREAM_RAW",
+        "meaning": "remote_host_or_ip",
+        "reason": "Captures structured IP addresses or hostnames with separators, suitable for raw streaming."
+      },
+      {
+        "slot": "S13",
+        "action": "STREAM_RAW",
+        "meaning": "user_name",
+        "reason": "Structured and bounded by explicit 'user=' anchor, suitable for raw streaming."
+      }
+    ]
+  },
+  "_proposal_cache_mode": "api"
+}

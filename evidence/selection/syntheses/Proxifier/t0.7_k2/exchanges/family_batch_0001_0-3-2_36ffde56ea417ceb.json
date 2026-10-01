@@ -1,0 +1,421 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "S0='[MM.DD'",
+              "S1='HH:MM:SS]'"
+            ],
+            "reason": "S0 and S1 together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "S4='proxy.cse.cuhk.edu.hk:5070'"
+            ],
+            "reason": "the captured value contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "S2='chrome.exe'",
+              "S2='WeChat.exe'",
+              "S2='Dropbox.exe'",
+              "S2='YodaoDict.exe'",
+              "S2='SogouCloud.exe'",
+              "S2='SGTool.exe'"
+            ],
+            "reason": "plain values are introduced by stable field-name literals encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp-like prefix is repeated across all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "composed timestamp-like field extracted for compression"
+        },
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "destination endpoint",
+          "reason": "structured destination endpoint extracted for compression"
+        },
+        {
+          "slot": "S2",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "application name",
+          "reason": "role-anchored application names extracted for compression"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "application_name",
+          "destination_endpoint"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp fields represent one semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2})\\.(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    mm, dd, hh, m, s = map(int, groups)\n    dt = datetime(datetime.now().year, mm, dd, hh, m, s)\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return f\"[{dt.month:02}.{dt.day:02} {dt.hour:02}:{dt.minute:02}:{dt.second:02}]\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "destination_endpoint",
+          "meaning": "destination endpoint",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "destination endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "structured endpoint contains explicit separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "([a-zA-Z0-9.-]+:\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "application_name",
+          "meaning": "application executable name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "application name",
+            "context_source": null,
+            "why_not_merge_raw": "role-anchored plain variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "([A-Za-z]+\\.exe)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 3,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "S0='[MM.DD'",
+              "S1='HH:MM:SS]'"
+            ],
+            "reason": "S0 and S1 together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "S13='proxy.cse.cuhk.edu.hk:5070'",
+              "S5='hm.baidu.com:80'",
+              "S5='mtalk.google.com:5228'"
+            ],
+            "reason": "the captured value contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp-like prefix is repeated across all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "composed timestamp-like field extracted for compression"
+        },
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "proxy endpoint",
+          "reason": "structured proxy endpoint extracted for compression"
+        },
+        {
+          "slot": "S5",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "destination endpoint",
+          "reason": "structured destination endpoint extracted for compression"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "status_code"
+        ],
+        "class_3_common_variable": [
+          "destination_endpoint",
+          "proxy_endpoint"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp fields represent one semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2})\\.(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    mm, dd, hh, m, s = map(int, groups)\n    dt = datetime(datetime.now().year, mm, dd, hh, m, s)\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return f\"[{dt.month:02}.{dt.day:02} {dt.hour:02}:{dt.minute:02}:{dt.second:02}]\""
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "status_code",
+          "meaning": "HTTP status code",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "status code",
+            "context_source": null,
+            "why_not_merge_raw": "status code is independent and numeric"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "status code (\\d{3})",
+          "replacement": "status code {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "destination_endpoint",
+          "meaning": "destination endpoint",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "destination endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "structured endpoint contains explicit separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "([a-zA-Z0-9.-]+:\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "proxy_endpoint",
+          "meaning": "proxy server endpoint",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "proxy server endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "structured endpoint contains explicit separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "proxy ([a-zA-Z0-9.-]+:\\d+)",
+          "replacement": "proxy {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "S0='[MM.DD'",
+              "S1='HH:MM:SS]'"
+            ],
+            "reason": "S0 and S1 together represent one timestamp-like value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "S4='shared.ydstatic.com:80'"
+            ],
+            "reason": "the captured value contains explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "timestamp-like prefix is repeated across all examples"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "log timestamp",
+          "reason": "composed timestamp-like field extracted for compression"
+        },
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "destination endpoint",
+          "reason": "structured destination endpoint extracted for compression"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "destination_endpoint"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp fields represent one semantic value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[(\\d{2})\\.(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    mm, dd, hh, m, s = map(int, groups)\n    dt = datetime(datetime.now().year, mm, dd, hh, m, s)\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return f\"[{dt.month:02}.{dt.day:02} {dt.hour:02}:{dt.minute:02}:{dt.second:02}]\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "destination_endpoint",
+          "meaning": "destination endpoint",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "destination endpoint",
+            "context_source": null,
+            "why_not_merge_raw": "structured endpoint contains explicit separators"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "([a-zA-Z0-9.-]+:\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

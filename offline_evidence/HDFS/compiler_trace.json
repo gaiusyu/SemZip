@@ -1,0 +1,248 @@
+[
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 4,
+    "meaning": "timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"081109 203529\", \"groups\": [\"081109\", \" \", \"203529\"], \"failure\": \"IndexError: list index out of range\"}"
+    ],
+    "regex": "(\\d{6})( +)(\\d{6})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_composed",
+    "status": "verifier_repair_produced_candidates",
+    "support": 6
+  },
+  {
+    "family_id": 4,
+    "kind": "python_exec",
+    "meaning": "timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{6})( +)(\\d{6})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_composed",
+    "status": "rejected_semantic_three_class",
+    "support": 6,
+    "tag": "timestamp_composed"
+  },
+  {
+    "family_id": 4,
+    "kind": "open_function",
+    "meaning": "timestamp",
+    "reasons": [],
+    "regex": "(\\d{6}) (\\d{6})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    date_part = groups[0]\\n    time_part = groups[1]\\n    dt = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\\n\\ndef inverse(record):\\n    millis = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(millis / 1000)\\n    return dt.strftime('%y%m%d %H%M%S')\",\"group_regex\":\"^(?:(\\\\d{6}) (\\\\d{6}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp_composed",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 6,
+    "tag": "A"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 4,
+    "meaning": "block identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"blk_7854771516489510256\", \"groups\": [\"7854771516489510256\"], \"record\": {\"stored\": [\"7854771516489510256\"], \"layout\": []}, \"inverse\": \"blk_7854771516489510256\", \"restored_match\": \"blk_blk_7854771516489510256\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "blk_(-?\\d+)",
+    "repair_candidates": 0,
+    "repair_category": "executed_counterexample",
+    "replacement": "blk_{placeholder}",
+    "source_tag": "block_id",
+    "status": "verifier_repair_no_candidate",
+    "support": 6
+  },
+  {
+    "family_id": 4,
+    "kind": "python_exec",
+    "meaning": "block identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "blk_(-?\\d+)",
+    "replacement": "blk_{placeholder}",
+    "source_tag": "block_id",
+    "status": "rejected_semantic_three_class",
+    "support": 6,
+    "tag": "block_id"
+  },
+  {
+    "family_id": 4,
+    "kind": "auto",
+    "meaning": "IP and port",
+    "reasons": [],
+    "regex": "(\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+)",
+    "replacement": "{placeholder}",
+    "semantic_key": "port:auto",
+    "source_tag": "ip_port",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 6,
+    "tag": "B"
+  },
+  {
+    "family_id": 4,
+    "kind": "python_exec",
+    "meaning": "timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{6})( +)(\\d{6})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_composed",
+    "status": "rejected_semantic_three_class",
+    "support": 6,
+    "tag": "timestamp_composed"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 3,
+    "meaning": "composed timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"081109 203521\", \"groups\": [\"081109\", \" \", \"203521\"], \"failure\": \"IndexError: list index out of range\"}"
+    ],
+    "regex": "^(\\d{6})( +)(\\d{6})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "composed timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{6})( +)(\\d{6})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 3,
+    "kind": "open_function",
+    "meaning": "composed timestamp",
+    "reasons": [],
+    "regex": "^(\\d{6}) (\\d{6})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    date_part = groups[0]\\n    time_part = groups[1]\\n    dt = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y%m%d %H%M%S')\",\"group_regex\":\"^(?:^(\\\\d{6}) (\\\\d{6}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "C"
+  },
+  {
+    "family_id": 3,
+    "kind": "auto",
+    "meaning": "block identifier",
+    "reasons": [],
+    "regex": "blk_[-]?\\d+",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "block_id",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "D"
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "composed timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{6})( +)(\\d{6})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 5,
+    "meaning": "composed timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"081109 203552\", \"groups\": [\"081109\", \" \", \"203552\"], \"failure\": \"IndexError: list index out of range\"}"
+    ],
+    "regex": "^(\\d{6})( +)(\\d{6})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 5,
+    "kind": "python_exec",
+    "meaning": "composed timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{6})( +)(\\d{6})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 5,
+    "kind": "open_function",
+    "meaning": "composed timestamp",
+    "reasons": [],
+    "regex": "^(\\d{6}) (\\d{6})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    date_part = groups[0]\\n    time_part = groups[1]\\n    dt = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y%m%d %H%M%S')\",\"group_regex\":\"^(?:^(\\\\d{6}) (\\\\d{6}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "E"
+  },
+  {
+    "family_id": 5,
+    "kind": "auto",
+    "meaning": "block identifier",
+    "reasons": [],
+    "regex": "blk_[-]?\\d+",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "block_id",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "F"
+  },
+  {
+    "family_id": 5,
+    "kind": "python_exec",
+    "meaning": "composed timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^(\\d{6})( +)(\\d{6})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  }
+]

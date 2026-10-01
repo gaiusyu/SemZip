@@ -1,0 +1,225 @@
+{
+ "dataset": "BGL",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "TS1"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "ras",
+     "kernel",
+     "fatal",
+     "instruction",
+     "address"
+    ],
+    "tags": [
+     "B"
+    ]
+   },
+   {
+    "key": [
+     "ras",
+     "kernel",
+     "fatal",
+     "debug",
+     "interrupt",
+     "enable"
+    ],
+    "tags": [
+     "A"
+    ]
+   },
+   {
+    "key": [
+     "ras",
+     "kernel",
+     "fatal",
+     "general",
+     "purpose",
+     "registers"
+    ],
+    "tags": [
+     "C"
+    ]
+   },
+   {
+    "key": [
+     "ras",
+     "kernel",
+     "fatal",
+     "machine",
+     "state",
+     "register"
+    ],
+    "tags": [
+     "G"
+    ]
+   },
+   {
+    "key": [
+     "ras",
+     "kernel",
+     "fatal",
+     "guaranteed",
+     "data",
+     "cache",
+     "block",
+     "touch"
+    ],
+    "tags": [
+     "D"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "A": "<A>",
+  "B": "<B>",
+  "C": "<C>",
+  "D": "<D>",
+  "G": "<G>",
+  "TS1": "<TS1>"
+ },
+ "spec_count": 6,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "2005-(\\d+)-(\\d+)-(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    dt = datetime.strptime('2005-' + '-'.join(groups[:2]) + ' ' + ':'.join(groups[2:5]) + '.' + groups[5], '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d-%H.%M.%S.%f')",
+    "group_regex": "^(?:2005-(\\d+)-(\\d+)-(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+))$",
+    "op": "python_exec",
+    "_layout_polymorphic_shared_delta": true,
+    "_layout_placeholder_prefix": "",
+    "_layout_placeholder_suffix": ""
+   },
+   "proposal_tag": "log_timestamp",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    dt = datetime.strptime('2005-' + '-'.join(groups[:2]) + ' ' + ':'.join(groups[2:5]) + '.' + groups[5], '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d-%H.%M.%S.%f')\",\"group_regex\":\"^(?:2005-(\\\\d{2})-(\\\\d{2})-(\\\\d{2})\\\\.(\\\\d{2})\\\\.(\\\\d{2})\\\\.(\\\\d{6}))$\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "TS1",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "(R\\d{2}-M\\d-N[A-Z]-C:J\\d{2}-U\\d{2})",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "structured_id",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "B",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "(R\\d{2}-M\\d-N[A-Z]-C:J\\d{2}-U\\d{2})",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "structured_id",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "A",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "([A-Z]\\d{2}-[A-Z]\\d{1}-[A-Z]{2}-[A-Z]:[A-Z]\\d{2}-[A-Z]\\d{2})",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "structured_variable",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "C",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "([A-Z]\\d{2}-[A-Z]\\d-[A-Z]{2}-[A-Z]:[A-Z]\\d{2}-[A-Z]\\d{2})",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "location_identifier",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "G",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "([A-Z]\\d{2}-[A-Z]\\d{1}-[A-Z]{2}-[A-Z]:[A-Z]\\d{2}-[A-Z]\\d{2})",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "structured_variable",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "D",
+   "value_type": "string"
+  }
+ ],
+ "version": 1
+}

@@ -1,0 +1,149 @@
+{
+  "header": {
+    "has_unified_header": false,
+    "reason": "The examples do not share a repeated prefix or header structure; each line appears to have independent fields with no common structure or preamble."
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "STREAM_RAW",
+      "meaning": "log sequence id",
+      "reason": "The values are high-entropy identifiers without clear numeric structure or semantic role; they should be treated as raw strings."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "source node identifier",
+      "reason": "The values are structured node identifiers with a fixed prefix and a variable suffix. They fit Class 3's intrinsic structure route."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "action descriptor",
+      "reason": "The field is a constant within this template and does not vary across examples."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "timestamp in seconds since epoch",
+      "reason": "The field represents a timestamp in seconds since the epoch, which can be compressed using delta encoding due to its numeric nature and locality."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "unknown constant",
+      "reason": "The field is constant across all examples and does not add value to extract."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "constant context indicator",
+      "reason": "The field is a constant and does not vary across examples."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain name",
+      "reason": "The domain names are structured strings with variable components separated by underscores or alphanumeric fragments. They satisfy Class 3's intrinsic structure route."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "node identifier",
+      "reason": "The values are structured node identifiers with a fixed prefix and a variable numeric suffix, satisfying Class 3's intrinsic structure route."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "log_sequence_id",
+      "meaning": "unique_log_sequence_id",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{6,7})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "exact storage of high-entropy log sequence id",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "source_node_id",
+      "meaning": "source_node_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(node-[A-Z]\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "exact storage of node identifier with fixed prefix and variable suffix",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "timestamp_epoch",
+      "meaning": "timestamp_in_seconds_since_epoch",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(\\d{10})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "store timestamp as seconds since epoch",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    },
+    {
+      "tag": "domain_name",
+      "meaning": "domain_name_with_variable_components",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "domain( +)([A-Za-z0-9_]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "exact storage of domain name with variable components",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "node_identifier",
+      "meaning": "target_node_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node( +)(node-\\d+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "exact storage of target node identifier with fixed prefix and variable suffix",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

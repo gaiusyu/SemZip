@@ -1,0 +1,37 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure (month, day, time, and component) with changing fields, which should be extracted into side streams.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "syslog_timestamp_without_year",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack month, day, hour, minute, and second into one monotonic integer. Preserve spacing for day field reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month_str, sp1, day, sp2, time = groups\n    month_map = {\"Jan\": 1, \"Feb\": 2, \"Mar\": 3, \"Apr\": 4, \"May\": 5, \"Jun\": 6, \"Jul\": 7, \"Aug\": 8, \"Sep\": 9, \"Oct\": 10, \"Nov\": 11, \"Dec\": 12}\n    month = month_map[month_str]\n    day = int(day)\n    hour, minute, second = map(int, time.split(':'))\n    packed = (((month * 31 + day) * 24 + hour) * 60 + minute) * 60 + second\n    return {'stored': [packed], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    packed = record['stored'][0]\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, day_width = layout\n    second = packed % 60\n    packed //= 60\n    minute = packed % 60\n    packed //= 60\n    hour = packed % 24\n    packed //= 24\n    day = packed % 31\n    packed //= 31\n    month = packed\n    month_map = {1: \"Jan\", 2: \"Feb\", 3: \"Mar\", 4: \"Apr\", 5: \"May\", 6: \"Jun\", 7: \"Jul\", 8: \"Aug\", 9: \"Sep\", 10: \"Oct\", 11: \"Nov\", 12: \"Dec\"}\n    month_str = month_map[month]\n    day_str = str(day).zfill(day_width)\n    time_str = f\"{hour:02}:{minute:02}:{second:02}\"\n    return month_str + (' ' * sp1_len) + day_str + (' ' * sp2_len) + time_str"
+        },
+        "functions": {
+          "tag": "process_id",
+          "meaning": "process_id_with_component",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": {
+            "code": "def project_context(line, groups):\n  n=....\n...json data remaining needed human feedback to cont.... "
+          }
+        }
+      }
+    ]
+  },
+  "_proposal_cache_mode": "api"
+}

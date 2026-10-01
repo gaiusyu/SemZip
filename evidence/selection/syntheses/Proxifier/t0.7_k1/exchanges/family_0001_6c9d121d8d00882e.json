@@ -1,0 +1,167 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The log lines share a repeated prefix structure that includes a timestamp, process name, and an optional architecture hint.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "date_and_time_combined_into_epoch_seconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[([0-9]{2})\\.([0-9]{2})( +)([0-9]{2}):([0-9]{2}):([0-9]{2})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Combine month, day, and time into epoch seconds and store as a single integer.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "from datetime import datetime\n\ndef forward(groups):\n    month, day, sp1, hour, minute, second = groups\n    text = month.zfill(2) + '/' + day.zfill(2) + ' ' + hour.zfill(2) + ':' + minute.zfill(2) + ':' + second.zfill(2)\n    dt = datetime.strptime(text, '%m/%d %H:%M:%S')\n    epoch_seconds = int(dt.replace(year=2000).timestamp())  # Assume year 2000 for yearless date\n    return {'stored': [epoch_seconds], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    epoch_seconds = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(epoch_seconds)\n    month = str(dt.month).zfill(2)\n    day = str(dt.day).zfill(2)\n    hour = str(dt.hour).zfill(2)\n    minute = str(dt.minute).zfill(2)\n    second = str(dt.second).zfill(2)\n    sp1 = ' ' * sp1_len\n    return f'[{month}.{day}{sp1}{hour}:{minute}:{second}]'"
+        }
+      },
+      {
+        "tag": "process_name",
+        "meaning": "name_of_the_running_process",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": " ([A-Za-z0-9.-]+\\.exe)( +)(\\*\\d+)? ",
+        "replacement": " {placeholder}{group2}{group3} ",
+        "program": {
+          "intent": "Extract process name and optional architecture hint.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    process_name = groups[0]\n    return {'stored': [process_name], 'layout': [len(groups[1]), 1 if groups[2] else 0, len(groups[2] or '')]}\n\ndef inverse(record):\n    process_name = record['stored'][0]\n    layout = record.get('layout', [])\n    sp2_len = layout[0]\n    has_arch = layout[1]\n    arch_len = layout[2]\n    sp2 = ' ' * sp2_len\n    architecture = '*64' if has_arch else ''\n    return process_name + sp2 + architecture"
+        }
+      },
+      {
+        "tag": "endpoint",
+        "meaning": "destination_host_and_port",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(\\S+\\.\\S+\\.\\S+\\.\\S+:\\d+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Extract the endpoint in the format host:port.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "timestamp extracted as epoch seconds",
+      "reason": "The timestamp fields are semantically one value and can be compactly stored as an integer."
+    },
+    {
+      "slot": "S2+S3",
+      "action": "STREAM_RAW",
+      "meaning": "process name and optional architecture hint as raw string",
+      "reason": "The process name and architecture hint are stable, repeated fields that vary across lines but do not require numeric transformations."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "host and port endpoint",
+      "reason": "Endpoint values have a stable intrinsic structure and are separated by dots and a colon."
+    },
+    {
+      "slot": "S6+S8+S9",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "bytes_sent_with_optional_display",
+      "reason": "The raw byte count and optional display format (e.g., in KB) are equivalent representations of the same value and can be stored as a single integer with layout metadata."
+    },
+    {
+      "slot": "S11+S13+S14",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "bytes_received_with_optional_display",
+      "reason": "The raw byte count and optional display format (e.g., in KB or MB) are equivalent representations of the same value and can be stored as a single integer with layout metadata."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "static action keyword 'close,'",
+      "reason": "This field is static and does not vary across examples."
+    },
+    {
+      "slot": "S17+S18+S15",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "connection_lifetime_in_seconds",
+      "reason": "The connection lifetime is expressed in a time format (H:M, M:S, or '<1 sec') and can be compactly stored as an integer with layout metadata."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "bytes_sent",
+      "meaning": "bytes_sent_with_optional_kb_mb_gb_display",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": {
+        "code": "def project_context(line, groups):\n    m = re.search(r'(\\S+\\.\\S+\\.\\S+\\.\\S+:\\d+)', line)\n    if m:\n        return m.group(1)\n    return None"
+      },
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "(\\d+)( +)bytes(?:(( +)\\((\\d+)(?:\\.(\\d+))?( +)(KB|MB|GB)\\)))?( +)sent,",
+      "replacement": "{placeholder}{group2}bytes{group3}",
+      "program": {
+        "intent": "Store raw bytes sent as an integer with optional KB/MB/GB display details for exact reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    raw_bytes, sp1, display_span, sp2, whole, frac, sp3, unit, sp4 = groups\n    has_display = 1 if display_span else 0\n    sp2_len = len(sp2) if sp2 else 0\n    frac_width = len(frac or '')\n    sp3_len = len(sp3) if sp3 else 0\n    unit_code = {'KB': 1, 'MB': 2, 'GB': 3}.get(unit, 0)\n    layout = [len(sp1), has_display, sp2_len, frac_width, sp3_len, unit_code]\n    return {'stored': [int(raw_bytes)], 'layout': layout}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, has_display, sp2_len, frac_width, sp3_len, unit_code = layout\n    sp1 = ' ' * sp1_len\n    sp2 = ' ' * sp2_len\n    sp3 = ' ' * sp3_len\n    unit_map = {1: 'KB', 2: 'MB', 3: 'GB'}\n    unit = unit_map.get(unit_code, '')\n    display = ''\n    if has_display:\n        divisor = 1024\n        if unit_code == 2:\n            divisor = 1048576\n        elif unit_code == 3:\n            divisor = 1073741824\n        scale = 10 ** frac_width\n        raw_frac = (v % divisor) * scale // divisor\n        whole = v // divisor\n        frac = '.' + str(raw_frac).zfill(frac_width) if frac_width else ''\n        display = sp2 + '(' + str(whole) + frac + sp3 + unit + ')'\n    return str(v) + sp1 + 'bytes' + display + sp4 + 'sent,'"
+      }
+    },
+    {
+      "tag": "bytes_received",
+      "meaning": "bytes_received_with_optional_kb_mb_display",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": {
+        "code": "def project_context(line, groups):\n    m = re.search(r'(\\S+\\.\\S+\\.\\S+\\.\\S+:\\d+)', line)\n    if m:\n        return m.group(1)\n    return None"
+      },
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "(\\d+)( +)bytes(?:(( +)\\((\\d+)(?:\\.(\\d+))?( +)(KB|MB|GB)\\)))?( +)received,",
+      "replacement": "{placeholder}{group2}bytes{group3}",
+      "program": {
+        "intent": "Store raw bytes received as an integer with optional KB/MB/GB display details for exact reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    raw_bytes, sp1, display_span, sp2, whole, frac, sp3, unit, sp4 = groups\n    has_display = 1 if display_span else 0\n    sp2_len = len(sp2) if sp2 else 0\n    frac_width = len(frac or '')\n    sp3_len = len(sp3) if sp3 else 0\n    unit_code = {'KB': 1, 'MB': 2, 'GB': 3}.get(unit, 0)\n    layout = [len(sp1), has_display, sp2_len, frac_width, sp3_len, unit_code]\n    return {'stored': [int(raw_bytes)], 'layout': layout}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, has_display, sp2_len, frac_width, sp3_len, unit_code = layout\n    sp1 = ' ' * sp1_len\n    sp2 = ' ' * sp2_len\n    sp3 = ' ' * sp3_len\n    unit_map = {1: 'KB', 2: 'MB', 3: 'GB'}\n    unit = unit_map.get(unit_code, '')\n    display = ''\n    if has_display:\n        divisor = 1024\n        if unit_code == 2:\n            divisor = 1048576\n        elif unit_code == 3:\n            divisor = 1073741824\n        scale = 10 ** frac_width\n        raw_frac = (v % divisor) * scale // divisor\n        whole = v // divisor\n        frac = '.' + str(raw_frac).zfill(frac_width) if frac_width else ''\n        display = sp2 + '(' + str(whole) + frac + sp3 + unit + ')'\n    return str(v) + sp1 + 'bytes' + display + sp4 + 'received,'"
+      }
+    },
+    {
+      "tag": "connection_lifetime",
+      "meaning": "connection_duration_in_seconds",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "lifetime( +)(<)?(\\d+):(\\d+)|(\\d+)( +)sec",
+      "replacement": "lifetime{group1}{group2}{placeholder}",
+      "program": {
+        "intent": "Store connection lifetime as seconds, considering '<1 sec' as 0 and HH:MM as seconds.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, less_than, minutes, seconds, sec_value, sp2 = groups\n    if less_than == '<':\n        total_seconds = 0\n    elif minutes is not None:\n        total_seconds = int(minutes) * 60 + int(seconds)\n    else:\n        total_seconds = int(sec_value)\n    layout = [len(sp1), 1 if less_than else 0, int(bool(minutes)), len(sp2 or '')]\n    return {'stored': [total_seconds], 'layout': layout}\n\ndef inverse(record):\n    seconds = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, is_less_than, has_minutes, sp2_len = layout\n    sp1 = ' ' * sp1_len\n    sp2 = ' ' * sp2_len\n    if is_less_than:\n        return f'lifetime{sp1}<1{sp2}sec'\n    elif has_minutes:\n        minutes = seconds // 60\n        sec = seconds % 60\n        return f'lifetime{sp1}{str(minutes).zfill(2)}:{str(sec).zfill(2)}'\n    else:\n        return f'lifetime{sp1}{seconds}{sp2}sec'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

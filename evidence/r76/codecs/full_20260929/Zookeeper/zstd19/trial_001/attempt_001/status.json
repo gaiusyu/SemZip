@@ -1,0 +1,69 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T03:04:16.964261+00:00",
+  "dataset": "Zookeeper",
+  "codec": "zstd19",
+  "trial": 1,
+  "workers": 3,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Zookeeper/Zookeeper.log",
+    "bytes": 10426438,
+    "mtime_ns": 1789369165659907000,
+    "device": 1048818,
+    "inode": 199002808556005705
+  },
+  "raw_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a",
+  "raw_bytes": 10426438,
+  "records": 74380,
+  "codec_spec": {
+    "exe": "zstd",
+    "encode": [
+      "-19",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "decode": [
+      "-d",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "suffix": ".zst",
+    "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+    "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+    "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/full_20260929/Zookeeper/zstd19/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.zst",
+      "archive_bytes": 267420,
+      "block_encode_seconds": 14.322088301181793,
+      "raw_bytes": 10426438,
+      "lf_count": 74380,
+      "records": 74380,
+      "ends_with_lf": true,
+      "raw_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a",
+      "archive_sha256": "5e3829d68d3b7628390864149152f463bc8465f623749d48c0c395abd734af9a",
+      "decoded_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a"
+    }
+  ],
+  "encode_seconds": 14.37944096326828,
+  "block_archive_bytes": 267420,
+  "archive_bytes": 267420,
+  "decode_seconds": 0.18976636230945587,
+  "restored_settle_seconds": 2.002991557121277,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a",
+  "audit_seconds": 0.06910787522792816,
+  "compression_ratio": 38.988998579014286,
+  "encode_MB_per_s": 0.7250934182096459,
+  "decode_MB_per_s": 54.94355202423807,
+  "finished_at": "2026-09-29T03:04:33.641919+00:00"
+}

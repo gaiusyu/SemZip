@@ -1,0 +1,72 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T02:47:23.526036+00:00",
+  "dataset": "Proxifier",
+  "codec": "zstd22long",
+  "trial": 1,
+  "workers": 2,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Proxifier/Proxifier.log",
+    "bytes": 2541814,
+    "mtime_ns": 1789369147018069000,
+    "device": 1048818,
+    "inode": 199002808556005618
+  },
+  "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+  "raw_bytes": 2541814,
+  "records": 21329,
+  "codec_spec": {
+    "exe": "zstd",
+    "encode": [
+      "--ultra",
+      "-22",
+      "--long=27",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "decode": [
+      "-d",
+      "--long=27",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "suffix": ".zst",
+    "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+    "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+    "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/smoke/Proxifier/zstd22long/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.zst",
+      "archive_bytes": 120295,
+      "block_encode_seconds": 2.5427035987377167,
+      "raw_bytes": 2541814,
+      "lf_count": 21329,
+      "records": 21329,
+      "ends_with_lf": true,
+      "raw_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+      "archive_sha256": "1f194bc860cea2ad9985b0a7f0592231a58d14d037dda70da18f7f2a3393e1c2",
+      "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7"
+    }
+  ],
+  "encode_seconds": 2.5583314150571823,
+  "block_archive_bytes": 120295,
+  "archive_bytes": 120295,
+  "decode_seconds": 0.13593219220638275,
+  "restored_settle_seconds": 2.0030976831912994,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "d3b49ce02eaff3af6d190461b3c06363c9ee120ea01c2b3d3e7bee797d5217d7",
+  "audit_seconds": 0.015051841735839844,
+  "compression_ratio": 21.12983914543414,
+  "encode_MB_per_s": 0.9935436765698267,
+  "decode_MB_per_s": 18.699131962359743,
+  "finished_at": "2026-09-29T02:47:28.259357+00:00"
+}

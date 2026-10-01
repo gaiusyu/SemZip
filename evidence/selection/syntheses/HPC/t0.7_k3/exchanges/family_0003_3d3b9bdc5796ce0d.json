@@ -1,0 +1,151 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated structure with a common header format and changing fields that should be extracted as side streams",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "line_sequence_number",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "^(\\d+)( +)",
+        "replacement": "{placeholder}{group1}",
+        "program": {
+          "intent": "Extracts the line sequence number as a numeric value",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    sequence_number, sp1 = groups\n    return {'stored': [int(sequence_number)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    sequence_number = str(record['stored'][0])\n    sp1_len = record['layout'][0]\n    return sequence_number + (' ' * sp1_len)"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "UINT_DELTA",
+      "meaning": "line sequence number",
+      "reason": "Line sequence number is a stable numeric increment and ideal for delta encoding"
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "source node identifier",
+      "reason": "Node identifiers are structured strings, but their entropy suggests they are better stored as raw strings"
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "event type",
+      "reason": "The field is a constant in all log lines and does not vary, so there is no need to extract it"
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "event timestamp as Unix epoch seconds",
+      "reason": "The field represents a timestamp in Unix epoch seconds and is suitable for delta encoding"
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "constant field indicating success",
+      "reason": "The field is a constant across all log lines and does not need to be extracted"
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "constant text for ClusterFileSystem header",
+      "reason": "The field is a constant across all log lines and does not need to be extracted"
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain name",
+      "reason": "Domain names vary significantly in structure and are better stored as raw strings"
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "destination node identifier",
+      "reason": "Node identifiers are structured strings and are better stored as raw strings for exact reconstruction"
+    }
+  ],
+  "functions": [
+    {
+      "tag": "event_timestamp_epoch",
+      "meaning": "event_timestamp_as_unix_epoch_seconds",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "clusterfilesystem\\.not_served( +)(\\d+)",
+      "replacement": "clusterfilesystem.not_served{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the timestamp as Unix epoch seconds for numeric processing and exact reconstruction",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, timestamp = groups\n    return {'stored': [int(timestamp)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    timestamp = str(record['stored'][0])\n    sp1_len = record['layout'][0]\n    return 'clusterfilesystem.not_served' + (' ' * sp1_len) + timestamp"
+      }
+    },
+    {
+      "tag": "source_node",
+      "meaning": "source_node_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "(node-[A-Z]\\d)( +)",
+      "replacement": "{placeholder}{group1}",
+      "program": {
+        "intent": "Extracts the source node identifier as a raw string",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    node_id, sp1 = groups\n    return {'stored': [node_id], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    node_id = record['stored'][0]\n    sp1_len = record['layout'][0]\n    return node_id + (' ' * sp1_len)"
+      }
+    },
+    {
+      "tag": "domain_name",
+      "meaning": "domain_name",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "domain( +)([A-Za-z0-9._-]+)( +)is",
+      "replacement": "domain{group1}{placeholder}{group2}is",
+      "program": {
+        "intent": "Extracts the domain name as a raw string",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, domain_name, sp2 = groups\n    return {'stored': [domain_name], 'layout': [len(sp1), len(sp2)]}\n\ndef inverse(record):\n    domain_name = record['stored'][0]\n    sp1_len, sp2_len = record['layout']\n    return 'domain' + (' ' * sp1_len) + domain_name + (' ' * sp2_len) + 'is'"
+      }
+    },
+    {
+      "tag": "destination_node",
+      "meaning": "destination_node_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "node( +)(node-[0-9]+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the destination node identifier as a raw string",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, node_id = groups\n    return {'stored': [node_id], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    node_id = record['stored'][0]\n    sp1_len = record['layout'][0]\n    return 'node' + (' ' * sp1_len) + node_id"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

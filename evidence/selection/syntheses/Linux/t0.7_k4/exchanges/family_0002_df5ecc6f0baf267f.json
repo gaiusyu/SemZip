@@ -1,0 +1,147 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix containing date, time, component, and process ID, which can be extracted into side streams for compression.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "month_day_time_as_monotonic_integer",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack month, day, hour, minute, and second into one monotonic integer for exact rendering.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    text = month + ' ' + day + ' ' + time\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    month_code = dt.month\n    day_width = len(day)\n    sp1_len = len(sp1)\n    sp2_len = len(sp2)\n    packed = month_code * 1000000 + dt.day * 10000 + dt.hour * 100 + dt.minute\n    return {'stored': [packed], 'layout': [sp1_len, sp2_len, day_width]}\n\ndef inverse(record):\n    packed = int(record['stored'][0])\n    sp1_len, sp2_len, day_width = record['layout']\n    month_code = packed // 1000000\n    day = (packed // 10000) % 100\n    hour = (packed // 100) % 100\n    minute = packed % 100\n    dt = datetime(1900, month_code, day, hour, minute)\n    month = dt.strftime('%b')\n    day_text = str(day).zfill(day_width)\n    time = dt.strftime('%H:%M:%S')\n    return month + (' ' * sp1_len) + day_text + (' ' * sp2_len) + time"
+        }
+      },
+      {
+        "tag": "process_id",
+        "meaning": "process_id_from_component",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": {
+          "code": "def project_context(line, groups):\n    m = re.search(r'combo( +)', line)\n    if m:\n        return 'combo'\n    return None"
+        },
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "\\[([A-Za-z_]+)\\(([^)]+)\\)\\[(\\d+)\\]\\]:",
+        "replacement": "[{group1}({group2})[{placeholder}]]:",
+        "program": {
+          "intent": "Extract numeric process ID for compression while preserving the surrounding structure.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[2])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "month_day_time as monotonic integer",
+      "reason": "The date and time can be packed into one numeric value for compression and exact rendering."
+    },
+    {
+      "slot": "S4",
+      "action": "UINT_DELTA",
+      "meaning": "process_id_from_component",
+      "reason": "The process ID is a numeric value that is stable and can be compressed efficiently."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "authentication status",
+      "reason": "The token is stable and does not benefit from extraction."
+    },
+    {
+      "slot": "S7",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "logname field",
+      "reason": "The field is stable and its value does not vary across examples."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "uid_value",
+      "reason": "The UID is a numeric field with stable role and semantic meaning."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "euid_value",
+      "reason": "The EUID is a numeric field with stable role and semantic meaning."
+    },
+    {
+      "slot": "S10",
+      "action": "STREAM_RAW",
+      "meaning": "tty_device",
+      "reason": "The TTY value has high entropy and is better stored as a raw stream."
+    },
+    {
+      "slot": "S11",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "ruser field",
+      "reason": "The field is stable and its value does not vary across examples."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "remote_host",
+      "reason": "The remote host is a self-delimiting structured variable with high entropy."
+    },
+    {
+      "slot": "S13",
+      "action": "STREAM_RAW",
+      "meaning": "user_name",
+      "reason": "The username is a stable field with semantic meaning and varying values, making it suitable for extraction."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "remote_host_ipv4_or_domain",
+      "meaning": "remote_host_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "rhost( +)([A-Za-z0-9_.-]+)",
+      "replacement": "rhost{group1}{placeholder}",
+      "program": {
+        "intent": "Extract the remote host address as a raw string, preserving its exact bytes.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "user_field",
+      "meaning": "user_name_field_value",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "user( +)([A-Za-z][A-Za-z0-9._-]*)",
+      "replacement": "user{group1}{placeholder}",
+      "program": {
+        "intent": "Extract the username as a raw string, preserving its exact value.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

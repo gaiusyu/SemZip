@@ -1,0 +1,77 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure with a timestamp, log level, and client IP address, which can be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "client_ipv4",
+        "meaning": "recurring_client_ipv4_address",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "\\[client( +)((?:\\d{1,3}\\.){3}\\d{1,3})\\]",
+        "replacement": "[client{group1}{placeholder}]",
+        "program": {
+          "intent": "Store the client IPv4 address as a raw string for exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "directory_path",
+        "meaning": "accessed_directory_path",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "rule:( +)(/[^ ]+)",
+        "replacement": "rule:{group1}{placeholder}",
+        "program": {
+          "intent": "Store the directory path as a raw string for exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ],
+    "slot_actions": [
+      {
+        "slot": "S0+S1+S2+S3+S4",
+        "action": "COMPOSE_FIELDS_TO_INT",
+        "meaning": "log timestamp with weekday, month, day, time, and year",
+        "reason": "The timestamp is a composed numeric value that can be stored as epoch microseconds for efficient compression and exact reconstruction."
+      },
+      {
+        "slot": "S5",
+        "action": "KEEP_IN_MAIN",
+        "meaning": "log level [error]",
+        "reason": "The log level is a stable literal structure that does not vary across examples and does not benefit from extraction."
+      },
+      {
+        "slot": "S6+S7",
+        "action": "STREAM_RAW",
+        "meaning": "client IP address",
+        "reason": "The client IP address is a bounded system variable with intrinsic structure (IPv4 format) and should be stored as a raw string for exact reconstruction."
+      },
+      {
+        "slot": "S12",
+        "action": "KEEP_IN_MAIN",
+        "meaning": "rule anchor",
+        "reason": "The 'rule:' anchor is a stable literal structure that does not vary across examples and does not benefit from extraction."
+      },
+      {
+        "slot": "S13",
+        "action": "STREAM_RAW",
+        "meaning": "directory path",
+        "reason": "The directory path is a bounded system variable with intrinsic structure (multi-level path) and should be stored as a raw string for exact reconstruction."
+      }
+    ]
+  },
+  "_proposal_cache_mode": "api"
+}

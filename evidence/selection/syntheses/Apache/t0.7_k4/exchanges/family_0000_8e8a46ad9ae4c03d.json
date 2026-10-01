@@ -1,0 +1,85 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix header structure that includes a timestamp, error level, and client IP address, which should be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "timestamp_epoch",
+        "meaning": "weekday_month_day_time_year_as_epoch_microseconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[([A-Z][a-z]{2})( +)([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})( +)(\\d{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Reversible conversion of the timestamp into epoch microseconds and reconstruction of the original timestamp format.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    weekday, sp1, month, sp2, day, sp3, hms, sp4, year = groups\n    text = weekday + ' ' + month + ' ' + day + ' ' + hms + ' ' + year\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1), len(sp2), len(sp3), len(sp4), len(day)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    s1, s2, s3, s4, day_width = layout\n    dt = datetime.fromtimestamp(micros / 1000000)\n    weekday = dt.strftime('%a')\n    month = dt.strftime('%b')\n    day = str(dt.day).zfill(int(day_width))\n    hms = dt.strftime('%H:%M:%S')\n    year = dt.strftime('%Y')\n    return weekday + (' ' * int(s1)) + month + (' ' * int(s2)) + day + (' ' * int(s3)) + hms + (' ' * int(s4)) + year"
+        }
+      },
+      {
+        "tag": "client_ipv4",
+        "meaning": "recurring_client_ipv4_address",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "\\[client( +)((?:\\d{1,3}\\.){3}\\d{1,3})\\]",
+        "replacement": "[client{group1}{placeholder}]",
+        "program": {
+          "intent": "Store and reconstruct the client IP address exactly as captured.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1+S2+S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log timestamp",
+      "reason": "These fields together form the primary log timestamp, which can be compactly stored as epoch microseconds."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "client IPv4 address",
+      "reason": "The IPv4 address is a recurring common variable with intrinsic structure and should be stored exactly."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "file path",
+      "reason": "The file path is a changing self-delimiting span with separators and varying components, making it unsuitable for compression beyond raw storage."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "file_path",
+      "meaning": "requested_file_path",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "exist:( +)(.+)",
+      "replacement": "exist:{group1}{placeholder}",
+      "program": {
+        "intent": "Store and reconstruct the file path exactly as captured.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

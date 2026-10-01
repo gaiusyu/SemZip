@@ -1,0 +1,26 @@
+\begin{table*}[t]\centering\small
+\caption{One first-block synthesis per dataset plus uniform corrected fitting. Synthesis subprocess seconds exclude preceding scanning/sampling. Corrected fit is a separate process measurement; the component sum is not observed total offline latency.}
+\label{tab:fresh-training-cost}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Dataset & Samples & Rules & Calls & Prompt tokens & Output tokens & Synthesis s & Fit s \\
+\midrule
+Linux & 80 & 8 & 17 & 74,426 & 13,042 & 96.6 & 5.3 \\
+Proxifier & 80 & 6 & 3 & 27,131 & 4,794 & 27.4 & 6.2 \\
+Apache & 79 & 3 & 16 & 66,209 & 16,018 & 97.5 & 5.3 \\
+Zookeeper & 54 & 7 & 17 & 53,508 & 22,971 & 131.2 & 16.9 \\
+Mac & 79 & 8 & 28 & 78,421 & 31,235 & 161.0 & 18.8 \\
+HealthApp & 80 & 1 & 4 & 20,821 & 6,775 & 32.3 & 5.1 \\
+HPC & 80 & 4 & 16 & 60,820 & 10,206 & 69.4 & 11.1 \\
+Hadoop & 80 & 9 & 17 & 64,266 & 19,602 & 113.2 & 19.9 \\
+OpenStack & 80 & 19 & 11 & 113,551 & 19,982 & 99.3 & 33.3 \\
+OpenSSH & 78 & 6 & 6 & 58,760 & 13,764 & 72.3 & 21.6 \\
+Android & 80 & 5 & 9 & 51,650 & 18,175 & 87.1 & 8.5 \\
+BGL & 76 & 7 & 8 & 60,770 & 15,353 & 79.0 & 13.8 \\
+HDFS & 26 & 3 & 6 & 25,588 & 4,450 & 33.1 & 4.4 \\
+Spark & 80 & 18 & 18 & 59,767 & 28,466 & 141.7 & 17.5 \\
+Windows & 80 & 16 & 22 & 110,868 & 20,816 & 133.0 & 16.9 \\
+Thunderbird & 80 & 2 & 4 & 56,283 & 9,517 & 44.7 & 0.9 \\
+Total & 1192 & 122 & 202 & 982,839 & 255,166 & 1419.0 & 205.5 \\
+\bottomrule
+\end{tabular}\end{table*}

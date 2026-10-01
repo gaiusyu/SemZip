@@ -1,0 +1,653 @@
+{
+  "families": [
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "S0 and S1 together represent a timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_id",
+            "tokens": [
+              "S8"
+            ],
+            "reason": "The block ID is a structured variable with explicit separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "file_path",
+            "tokens": [
+              "S7"
+            ],
+            "reason": "The file path contains multiple structural separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines share a consistent prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "S0 and S1 together form a timestamp"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "block ID",
+          "reason": "Structured variable with explicit separators"
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "file path",
+          "reason": "Structured variable with multiple separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id",
+          "file_path"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "composed timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S0 and S1 together form a single timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) (\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]\n    time_part = groups[1]\n    dt = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block ID",
+            "context_source": null,
+            "why_not_merge_raw": "The block ID is a single structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_(-?\\d+)",
+          "replacement": "blk_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'blk_{record[\"stored\"][0]}'"
+          }
+        },
+        {
+          "tag": "file_path",
+          "meaning": "file path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "file path",
+            "context_source": null,
+            "why_not_merge_raw": "The file path is a single structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(/user/root/rand/[^ ]+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "S0 and S1 together represent a timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_id",
+            "tokens": [
+              "S13"
+            ],
+            "reason": "The block ID is a structured variable with explicit separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "ip_port",
+            "tokens": [
+              "S9"
+            ],
+            "reason": "The IP and port are structured variables with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines share a consistent prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "S0 and S1 together form a timestamp"
+        },
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "block ID",
+          "reason": "Structured variable with explicit separators"
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "IP and port",
+          "reason": "Structured variable with explicit separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id",
+          "ip_port"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "composed timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S0 and S1 together form a single timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) (\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]\n    time_part = groups[1]\n    dt = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block ID",
+            "context_source": null,
+            "why_not_merge_raw": "The block ID is a single structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_(-?\\d+)",
+          "replacement": "blk_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'blk_{record[\"stored\"][0]}'"
+          }
+        },
+        {
+          "tag": "ip_port",
+          "meaning": "IP and port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "IP and port",
+            "context_source": null,
+            "why_not_merge_raw": "The IP and port are a single structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "S0 and S1 together represent a timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_id",
+            "tokens": [
+              "S7"
+            ],
+            "reason": "The block ID is a structured variable with explicit separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "source_ip_port",
+            "tokens": [
+              "S9"
+            ],
+            "reason": "The source IP and port are structured variables with explicit separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "destination_ip_port",
+            "tokens": [
+              "S11"
+            ],
+            "reason": "The destination IP and port are structured variables with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines share a consistent prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "S0 and S1 together form a timestamp"
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "block ID",
+          "reason": "Structured variable with explicit separators"
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "source IP and port",
+          "reason": "Structured variable with explicit separators"
+        },
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "destination IP and port",
+          "reason": "Structured variable with explicit separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "block_id",
+          "source_ip_port",
+          "destination_ip_port"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "composed timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S0 and S1 together form a single timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) (\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]\n    time_part = groups[1]\n    dt = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block ID",
+            "context_source": null,
+            "why_not_merge_raw": "The block ID is a single structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_(-?\\d+)",
+          "replacement": "blk_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'blk_{record[\"stored\"][0]}'"
+          }
+        },
+        {
+          "tag": "source_ip_port",
+          "meaning": "source IP and port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "source IP and port",
+            "context_source": null,
+            "why_not_merge_raw": "The source IP and port are a single structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "/(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d+)",
+          "replacement": "/{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'/{record[\"stored\"][0]}'"
+          }
+        },
+        {
+          "tag": "destination_ip_port",
+          "meaning": "destination IP and port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "destination IP and port",
+            "context_source": null,
+            "why_not_merge_raw": "The destination IP and port are a single structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "/(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d+)",
+          "replacement": "/{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'/{record[\"stored\"][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "S0 and S1 together represent a timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "block_id",
+            "tokens": [
+              "S7"
+            ],
+            "reason": "The block ID is a structured variable with explicit separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "block_size",
+            "tokens": [
+              "S10"
+            ],
+            "reason": "The block size is a numeric value with a clear role",
+            "must_emit_function": true
+          },
+          {
+            "name": "source_ip",
+            "tokens": [
+              "S12"
+            ],
+            "reason": "The source IP is a structured variable with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The log lines share a consistent prefix structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "S0 and S1 together form a timestamp"
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "block ID",
+          "reason": "Structured variable with explicit separators"
+        },
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "block size",
+          "reason": "Numeric value with a clear role"
+        },
+        {
+          "slot": "S12",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "source IP",
+          "reason": "Structured variable with explicit separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [
+          "block_size"
+        ],
+        "class_3_common_variable": [
+          "block_id",
+          "source_ip"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "composed timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S0 and S1 together form a single timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{6}) (\\d{6})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    date_part = groups[0]\n    time_part = groups[1]\n    dt = datetime.strptime(date_part + time_part, '%y%m%d%H%M%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y%m%d %H%M%S')"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "block_size",
+          "meaning": "block size",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block size",
+            "context_source": null,
+            "why_not_merge_raw": "The block size is a single numeric value"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "size (\\d+)",
+          "replacement": "size {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block ID",
+            "context_source": null,
+            "why_not_merge_raw": "The block ID is a single structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "blk_(-?\\d+)",
+          "replacement": "blk_{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'blk_{record[\"stored\"][0]}'"
+          }
+        },
+        {
+          "tag": "source_ip",
+          "meaning": "source IP",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "source IP",
+            "context_source": null,
+            "why_not_merge_raw": "The source IP is a single structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "/(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})",
+          "replacement": "/{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'/{record[\"stored\"][0]}'"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

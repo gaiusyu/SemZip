@@ -1,0 +1,1704 @@
+[
+  {
+    "family_id": 4,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 10,
+    "tag": "A"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 4,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:01:05\", \"groups\": [\"Jul  1 09:01:05\"], \"record\": {\"stored\": [-2193347078000000], \"layout\": []}, \"inverse\": \"Jul 01 09:01:05\", \"restored_match\": \"Jul 01 09:01:05\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 10
+  },
+  {
+    "family_id": 4,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 10,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 4,
+    "kind": "auto",
+    "meaning": "structured identifier",
+    "reasons": [],
+    "regex": "(calvisitor-\\d+-\\d+-\\d+-\\d+|com\\.apple\\.[^:]+:[^ ]+)",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_identifier",
+    "status": "pruned_constant_local_stream",
+    "support": 10
+  },
+  {
+    "family_id": 4,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "B:no surviving matches for tag B"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 10,
+    "tag": "B"
+  },
+  {
+    "family_id": 18,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "B"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 18,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:55\", \"groups\": [\"Jul  1 09:00:55\"], \"record\": {\"stored\": [-2193347088000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:55\", \"restored_match\": \"Jul 01 09:00:55\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 18,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 18,
+    "kind": "auto",
+    "meaning": "structured identifier",
+    "reasons": [],
+    "regex": "(calvisitor-\\d+-\\d+-\\d+-\\d+|kernel\\[\\d+\\]:|AppleCamIn::[\\w:]+|ARPT:|AirPort_Brcm43xx::[\\w:]+|WWEN\\[\\w+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "pid:auto",
+    "source_tag": "structured_identifier",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "C"
+  },
+  {
+    "family_id": 18,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "D:no surviving matches for tag D"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 4,
+    "tag": "D"
+  },
+  {
+    "family_id": 2,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "D"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 2,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:55\", \"groups\": [\"Jul  1 09:00:55\"], \"record\": {\"stored\": [-2193347088000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:55\", \"restored_match\": \"Jul 01 09:00:55\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 2,
+    "kind": "auto",
+    "meaning": "structured identifier",
+    "reasons": [],
+    "regex": "(calvisitor-\\d+-\\d+-\\d+-\\d+|authorMacBook-Pro|kernel\\[\\d+\\]:|AppleCamIn::[\\w:]+|messageType|0x[A-Fa-f0-9]+)",
+    "replacement": "{placeholder}",
+    "semantic_key": "pid:auto",
+    "source_tag": "structured_identifier",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "E"
+  },
+  {
+    "family_id": 2,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "F:no surviving matches for tag F"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 4,
+    "tag": "F"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 21,
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:55\", \"groups\": [\"Jul\", \"1\", \"09:00:55\"], \"record\": {\"stored\": [-2193347088000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:55\", \"restored_match\": \"Jul 01 09:00:55\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 21,
+    "kind": "python_exec",
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 21,
+    "meaning": "host_identifier",
+    "reasons": [],
+    "regex": "\\s([a-zA-Z0-9-]+(?:-\\d+){4})\\s",
+    "replacement": " {placeholder} ",
+    "source_tag": "hostname",
+    "status": "rejected_unsafe_regex",
+    "support": 4
+  },
+  {
+    "family_id": 21,
+    "kind": "auto",
+    "meaning": "bssid_value",
+    "reasons": [],
+    "regex": "BSSID changed to ([0-9a-fA-F:]+)",
+    "replacement": "BSSID changed to {placeholder}",
+    "semantic_key": "",
+    "source_tag": "bssid",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 4,
+    "tag": "F"
+  },
+  {
+    "family_id": 21,
+    "kind": "open_function",
+    "meaning": "log_timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "G"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 1,
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:56\", \"groups\": [\"Jul\", \"1\", \"09:00:56\"], \"record\": {\"stored\": [-2193347087000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:56\", \"restored_match\": \"Jul 01 09:00:56\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 1,
+    "kind": "python_exec",
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 1,
+    "kind": "open_function",
+    "meaning": "log_timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "H"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 28,
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:03:08\", \"groups\": [\"Jul\", \"1\", \"09:03:08\"], \"record\": {\"stored\": [-2193346955000000], \"layout\": []}, \"inverse\": \"Jul 01 09:03:08\", \"restored_match\": \"Jul 01 09:03:08\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 28,
+    "kind": "python_exec",
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 28,
+    "meaning": "host_identifier",
+    "reasons": [],
+    "regex": "\\s([a-zA-Z0-9-]+(?:-\\d+){4})\\s",
+    "replacement": " {placeholder} ",
+    "source_tag": "hostname",
+    "status": "rejected_unsafe_regex",
+    "support": 2
+  },
+  {
+    "family_id": 28,
+    "kind": "auto",
+    "meaning": "last_retry_timestamp",
+    "reasons": [],
+    "regex": "fLastRetryTimestamp,\\s([0-9]+\\.[0-9]+)",
+    "replacement": "fLastRetryTimestamp, {placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    return {'stored': [groups[0]], 'layout': []}\\n\\ndef inverse(record):\\n    return record['stored'][0]\",\"op\":\"python_exec\"}:fLastRetryTimestamp, {placeholder}",
+    "source_tag": "last_retry_timestamp",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "I"
+  },
+  {
+    "family_id": 28,
+    "kind": "open_function",
+    "meaning": "log_timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "J"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 15,
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 10:14:21\", \"groups\": [\"Jul\", \"1\", \"10:14:21\"], \"record\": {\"stored\": [-2193342682000000], \"layout\": []}, \"inverse\": \"Jul 01 10:14:21\", \"restored_match\": \"Jul 01 10:14:21\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 15,
+    "kind": "python_exec",
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 15,
+    "meaning": "host_identifier",
+    "reasons": [],
+    "regex": "\\s([a-zA-Z0-9-]+(?:-\\d+){4})\\s",
+    "replacement": " {placeholder} ",
+    "source_tag": "hostname",
+    "status": "rejected_unsafe_regex",
+    "support": 2
+  },
+  {
+    "family_id": 15,
+    "kind": "auto",
+    "meaning": "file_path",
+    "reasons": [],
+    "regex": "path\\s=\\s([^\\s]+)",
+    "replacement": "path = {placeholder}",
+    "semantic_key": "",
+    "source_tag": "path",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "K"
+  },
+  {
+    "family_id": 15,
+    "kind": "auto",
+    "meaning": "origin_path",
+    "reasons": [],
+    "regex": "origin\\s=\\s([^\\s]+)",
+    "replacement": "origin = {placeholder}",
+    "semantic_key": "",
+    "source_tag": "origin",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 15,
+    "kind": "open_function",
+    "meaning": "log_timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "L"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 10,
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:01:41\", \"groups\": [\"Jul\", \"1\", \"09:01:41\"], \"record\": {\"stored\": [-2193347042000000], \"layout\": []}, \"inverse\": \"Jul 01 09:01:41\", \"restored_match\": \"Jul 01 09:01:41\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 10,
+    "kind": "python_exec",
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 10,
+    "meaning": "host_identifier",
+    "reasons": [],
+    "regex": "\\s([a-zA-Z0-9-]+(?:-\\d+){4})\\s",
+    "replacement": " {placeholder} ",
+    "source_tag": "hostname",
+    "status": "rejected_unsafe_regex",
+    "support": 2
+  },
+  {
+    "family_id": 10,
+    "kind": "auto",
+    "meaning": "ipv6_address",
+    "reasons": [],
+    "regex": "Addr:\\s([0-9a-fA-F:]+)",
+    "replacement": "Addr: {placeholder}",
+    "semantic_key": "",
+    "source_tag": "ipv6_address",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "M"
+  },
+  {
+    "family_id": 10,
+    "kind": "python_exec",
+    "meaning": "log_timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 3,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "N"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 3,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:25:31\", \"groups\": [\"Jul  1 09:25:31\"], \"record\": {\"stored\": [-2193345612000000], \"layout\": []}, \"inverse\": \"Jul 01 09:25:31\", \"restored_match\": \"Jul 01 09:25:31\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 3,
+    "kind": "auto",
+    "meaning": "structured variable",
+    "reasons": [],
+    "regex": "([A-Za-z0-9.-]+\\[\\d+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 3,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "O:no surviving matches for tag O"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "O"
+  },
+  {
+    "family_id": 23,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "O"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 23,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:56\", \"groups\": [\"Jul  1 09:00:56\"], \"record\": {\"stored\": [-2193347087000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:56\", \"restored_match\": \"Jul 01 09:00:56\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 23,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 23,
+    "kind": "auto",
+    "meaning": "structured variable",
+    "reasons": [],
+    "regex": "([A-Za-z0-9.-]+\\[\\d+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "P"
+  },
+  {
+    "family_id": 23,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "Q:no surviving matches for tag Q"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "Q"
+  },
+  {
+    "family_id": 26,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "Q"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 26,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:56\", \"groups\": [\"Jul  1 09:00:56\"], \"record\": {\"stored\": [-2193347087000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:56\", \"restored_match\": \"Jul 01 09:00:56\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 26,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 26,
+    "kind": "auto",
+    "meaning": "structured variable",
+    "reasons": [],
+    "regex": "([A-Za-z0-9.-]+\\[\\d+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 26,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "R:no surviving matches for tag R"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "R"
+  },
+  {
+    "family_id": 16,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "R"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 16,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:02:32\", \"groups\": [\"Jul  1 09:02:32\"], \"record\": {\"stored\": [-2193346991000000], \"layout\": []}, \"inverse\": \"Jul 01 09:02:32\", \"restored_match\": \"Jul 01 09:02:32\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 16,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 16,
+    "kind": "auto",
+    "meaning": "structured variable",
+    "reasons": [],
+    "regex": "([A-Za-z0-9.-]+\\[\\d+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "S"
+  },
+  {
+    "family_id": 16,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "T:no surviving matches for tag T"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "T"
+  },
+  {
+    "family_id": 30,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "T"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 30,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 19:45:29\", \"groups\": [\"Jul  1 19:45:29\"], \"record\": {\"stored\": [-2193308414000000], \"layout\": []}, \"inverse\": \"Jul 01 19:45:29\", \"restored_match\": \"Jul 01 19:45:29\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 30,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 30,
+    "kind": "auto",
+    "meaning": "structured variable",
+    "reasons": [],
+    "regex": "([A-Za-z0-9.-]+\\[\\d+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 30,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "U:no surviving matches for tag U"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "U"
+  },
+  {
+    "family_id": 7,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "U"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 7,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:55\", \"groups\": [\"Jul  1 09:00:55\"], \"record\": {\"stored\": [-2193347088000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:55\", \"restored_match\": \"Jul 01 09:00:55\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 7,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 7,
+    "kind": "auto",
+    "meaning": "structured variable",
+    "reasons": [],
+    "regex": "([A-Za-z0-9.-]+\\[\\d+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 7,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "V:no surviving matches for tag V"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "V"
+  },
+  {
+    "family_id": 11,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "V"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 11,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:25:31\", \"groups\": [\"Jul  1 09:25:31\"], \"record\": {\"stored\": [-2193345612000000], \"layout\": []}, \"inverse\": \"Jul 01 09:25:31\", \"restored_match\": \"Jul 01 09:25:31\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 11,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 11,
+    "kind": "auto",
+    "meaning": "structured variable",
+    "reasons": [],
+    "regex": "([A-Za-z0-9.-]+\\[\\d+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 11,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "W:no surviving matches for tag W"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "W"
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "W"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 6,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:01:05\", \"groups\": [\"Jul  1 09:01:05\"], \"record\": {\"stored\": [-2193347078000000], \"layout\": []}, \"inverse\": \"Jul 01 09:01:05\", \"restored_match\": \"Jul 01 09:01:05\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 6,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 6,
+    "kind": "auto",
+    "meaning": "structured variable",
+    "reasons": [],
+    "regex": "([A-Za-z0-9.-]+\\[\\d+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "X"
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "Y:no surviving matches for tag Y"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "Y"
+  },
+  {
+    "family_id": 17,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "Y"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 17,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  2 14:45:00\", \"groups\": [\"Jul  2 14:45:00\"], \"record\": {\"stored\": [-2193240043000000], \"layout\": []}, \"inverse\": \"Jul 02 14:45:00\", \"restored_match\": \"Jul 02 14:45:00\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 17,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 17,
+    "kind": "auto",
+    "meaning": "structured variable",
+    "reasons": [],
+    "regex": "([A-Za-z0-9.-]+\\[\\d+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 17,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "Z:no surviving matches for tag Z"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "Z"
+  },
+  {
+    "family_id": 27,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{1,2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"_space_layout_repair\":true,\"code\":\"def _orig_forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef _orig_inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %d %H:%M:%S')\\n\\ndef _space_lengths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _digit_widths(text):\\n    result = []\\n    i = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            result.append(i - start)\\n        else:\\n            i = i + 1\\n    return result\\n\\ndef _apply_space_lengths(text, lengths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i] == ' ':\\n            start = i\\n            while i < len(text) and text[i] == ' ':\\n                i = i + 1\\n            count = i - start\\n            if j < len(lengths):\\n                count = int(lengths[j])\\n            out = out + (' ' * count)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef _apply_digit_widths(text, widths):\\n    out = ''\\n    i = 0\\n    j = 0\\n    while i < len(text):\\n        if text[i].isdigit():\\n            start = i\\n            while i < len(text) and text[i].isdigit():\\n                i = i + 1\\n            raw = text[start:i]\\n            width = len(raw)\\n            if j < len(widths):\\n                width = int(widths[j])\\n            value = int(raw)\\n            out = out + str(value).zfill(width)\\n            j = j + 1\\n        else:\\n            out = out + text[i]\\n            i = i + 1\\n    return out\\n\\ndef forward(groups):\\n    raw = groups[0]\\n    base = _orig_forward([raw])\\n    base_layout = base.get('layout', [])\\n    spaces = _space_lengths(raw)\\n    widths = _digit_widths(raw)\\n    layout = [len(base_layout)]\\n    for item in base_layout:\\n        layout.append(int(item))\\n    layout.append(len(spaces))\\n    for item in spaces:\\n        layout.append(int(item))\\n    layout.append(len(widths))\\n    for item in widths:\\n        layout.append(int(item))\\n    return {'stored': base.get('stored', []), 'layout': layout}\\n\\ndef inverse(record):\\n    layout = record.get('layout', [])\\n    index = 0\\n    base_count = int(layout[index])\\n    index = index + 1\\n    base_layout = layout[index:index + base_count]\\n    index = index + base_count\\n    space_count = int(layout[index])\\n    index = index + 1\\n    spaces = layout[index:index + space_count]\\n    index = index + space_count\\n    width_count = int(layout[index])\\n    index = index + 1\\n    widths = layout[index:index + width_count]\\n    text = _orig_inverse({'stored': record.get('stored', []), 'layout': base_layout})\\n    text = _apply_space_lengths(text, spaces)\\n    text = _apply_digit_widths(text, widths)\\n    return text\\n\",\"group_regex\":\"^(([A-Z][a-z]{2}( +)\\\\d{1,2}( +)\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "Z"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 27,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:56\", \"groups\": [\"Jul  1 09:00:56\"], \"record\": {\"stored\": [-2193347087000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:56\", \"restored_match\": \"Jul 01 09:00:56\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 27,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 27,
+    "kind": "auto",
+    "meaning": "structured variable",
+    "reasons": [],
+    "regex": "([A-Za-z0-9.-]+\\[\\d+\\])",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 27,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2} +\\d{1,2} +\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 8,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 10:13:34\", \"groups\": [\"Jul\", \"1\", \"10:13:34\"], \"record\": {\"stored\": [-2193342729000000], \"layout\": []}, \"inverse\": \"Jul 01 10:13:34\", \"restored_match\": \"Jul 01 10:13:34\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 8,
+    "kind": "auto",
+    "meaning": "structured host identifier",
+    "reasons": [],
+    "regex": "\\s([a-zA-Z0-9-]+-[0-9-]+)\\s",
+    "replacement": " {placeholder} ",
+    "semantic_key": "",
+    "source_tag": "host_identifier",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 8,
+    "kind": "auto",
+    "meaning": "process identifier",
+    "reasons": [],
+    "regex": "pid\\s(\\d+)",
+    "replacement": "pid {placeholder}",
+    "semantic_key": "",
+    "source_tag": "pid_value",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 8,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "A1"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 12,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:56\", \"groups\": [\"Jul\", \"1\", \"09:00:56\"], \"record\": {\"stored\": [-2193347087000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:56\", \"restored_match\": \"Jul 01 09:00:56\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 12,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 12,
+    "kind": "python_exec",
+    "meaning": "structured host identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\s([a-zA-Z0-9-]+)\\s",
+    "replacement": " {placeholder} ",
+    "source_tag": "host_identifier",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "host_identifier"
+  },
+  {
+    "family_id": 12,
+    "kind": "auto",
+    "meaning": "process identifier",
+    "reasons": [],
+    "regex": "corecaptured\\[(\\d+)\\]",
+    "replacement": "corecaptured[{placeholder}]",
+    "semantic_key": "pid:auto",
+    "source_tag": "pid_value",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "B1"
+  },
+  {
+    "family_id": 12,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 0,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  4 23:22:09\", \"groups\": [\"Jul\", \"4\", \"23:22:09\"], \"record\": {\"stored\": [-2193036214000000], \"layout\": []}, \"inverse\": \"Jul 04 23:22:09\", \"restored_match\": \"Jul 04 23:22:09\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "structured host identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\s([a-zA-Z0-9-]+)\\s",
+    "replacement": " {placeholder} ",
+    "source_tag": "host_identifier",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "host_identifier"
+  },
+  {
+    "family_id": 0,
+    "kind": "auto",
+    "meaning": "process identifier",
+    "reasons": [],
+    "regex": "Word\\[(\\d+)\\]",
+    "replacement": "Word[{placeholder}]",
+    "semantic_key": "pid:auto",
+    "source_tag": "pid_value",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "C1"
+  },
+  {
+    "family_id": 0,
+    "kind": "auto",
+    "meaning": "error code",
+    "reasons": [],
+    "regex": "'(0x[0-9a-fA-F]+)'",
+    "replacement": "'{placeholder}'",
+    "semantic_key": "",
+    "source_tag": "error_code",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "D1"
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 29,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 19:45:29\", \"groups\": [\"Jul\", \"1\", \"19:45:29\"], \"record\": {\"stored\": [-2193308414000000], \"layout\": []}, \"inverse\": \"Jul 01 19:45:29\", \"restored_match\": \"Jul 01 19:45:29\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 29,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 29,
+    "kind": "python_exec",
+    "meaning": "structured host identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\s([a-zA-Z0-9-]+)\\s",
+    "replacement": " {placeholder} ",
+    "source_tag": "host_identifier",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "host_identifier"
+  },
+  {
+    "family_id": 29,
+    "kind": "auto",
+    "meaning": "process identifier",
+    "reasons": [],
+    "regex": "quicklookd\\[(\\d+)\\]",
+    "replacement": "quicklookd[{placeholder}]",
+    "semantic_key": "pid:auto",
+    "source_tag": "pid_value",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "E1"
+  },
+  {
+    "family_id": 29,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 13,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:55\", \"groups\": [\"Jul\", \"1\", \"09:00:55\"], \"record\": {\"stored\": [-2193347088000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:55\", \"restored_match\": \"Jul 01 09:00:55\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 13,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 13,
+    "kind": "python_exec",
+    "meaning": "structured host identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\s([a-zA-Z0-9-]+)\\s",
+    "replacement": " {placeholder} ",
+    "source_tag": "host_identifier",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "host_identifier"
+  },
+  {
+    "family_id": 13,
+    "kind": "auto",
+    "meaning": "process identifier",
+    "reasons": [],
+    "regex": "kernel\\[(\\d+)\\]",
+    "replacement": "kernel[{placeholder}]",
+    "semantic_key": "pid:auto",
+    "source_tag": "pid_value",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "F1"
+  },
+  {
+    "family_id": 13,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 14,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Jul  1 09:00:55\", \"groups\": [\"Jul\", \"1\", \"09:00:55\"], \"record\": {\"stored\": [-2193347088000000], \"layout\": []}, \"inverse\": \"Jul 01 09:00:55\", \"restored_match\": \"Jul 01 09:00:55\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 14,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 14,
+    "kind": "python_exec",
+    "meaning": "structured host identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\s([a-zA-Z0-9-]+)\\s",
+    "replacement": " {placeholder} ",
+    "source_tag": "host_identifier",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "host_identifier"
+  },
+  {
+    "family_id": 14,
+    "kind": "auto",
+    "meaning": "process identifier",
+    "reasons": [],
+    "regex": "kernel\\[(\\d+)\\]",
+    "replacement": "kernel[{placeholder}]",
+    "semantic_key": "pid:auto",
+    "source_tag": "pid_value",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "G1"
+  },
+  {
+    "family_id": 14,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:syslog:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%b %e %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "H1"
+  }
+]

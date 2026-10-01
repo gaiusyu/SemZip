@@ -1,0 +1,363 @@
+You are generating reversible extraction programs for several Mac log-line families in one batch.
+Return JSON only. The top-level object must be {"families": [...]}.
+Return exactly 8 family objects, one for each input family_id in this exact set: [21, 1, 28, 15, 10, 19, 22, 5].
+Do not omit a family. If a family has no safe function, still return it with all three class function arrays empty.
+Each output family must preserve its input family_id exactly and follow this schema:
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "several tokens together represent one value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "1234 bytes",
+              "1.20 KB"
+            ],
+            "reason": "different displays of the same underlying value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "10.0.0.5",
+              "/var/log/app",
+              "api.example.net",
+              "550e8400-e29b-41d4-a716-446655440000"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "user Alice",
+              "username=Alice"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex; whitespace or a generic preposition is not enough",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "whether this family has a repeated prefix/header"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "semantic role if known",
+          "reason": "why this slot is extracted, composed, or kept"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_2_formatted_numeric": [
+          "semantic names found in this family, or an empty list"
+        ],
+        "class_3_common_variable": [
+          "semantic names found in this family, or an empty list"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "T",
+          "meaning": "short semantic name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "log_timestamp | ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent | split_context_value | raw_single_source | leave_to_residual",
+            "stored_source": "what this function stores",
+            "context_source": "what groups the stored value, or null",
+            "why_not_merge_raw": "why independent entropy sources are not stored as one raw string"
+          },
+          "general": true,
+          "order_hint": "global_composed | family_structured | global_atomic",
+          "regex": "Python re regex for one value span or narrow context span",
+          "replacement": "literal replacement containing {placeholder} and optional {group1}",
+          "program": {
+            "op": "python_exec",
+            "code": "required real Python code defining both forward(groups) and inverse(record)"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+Class-wise completion contract:
+- Inspect Class 1, Class 2, and Class 3 independently for every family before emitting JSON.
+- class_inventory must contain all three class keys and briefly name every candidate category found; use [] when none is present.
+- Put executable proposals only in class_1_functions, class_2_functions, or class_3_functions. Always emit all three arrays, even when empty.
+- Do not emit a flat functions array or header.functions. A changing header field belongs in the class array matching its semantics.
+- The class bucket is authoritative: Class 1 and Class 2 store numeric values; Class 3 stores exact strings.
+
+For every family, fill family_analysis before writing functions. This is a short machine-readable plan, not chain-of-thought.
+- has_composable_tokens means several tokens/pieces jointly represent one value, such as weekday + month + day + time + year forming one timestamp-like value.
+- has_semantic_equivalent_tokens means two displays represent the same value, such as '1234 bytes' and '(1.20 KB)' describing the same byte count.
+- If has_composable_tokens=true, at least one function should implement the best composable_group unless exact reconstruction is impossible.
+- If has_semantic_equivalent_tokens=true, at least one function should implement the best semantic_equivalent_group unless exact reconstruction is impossible.
+- raw_variable_groups are Class 3 candidates through either of two evidence routes: (A) the captured value itself contains at least two non-alphanumeric separator occurrences explicitly encoded by the regex; or (B) a plain value is immediately introduced by a stable, unambiguous field-name literal explicitly present in the regex, such as user( +)([A-Za-z0-9]+) or username=([A-Za-z0-9]+). Whitespace alone and generic words such as for, from, to, or by do not qualify. Unanchored broad captures such as ([A-Za-z0-9]+), (\w+), or ([^ ]+) must be left to residual.
+- This planning step is meant to prevent skipping high-value fusion opportunities before regex writing.
+
+Direct per-line context schema:
+- Every function must include tag, class, value_type, target_role, context, regex, replacement, and program.
+- class must be one of class_1_composed_numeric, class_2_formatted_numeric, class_3_common_variable.
+- value_type must be numeric for class_1_composed_numeric and class_2_formatted_numeric. Use string for class_3_common_variable.
+- target_role must be log_timestamp only when the stored target itself is the primary timestamp of the log record. Use ordinary_value for every other stored target.
+- Use context=null when no other field in the same physical line should partition the target's distribution. A log_timestamp normally uses context=null.
+- Otherwise context must contain code defining project_context(line, groups). It returns the actual per-line context value as str/int, or None when absent; it must not return a semantic label.
+- line is the complete original physical log line and groups are the target regex groups. The target regex does not need to capture the context, and the context may be adjacent or non-adjacent.
+- Context only routes an already reversible target. forward(groups) and inverse(record) must reconstruct the target without context. Numeric streams use delta within each returned context; string streams use dictionary ranks within each returned context.
+- project_context must be deterministic, must not import modules, and may use provided re.search/re.match/re.fullmatch with literal safe regexes.
+- Direct projector example for 'Failed password from 173.234.31.186 port 38926 ssh2': the source_port target regex is 'port( +)(\\d+)', its target program stores int(groups[1]), and context.code is: def project_context(line, groups): m = re.search(r'from( +)((?:\\d{1,3}\\.){3}\\d{1,3})', line); return m.group(2) if m else None.
+- The example returns the concrete IP bytes, not the words source_ip and not another function tag.
+- Before writing each function, fill source_separation. This is a machine-readable audit, not a long chain-of-thought. Use decision=merge_equivalent only when the captured pieces are one semantic quantity or one piece is exactly derivable from another. Use decision=split_context_value when a textual span contains independent sources and one source predicts/groups the other. Use decision=raw_single_source only for one bounded opaque variable. Use decision=leave_to_residual when the LLM should not create a function.
+- If a target's distribution depends on another field anywhere in the same line, attach a projector to the target. Example: source_port stores only the port and project_context returns the concrete source IP from the complete line.
+- Contrastive source-separation example. Bad: store '10.10.34.12:3888' as one raw endpoint string; this repeats the IP many times and mixes address entropy with port entropy. Good: capture IP as context and store only the port as numeric value, with source_separation.decision='split_context_value', stored_source='port', context_source='ip'.
+- Contrastive source-separation example. Good merge: '1234 bytes (1.20 KB)' has two displays of one byte-size value, so use source_separation.decision='merge_equivalent' and store one canonical integer plus layout/display flags.
+
+Executable program forms:
+- Raw python_exec: store the captured raw value exactly as a string; downstream codec chooses rank/delta/raw.
+- {"op":"python_exec", "code":"..."}: real Python code defining forward(groups) and inverse(record). Use this for exact date/time, unit, duration, tuple, and compound numeric transforms.
+- python_exec code must not import modules. The verifier already provides datetime, re, math, and calendar-like helpers. Any import/from-import statement is rejected.
+- Use only the verifier-aligned Python subset: ordinary assignments, arithmetic, indexing/slicing, simple if/for/while, int/str/len/float/round/abs/min/max, datetime/timedelta/re helpers, f-strings, lists, tuples, and dicts.
+- Do not use augmented assignment such as +=, -=, *=, //=, or %=; write ordinary assignment instead. Example: write `v = v // 1000`, not `v //= 1000`.
+- Do not use comprehensions, lambda, try/except, with, class definitions, file/network/system calls, eval/exec/compile, globals/locals/vars, or double-underscore names.
+- python_exec forward(groups) must return a dict exactly shaped like {'stored': [one_value], 'layout': [optional_small_integers]}. Use layout for variable spaces or widths needed by inverse(record).
+- python_exec inverse(record) must read record['stored'] and return the exact original captured bytes as a string.
+- Do not return datetime objects, ISO strings, tuples, or plain integers from forward(). Do not make inverse(record) expect a datetime object directly.
+
+Placeholder routing contract:
+- Use exactly one {placeholder} in every replacement. The decoder uses that route to choose this function's side stream.
+- If a function consumes several capture groups that together describe one attribute, they still map to one {placeholder}, not multiple placeholders.
+- If a span contains independent attributes, emit separate functions with separate tags.
+- Do not duplicate storage: bytes consumed into {placeholder} must not also remain as {groupN}.
+
+For each family:
+- Every function must include class and target_role. Use class_1_composed_numeric for multi-piece values that become one compressible semantic integer, class_2_formatted_numeric for text or formatted tokens that express numeric meaning and can be converted into one compressible integer, and class_3_common_variable for an exact string supported by either intrinsic structure or an explicit adjacent field-name anchor. Use target_role=log_timestamp only for the primary log timestamp; otherwise use ordinary_value.
+- If a date/time-like span is present, prefer class_1_composed_numeric and write python_exec that stores one integer timestamp-like value. Do not use class_3_common_variable or raw identity for a timestamp merely because spaces or display widths vary; store those reversible display details in layout.
+- Choose class_2 not only for visibly numeric tokens, but for non-numeric or formatted text that carries numeric meaning and has a deterministic numeric representation: units, durations, byte-size displays, ordinal/state counters, severity-like levels, port-like roles, process/thread ids, slots, or structured subfields. Do not classify random-looking session ids, hashes, request ids, or opaque hex strings as class_1/class_2 merely because they can be parsed as integers.
+- Strategy switch for numbers: leave anonymous/simple numbers to deterministic residual coders, but extract semantically stable numbers whose surrounding words vary across templates. A port near an IP/host should be a class_2 target whose context projector returns the concrete IP/host when that field predicts the port distribution.
+- For every ordinary_value target, ask whether another field anywhere in the same physical line predicts or partitions its distribution. If yes, provide context.code defining project_context(line, groups); otherwise use context=null.
+- project_context returns the actual value found on this line, not a field name or another function tag. A log_timestamp normally uses context=null.
+- Context routing is available to every class. Numeric targets use context-local delta and string targets use context-local dictionary ranks, while target reconstruction remains independent of context.
+- Prefer class_3_common_variable only after one evidence route passes. Intrinsic route: the captured value has at least two separator occurrences explicit in the regex. Role-anchor route: a plain value is immediately introduced by a stable, unambiguous field-name literal explicit in the regex, such as user or username=. A semantic explanation, whitespace, or a generic word such as for/from/to/by is insufficient. Numeric-looking opaque identifiers may use class_3 only when they satisfy one route and lack semantic magnitude/order.
+- First decide whether there is a unified log header. Headers can use brackets, punctuation, or component fields, not just whitespace.
+- Put changing header fields in header.functions.
+- Then propose normal value functions for hard formats such as session ids, stable-affix ids, derived date/time text, unit-bearing values, and compound numeric fields.
+- Prefer one reversible function for a complete real-world attribute over several substring functions. If adjacent tokens or neighboring pieces describe the same underlying value, capture the complete span and store one compact value when exact rendering is possible.
+- Do not split one attribute into independent streams just because it appears as several tokens or contains punctuation. A date/time-like attribute, unit-bearing display, bracketed identifier, endpoint-like text, or stable-affix id should be considered as a complete reversible span first.
+- If one displayed piece is derivable from another captured value, store the source value and render the derived text instead of creating a separate stream. If exact derivation is not safe, store the complete formatted span with raw python_exec.
+- Prefer executable python_exec for complete composed attributes when a deterministic parse/render relation is clear. Use raw python_exec when the exact bytes are opaque or when a compact inverse renderer is not safe.
+- Set general=true when the function likely applies across many families/templates, such as a repeated header attribute, address-like value, endpoint-like value, bracketed process/context id, port-like number, user/domain-like token, or other recurring value format. Set general=false for message-specific variables.
+- Set order_hint=global_composed for a global function that consumes a complete multi-piece attribute or starts at a repeated line prefix; set family_structured for context-scoped message variables; set global_atomic for simple intrinsic global values.
+- Constants remain literal. Store changing bytes once: either as {placeholder} or as preserved {groupN}, never both.
+- Unit-bearing variants must be byte-exact. If examples include both plain and displayed forms such as '123 bytes' and '123 bytes (1.20 KB)', do not consume the optional display and drop it from replacement. Store the complete formatted value span or render all captured pieces exactly.
+- Use numeric scalar programs only after checking that the scalar render reconstructs the whole matched value, including optional unit displays and alternate units.
+- Regexes must be Python re compatible, local to the matched substring, and under 220 characters.
+- Avoid broad tail captures like (.+) or (.*). Avoid bare all-number regexes unless tightly scoped by literals. For Class 3, forbid unanchored plain-token captures such as ([A-Za-z0-9]+), (\w+), and ([^ ]+). A narrow plain-token capture is allowed only when a stable, unambiguous field-name literal immediately introduces it in the same regex; whitespace or generic for/from/to/by does not qualify.
+- If functions overlap, order most specific first.
+
+Executable examples, for style only and not a closed type list:
+Example exact raw value:
+{"tag": "dot_value", "meaning": "recurring dotted value", "class": "class_3_common_variable", "general": true, "order_hint": "global_atomic", "regex": "from ((?:\\d{1,3}\\.){3}\\d{1,3})", "replacement": "from {placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example exact raw plain value with an explicit role anchor:
+{"tag": "user_name", "meaning": "user_field_value", "class": "class_3_common_variable", "general": false, "order_hint": "family_structured", "regex": "user( +)([A-Za-z][A-Za-z0-9._-]*)", "replacement": "user{group1}{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"}}
+Example fixed-width integer:
+{"tag": "bracket_number", "meaning": "recurring bracketed numeric id", "class": "class_2_formatted_numeric", "general": true, "order_hint": "global_composed", "regex": "worker\\[(\\d{5})\\]", "replacement": "worker[{placeholder}]", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    return {'stored': [int(text)], 'layout': []}\n\ndef inverse(record):\n    value = int(record['stored'][0])\n    return str(value).zfill(5)"}}
+Example composed date/time-like attribute with a fixed exact layout:
+{"tag": "composed_time", "meaning": "complete repeated date/time-like prefix", "class": "class_1_composed_numeric", "general": true, "order_hint": "global_composed", "regex": "^([A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2})", "replacement": "{placeholder}", "program": {"op": "python_exec", "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"}}
+If exact reconstruction needs variable width, variable spaces, optional text, or any other layout bytes, either capture the complete span with raw python_exec, or emit a python_exec that stores the required layout bytes and inverse reconstructs exactly.
+
+Open executable transducer mode:
+- Prefer LLM-generated executable Python transforms for structured numeric fields, including timestamps, dates, durations, sizes, tuple-like IDs, and compound numeric tokens.
+- The transform must define forward(groups) and inverse(record). forward receives the captured value bytes; inverse reconstructs exactly the captured bytes from the stored integer.
+- A timestamp does not need true Unix time. A monotonic packed integer is acceptable if inverse renders the exact original bytes and deltas are locally small.
+- For YYYY-MM-DD HH:MM:SS,mmm, write Python that parses the seven numeric fields, packs them into one integer, and inverse-unpacks with the same zero padding and punctuation.
+- For bracketed or prefixed fields, capture only the value span and preserve stable punctuation in replacement groups.
+- Stable text is an anchor, not a side-stream value. Never store the same bytes twice: if a captured group is represented by {placeholder}, do not also keep that group as {groupN} in replacement.
+
+
+Focus function budget on complete formatted spans and semantic dependencies. Plain leftover numbers can be handled by generic residual coders unless local context gives them a stable role.
+
+### FAMILY 21
+support=4
+template_anchor_key=jul calvisitor kernel en channel changed to
+examples_and_shapes:
+Example 0: Jul  1 09:00:55 calvisitor-10-105-160-95 kernel[0]: en0: channel changed to 1
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:00:55':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='en0:':A2D1: | S6='channel':A7 | S7='changed':A7 | S8='to':A2 | S9='1':D1
+Example 1: Jul  1 09:01:29 calvisitor-10-105-160-95 kernel[0]: en0: channel changed to 1
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:01:29':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='en0:':A2D1: | S6='channel':A7 | S7='changed':A7 | S8='to':A2 | S9='1':D1
+Example 2: Jul  1 09:01:29 calvisitor-10-105-160-95 kernel[0]: en0: BSSID changed to 5c:50:15:4c:18:13
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:01:29':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='en0:':A2D1: | S6='BSSID':A5 | S7='changed':A7 | S8='to':A2 | S9='5c:50:15:4c:18:13':D1A1:D2:D2:D1A1:D2:D2
+Example 3: Jul  1 09:05:02 calvisitor-10-105-160-95 kernel[0]: en0: BSSID changed to 5c:50:15:36:bc:03
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:05:02':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='en0:':A2D1: | S6='BSSID':A5 | S7='changed':A7 | S8='to':A2 | S9='5c:50:15:36:bc:03':D1A1:D2:D2:D2:A2:D2
+required_value_like_slots (24 sampled occurrences):
+Example 0: S1='1':D1 | S2='09:00:55':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='en0:':A2D1: | S9='1':D1
+Example 1: S1='1':D1 | S2='09:01:29':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='en0:':A2D1: | S9='1':D1
+Example 2: S1='1':D1 | S2='09:01:29':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='en0:':A2D1: | S9='5c:50:15:4c:18:13':D1A1:D2:D2:D1A1:D2:D2
+Example 3: S1='1':D1 | S2='09:05:02':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='en0:':A2D1: | S9='5c:50:15:36:bc:03':D1A1:D2:D2:D2:A2:D2
+
+### FAMILY 1
+support=4
+template_anchor_key=jul last message repeated time
+examples_and_shapes:
+Example 0: Jul  1 09:00:56 --- last message repeated 1 time ---
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:00:56':D2:D2:D2 | S3='---':- | S4='last':A4 | S5='message':A7 | S6='repeated':A8 | S7='1':D1 | S8='time':A4 | S9='---':-
+Example 1: Jul  1 09:01:00 --- last message repeated 1 time ---
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:01:00':D2:D2:D2 | S3='---':- | S4='last':A4 | S5='message':A7 | S6='repeated':A8 | S7='1':D1 | S8='time':A4 | S9='---':-
+Example 2: Jul  1 09:02:27 --- last message repeated 2 times ---
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:02:27':D2:D2:D2 | S3='---':- | S4='last':A4 | S5='message':A7 | S6='repeated':A8 | S7='2':D1 | S8='times':A5 | S9='---':-
+Example 3: Jul  1 09:04:33 --- last message repeated 2 times ---
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:04:33':D2:D2:D2 | S3='---':- | S4='last':A4 | S5='message':A7 | S6='repeated':A8 | S7='2':D1 | S8='times':A5 | S9='---':-
+required_value_like_slots (12 sampled occurrences):
+Example 0: S1='1':D1 | S2='09:00:56':D2:D2:D2 | S7='1':D1
+Example 1: S1='1':D1 | S2='09:01:00':D2:D2:D2 | S7='1':D1
+Example 2: S1='1':D1 | S2='09:02:27':D2:D2:D2 | S7='2':D1
+Example 3: S1='1':D1 | S2='09:04:33':D2:D2:D2 | S7='2':D1
+
+### FAMILY 28
+support=2
+template_anchor_key=jul calvisitor locationd network requery items fqueryretries flastretrytimestamp
+examples_and_shapes:
+Example 0: Jul  1 09:03:08 calvisitor-10-105-160-95 locationd[82]: NETWORK: requery, 0, 0, 0, 0, 292, items, fQueryRetries, 0, fLastRetryTimestamp, 520616166.1
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:03:08':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='locationd[82]:':A9[D2]: | S5='NETWORK:':A7: | S6='requery,':A7, | S7='0,':D1, | S8='0,':D1, | S9='0,':D1, | S10='0,':D1, | S11='292,':D3, | S12='items,':A5, | S13='fQueryRetries,':A13, | S14='0,':D1, | S15='fLastRetryTimestamp,':A19, | S16='520616166.1':D9.D1
+Example 1: Jul  1 09:17:43 calvisitor-10-105-160-95 locationd[82]: NETWORK: requery, 0, 0, 0, 0, 292, items, fQueryRetries, 2, fLastRetryTimestamp, 520617788.4
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:17:43':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='locationd[82]:':A9[D2]: | S5='NETWORK:':A7: | S6='requery,':A7, | S7='0,':D1, | S8='0,':D1, | S9='0,':D1, | S10='0,':D1, | S11='292,':D3, | S12='items,':A5, | S13='fQueryRetries,':A13, | S14='2,':D1, | S15='fLastRetryTimestamp,':A19, | S16='520617788.4':D9.D1
+required_value_like_slots (32 sampled occurrences):
+Example 0: S1='1':D1 | S2='09:03:08':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='locationd[82]:':A9[D2]: | S5='NETWORK:':A7: | S6='requery,':A7, | S7='0,':D1, | S8='0,':D1, | S9='0,':D1, | S10='0,':D1, | S11='292,':D3, | S12='items,':A5, | S13='fQueryRetries,':A13, | S14='0,':D1, | S15='fLastRetryTimestamp,':A19, | S16='520616166.1':D9.D1
+Example 1: S1='1':D1 | S2='09:17:43':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='locationd[82]:':A9[D2]: | S5='NETWORK:':A7: | S6='requery,':A7, | S7='0,':D1, | S8='0,':D1, | S9='0,':D1, | S10='0,':D1, | S11='292,':D3, | S12='items,':A5, | S13='fQueryRetries,':A13, | S14='2,':D1, | S15='fLastRetryTimestamp,':A19, | S16='520617788.4':D9.D1
+
+### FAMILY 15
+support=2
+template_anchor_key=jul calvisitor path not allowed in target domain type pid path error the specified service did not ship in the bundle origin
+examples_and_shapes:
+Example 0: Jul  1 10:14:21 calvisitor-10-105-160-95 com.apple.xpc.launchd[1] (com.apple.xpc.launchd.domain.pid.WebContent.31349): Path not allowed in target domain: type = pid, path = /System/Library/StagedFrameworks/Safari/SafariShared.framework/Versions/A/XPCServices/com.apple.Safari.History.xpc/Contents/MacOS/com.apple.Safari.History error = 147: The specified service did not ship in the requestor's bundle, origin = /System/Library/StagedFrameworks/Safari/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.WebContent.xpc
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='10:14:21':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='com.apple.xpc.launchd[1]':A3.A5.A3.A7[D1] | S5='(com.apple.xpc.launchd.domain.pid.WebContent.31349):':(A3.A5.A3.A7.A6.A3.A10.D5): | S6='Path':A4 | S7='not':A3 | S8='allowed':A7 | S9='in':A2 | S10='target':A6 | S11='domain:':A6: | S12='type':A4 | S13='=':= | S14='pid,':A3, | S15='path':A4 | S16='=':= | S17='/System/Library/StagedFrameworks/Safari/SafariShared.framework/Versions/A/XPCServices/com.apple.Safari.History.xpc/Contents/MacOS/com.apple.Safari.History':/A6/A7/A16/A6/A12.A9/A8/A1/A11/A3.A5.A6.A7.A3/A8/A5/A3.A5.A6.A7 | S18='error':A5 | S19='=':= | S20='147:':D3: | S21='The':A3 | S22='specified':A9 | S23='service':A7 | S24='did':A3 | S25='not':A3 | S26='ship':A4 | S27='in':A2 | S28='the':A3 | S29="requestor's":A9'A1 | S30='bundle,':A6, | S31='origin':A6 | S32='=':= | S33='/System/Library/StagedFrameworks/Safari/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.WebContent.xpc':/A6/A7/A16/A6/A6.A9/A8/A1/A11/A3.A5.A6.A10.A3
+Example 1: Jul  1 10:14:21 calvisitor-10-105-160-95 com.apple.xpc.launchd[1] (com.apple.xpc.launchd.domain.pid.WebContent.31349): Path not allowed in target domain: type = pid, path = /System/Library/StagedFrameworks/Safari/SafariShared.framework/Versions/A/XPCServices/com.apple.Safari.ImageDecoder.xpc/Contents/MacOS/com.apple.Safari.ImageDecoder error = 147: The specified service did not ship in the requestor's bundle, origin = /System/Library/StagedFrameworks/Safari/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.WebContent.xpc
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='10:14:21':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='com.apple.xpc.launchd[1]':A3.A5.A3.A7[D1] | S5='(com.apple.xpc.launchd.domain.pid.WebContent.31349):':(A3.A5.A3.A7.A6.A3.A10.D5): | S6='Path':A4 | S7='not':A3 | S8='allowed':A7 | S9='in':A2 | S10='target':A6 | S11='domain:':A6: | S12='type':A4 | S13='=':= | S14='pid,':A3, | S15='path':A4 | S16='=':= | S17='/System/Library/StagedFrameworks/Safari/SafariShared.framework/Versions/A/XPCServices/com.apple.Safari.ImageDecoder.xpc/Contents/MacOS/com.apple.Safari.ImageDecoder':/A6/A7/A16/A6/A12.A9/A8/A1/A11/A3.A5.A6.A12.A3/A8/A5/A3.A5.A6.A12 | S18='error':A5 | S19='=':= | S20='147:':D3: | S21='The':A3 | S22='specified':A9 | S23='service':A7 | S24='did':A3 | S25='not':A3 | S26='ship':A4 | S27='in':A2 | S28='the':A3 | S29="requestor's":A9'A1 | S30='bundle,':A6, | S31='origin':A6 | S32='=':= | S33='/System/Library/StagedFrameworks/Safari/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.WebContent.xpc':/A6/A7/A16/A6/A6.A9/A8/A1/A11/A3.A5.A6.A10.A3
+required_value_like_slots (24 sampled occurrences):
+Example 0: S1='1':D1 | S2='10:14:21':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='com.apple.xpc.launchd[1]':A3.A5.A3.A7[D1] | S5='(com.apple.xpc.launchd.domain.pid.WebContent.31349):':(A3.A5.A3.A7.A6.A3.A10.D5): | S11='domain:':A6: | S14='pid,':A3, | S17='/System/Library/StagedFrameworks/Safari/SafariShared.framework/Versions/A/XPCServices/com.apple.Safari.History.xpc/Contents/MacOS/com.apple.Safari.History':/A6/A7/A16/A6/A12.A9/A8/A1/A11/A3.A5.A6.A7.A3/A8/A5/A3.A5.A6.A7 | S20='147:':D3: | S29="requestor's":A9'A1 | S30='bundle,':A6, | S33='/System/Library/StagedFrameworks/Safari/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.WebContent.xpc':/A6/A7/A16/A6/A6.A9/A8/A1/A11/A3.A5.A6.A10.A3
+Example 1: S1='1':D1 | S2='10:14:21':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='com.apple.xpc.launchd[1]':A3.A5.A3.A7[D1] | S5='(com.apple.xpc.launchd.domain.pid.WebContent.31349):':(A3.A5.A3.A7.A6.A3.A10.D5): | S11='domain:':A6: | S14='pid,':A3, | S17='/System/Library/StagedFrameworks/Safari/SafariShared.framework/Versions/A/XPCServices/com.apple.Safari.ImageDecoder.xpc/Contents/MacOS/com.apple.Safari.ImageDecoder':/A6/A7/A16/A6/A12.A9/A8/A1/A11/A3.A5.A6.A12.A3/A8/A5/A3.A5.A6.A12 | S20='147:':D3: | S29="requestor's":A9'A1 | S30='bundle,':A6, | S33='/System/Library/StagedFrameworks/Safari/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.WebContent.xpc':/A6/A7/A16/A6/A6.A9/A8/A1/A11/A3.A5.A6.A10.A3
+
+### FAMILY 10
+support=2
+template_anchor_key=jul calvisitor kernel arpt wl mdns ipv addr
+examples_and_shapes:
+Example 0: Jul  1 09:01:41 calvisitor-10-105-160-95 kernel[0]: ARPT: 620698.466000: wl0: MDNS: IPV6 Addr: fe80:0:0:0:c6b3:1ff:fecd:467f
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:01:41':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='ARPT:':A4: | S6='620698.466000:':D6.D6: | S7='wl0:':A2D1: | S8='MDNS:':A4: | S9='IPV6':A3D1 | S10='Addr:':A4: | S11='fe80:0:0:0:c6b3:1ff:fecd:467f':A2D2:D1:D1:D1:A1D1A1D1:D1A2:A4:D3A1
+Example 1: Jul  1 09:01:41 calvisitor-10-105-160-95 kernel[0]: ARPT: 620698.466009: wl0: MDNS: IPV6 Addr: 2607:f140:6000:8:c6b3:1ff:fecd:467f
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:01:41':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='ARPT:':A4: | S6='620698.466009:':D6.D6: | S7='wl0:':A2D1: | S8='MDNS:':A4: | S9='IPV6':A3D1 | S10='Addr:':A4: | S11='2607:f140:6000:8:c6b3:1ff:fecd:467f':D4:A1D3:D4:D1:A1D1A1D1:D1A2:A4:D3A1
+required_value_like_slots (22 sampled occurrences):
+Example 0: S1='1':D1 | S2='09:01:41':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='ARPT:':A4: | S6='620698.466000:':D6.D6: | S7='wl0:':A2D1: | S8='MDNS:':A4: | S9='IPV6':A3D1 | S10='Addr:':A4: | S11='fe80:0:0:0:c6b3:1ff:fecd:467f':A2D2:D1:D1:D1:A1D1A1D1:D1A2:A4:D3A1
+Example 1: S1='1':D1 | S2='09:01:41':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='ARPT:':A4: | S6='620698.466009:':D6.D6: | S7='wl0:':A2D1: | S8='MDNS:':A4: | S9='IPV6':A3D1 | S10='Addr:':A4: | S11='2607:f140:6000:8:c6b3:1ff:fecd:467f':D4:A1D3:D4:D1:A1D1A1D1:D1A2:A4:D3A1
+
+### FAMILY 19
+support=2
+template_anchor_key=jul calvisitor figagglomeratorsetobjectforkey signalled err null key at line
+examples_and_shapes:
+Example 0: Jul  2 14:44:30 calvisitor-10-105-163-202 com.apple.WebKit.WebContent[32378]: [14:44:30.117] FigAgglomeratorSetObjectForKey signalled err=-16020 (kFigStringConformerError_ParamErr) (NULL key) at /Library/Caches/com.apple.xbs/Sources/CoreMedia/CoreMedia-1731.15.207/Prototypes/LegibleOutput/FigAgglomerator.c line 92
+Tokens: S0='Jul':A3 | S1='2':D1 | S2='14:44:30':D2:D2:D2 | S3='calvisitor-10-105-163-202':A10-D2-D3-D3-D3 | S4='com.apple.WebKit.WebContent[32378]:':A3.A5.A6.A10[D5]: | S5='[14:44:30.117]':[D2:D2:D2.D3] | S6='FigAgglomeratorSetObjectForKey':A30 | S7='signalled':A9 | S8='err=-16020':A3=-D5 | S9='(kFigStringConformerError_ParamErr)':(A24_A8) | S10='(NULL':(A4 | S11='key)':A3) | S12='at':A2 | S13='/Library/Caches/com.apple.xbs/Sources/CoreMedia/CoreMedia-1731.15.207/Prototypes/LegibleOutput/FigAgglomerator.c':/A7/A6/A3.A5.A3/A7/A9/A9-D4.D2.D3/A10/A13/A15.A1 | S14='line':A4 | S15='92':D2
+Example 1: Jul  2 14:45:01 calvisitor-10-105-163-202 com.apple.WebKit.WebContent[32378]: [14:45:01.085] FigAgglomeratorSetObjectForKey signalled err=-16020 (kFigStringConformerError_ParamErr) (NULL key) at /Library/Caches/com.apple.xbs/Sources/CoreMedia/CoreMedia-1731.15.207/Prototypes/LegibleOutput/FigAgglomerator.c line 92
+Tokens: S0='Jul':A3 | S1='2':D1 | S2='14:45:01':D2:D2:D2 | S3='calvisitor-10-105-163-202':A10-D2-D3-D3-D3 | S4='com.apple.WebKit.WebContent[32378]:':A3.A5.A6.A10[D5]: | S5='[14:45:01.085]':[D2:D2:D2.D3] | S6='FigAgglomeratorSetObjectForKey':A30 | S7='signalled':A9 | S8='err=-16020':A3=-D5 | S9='(kFigStringConformerError_ParamErr)':(A24_A8) | S10='(NULL':(A4 | S11='key)':A3) | S12='at':A2 | S13='/Library/Caches/com.apple.xbs/Sources/CoreMedia/CoreMedia-1731.15.207/Prototypes/LegibleOutput/FigAgglomerator.c':/A7/A6/A3.A5.A3/A7/A9/A9-D4.D2.D3/A10/A13/A15.A1 | S14='line':A4 | S15='92':D2
+required_value_like_slots (22 sampled occurrences):
+Example 0: S1='2':D1 | S2='14:44:30':D2:D2:D2 | S3='calvisitor-10-105-163-202':A10-D2-D3-D3-D3 | S4='com.apple.WebKit.WebContent[32378]:':A3.A5.A6.A10[D5]: | S5='[14:44:30.117]':[D2:D2:D2.D3] | S8='err=-16020':A3=-D5 | S9='(kFigStringConformerError_ParamErr)':(A24_A8) | S10='(NULL':(A4 | S11='key)':A3) | S13='/Library/Caches/com.apple.xbs/Sources/CoreMedia/CoreMedia-1731.15.207/Prototypes/LegibleOutput/FigAgglomerator.c':/A7/A6/A3.A5.A3/A7/A9/A9-D4.D2.D3/A10/A13/A15.A1 | S15='92':D2
+Example 1: S1='2':D1 | S2='14:45:01':D2:D2:D2 | S3='calvisitor-10-105-163-202':A10-D2-D3-D3-D3 | S4='com.apple.WebKit.WebContent[32378]:':A3.A5.A6.A10[D5]: | S5='[14:45:01.085]':[D2:D2:D2.D3] | S8='err=-16020':A3=-D5 | S9='(kFigStringConformerError_ParamErr)':(A24_A8) | S10='(NULL':(A4 | S11='key)':A3) | S13='/Library/Caches/com.apple.xbs/Sources/CoreMedia/CoreMedia-1731.15.207/Prototypes/LegibleOutput/FigAgglomerator.c':/A7/A6/A3.A5.A3/A7/A9/A9-D4.D2.D3/A10/A13/A15.A1 | S15='92':D2
+
+### FAMILY 22
+support=2
+template_anchor_key=jul calvisitor connecttoserver connect failed socket err errno operation not permitted
+examples_and_shapes:
+Example 0: Jul  1 09:25:34 calvisitor-10-105-160-95 com.apple.AddressBook.InternetAccountsBridge[31190]: dnssd_clientstub ConnectToServer: connect() failed path:/var/run/mDNSResponder Socket:4 Err:-1 Errno:1 Operation not permitted
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:25:34':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='com.apple.AddressBook.InternetAccountsBridge[31190]:':A3.A5.A11.A22[D5]: | S5='dnssd_clientstub':A5_A10 | S6='ConnectToServer:':A15: | S7='connect()':A7() | S8='failed':A6 | S9='path:/var/run/mDNSResponder':A4:/A3/A3/A13 | S10='Socket:4':A6:D1 | S11='Err:-1':A3:-D1 | S12='Errno:1':A5:D1 | S13='Operation':A9 | S14='not':A3 | S15='permitted':A9
+Example 1: Jul  1 09:25:38 calvisitor-10-105-160-95 com.apple.AddressBook.InternetAccountsBridge[31190]: dnssd_clientstub ConnectToServer: connect() failed path:/var/run/mDNSResponder Socket:4 Err:-1 Errno:1 Operation not permitted
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:25:38':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='com.apple.AddressBook.InternetAccountsBridge[31190]:':A3.A5.A11.A22[D5]: | S5='dnssd_clientstub':A5_A10 | S6='ConnectToServer:':A15: | S7='connect()':A7() | S8='failed':A6 | S9='path:/var/run/mDNSResponder':A4:/A3/A3/A13 | S10='Socket:4':A6:D1 | S11='Err:-1':A3:-D1 | S12='Errno:1':A5:D1 | S13='Operation':A9 | S14='not':A3 | S15='permitted':A9
+required_value_like_slots (22 sampled occurrences):
+Example 0: S1='1':D1 | S2='09:25:34':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='com.apple.AddressBook.InternetAccountsBridge[31190]:':A3.A5.A11.A22[D5]: | S5='dnssd_clientstub':A5_A10 | S6='ConnectToServer:':A15: | S7='connect()':A7() | S9='path:/var/run/mDNSResponder':A4:/A3/A3/A13 | S10='Socket:4':A6:D1 | S11='Err:-1':A3:-D1 | S12='Errno:1':A5:D1
+Example 1: S1='1':D1 | S2='09:25:38':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='com.apple.AddressBook.InternetAccountsBridge[31190]:':A3.A5.A11.A22[D5]: | S5='dnssd_clientstub':A5_A10 | S6='ConnectToServer:':A15: | S7='connect()':A7() | S9='path:/var/run/mDNSResponder':A4:/A3/A3/A13 | S10='Socket:4':A6:D1 | S11='Err:-1':A3:-D1 | S12='Errno:1':A5:D1
+
+### FAMILY 5
+support=2
+template_anchor_key=jul calvisitor kernel sandbox deny
+examples_and_shapes:
+Example 0: Jul  1 09:25:38 calvisitor-10-105-160-95 kernel[0]: Sandbox: com.apple.Addres(31190) deny(1) network-outbound /private/var/run/mDNSResponder
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:25:38':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='Sandbox:':A7: | S6='com.apple.Addres(31190)':A3.A5.A6(D5) | S7='deny(1)':A4(D1) | S8='network-outbound':A7-A8 | S9='/private/var/run/mDNSResponder':/A7/A3/A3/A13
+Example 1: Jul  1 09:27:02 calvisitor-10-105-160-95 kernel[0]: Sandbox: com.apple.Addres(31201) deny(1) network-outbound /private/var/run/mDNSResponder
+Tokens: S0='Jul':A3 | S1='1':D1 | S2='09:27:02':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='Sandbox:':A7: | S6='com.apple.Addres(31201)':A3.A5.A6(D5) | S7='deny(1)':A4(D1) | S8='network-outbound':A7-A8 | S9='/private/var/run/mDNSResponder':/A7/A3/A3/A13
+required_value_like_slots (18 sampled occurrences):
+Example 0: S1='1':D1 | S2='09:25:38':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='Sandbox:':A7: | S6='com.apple.Addres(31190)':A3.A5.A6(D5) | S7='deny(1)':A4(D1) | S8='network-outbound':A7-A8 | S9='/private/var/run/mDNSResponder':/A7/A3/A3/A13
+Example 1: S1='1':D1 | S2='09:27:02':D2:D2:D2 | S3='calvisitor-10-105-160-95':A10-D2-D3-D3-D2 | S4='kernel[0]:':A6[D1]: | S5='Sandbox:':A7: | S6='com.apple.Addres(31201)':A3.A5.A6(D5) | S7='deny(1)':A4(D1) | S8='network-outbound':A7-A8 | S9='/private/var/run/mDNSResponder':/A7/A3/A3/A13

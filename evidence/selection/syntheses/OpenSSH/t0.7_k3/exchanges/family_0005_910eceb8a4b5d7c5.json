@@ -1,0 +1,43 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix consisting of timestamp, hostname, and process information. These fields are stable and should be considered part of the header.",
+    "functions": [
+      {
+        "tag": "Header_process",
+        "meaning": "systemd services",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": false,
+        "order_hint": "family_structured",
+        "regex": "\\ssshd\\[\\d+\\]",
+        "replacement": "({placeholder})",
+        "program": {
+          "op": "python_exec",
+          "parameters": {
+            "regex_capture": null
+          },
+          "code": "def forward(groups):\n    return {'stored': [groups[0]]}\n\ndef inverse(record):\n    return record['stored'][0]"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "syslog_date_time_without_year",
+      "reason": "Month, day, and time form a composed timestamp, which can be compactly stored as a single integer."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "System process identifier",
+      "reason": "The process identifier of the sshd process is variable but has a fixed structure, making it suitable for a raw capture."
+    }
+  ],
+  "functions": [],
+  "_proposal_cache_mode": "api"
+}

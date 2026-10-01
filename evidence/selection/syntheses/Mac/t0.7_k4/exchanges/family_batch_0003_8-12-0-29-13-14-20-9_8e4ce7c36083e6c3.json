@@ -1,0 +1,571 @@
+{
+  "families": [
+    {
+      "family_id": 8,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "Jul",
+              "1",
+              "10:13:34"
+            ],
+            "reason": "Tokens represent a single timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "hostname_or_ip",
+            "tokens": [
+              "calvisitor-10-105-160-95"
+            ],
+            "reason": "The value contains multiple structural separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "process_pid",
+            "tokens": [
+              "WindowServer[184]"
+            ],
+            "reason": "The pid is explicitly structured with brackets",
+            "must_emit_function": true
+          },
+          {
+            "name": "pid_value",
+            "tokens": [
+              "pid 445"
+            ],
+            "reason": "The plain value is introduced by a stable field-name literal",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Repeated timestamp and hostname structure"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Timestamp",
+          "reason": "Contains critical timestamp information"
+        },
+        {
+          "slot": "S3",
+          "action": "STREAM_RAW",
+          "meaning": "Hostname or IP",
+          "reason": "Structured value with separators"
+        },
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW",
+          "meaning": "Process name and PID",
+          "reason": "Structured value with stable brackets"
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW",
+          "meaning": "PID",
+          "reason": "Explicitly labeled value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hostname_or_ip",
+          "process_pid",
+          "pid_value"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "Timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "The tokens merge into one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(Jul \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "hostname_or_ip",
+          "meaning": "Hostname or IP",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hostname_or_ip",
+            "context_source": null,
+            "why_not_merge_raw": "Value is already structured"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\b(calvisitor-\\d{1,3}-\\d{1,3}-\\d{1,3}-\\d{1,3})\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "process_pid",
+          "meaning": "Process name and PID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "process_name_with_pid",
+            "context_source": null,
+            "why_not_merge_raw": "Value is already structured"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\b(WindowServer\\[\\d+\\])\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "pid_value",
+          "meaning": "PID from label",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "pid",
+            "context_source": null,
+            "why_not_merge_raw": "Value is explicitly labeled"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\bpid (\\d+)\\b",
+          "replacement": "pid {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composed",
+            "tokens": [
+              "Jul",
+              "1",
+              "09:00:56"
+            ],
+            "reason": "Tokens represent a single timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "hostname_or_device",
+            "tokens": [
+              "authorMacBook-Pro"
+            ],
+            "reason": "The value contains multiple structural separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "process_pid",
+            "tokens": [
+              "corecaptured[31125]"
+            ],
+            "reason": "The pid is explicitly structured with brackets",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Common prefix with timestamp and hostname"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "Timestamp",
+          "reason": "Contains critical timestamp information"
+        },
+        {
+          "slot": "S3",
+          "action": "STREAM_RAW",
+          "meaning": "Hostname or device",
+          "reason": "Structured value with separators"
+        },
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW",
+          "meaning": "Process name and PID",
+          "reason": "Structured value with stable brackets"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composed"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hostname_or_device",
+          "process_pid"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composed",
+          "meaning": "Timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "The tokens merge into one timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(Jul \\d{1,2} \\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "hostname_or_device",
+          "meaning": "Hostname or device",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hostname_or_device",
+            "context_source": null,
+            "why_not_merge_raw": "Value is already structured"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\b([a-zA-Z0-9-]+(?:-[a-zA-Z0-9]+)*)\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "process_pid",
+          "meaning": "Process name and PID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "process_name_with_pid",
+            "context_source": null,
+            "why_not_merge_raw": "Value is already structured"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\b(corecaptured\\[\\d+\\])\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "hex_code",
+            "tokens": [
+              "'0x0092fffe':",
+              "'0x00930001':"
+            ],
+            "reason": "Value is a structured hexadecimal identifier",
+            "must_emit_function": true
+          },
+          {
+            "name": "hostname_or_ip",
+            "tokens": [
+              "calvisitor-10-105-162-105"
+            ],
+            "reason": "The value contains multiple structural separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "process_with_pid",
+            "tokens": [
+              "Word[14463]"
+            ],
+            "reason": "PID is explicitly structured with brackets",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "Common prefix with timestamp and hostname"
+      },
+      "slot_actions": [
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW",
+          "meaning": "Hexadecimal code",
+          "reason": "Structured hexadecimal identifier"
+        },
+        {
+          "slot": "S3",
+          "action": "STREAM_RAW",
+          "meaning": "Hostname or IP",
+          "reason": "Structured value with separators"
+        },
+        {
+          "slot": "S5",
+          "action": "STREAM_RAW",
+          "meaning": "Process name and PID",
+          "reason": "Structured value with stable brackets"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hex_code",
+          "hostname_or_ip",
+          "process_with_pid"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "hex_code",
+          "meaning": "Hexadecimal code",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hexadecimal_value",
+            "context_source": null,
+            "why_not_merge_raw": "Value is structured as a hexadecimal identifier"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "'(0x[0-9a-fA-F]+)':",
+          "replacement": "'{placeholder}':",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"'{record['stored'][0]}':\""
+          }
+        },
+        {
+          "tag": "hostname_or_ip",
+          "meaning": "Hostname or IP",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hostname_or_ip",
+            "context_source": null,
+            "why_not_merge_raw": "Value is already structured"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\b(calvisitor-\\d{1,3}-\\d{1,3}-\\d{1,3}-\\d{1,3})\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "process_with_pid",
+          "meaning": "Process name with PID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "process_with_pid",
+            "context_source": null,
+            "why_not_merge_raw": "Value is already structured"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\b(Word\\[\\d+\\])\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 29,
+      "family_analysis": {},
+      "header": {
+        "has_unified_header": false,
+        "reason": "No unified header detected"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 13,
+      "family_analysis": {},
+      "header": {
+        "has_unified_header": false,
+        "reason": "No unified header detected"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {},
+      "header": {
+        "has_unified_header": false,
+        "reason": "No unified header detected"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 20,
+      "family_analysis": {},
+      "header": {
+        "has_unified_header": false,
+        "reason": "No unified header detected"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 9,
+      "family_analysis": {},
+      "header": {
+        "has_unified_header": false,
+        "reason": "No unified header detected"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 25,
+      "family_analysis": {},
+      "header": {
+        "has_unified_header": false,
+        "reason": "No unified header detected"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

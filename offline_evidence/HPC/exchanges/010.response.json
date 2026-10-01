@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"fan_speeds\",\n      \"meaning\": \"fan speed values\",\n      \"class\": \"class_1_composed_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"regex\": \"\\\\(\\\\s*(\\\\d+)\\\\s+(\\\\d+)\\\\s+(\\\\d+)\\\\s+(\\\\d+|\\\\*\\\\*\\\\*\\\\*)\\\\s+(\\\\d+)\\\\s+(\\\\d+)\\\\s*\\\\)\",\n      \"replacement\": \"({placeholder})\",\n      \"program\": {\n        \"op\": \"python_exec\",\n        \"code\": \"def forward(groups):\\n    speeds = []\\n    for g in groups:\\n        if g == '****':\\n            speeds.append(-1)\\n        else:\\n            speeds.append(int(g))\\n    return {'stored': speeds, 'layout': []}\\n\\ndef inverse(record):\\n    speeds = record['stored']\\n    return '(' + ' '.join(str(s) if s != -1 else '****' for s in speeds) + ')'\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 255,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1178,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1433
+  }
+}

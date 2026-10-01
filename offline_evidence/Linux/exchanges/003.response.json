@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"euid\",\n      \"meaning\": \"effective_user_id\",\n      \"class\": \"class_2_formatted_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"regex\": \"euid=(\\\\d+)\",\n      \"replacement\": \"euid={placeholder}\",\n      \"program\": {\n        \"intent\": \"Extract and store the effective user ID as a numeric value.\",\n        \"op\": \"python_exec\",\n        \"parameters\": {},\n        \"code\": \"def forward(groups):\\n    return {'stored': [int(groups[0])], 'layout': ['euid=']}\\n\\ndef inverse(record):\\n    return record['layout'][0] + str(record['stored'][0])\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 181,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1237,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1418
+  }
+}

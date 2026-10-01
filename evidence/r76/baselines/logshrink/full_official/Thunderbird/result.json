@@ -1,0 +1,67 @@
+{
+  "schema": "semzip.r76.logshrink.v1",
+  "dataset": "Thunderbird",
+  "started_at": "2026-09-29T13:03:20.538583+00:00",
+  "finished_at": "2026-09-30T07:42:16.668600+00:00",
+  "partial_first_blocks_only": false,
+  "upstream": "github.com/IntelligentDDS/LogShrink",
+  "upstream_commit": "59ce49434eec06c709c7e16027a46214a6c37961",
+  "header_length_L": 9,
+  "L_mode": "official",
+  "params": "-E E -C -K lzma -V -S -P -wh 20 -th 4 -NC 16 -mt 0.5 (sample_rate 0.1), seed 0",
+  "workers": 3,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Thunderbird/Thunderbird.log",
+    "bytes": 31788301041,
+    "mtime_ns": 1789409270402156000,
+    "device": 1048818,
+    "inode": 199002808556028868
+  },
+  "raw_bytes": 31788301041,
+  "raw_sha256": "3e8659d6efdf048bca6d682d376c74cf742a43cac66cb2a514241a103284f289",
+  "stream_full_sha256": "3e8659d6efdf048bca6d682d376c74cf742a43cac66cb2a514241a103284f289",
+  "input_matches_r68_inventory": true,
+  "blocks": 2113,
+  "blocks_status_ok": 2113,
+  "failed_blocks": [],
+  "native": {
+    "archive_bytes": 544558376,
+    "ratio": 58.374459822834496,
+    "suffix_raw_bytes": 31773767445,
+    "suffix_archive_bytes": 544202253,
+    "suffix_ratio": 58.385953512397535,
+    "lossless_blocks": 380,
+    "full_sha256_match": false,
+    "lossless": false,
+    "payload_7z_bytes": 540235423,
+    "model_7z_bytes": 4301823,
+    "model_raw_bytes": 8838323,
+    "header_bytes": 21130
+  },
+  "repaired": {
+    "archive_bytes": 553352884,
+    "ratio": 57.44670708357599,
+    "suffix_archive_bytes": 552994105,
+    "suffix_ratio": 57.45769648846438,
+    "residual_bytes": 8794508,
+    "lossless_blocks": 2113,
+    "full_sha256_match": true,
+    "lossless": true,
+    "fallback_blocks": 0,
+    "differing_lines": 14569349
+  },
+  "timing": {
+    "wall_seconds_encode_decode_audit": 67136.12238256633,
+    "sum_block_encode_seconds": 111842.63550178707,
+    "sum_block_decode_seconds": 87320.56220689416,
+    "sum_residual_seconds": 484.4120000451803,
+    "sum_patch_seconds": 96.23523741960526,
+    "encode_MB_per_s_single_worker": 0.28422346181650976,
+    "decode_MB_per_s_single_worker": 0.3640414151901812,
+    "resumed_blocks": 0
+  },
+  "host": {
+    "node": "<DEV_HOST>",
+    "python": "3.9.2"
+  }
+}

@@ -1,0 +1,78 @@
+{
+ "dataset": "Zookeeper",
+ "method": "semzip1",
+ "repeat": 1,
+ "status": "PASS",
+ "attempt": 1,
+ "_dest": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/144250_026_Zookeeper_semzip1_r1_a1",
+ "encode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "encode",
+   "--input",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/raw/Zookeeper.log",
+   "--plan",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/deployments/Zookeeper/program.json",
+   "--dataset",
+   "Zookeeper",
+   "--semzip-source",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/144250_026_Zookeeper_semzip1_r1_a1/work",
+   "--block-size",
+   "100000",
+   "--workers",
+   "4"
+  ],
+  "seconds": 14.997001394629478,
+  "returncode": 0,
+  "load_average": [
+   23.58,
+   25.66,
+   32.02
+  ],
+  "own_cpu_seconds": 10.758396000000001,
+  "other_cpu_seconds": 0.21682131999999932,
+  "other_cores": 0.014457644851433062
+ },
+ "decode": {
+  "command": [
+   "/usr/bin/python3",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/frozen/guarded_backend_v2.py",
+   "decode",
+   "--archive",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/144250_026_Zookeeper_semzip1_r1_a1/work/archive",
+   "--output",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/144250_026_Zookeeper_semzip1_r1_a1/restored.owned.log",
+   "--semzip-source",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/art/source/runtime",
+   "--result",
+   "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/timing/144250_026_Zookeeper_semzip1_r1_a1/decode",
+   "--workers",
+   "4"
+  ],
+  "seconds": 3.9063094556331635,
+  "returncode": 0,
+  "load_average": [
+   23.7,
+   25.65,
+   31.98
+  ],
+  "own_cpu_seconds": 1.7938219999999987,
+  "other_cpu_seconds": 0.06339627000000125,
+  "other_cores": 0.016229198101184616
+ },
+ "archive_bytes": 58249,
+ "fallback_blocks": 0,
+ "sha_pass": true,
+ "raw_bytes": 10426438,
+ "encode_MB_per_s": 0.6952348489967984,
+ "decode_MB_per_s": 2.6691275021655976,
+ "quiet_before": {
+  "waited_seconds": 5,
+  "other_cores_before": 0.013627666772226285
+ },
+ "max_other_cores": 0.016229198101184616,
+ "contaminated": false
+}

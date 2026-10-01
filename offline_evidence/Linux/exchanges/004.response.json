@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"header\": {\n    \"has_unified_header\": true,\n    \"reason\": \"The sampled lines share a repeated prefix/header structure with changing fields that should be extracted as side streams.\",\n    \"functions\": [\n      {\n        \"tag\": \"header_timestamp\",\n        \"meaning\": \"month_day_time_as_monotonic_integer\",\n        \"class\": \"class_1_composed_numeric\",\n        \"value_type\": \"numeric\",\n        \"target_role\": \"log_timestamp\",\n        \"context\": null,\n        \"general\": true,\n        \"order_hint\": \"global_composed\",\n        \"regex\": \"([A-Z][a-z]{2})( +)(\\\\d{1,2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2})\",\n        \"replacement\": \"{placeholder}\",\n        \"program\": {\n          \"intent\": \"Pack month, day, and time into one monotonic integer and preserve spacing for exact reconstruction.\",\n          \"op\": \"python_exec\",\n          \"parameters\": {},\n          \"code\": \"def forward(groups):\\n    month, sp1, day, sp2, time = groups\\n    text = month + ' ' + day + ' ' + time\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    monotonic = (dt.month * 1000000) + (dt.day * 10000) + (dt.hour * 100) + dt.minute\\n    return {'stored': [monotonic], 'layout': [len(sp1), len(sp2), len(day)]}\\n\\ndef inverse(record):\\n    monotonic = int(record['stored'][0])\\n    layout = record.get('layout', [])\\n    sp1_len, sp2_len, day_width = layout\\n    month = datetime.strptime(str(monotonic // 1000000), '%m').strftime('%b')\\n    day = str((monotonic % 1000000) // 10000).zfill(day_width)\\n    hour = (monotonic % 10000) // 100\\n    minute = monotonic % 100\\n    time = f'{hour:02}:{minute:02}:00'\\n    return month + (' ' * sp1_len) + day + (' ' * sp2_len) + time\"\n        }\n      }\n    ]\n  },\n  \"slot_actions\": [\n    {\n      \"slot\": \"S1+S2\",\n      \"action\": \"COMPOSE_FIELDS_TO_INT\",\n      \"meaning\": \"month_day_time_as_monotonic_integer\",\n      \"reason\": \"Month, day, and time together form one timestamp-like value.\"\n    },\n    {\n      \"slot\": \"S4\",\n      \"action\": \"STREAM_RAW\",\n      \"meaning\": \"process_name_and_id\",\n      \"reason\": \"The process name and ID are a structured span with stable separators and changing values.\"\n    },\n    {\n      \"slot\": \"S6\",\n      \"action\": \"KEEP_IN_MAIN\",\n      \"meaning\": \"pass_status\",\n      \"reason\": \"The 'pass;' token is stable and does not disturb the template structure.\"\n    }\n  ],\n  \"functions\": [\n    {\n      \"tag\": \"process_name_id\",\n      \"meaning\": \"process_name_and_id\",\n      \"class\": \"class_3_common_variable\",\n      \"value_type\": \"string\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"general\": true,\n      \"order_hint\": \"global_atomic\",\n      \"regex\": \"([A-Za-z_]+\\\\([A-Za-z_]+\\\\)\\\\[\\\\d+\\\\]:)\",\n      \"replacement\": \"{placeholder}\",\n      \"program\": {\n        \"intent\": \"Preserve the exact process name and ID span as a raw stream.\",\n        \"op\": \"python_exec\",\n        \"parameters\": {},\n        \"code\": \"def forward(groups):\\n    return {'stored': [groups[0]], 'layout': []}\\n\\ndef inverse(record):\\n    return str(record['stored'][0])\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 863,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 11179,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 12042
+  }
+}

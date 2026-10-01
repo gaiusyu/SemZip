@@ -1,0 +1,103 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated header structure with a timestamp, log level, and client IP address. These changing fields should be extracted as side streams for better compression.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "weekday_month_day_time_year_as_epoch_seconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[([A-Z][a-z]{2})( +)([A-Z][a-z]{2})( +)(\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})( +)(\\d{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Pack the full timestamp into epoch seconds for compact storage.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    weekday, sp1, month, sp2, day, sp3, time, sp4, year = groups\n    text = weekday + ' ' + month + ' ' + day + ' ' + time + ' ' + year\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\n    return {'stored': [int(dt.timestamp())], 'layout': [len(sp1), len(sp2), len(sp3), len(sp4)]}\n\ndef inverse(record):\n    stored_value = record['stored'][0]\n    layout = record['layout']\n    dt = datetime.fromtimestamp(stored_value)\n    weekday = dt.strftime('%a')\n    month = dt.strftime('%b')\n    day = str(dt.day).zfill(2)\n    time = dt.strftime('%H:%M:%S')\n    year = dt.strftime('%Y')\n    return weekday + (' ' * layout[0]) + month + (' ' * layout[1]) + day + (' ' * layout[2]) + time + (' ' * layout[3]) + year"
+        }
+      },
+      {
+        "tag": "client_ipv4",
+        "meaning": "recurring_client_ipv4_address",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "\\[client( +)((?:\\d{1,3}\\.){3}\\d{1,3})\\]",
+        "replacement": "[client{group1}{placeholder}]",
+        "program": {
+          "intent": "Capture and store the client IPv4 address exactly.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1+S2+S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "full log timestamp as epoch seconds",
+      "reason": "The timestamp is composed of multiple fields (weekday, month, day, time, year) that form one semantic value. Storing it as epoch seconds is more compact and allows exact reconstruction."
+    },
+    {
+      "slot": "S6+S7",
+      "action": "STREAM_RAW",
+      "meaning": "client IPv4 address",
+      "reason": "The client IP address is a structured and bounded system variable with a recurring format, making it suitable for extraction as a common variable stream."
+    },
+    {
+      "slot": "S13",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "request path",
+      "reason": "The request path is static across examples and appears to be a constant in this log family, so it should remain in the main template."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "log_level",
+      "meaning": "log_level_error_constant",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "\\[(error)\\]",
+      "replacement": "[{placeholder}]",
+      "program": {
+        "intent": "Capture the log level as a constant string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "directory_path",
+      "meaning": "accessed_directory_path",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": false,
+      "order_hint": "family_structured",
+      "regex": "rule:( +)(/[^ ]+)",
+      "replacement": "rule:{group1}{placeholder}",
+      "program": {
+        "intent": "Capture the directory path exactly as it appears in the log.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

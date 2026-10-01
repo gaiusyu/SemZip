@@ -1,0 +1,123 @@
+{
+  "version": "QG-V1",
+  "implementation": "qg_select2 (parallel evaluation, same decisions)",
+  "dataset": "HealthApp",
+  "input_plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/train_k/HealthApp/t0.7_k1/training_work/HealthApp/replay_plan.json",
+  "input_plan_sha256": "08b4d2abd540907539dc1ff55c16450d036dc2f8043971c1cd5bbd2f9994c3b2",
+  "training_block_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68",
+  "selected_plan_sha256": "1488a2a101d2c320935f105c49b9b8f2a58e29868bb3272c228dba436792d2e3",
+  "original_train_archive_bytes": 333745,
+  "empty_train_archive_bytes": 216981,
+  "selected_train_archive_bytes": 316517,
+  "removed_tags": [],
+  "kept_tags": [
+    "TS1",
+    "B",
+    "E"
+  ],
+  "evaluations": 6,
+  "decisions": [
+    {
+      "stage": "A",
+      "spec_index": 0,
+      "tag": "TS1",
+      "variant": "width_agnostic",
+      "before": 333745,
+      "after": 316517,
+      "accepted": true
+    },
+    {
+      "stage": "B",
+      "tag": "E",
+      "before": 316517,
+      "after": 316517,
+      "accepted": false,
+      "all": {
+        "B": 317149,
+        "E": 316517,
+        "TS1": 338677
+      }
+    }
+  ],
+  "eval_log": [
+    {
+      "eval": 2,
+      "key": "c5668ee894e2",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 216981,
+      "seconds": 4.71
+    },
+    {
+      "eval": 2,
+      "key": "cd9618f677fb",
+      "label": "original",
+      "tags": [
+        "TS1",
+        "B",
+        "E"
+      ],
+      "archive_bytes": 333745,
+      "seconds": 37.78
+    },
+    {
+      "eval": 3,
+      "key": "3ca3ec9f9261",
+      "label": "A:TS1:width_agnostic",
+      "tags": [
+        "TS1",
+        "B",
+        "E"
+      ],
+      "archive_bytes": 316517,
+      "seconds": 60.67
+    },
+    {
+      "eval": 3,
+      "key": "3ca3ec9f9261",
+      "label": "A:TS1:width_agnostic",
+      "tags": [
+        "TS1",
+        "B",
+        "E"
+      ],
+      "archive_bytes": 316517,
+      "seconds": 60.67,
+      "cached": true
+    },
+    {
+      "eval": 6,
+      "key": "e2e09e19e11e",
+      "label": "B:-TS1",
+      "tags": [
+        "B",
+        "E"
+      ],
+      "archive_bytes": 338677,
+      "seconds": 29.14
+    },
+    {
+      "eval": 6,
+      "key": "39142a43e5aa",
+      "label": "B:-B",
+      "tags": [
+        "TS1",
+        "E"
+      ],
+      "archive_bytes": 317149,
+      "seconds": 59.7
+    },
+    {
+      "eval": 6,
+      "key": "b4425f4e8e8f",
+      "label": "B:-E",
+      "tags": [
+        "TS1",
+        "B"
+      ],
+      "archive_bytes": 316517,
+      "seconds": 59.7
+    }
+  ],
+  "llm_calls": 0
+}

@@ -1,0 +1,523 @@
+{
+  "families": [
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "Several tokens jointly form a timestamp-like value.",
+            "target_value": "numeric timestamp representation",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "hostname_pattern",
+            "tokens": [
+              "calvisitor-10-105-160-95"
+            ],
+            "reason": "The captured value contains explicit structural separators encoded by the regex.",
+            "must_emit_function": true
+          },
+          {
+            "name": "log_source",
+            "tokens": [
+              "com.apple.cts[258]:",
+              "com.apple.icloud.fmfd.heartbeat:",
+              "com.apple.Safari.SafeBrowsing.Update:",
+              "com.apple.EscrowSecurityAlert.daily:",
+              "com.apple.CacheDelete.daily:",
+              "com.apple.suggestions.harvest:"
+            ],
+            "reason": "The captured value contains explicit structural separators encoded by the regex.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The family has a consistent prefix defining the log timestamp and hostname."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "Tokens jointly form the log timestamp used as the primary timestamp."
+        },
+        {
+          "slot": "S3",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "hostname",
+          "reason": "Hostname contains structural separators, making it suitable for extraction."
+        },
+        {
+          "slot": "S4+S5",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "log source",
+          "reason": "Log source contains structured identifiers, suitable for extraction."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hostname",
+          "log_source"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Timestamp tokens are composable into one numeric value."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\w{3}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]} {groups[2]}', '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "hostname",
+          "meaning": "structured hostname pattern",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hostname",
+            "context_source": null,
+            "why_not_merge_raw": "Value contains intrinsic structural separators."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\b((?:\\w+-\\d+-\\d+-\\d+-\\d+))\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "log_source",
+          "meaning": "structured log source pattern",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "log source",
+            "context_source": null,
+            "why_not_merge_raw": "Value contains intrinsic structural separators."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\b(com\\.apple\\.[a-zA-Z0-9._-]+)\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 18,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "Several tokens jointly form a timestamp-like value.",
+            "target_value": "numeric timestamp representation",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "hostname_pattern",
+            "tokens": [
+              "calvisitor-10-105-160-95"
+            ],
+            "reason": "The captured value contains explicit structural separators encoded by the regex.",
+            "must_emit_function": true
+          },
+          {
+            "name": "kernel_log_source",
+            "tokens": [
+              "kernel[0]:"
+            ],
+            "reason": "The captured value contains brackets explicitly encoded by the regex.",
+            "must_emit_function": true
+          },
+          {
+            "name": "event_action",
+            "tokens": [
+              "AppleCamIn::wakeEventHandlerThread",
+              "ARPT:",
+              "AirPort_Brcm43xx::syncPowerState:",
+              "WWEN[enabled]"
+            ],
+            "reason": "The captured value contains intrinsic structural separators explicitly encoded by the regex.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The family has a consistent prefix defining the log timestamp and hostname."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "Tokens jointly form the log timestamp used as the primary timestamp."
+        },
+        {
+          "slot": "S3",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "hostname",
+          "reason": "Hostname contains structural separators, making it suitable for extraction."
+        },
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "kernel log source",
+          "reason": "Kernel log source has stable brackets and structured identifiers."
+        },
+        {
+          "slot": "S5+S6+S7+S8",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "event action or state",
+          "reason": "Logs contain structural identifiers and explicit formatting."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hostname",
+          "kernel_log_source",
+          "event_action"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Timestamp tokens are composable into one numeric value."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\w{3}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]} {groups[2]}', '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "hostname",
+          "meaning": "structured hostname pattern",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hostname",
+            "context_source": null,
+            "why_not_merge_raw": "Value contains intrinsic structural separators."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\b((?:\\w+-\\d+-\\d+-\\d+-\\d+))\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "kernel_log_source",
+          "meaning": "kernel log source",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "kernel log source",
+            "context_source": null,
+            "why_not_merge_raw": "Value contains brackets and structural separators."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\b(kernel\\[\\d+\\]:)\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "event_action",
+          "meaning": "event action or state",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "event action",
+            "context_source": null,
+            "why_not_merge_raw": "Value contains structural identifiers and explicit formatting."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\b([A-Za-z0-9._:-]+)\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "weekday",
+              "month",
+              "day",
+              "time"
+            ],
+            "reason": "Several tokens jointly form a timestamp-like value.",
+            "target_value": "numeric timestamp representation",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "hostname_pattern",
+            "tokens": [
+              "calvisitor-10-105-160-95",
+              "authorMacBook-Pro"
+            ],
+            "reason": "The captured value contains explicit structural separators encoded by the regex.",
+            "must_emit_function": true
+          },
+          {
+            "name": "kernel_log_source",
+            "tokens": [
+              "kernel[0]:"
+            ],
+            "reason": "The captured value contains brackets explicitly encoded by the regex.",
+            "must_emit_function": true
+          },
+          {
+            "name": "message_type",
+            "tokens": [
+              "0xE0000340"
+            ],
+            "reason": "The value is a structured hexadecimal identifier explicitly encoded by the regex.",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "The family has a consistent prefix defining the log timestamp and hostname."
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1+S2",
+          "action": "COMPOSE_FIELDS_TO_INT | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "Tokens jointly form the log timestamp used as the primary timestamp."
+        },
+        {
+          "slot": "S3",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "hostname",
+          "reason": "Hostname contains structural separators, making it suitable for extraction."
+        },
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "kernel log source",
+          "reason": "Kernel log source has stable brackets and structured identifiers."
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "message type",
+          "reason": "Message type is a structured hexadecimal identifier."
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hostname",
+          "kernel_log_source",
+          "message_type"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "Timestamp tokens are composable into one numeric value."
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\w{3}) +(\\d{1,2}) +(\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f'{groups[0]} {groups[1]} {groups[2]}', '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "hostname",
+          "meaning": "structured hostname pattern",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hostname",
+            "context_source": null,
+            "why_not_merge_raw": "Value contains intrinsic structural separators."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\b((?:\\w+-\\d+-\\d+-\\d+-\\d+)|(?:\\w+-\\w+-\\w+))\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "kernel_log_source",
+          "meaning": "kernel log source",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "kernel log source",
+            "context_source": null,
+            "why_not_merge_raw": "Value contains brackets and structural separators."
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\b(kernel\\[\\d+\\]:)\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "message_type",
+          "meaning": "message type",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "message type",
+            "context_source": null,
+            "why_not_merge_raw": "Value is a structured, stable hexadecimal identifier."
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\b(0x[A-Fa-f0-9]+)\\b",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

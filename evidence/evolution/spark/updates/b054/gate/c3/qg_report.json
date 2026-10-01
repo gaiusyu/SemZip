@@ -1,0 +1,106 @@
+{
+  "version": "QG-V1",
+  "implementation": "qg_select2 (parallel evaluation, same decisions)",
+  "dataset": "Spark",
+  "input_plan": "<WORKSPACE>/r75_fallback_evolution_20260927/spark_run/upd/b054/train_k/Spark/t0.7_k3/training_work/Spark/replay_plan.json",
+  "input_plan_sha256": "bd0cf7b9b22f324bf7a9a9296ebc2470131350cc400ffbdff18b5d455b33bf85",
+  "training_block_sha256": "8ab9316a6c39461f88ad1473fdbd2304ea87c1b8c45c95a46d79b2e7b15cec47",
+  "selected_plan_sha256": "17c72253dc712362a21911f7e8e5cf9f2da7dd7be2ea8fd04c569e442ab99fbb",
+  "original_train_archive_bytes": 279029,
+  "empty_train_archive_bytes": 278829,
+  "selected_train_archive_bytes": 278829,
+  "removed_tags": [
+    "C"
+  ],
+  "kept_tags": [],
+  "evaluations": 2,
+  "decisions": [
+    {
+      "stage": "B",
+      "tag": "C",
+      "before": 279029,
+      "after": 278829,
+      "accepted": true,
+      "all": {
+        "C": 278829
+      }
+    },
+    {
+      "stage": "C",
+      "tag": "C",
+      "before": 278829,
+      "after": 279029,
+      "accepted": false
+    }
+  ],
+  "eval_log": [
+    {
+      "eval": 1,
+      "key": "17d87ca3cea6",
+      "label": "original",
+      "tags": [
+        "C"
+      ],
+      "archive_bytes": 279029,
+      "seconds": 4.18
+    },
+    {
+      "eval": 2,
+      "key": "617797c9c0a6",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 278829,
+      "seconds": 3.21
+    },
+    {
+      "eval": 1,
+      "key": "17d87ca3cea6",
+      "label": "original",
+      "tags": [
+        "C"
+      ],
+      "archive_bytes": 279029,
+      "seconds": 4.18,
+      "cached": true
+    },
+    {
+      "eval": 2,
+      "key": "617797c9c0a6",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 278829,
+      "seconds": 3.21,
+      "cached": true
+    },
+    {
+      "eval": 2,
+      "key": "617797c9c0a6",
+      "label": "B:-C",
+      "tags": [],
+      "archive_bytes": 278829,
+      "seconds": 3.21,
+      "cached": true
+    },
+    {
+      "eval": 2,
+      "key": "617797c9c0a6",
+      "label": "B:-C",
+      "tags": [],
+      "archive_bytes": 278829,
+      "seconds": 3.21,
+      "cached": true
+    },
+    {
+      "eval": 1,
+      "key": "17d87ca3cea6",
+      "label": "C:+C",
+      "tags": [
+        "C"
+      ],
+      "archive_bytes": 279029,
+      "seconds": 4.18,
+      "cached": true
+    }
+  ],
+  "llm_calls": 0
+}

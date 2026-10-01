@@ -1,0 +1,246 @@
+{
+  "families": [
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "log_timestamp",
+            "tokens": [
+              "[weekday",
+              "month",
+              "day",
+              "hh:mm:ss",
+              "year]"
+            ],
+            "reason": "several tokens together represent one timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "82.231.38.27",
+              "204.57.79.90",
+              "84.155.141.86",
+              "218.104.211.118",
+              "/var/www/cgi-bin/awstats.pl",
+              "/var/www/cgi-bin/awstats"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines have a repeated timestamp and error prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1+S2+S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp fields need to be composed into one integer-like value for compression and sorting"
+        },
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "client IP address",
+          "reason": "structured IP address for client identification"
+        },
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "script path",
+          "reason": "structured file path for script location"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "client_ip",
+          "script_path"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "primary log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed date/time fields",
+            "context_source": null,
+            "why_not_merge_raw": "composed date/time fields represent one logical timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[([A-Z][a-z]{2}) ([A-Z][a-z]{2}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = ' '.join(groups)\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000)\n    return dt.strftime('[%a %b %d %H:%M:%S %Y]')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "client_ip",
+          "meaning": "client IP address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "IP address",
+            "context_source": null,
+            "why_not_merge_raw": "IP address is a single structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\[client ((?:\\d{1,3}\\.){3}\\d{1,3})\\]",
+          "replacement": "[client {placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "script_path",
+          "meaning": "CGI script file path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "file path",
+            "context_source": null,
+            "why_not_merge_raw": "file path is a single structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "stat: (/.+)",
+          "replacement": "stat: {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 9,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "log_timestamp",
+            "tokens": [
+              "[weekday",
+              "month",
+              "day",
+              "hh:mm:ss",
+              "year]"
+            ],
+            "reason": "several tokens together represent one timestamp value",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines have a repeated timestamp and error prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1+S2+S3+S4",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "log timestamp",
+          "reason": "timestamp fields need to be composed into one integer-like value for compression and sorting"
+        },
+        {
+          "slot": "S9+S10",
+          "action": "COMPOSE_FIELDS_TO_INT",
+          "meaning": "child initialization status",
+          "reason": "two integer fields represent one logical status value"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp",
+          "child_init_status"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "primary log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed date/time fields",
+            "context_source": null,
+            "why_not_merge_raw": "composed date/time fields represent one logical timestamp value"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\[([A-Z][a-z]{2}) ([A-Z][a-z]{2}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+          "replacement": "[{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = ' '.join(groups)\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    millis = int(record['stored'][0])\n    dt = datetime.fromtimestamp(millis / 1000)\n    return dt.strftime('[%a %b %d %H:%M:%S %Y]')"
+          }
+        },
+        {
+          "tag": "child_init_status",
+          "meaning": "child initialization status",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "child init numeric fields",
+            "context_source": null,
+            "why_not_merge_raw": "two numeric fields represent one logical status value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "init (\\d+) ([-]?\\d+)",
+          "replacement": "init {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    val1 = int(groups[0])\n    val2 = int(groups[1])\n    return {'stored': [val1 * 100 + val2], 'layout': []}\n\ndef inverse(record):\n    combined = int(record['stored'][0])\n    val1 = combined // 100\n    val2 = combined % 100\n    return f'init {val1} {val2}'"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

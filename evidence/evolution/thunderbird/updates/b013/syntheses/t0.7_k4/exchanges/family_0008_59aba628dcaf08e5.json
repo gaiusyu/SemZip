@@ -1,0 +1,175 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure including timestamp, system information, and process metadata, indicating a unified header.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "epoch_time_in_seconds",
+        "class": "class_2_formatted_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "-( +)(\\d{10})",
+        "replacement": "-{group1}{placeholder}",
+        "program": {
+          "intent": "Extract and store the epoch timestamp as an integer.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "date_iso",
+        "meaning": "iso_date_format",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})\\.(\\d{2})\\.(\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack ISO date (YYYY.MM.DD) into a single integer for compact storage.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day = map(int, groups)\n    return {'stored': [year * 10000 + month * 100 + day], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0]\n    year = value // 10000\n    month = (value // 100) % 100\n    day = value % 100\n    return f\"{year:04}.{month:02}.{day:02}\""
+        }
+      },
+      {
+        "tag": "time_hms",
+        "meaning": "time_in_hh_mm_ss",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{2}):(\\d{2}):(\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack time (HH:MM:SS) into a single integer for compact storage.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    hour, minute, second = map(int, groups)\n    return {'stored': [hour * 3600 + minute * 60 + second], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0]\n    hour = value // 3600\n    minute = (value % 3600) // 60\n    second = value % 60\n    return f\"{hour:02}:{minute:02}:{second:02}\""
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1",
+      "action": "UINT_DELTA",
+      "meaning": "epoch_time_in_seconds",
+      "reason": "The epoch timestamp is a stable numeric value suitable for delta compression."
+    },
+    {
+      "slot": "S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "iso_date_format",
+      "reason": "The ISO date (YYYY.MM.DD) can be packed into a single integer for compact storage."
+    },
+    {
+      "slot": "S6",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "time_in_hh_mm_ss",
+      "reason": "The time (HH:MM:SS) can be packed into a single integer for compact storage."
+    },
+    {
+      "slot": "S3",
+      "action": "STREAM_RAW",
+      "meaning": "hostname",
+      "reason": "The hostname is a structured variable with low likelihood of numeric compression."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "email_like_identifier",
+      "reason": "The email-like identifier is a structured but variable field and should be stored as raw."
+    },
+    {
+      "slot": "S8",
+      "action": "STREAM_RAW",
+      "meaning": "process_path_and_pid",
+      "reason": "The process path and PID are structured values with separators, suitable for raw extraction."
+    },
+    {
+      "slot": "S9",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "operation_type",
+      "reason": "The operation type ('RRD_update') is constant across examples and should remain in the main template."
+    },
+    {
+      "slot": "S10",
+      "action": "STREAM_RAW",
+      "meaning": "metric_path",
+      "reason": "The metric path is a structured value with variable components and should be stored as raw."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "metric_path_in_quotes",
+      "reason": "The quoted metric path is redundant but important for exact reconstruction, stored as raw."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "metric_path",
+      "meaning": "file_path_with_rrd_suffix",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\((/var/lib/ganglia/rrds/__SummaryInfo__/[a-zA-Z0-9_]+\\.rrd)\\):",
+      "replacement": "({placeholder}):",
+      "program": {
+        "intent": "Store the metric file path with the '.rrd' extension as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+      }
+    },
+    {
+      "tag": "metric_path_in_quotes",
+      "meaning": "quoted_file_path_with_rrd_suffix",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "'(/var/lib/ganglia/rrds/__SummaryInfo__/[a-zA-Z0-9_]+\\.rrd)'",
+      "replacement": "'{placeholder}'",
+      "program": {
+        "intent": "Store the quoted metric file path with the '.rrd' extension as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"'{record['stored'][0]}'\""
+      }
+    },
+    {
+      "tag": "process_path",
+      "meaning": "process_path_and_pid",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(/apps/x86_64/system/ganglia-3\\.0\\.1/sbin/gmetad\\[\\d+\\]):",
+      "replacement": "{placeholder}:",
+      "program": {
+        "intent": "Store the process path and PID as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

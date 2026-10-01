@@ -1,0 +1,115 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a consistent prefix with timestamp, log level, and component fields that remain stable across examples.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "ISO8601_date_time_with_microsecond_precision",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2}),",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Parse and compress an ISO8601 timestamp with microsecond precision.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day, sp1, hour, minute, second = groups\n    text = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d') + (' ' * sp1_len) + dt.strftime('%H:%M:%S,')"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "Timestamp with date and time",
+      "reason": "The date and time fields together form a complete timestamp suitable for conversion to epoch microseconds."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "Component identifier with architecture, locale, and resource details",
+      "reason": "The structure of the component field contains high entropy opaque identifiers and separators that cannot be compactly represented, so it is preserved as raw."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "Elevate field numeric value",
+      "reason": "The elevate field is a stable numeric value suitable for compact delta coding."
+    },
+    {
+      "slot": "S10",
+      "action": "UINT_DELTA",
+      "meaning": "Applicable status (true/false) as numeric value",
+      "reason": "The binary applicable field is represented as a numeric value and can be compactly delta-coded."
+    },
+    {
+      "slot": "S9",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Applicable field context",
+      "reason": "The stable applicable context text provides clarity and does not vary aside from the binary value; it is kept in the main template for readability."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "component_identifier",
+      "meaning": "Architecture_specific_component_version_resources_locale_id",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "Component:( +)([A-Za-z0-9_.\\-]+_\\d+_\\d+\\.\\d+\\.\\d+\\.\\d+_[A-Za-z-]+_[A-Za-z0-9]+),",
+      "replacement": "Component:{group1}{placeholder},",
+      "program": {
+        "intent": "Raw streaming of the component identifier field.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "elevate_value",
+      "meaning": "elevate_numeric_value",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "elevate:( +)(\\d+),",
+      "replacement": "elevate:{group1}{placeholder},",
+      "program": {
+        "intent": "Store the elevate numeric value and render it exactly.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    },
+    {
+      "tag": "applicable_status",
+      "meaning": "binary_applicable_field",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "applicable\\(true/false\\):( +)(\\d)",
+      "replacement": "applicable(true/false):{group1}{placeholder}",
+      "program": {
+        "intent": "Store the binary applicable status as a numeric value and render it exactly.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

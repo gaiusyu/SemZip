@@ -1,0 +1,121 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure comprising month, day, time, hostname, and program-specific tags.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "syslog-style timestamp with month, day, and time",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack month, day, and time into one monotonic integer while preserving spacing.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, hms = groups\n    text = month + ' ' + day + ' ' + hms\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    packed = (dt.month * 100000000) + (dt.day * 1000000) + (dt.hour * 10000) + (dt.minute * 100) + dt.second\n    return {'stored': [packed], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    packed = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, day_width = layout\n    month = packed // 100000000\n    day = (packed // 1000000) % 100\n    hour = (packed // 10000) % 100\n    minute = (packed // 100) % 100\n    second = packed % 100\n    dt = datetime(2000, month, day, hour, minute, second)\n    month_name = dt.strftime('%b')\n    day_str = str(day).zfill(day_width)\n    return month_name + (' ' * sp1_len) + day_str + (' ' * sp2_len) + dt.strftime('%H:%M:%S')"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "syslog-style timestamp with day and time packed into one integer",
+      "reason": "These fields form one semantic timestamp value."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "program-specific metadata including component and PID",
+      "reason": "This slot often varies across lines and has structural separators."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "remote host IP or domain address",
+      "reason": "This field represents a standard IPv4 or domain structure."
+    },
+    {
+      "slot": "S13",
+      "action": "STREAM_RAW",
+      "meaning": "user identity",
+      "reason": "This field represents a specific user and varies across lines."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "authentication result",
+      "reason": "This field is stable and does not disturb the template."
+    },
+    {
+      "slot": "S8",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "UID of the process",
+      "reason": "This field is stable and does not disturb the template."
+    },
+    {
+      "slot": "S9",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "EUID of the process",
+      "reason": "This field is stable and does not disturb the template."
+    },
+    {
+      "slot": "S10",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "TTY identifier",
+      "reason": "This field is stable and does not disturb the template."
+    },
+    {
+      "slot": "S11",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "remote user",
+      "reason": "This field is stable and does not disturb the template."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "remote_host",
+      "meaning": "remote host IP or domain address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "rhost=( +)((?:\\d{1,3}\\.){3}\\d{1,3}|[a-zA-Z0-9.-]+)",
+      "replacement": "rhost={group1}{placeholder}",
+      "program": {
+        "intent": "Capture and preserve the exact remote host address (IP or domain).",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "user_identity",
+      "meaning": "user field value",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "user=( +)([A-Za-z][A-Za-z0-9._-]*)",
+      "replacement": "user{group1}{placeholder}",
+      "program": {
+        "intent": "Capture and preserve the exact user identity.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T03:03:06.986945+00:00",
+  "dataset": "Apache",
+  "codec": "zstd19",
+  "trial": 1,
+  "workers": 3,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+    "bytes": 5135876,
+    "mtime_ns": 1789369148595142000,
+    "device": 1048818,
+    "inode": 199002808556005632
+  },
+  "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+  "raw_bytes": 5135876,
+  "records": 56482,
+  "codec_spec": {
+    "exe": "zstd",
+    "encode": [
+      "-19",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "decode": [
+      "-d",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "suffix": ".zst",
+    "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+    "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+    "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/full_20260929/Apache/zstd19/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.zst",
+      "archive_bytes": 177700,
+      "block_encode_seconds": 2.8886905163526535,
+      "raw_bytes": 5135876,
+      "lf_count": 56481,
+      "records": 56482,
+      "ends_with_lf": false,
+      "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "archive_sha256": "04a416c1c00689c75b90c980f1ff1152556005beb40107669045571325fd24c5",
+      "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b"
+    }
+  ],
+  "encode_seconds": 2.9214590042829514,
+  "block_archive_bytes": 177700,
+  "archive_bytes": 177700,
+  "decode_seconds": 0.20984619855880737,
+  "restored_settle_seconds": 2.0043260008096695,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+  "audit_seconds": 0.0255596786737442,
+  "compression_ratio": 28.90194710185706,
+  "encode_MB_per_s": 1.7579832516802882,
+  "decode_MB_per_s": 24.474477189829678,
+  "finished_at": "2026-09-29T03:03:12.170258+00:00"
+}

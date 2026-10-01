@@ -1,0 +1,66 @@
+[
+  {
+    "family_id": 21,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2}( +)\\d{2}( +)\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 21,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([A-Z][a-z]{2} \\d{2} \\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 11,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})( +)([A-Za-z]{3})( +)([0-9]{1,2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_composition",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 11,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "([0-9]{4}\\.[0-9]{2}\\.[0-9]{2}) ([A-Za-z]{3}) ([0-9]{1,2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_composition",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 11,
+    "kind": "auto",
+    "meaning": "MAC address",
+    "reasons": [],
+    "regex": "from ([0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2})",
+    "replacement": "from {placeholder}",
+    "semantic_key": "",
+    "source_tag": "mac_address",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 11,
+    "kind": "auto",
+    "meaning": "network identifier",
+    "reasons": [],
+    "regex": "network ([A-Za-z0-9_]+):",
+    "replacement": "network {placeholder}:",
+    "semantic_key": "",
+    "source_tag": "network_identifier",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  }
+]

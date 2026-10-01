@@ -1,0 +1,86 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "OpenSSH",
+  "candidates": [
+    {
+      "cid": "c0",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c0/OpenSSH/selected_plan.json",
+      "train_cost": 76183
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c2/OpenSSH/selected_plan.json",
+      "train_cost": 76211
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c4/OpenSSH/selected_plan.json",
+      "train_cost": 78039
+    },
+    {
+      "cid": "c3",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c3/OpenSSH/selected_plan.json",
+      "train_cost": 80311
+    },
+    {
+      "cid": "c1",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c1/OpenSSH/selected_plan.json",
+      "train_cost": 82303
+    }
+  ],
+  "start": "c0",
+  "start_train_bytes": 76183,
+  "start_cost_reproduced": true,
+  "pool_groups": 12,
+  "duplicate_groups_skipped": 6,
+  "selected_train_bytes": 76063,
+  "selected_tags": [
+    "IP",
+    "PT",
+    "US",
+    "X2TS",
+    "X2PD"
+  ],
+  "selected_plan_sha256": "ce864c4c4ca334de8072ad04d80c8f3ff85845ea2febcd1a85b31d1b7b92118c",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 29,
+      "n_improving": 4,
+      "before": 76183,
+      "accepted": [
+        {
+          "move": "replace:TS0->X2TS",
+          "screen_cost": 76167,
+          "applied_cost": 76167
+        },
+        {
+          "move": "replace:PD->X2PD",
+          "screen_cost": 76175,
+          "applied_cost": 76063
+        }
+      ],
+      "after": 76063
+    },
+    {
+      "round": 1,
+      "n_moves": 23,
+      "n_improving": 0,
+      "before": 76063,
+      "accepted": [],
+      "after": 76063
+    },
+    {
+      "stage": "eliminate",
+      "tag": "X2PD",
+      "before": 76063,
+      "after": 77179,
+      "accepted": false
+    }
+  ],
+  "evaluations": 54,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "99719ec0b6bbf6bc0912604ccc083b263e7b9353b42ba1fc5b71b28273dbed06"
+}

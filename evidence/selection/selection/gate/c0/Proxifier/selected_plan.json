@@ -1,0 +1,155 @@
+{
+ "dataset": "Proxifier",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "DU",
+   "HP",
+   "BS",
+   "BR"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "open",
+     "through",
+     "proxy",
+     "https"
+    ],
+    "tags": [
+     "F"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "BR": "<BR>",
+  "BS": "<BS>",
+  "DU": "<DU>",
+  "F": "<F>",
+  "HP": "<HP>"
+ },
+ "spec_count": 5,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "lifetime( +)(<)?(\\d+):(\\d+)( +)?(sec)?",
+   "program": {
+    "code": "def forward(groups):\n    sp1, less_than, minutes, seconds, sp2, sec_literal = groups\n    is_less_than = 1 if less_than else 0\n    is_sec_literal = 1 if sec_literal else 0\n    total_seconds = int(minutes) * 60 + int(seconds)\n    layout = [len(sp1), is_less_than, len(sp2 or ''), is_sec_literal]\n    return {'stored': [total_seconds], 'layout': layout}\n\ndef inverse(record):\n    total_seconds = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = int(layout[0])\n    is_less_than = int(layout[1])\n    sp2_len = int(layout[2])\n    is_sec_literal = int(layout[3])\n    minutes = total_seconds // 60\n    seconds = total_seconds % 60\n    less_than = '<' if is_less_than else ''\n    sec_literal = ' sec' if is_sec_literal else ''\n    return 'lifetime' + (' ' * sp1_len) + less_than + f'{minutes:02}:{seconds:02}' + (' ' * sp2_len) + sec_literal",
+    "group_regex": "^(?:lifetime( +)(<)?(\\d+):(\\d+)( +)?(sec)?)$",
+    "intent": "Parse lifetime duration into total seconds and reconstruct the original format.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "lifetime_duration",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "duration:{\"code\":\"def forward(groups):\\n    sp1, less_than, minutes, seconds, sp2, sec_literal = groups\\n    is_less_than = 1 if less_than else 0\\n    is_sec_literal = 1 if sec_literal else 0\\n    total_seconds = int(minutes) * 60 + int(seconds)\\n    layout = [len(sp1), is_less_than, len(sp2 or ''), is_sec_literal]\\n    return {'stored': [total_seconds], 'layout': layout}\\n\\ndef inverse(record):\\n    total_seconds = int(record['stored'][0])\\n    layout = record.get('layout', [])\\n    sp1_len = int(layout[0])\\n    is_less_than = int(layout[1])\\n    sp2_len = int(layout[2])\\n    is_sec_literal = int(layout[3])\\n    minutes = total_seconds // 60\\n    seconds = total_seconds % 60\\n    less_than = '<' if is_less_than else ''\\n    sec_literal = ' sec' if is_sec_literal else ''\\n    return 'lifetime' + (' ' * sp1_len) + less_than + f'{minutes:02}:{seconds:02}' + (' ' * sp2_len) + sec_literal\",\"group_regex\":\"^(?:lifetime( +)(<)?(\\\\d+):(\\\\d+)( +)?(sec)?)$\",\"intent\":\"Parse lifetime duration into total seconds and reconstruct the original format.\",\"op\":\"python_exec\"}",
+   "store_group": 0,
+   "tag": "DU",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "\\[(\\d{2})\\.(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2})\\]",
+   "program": {
+    "code": "def forward(groups):\n    month, day, sp1, hour, minute, second = groups\n    text = f'{month}.{day} {hour}:{minute}:{second}'\n    dt = datetime.strptime(text, '%m.%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp())], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    epoch_seconds = int(record['stored'][0])\n    sp1_len = record['layout'][0]\n    dt = datetime.fromtimestamp(epoch_seconds)\n    month = dt.strftime('%m')\n    day = dt.strftime('%d')\n    hour = dt.strftime('%H')\n    minute = dt.strftime('%M')\n    second = dt.strftime('%S')\n    return f'{month}.{day}' + (' ' * sp1_len) + f'{hour}:{minute}:{second}'",
+    "group_regex": "^(?:\\[(\\d{2})\\.(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2})\\])$",
+    "intent": "Parse date and time into epoch seconds and reconstruct the original format.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "header_timestamp",
+   "replacement": "[{placeholder}]",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "hostport:auto",
+   "store_group": 0,
+   "tag": "HP",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(\\d+)( +)bytes(?:(( +)\\((\\d+)\\.(\\d+)( +)(KB|MB|GB)\\)))?( +)sent,",
+   "program": {
+    "code": "def forward(groups):\n    byte_text, sp1, display_span, sp2, whole, frac, sp3, unit, sp4 = groups\n    has_display = 1 if display_span else 0\n    sp2_len = 0\n    frac_width = 0\n    sp3_len = 0\n    unit_code = 0\n    if display_span:\n        sp2_len = len(sp2)\n        frac_width = len(frac or '')\n        sp3_len = len(sp3)\n        unit_code = {'KB': 1, 'MB': 2, 'GB': 3}.get(unit, 0)\n    layout = [len(sp1), has_display, len(sp4), sp2_len, frac_width, sp3_len, unit_code]\n    return {'stored': [int(byte_text)], 'layout': layout}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = int(layout[0])\n    has_display = int(layout[1])\n    sp4_len = int(layout[2])\n    display = ''\n    if has_display:\n        unit_names = {1: 'KB', 2: 'MB', 3: 'GB'}\n        sp2_len = int(layout[3])\n        frac_width = int(layout[4])\n        sp3_len = int(layout[5])\n        unit_code = int(layout[6])\n        divisor = 1024\n        if unit_code == 2:\n            divisor = 1048576\n        if unit_code == 3:\n            divisor = 1073741824\n        scale = 1\n        if frac_width == 1:\n            scale = 10\n        if frac_width == 2:\n            scale = 100\n        if frac_width == 3:\n            scale = 1000\n        if frac_width == 4:\n            scale = 10000\n        shown = v * scale // divisor\n        whole = shown // scale\n        frac_value = shown % scale\n        frac = ('.' + str(frac_value).zfill(frac_width)) if frac_width else ''\n        display = (' ' * sp2_len) + '(' + str(whole) + frac + (' ' * sp3_len) + unit_names[unit_code] + ')'\n    return str(v) + (' ' * sp1_len) + 'bytes' + display + (' ' * sp4_len) + 'sent,'",
+    "group_regex": "^(?:(\\d+)( +)bytes(?:(( +)\\((\\d+)\\.(\\d+)( +)(KB|MB|GB)\\)))?( +)sent,)$",
+    "intent": "Parse bytes sent and optional display form into a canonical integer and layout information.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "bytes_sent",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "bytes_sent:auto",
+   "store_group": 0,
+   "tag": "BS",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "(\\d+)( +)bytes(?:(( +)\\((\\d+)\\.(\\d+)( +)(KB|MB|GB)\\)))?( +)received,",
+   "program": {
+    "code": "def forward(groups):\n    byte_text, sp1, display_span, sp2, whole, frac, sp3, unit, sp4 = groups\n    has_display = 1 if display_span else 0\n    sp2_len = 0\n    frac_width = 0\n    sp3_len = 0\n    unit_code = 0\n    if display_span:\n        sp2_len = len(sp2)\n        frac_width = len(frac or '')\n        sp3_len = len(sp3)\n        unit_code = {'KB': 1, 'MB': 2, 'GB': 3}.get(unit, 0)\n    layout = [len(sp1), has_display, len(sp4), sp2_len, frac_width, sp3_len, unit_code]\n    return {'stored': [int(byte_text)], 'layout': layout}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = int(layout[0])\n    has_display = int(layout[1])\n    sp4_len = int(layout[2])\n    display = ''\n    if has_display:\n        unit_names = {1: 'KB', 2: 'MB', 3: 'GB'}\n        sp2_len = int(layout[3])\n        frac_width = int(layout[4])\n        sp3_len = int(layout[5])\n        unit_code = int(layout[6])\n        divisor = 1024\n        if unit_code == 2:\n            divisor = 1048576\n        if unit_code == 3:\n            divisor = 1073741824\n        scale = 1\n        if frac_width == 1:\n            scale = 10\n        if frac_width == 2:\n            scale = 100\n        if frac_width == 3:\n            scale = 1000\n        if frac_width == 4:\n            scale = 10000\n        shown = v * scale // divisor\n        whole = shown // scale\n        frac_value = shown % scale\n        frac = ('.' + str(frac_value).zfill(frac_width)) if frac_width else ''\n        display = (' ' * sp2_len) + '(' + str(whole) + frac + (' ' * sp3_len) + unit_names[unit_code] + ')'\n    return str(v) + (' ' * sp1_len) + 'bytes' + display + (' ' * sp4_len) + 'received,'",
+    "group_regex": "^(?:(\\d+)( +)bytes(?:(( +)\\((\\d+)\\.(\\d+)( +)(KB|MB|GB)\\)))?( +)received,)$",
+    "intent": "Parse bytes received and optional display form into a canonical integer and layout information.",
+    "op": "python_exec"
+   },
+   "proposal_tag": "bytes_received",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "bytes_received:auto",
+   "store_group": 0,
+   "tag": "BR",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "proxy\\.cse\\.cuhk\\.edu\\.hk:\\d+|[a-zA-Z0-9.-]+:\\d+",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "proxy_address",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 0,
+   "tag": "F",
+   "value_type": "string"
+  }
+ ],
+ "version": 1
+}

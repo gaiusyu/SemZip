@@ -1,0 +1,173 @@
+{
+  "version": "QG-V1",
+  "implementation": "qg_select2 (parallel evaluation, same decisions)",
+  "dataset": "Zookeeper",
+  "input_plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/train_k/Zookeeper/t0.7_k3/training_work/Zookeeper/replay_plan.json",
+  "input_plan_sha256": "592cfc931e8539cb37ab9c2e31da3da2d90511f687d8be387d6248a8aad9de50",
+  "training_block_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a",
+  "selected_plan_sha256": "73108acaf41dc2fba8576ffe17e6a44b5f33bed246791081df5c0cfbee8a2d2e",
+  "original_train_archive_bytes": 60065,
+  "empty_train_archive_bytes": 92253,
+  "selected_train_archive_bytes": 60065,
+  "removed_tags": [],
+  "kept_tags": [
+    "TS1",
+    "DU",
+    "IP",
+    "B",
+    "F",
+    "G",
+    "I"
+  ],
+  "evaluations": 9,
+  "decisions": [
+    {
+      "stage": "B",
+      "tag": "F",
+      "before": 60065,
+      "after": 60065,
+      "accepted": false,
+      "all": {
+        "B": 65061,
+        "DU": 60225,
+        "F": 60065,
+        "G": 60065,
+        "I": 60065,
+        "IP": 60321,
+        "TS1": 87437
+      }
+    }
+  ],
+  "eval_log": [
+    {
+      "eval": 2,
+      "key": "0ac0e83eb983",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 92253,
+      "seconds": 7.0
+    },
+    {
+      "eval": 2,
+      "key": "44bad8e4f959",
+      "label": "original",
+      "tags": [
+        "TS1",
+        "DU",
+        "IP",
+        "B",
+        "F",
+        "G",
+        "I"
+      ],
+      "archive_bytes": 60065,
+      "seconds": 40.41
+    },
+    {
+      "eval": 5,
+      "key": "06862f65baea",
+      "label": "B:-DU",
+      "tags": [
+        "TS1",
+        "IP",
+        "B",
+        "F",
+        "G",
+        "I"
+      ],
+      "archive_bytes": 60225,
+      "seconds": 42.34
+    },
+    {
+      "eval": 6,
+      "key": "792ba5516e18",
+      "label": "B:-F",
+      "tags": [
+        "TS1",
+        "DU",
+        "IP",
+        "B",
+        "G",
+        "I"
+      ],
+      "archive_bytes": 60065,
+      "seconds": 42.7
+    },
+    {
+      "eval": 7,
+      "key": "6518cc2b2c14",
+      "label": "B:-B",
+      "tags": [
+        "TS1",
+        "DU",
+        "IP",
+        "F",
+        "G",
+        "I"
+      ],
+      "archive_bytes": 65061,
+      "seconds": 43.04
+    },
+    {
+      "eval": 8,
+      "key": "6faac4d57b97",
+      "label": "B:-IP",
+      "tags": [
+        "TS1",
+        "DU",
+        "B",
+        "F",
+        "G",
+        "I"
+      ],
+      "archive_bytes": 60321,
+      "seconds": 39.76
+    },
+    {
+      "eval": 9,
+      "key": "1f66745e42e8",
+      "label": "B:-G",
+      "tags": [
+        "TS1",
+        "DU",
+        "IP",
+        "B",
+        "F",
+        "I"
+      ],
+      "archive_bytes": 60065,
+      "seconds": 44.58
+    },
+    {
+      "eval": 9,
+      "key": "0706ff0eaa27",
+      "label": "B:-I",
+      "tags": [
+        "TS1",
+        "DU",
+        "IP",
+        "B",
+        "F",
+        "G"
+      ],
+      "archive_bytes": 60065,
+      "seconds": 45.44
+    },
+    {
+      "eval": 9,
+      "key": "ba144178aaee",
+      "label": "B:-TS1",
+      "tags": [
+        "DU",
+        "IP",
+        "B",
+        "F",
+        "G",
+        "I"
+      ],
+      "archive_bytes": 87437,
+      "seconds": 12.31
+    }
+  ],
+  "llm_calls": 0
+}

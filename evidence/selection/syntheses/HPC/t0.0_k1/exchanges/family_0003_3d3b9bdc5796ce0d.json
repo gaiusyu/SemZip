@@ -1,0 +1,133 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure with stable tokens and changing fields that can be extracted into side streams.",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "header timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{10})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Convert epoch timestamp to microseconds and back.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[0]) * 1000000], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    return str(micros // 1000000)"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0",
+      "action": "UINT_DELTA",
+      "meaning": "sequence identifier",
+      "reason": "This slot is a numeric sequence identifier and can be efficiently compressed using delta coding."
+    },
+    {
+      "slot": "S1",
+      "action": "STREAM_RAW",
+      "meaning": "source node identifier",
+      "reason": "This slot represents a node identifier with a stable prefix and variable suffix, making it suitable for raw string extraction."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "event type",
+      "reason": "This slot is a stable literal structure that does not vary across examples and is better kept in the main template."
+    },
+    {
+      "slot": "S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "timestamp",
+      "reason": "This slot represents an epoch timestamp and can be composed into a single integer for efficient storage and reconstruction."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "event count",
+      "reason": "This slot is a stable literal structure that does not vary across examples and is better kept in the main template."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "event category",
+      "reason": "This slot is a stable literal structure that does not vary across examples and is better kept in the main template."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "domain name",
+      "reason": "This slot represents a domain name with variable components and separators, making it suitable for raw string extraction."
+    },
+    {
+      "slot": "S16",
+      "action": "STREAM_RAW",
+      "meaning": "destination node identifier",
+      "reason": "This slot represents a node identifier with a stable prefix and variable suffix, making it suitable for raw string extraction."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "domain_name",
+      "meaning": "domain name",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "domain( +)([A-Za-z0-9_]+)",
+      "replacement": "domain{group1}{placeholder}",
+      "program": {
+        "intent": "Extract domain name as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "source_node",
+      "meaning": "source node identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(node-[A-Z]\\d+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract source node identifier as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "destination_node",
+      "meaning": "destination node identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "node( +)(node-\\d+)",
+      "replacement": "node{group1}{placeholder}",
+      "program": {
+        "intent": "Extract destination node identifier as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

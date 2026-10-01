@@ -1,0 +1,175 @@
+\section{Additional baselines and controls}\label{sec:r76}\sloppy
+
+All experiments in this section were specified in a design document written before any of their results existed (29 September 2026, 01:30 UTC); later changes are appended to that document as dated change-log entries and are stated below. Every compression cell decodes from its archive alone and matches per-block and full-file SHA-256 digests of the original inputs.
+
+\subsection{Log-specific baselines}
+
+The +R correction deviates from the pre-registered adaptation rule (change log, 29 September, 05:30 UTC); it was recorded before any new-baseline ratio comparison and was not applied to Denum. LogShrink (commit 59ce494) and LogReducer (commit 4000541) run their official pipelines independently on every 100,000-line block, including their own sampling and template training on that block (samplers seeded with 0); their decoders read only the block archive, which contains the native payload, every model file the official restore reads, and, for the +R variants, a per-line correction. As released, both tools drop carriage returns, strip leading and trailing whitespace, collapse runs of header spaces, and drop leading zeros; LogShrink also truncates integers wider than 32 bits (e.g., HDFS block identifiers). The correction is computed from the original block and the tool\textquotesingle s own decoded output only, compressed with LZMA, and counted. LogShrink\textquotesingle s official decoder additionally needed five fixes that change no archive byte (empty failed-log files, column-file ordering, header-file ordering, whole-line template matching, and delimiter recovery). LogShrink uses its shipped per-dataset header lengths; LogReducer uses its generic defaults. LogReducer+R failed the SHA check on 48 of Spark\textquotesingle s 333 blocks; LogShrink could not encode or decode 48 of Spark\textquotesingle s 333 blocks; LogShrink could not encode or decode 42 of Windows\textquotesingle s 1147 blocks; these files have no valid ratio for the affected tool. The official DeLog build (commit 64a074f) and DeLog-gen differ only in the per-dataset regular-expression map (emptied in DeLog-gen); the decoders are identical.
+
+\input{generated/supp_external.tex}
+
+\paragraph{Denum.} The released Denum compressor (commit a3a6975) replaces each match of its per-dataset regular expressions by a tag and stores the concatenated digits as one integer, without group widths or separator positions; its Python decoder also drops carriage returns and leading zeros. For each of the sixteen datasets we changed one line of block 0 by moving a digit across a group boundary; in all 16 cases the original and the modified block produce byte-identical archive members, so no decoder can restore both. Examples: \texttt{[Thu Jun 09 06:07:04 2005] [notice] LD} vs.\ \texttt{[Thu Jun 09 0:607:04 2005] [notice] LD}; \texttt{...3 R02-M1-N0-C:J12-U11 2005-06-03-15.42.50.363779 R} vs.\ \texttt{...3 R02-M1-N0-C:J12-U11 200-506-03-15.42.50.363779 R}; \texttt{...08999687919862906 src: /10.250.19.102:54106 dest: } vs.\ \texttt{...08999687919862906 src: /1.0250.19.102:54106 dest: }. Denum is therefore excluded from the lossless comparison.
+
+\paragraph{Published numbers without implementations.} LogFold and LogPrism provide no public implementation (checked 29 September 2026: the LogFold repository holds only a license and README; the LogPrism repository is empty). Their papers report the following ratios for 100,000-line chunks; input identities are not verified and these numbers are not matched observations.
+
+\begin{longtable}{lrrr}\caption{Published ratios (literature context only) next to \tool.}\label{tab:published}\\\toprule
+
+Dataset & LogFold (2603.20618v1) & LogPrism (2601.17482v2) & \tool\ \\\midrule
+
+Android & 32.72 & 32.82 & 34.55 \\
+
+Apache & 57.81 & 64.33 & 73.74 \\
+
+BGL & 51.02 & 47.15 & 52.32 \\
+
+Hadoop & 90.97 & 79.73 & 85.03 \\
+
+HDFS & 25.22 & 26.47 & 31.05 \\
+
+HealthApp & 56.56 & 50.48 & 59.53 \\
+
+HPC & 46.95 & 45.45 & 45.79 \\
+
+Linux & 31.51 & 38.34 & 40.09 \\
+
+Mac & 49.40 & 44.99 & 54.13 \\
+
+OpenSSH & 96.76 & 113.33 & 117.78 \\
+
+OpenStack & 20.39 & 23.36 & 25.24 \\
+
+Proxifier & 29.14 & 29.85 & 36.13 \\
+
+Spark & 59.88 & 54.81 & 62.35 \\
+
+Thunderbird & 67.69 & 75.86 & 64.86 \\
+
+Windows & 570.55 & 497.30 & 618.58 \\
+
+Zookeeper & 145.74 & 143.74 & 189.42 \\
+
+\bottomrule\end{longtable}
+
+\subsection{Program-library control}
+
+The library proposer replaces only the LLM call of the trainer; compilation, verification, the quality gate, storage fitting, the runtime, and archive-only decoding are unchanged, and it makes no API call. Its program types were frozen before any library result: syslog, ISO-8601, \texttt{YYYY-MM-DD HH:MM:SS} (with optional milliseconds), \texttt{YY/MM/DD}, \texttt{YYYYMMDD HHMMSS}, clock-time, and ten-digit epoch timestamps; IPv4 and IPv4:port; hexadecimal numbers; sizes with B/KB/MB/GB units; percentages; and decimal integers and fixed-point numbers with width and leading zeros. A type is proposed for a sampled group when it matches one of the group\textquotesingle s examples (at most eight per group). With one candidate per dataset, pooled selection reduces to the gated plan. The gate removes one rule group at a time and only on a strict decrease, and never compares with the empty program; on HealthApp, where no library timestamp matches, fourteen generic integer rules leave block 0 3.4 times larger than the empty program. The post-hoc floor (not pre-registered) deploys the empty program when it is smaller on block 0; \tool\textquotesingle s deployed plans are below the empty program on block 0 for all sixteen files.
+
+\begin{longtable}{lrrrrr}\caption{Program-library control: block-0 payload bytes and complete-file ratios.}\label{tab:library}\\\toprule
+
+Dataset & Library B0 & Empty B0 & Library & Lib.+floor & \tool\ \\\midrule
+
+Android & 493,280 & 410,416 & 27.51 & 31.83 & 34.55 \\
+
+Apache & 101,084 & 120,736 & 50.73 & 50.73 & 73.74 \\
+
+BGL & 400,556 & 418,044 & 33.79 & 33.79 & 52.32 \\
+
+Hadoop & 384,372 & 495,324 & 64.90 & 64.90 & 85.03 \\
+
+HDFS & 582,564 & 508,312 & 22.10 & 24.03 & 31.05 \\
+
+HealthApp & 739,028 & 216,824 & 12.50 & 39.85 & 59.53 \\
+
+HPC & 479,204 & 194,936 & 15.75 & 44.79 & 45.79 \\
+
+Linux & 79,392 & 92,204 & 29.54 & 29.54 & 40.09 \\
+
+Mac & 381,416 & 316,776 & 35.03 & 42.07 & 54.13 \\
+
+OpenSSH & 264,948 & 152,356 & 37.16 & 66.19 & 117.78 \\
+
+OpenStack & 1,768,572 & 1,393,624 & 17.73 & 22.45 & 25.24 \\
+
+Proxifier & 115,932 & 96,280 & 21.90 & 26.36 & 36.13 \\
+
+Spark & 389,208 & 288,084 & 39.71 & 50.91 & 62.35 \\
+
+Thunderbird & 482,248 & 293,036 & 37.39 & 64.65 & 64.86 \\
+
+Windows & 49,236 & 57,652 & 502.31 & 502.31 & 618.58 \\
+
+Zookeeper & 135,160 & 92,096 & 77.05 & 113.02 & 189.42 \\
+
+\bottomrule\end{longtable}
+
+\subsection{Matched replay on the deployed plans}
+
+Both branches execute the deployed matcher once per block and share its spans, rule order, placeholders, residual archive (byte-identical), and semantic XZ preset; the surface branch stores each replaced literal with identity reconstruction and generic field storage and fits its own block-0 storage policy. The latent branch reproduces the formal \tool\ archives byte for byte. Large files use the twenty blocks $\mathrm{round}(i(N-1)/19)$.
+
+\begin{longtable}{llrrrr}\caption{Matched replay: surface and latent archive bytes.}\label{tab:replay16}\\\toprule
+
+Dataset & Scope & Blocks & Surface & Latent & Saving \\\midrule
+
+Android & complete & 16/16 & 5,602,902 & 5,565,790 & 0.66\% \\
+
+Apache & complete & 1/1 & 82,026 & 69,646 & 15.09\% \\
+
+BGL & complete & 48/48 & 14,680,374 & 14,203,694 & 3.25\% \\
+
+Hadoop & complete & 4/4 & 633,820 & 571,500 & 9.83\% \\
+
+HealthApp & complete & 3/3 & 433,917 & 395,273 & 8.91\% \\
+
+HPC & complete & 5/5 & 732,843 & 732,843 & n/a \\
+
+Linux & complete & 1/1 & 63,725 & 58,613 & 8.02\% \\
+
+Mac & complete & 2/2 & 313,549 & 311,853 & 0.54\% \\
+
+OpenSSH & complete & 7/7 & 728,835 & 623,323 & 14.48\% \\
+
+OpenStack & complete & 3/3 & 2,481,449 & 2,434,257 & 1.90\% \\
+
+Proxifier & complete & 1/1 & 79,389 & 70,361 & 11.37\% \\
+
+Zookeeper & complete & 1/1 & 63,013 & 55,045 & 12.65\% \\
+
+HDFS & sample20 & 20/112 & 10,051,953 & 10,051,953 & n/a \\
+
+Spark & sample20 & 20/333 & 2,887,699 & 2,876,067 & 0.40\% \\
+
+Windows & sample20 & 20/1147 & 767,784 & 773,208 & -0.71\% \\
+
+Thunderbird & sample20 & 20/2113 & 3,911,949 & 3,911,949 & n/a \\
+
+\bottomrule\end{longtable}
+
+\subsection{Complete reruns}
+
+Each rerun draws five fresh syntheses (greedy and four at temperature 0.7) from the same GPT-4o gateway with the unchanged trainer and budgets, then gates, selects, fits storage, and encodes and decodes the complete file; run 1 is the reported deployment and is not replaced.
+
+\begin{longtable}{lrrrrrr}\caption{Complete reruns: ratios and archive bytes relative to DeLog.}\label{tab:reruns}\\\toprule
+
+Dataset & Run & Ratio & Suffix ratio & vs.\ DeLog & Suffix vs.\ DeLog & \\\midrule
+
+HPC & 1 & 45.79 & 45.03 & $-$2.37\% & $-$2.73\% & \\
+
+HPC & 2 & 45.73 & 45.18 & $-$2.25\% & $-$3.06\% & \\
+
+HPC & 3 & 46.79 & 45.89 & $-$4.45\% & $-$4.56\% & \\
+
+HDFS & 1 & 31.05 & 31.00 & $-$3.93\% & $-$3.93\% & \\
+
+HDFS & 2 & 31.50 & 31.45 & $-$5.30\% & $-$5.29\% & \\
+
+HDFS & 3 & 31.05 & 31.00 & $-$3.93\% & $-$3.93\% & \\
+
+Hadoop & 1 & 85.03 & 109.25 & $-$5.22\% & $-$3.65\% & \\
+
+Hadoop & 2 & 84.53 & 108.79 & $-$4.65\% & $-$3.23\% & \\
+
+Hadoop & 3 & 87.82 & 114.14 & $-$8.23\% & $-$7.77\% & \\
+
+Spark & 1 & 62.35 & 62.41 & $-$5.29\% & $-$5.29\% & \\
+
+Spark & 2 & 61.71 & 61.75 & $-$4.31\% & $-$4.27\% & \\
+
+Spark & 3 & 62.53 & 62.57 & $-$5.57\% & $-$5.52\% & \\
+
+\bottomrule\end{longtable}
+
+\subsection{Decode-time safety}
+
+\textbf{Audit.} The runtime executes \texttt{python\_exec} code with \texttt{exec(compile(...))} after an allow-list check of syntax nodes, in a namespace limited to \texttt{datetime}, \texttt{timedelta}, \texttt{int}, \texttt{str}, \texttt{len}, \texttt{float}, \texttt{round}, \texttt{abs}, \texttt{min}, \texttt{max}, and a restricted import shim; context programs also receive the \texttt{re} module. Names beginning with a double underscore are rejected. Code runs in the decoding worker process with the decoder\textquotesingle s privileges and no resource limits, and semantic archives are unpacked without member-path filtering. Four crafted archives derived from the Apache archive test this boundary: an injected import (rejected by the runtime), a format string reading \texttt{\{0.\_\_class\_\_\}} (accepted), a context program reading \texttt{re.enum.sys} (accepted, top level executed), and a tar member \texttt{../} path (not executed against the unprotected decoder).
+
+\textbf{Check.} The enforced check rejects imports, names and attributes beginning with an underscore outside the runtime\textquotesingle s fixed wrapper, reflective built-ins, format fields, and module attributes outside an allow-list, and preflights tar members. It rejects all four crafted archives. Over 89 distinct programs from all syntheses, deployments, and evolution runs, the only strict-rule findings (144 underscore names in 12 programs) come from the runtime\textquotesingle s own fixed wrapper, which the check recognizes exactly; LLM-written code has no violation. With the check enforced before any program is compiled, all sixteen archives (3,797 blocks) decode byte-exactly.

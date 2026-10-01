@@ -1,0 +1,133 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix containing timestamp, log level, and component name, which can be extracted as a unified header.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "date_time_as_epoch_seconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{2})/(\\d{2})/(\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack date and time into one epoch timestamp (seconds).",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day, sp1, time = groups\n    full_year = '20' + year\n    dt = datetime.strptime(f'{full_year}-{month}-{day} {time}', '%Y-%m-%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp())], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    epoch_seconds = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(epoch_seconds)\n    year = dt.strftime('%y')\n    month = dt.strftime('%m')\n    day = dt.strftime('%d')\n    time = dt.strftime('%H:%M:%S')\n    return f'{year}/{month}/{day}' + (' ' * sp1_len) + time"
+        }
+      },
+      {
+        "tag": "header_component",
+        "meaning": "component_name",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "INFO( +)([A-Za-z]+\\.[A-Za-z]+):",
+        "replacement": "INFO{group1}{placeholder}:",
+        "program": {
+          "intent": "Store the component name following the log level.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "timestamp in epoch seconds",
+      "reason": "Date and time together form the primary log timestamp. Storing as an integer reduces size and allows exact reconstruction."
+    },
+    {
+      "slot": "S3",
+      "action": "STREAM_RAW",
+      "meaning": "component name",
+      "reason": "Component names are stable, structured variables and fit Class 3 criteria for raw string storage."
+    },
+    {
+      "slot": "S5",
+      "action": "STREAM_RAW",
+      "meaning": "block identifier",
+      "reason": "broadcast_10_piece0 represents a stable identifier with internal structure (e.g., underscores, digits)."
+    },
+    {
+      "slot": "S13+S14",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "block_estimated_size_in_centi_kb",
+      "reason": "Estimated size in KB can be stored as centi-KB integer to reduce size and allow exact reconstruction."
+    },
+    {
+      "slot": "S16+S17",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "remaining_free_memory_in_centi_kb",
+      "reason": "Free memory in KB/GB can be normalized to centi-KB integer for compact numeric storage and exact reconstruction."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "block_id",
+      "meaning": "broadcast_block_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "Block( +)([A-Za-z0-9_]+)",
+      "replacement": "Block{group1}{placeholder}",
+      "program": {
+        "intent": "Store the block identifier as a raw structured string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "estimated_size",
+      "meaning": "block_estimated_size_in_centi_kb",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "estimated( +)size( +)(\\d+)\\.(\\d{1}) (KB|MB|GB)",
+      "replacement": "estimated{group1}size{group2}{placeholder} {group5}",
+      "program": {
+        "intent": "Convert estimated size into centi-units of KB and store as an integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, sp2, whole, frac, unit = groups\n    factor = {'KB': 1, 'MB': 1024, 'GB': 1048576}[unit]\n    centi_kb = int(whole) * 100 + int(frac) * 10\n    centi_kb *= factor / 100\n    return {'stored': [int(centi_kb)], 'layout': [len(sp1), len(sp2)]}\n\ndef inverse(record):\n    centi_kb = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len = layout\n    kb = centi_kb / 100\n    return f'estimated' + (' ' * sp1_len) + 'size' + (' ' * sp2_len) + f'{kb:.1f}'"
+      }
+    },
+    {
+      "tag": "free_memory",
+      "meaning": "remaining_free_memory_in_centi_kb",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "free( +)(\\d+)\\.(\\d{1}) (KB|GB)",
+      "replacement": "free{group1}{placeholder} {group4}",
+      "program": {
+        "intent": "Convert free memory size into centi-units of KB and store as an integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, whole, frac, unit = groups\n    factor = {'KB': 1, 'GB': 1048576}[unit]\n    centi_kb = int(whole) * 100 + int(frac) * 10\n    centi_kb *= factor / 100\n    return {'stored': [int(centi_kb)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    centi_kb = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    kb = centi_kb / 100\n    unit = 'KB' if centi_kb < 1048576 else 'GB'\n    return f'free' + (' ' * sp1_len) + f'{kb:.1f}' + f' {unit}'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

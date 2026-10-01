@@ -1,0 +1,174 @@
+[
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 11,
+    "meaning": "timestamp and context",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"20171223-22:19:58:424|HiH_HiSyncControl|30002312|initDataPrivacy\", \"groups\": [\"20171223-22:19:58:424\", \"HiH_HiSyncControl\", \"30002312\", \"initDataPrivacy\"], \"failure\": \"ValueError: invalid literal for int() with base 10: 'HiH_HiSyncControl|30002312|initDataPrivacy'\"}"
+    ],
+    "regex": "^([0-9]{8}-[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3})\\|([A-Za-z0-9_]+)\\|([0-9]+)\\|([A-Za-z0-9_]+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_context",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 11,
+    "kind": "python_exec",
+    "meaning": "timestamp and context",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([0-9]{8}-[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3})\\|([A-Za-z0-9_]+)\\|([0-9]+)\\|([A-Za-z0-9_]+)",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_context",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp_context"
+  },
+  {
+    "family_id": 11,
+    "kind": "python_exec",
+    "meaning": "timestamp and context",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([0-9]{8}-[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3})\\|([A-Za-z0-9_]+)\\|([0-9]+)\\|([A-Za-z0-9_]+)",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_context",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp_context"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 15,
+    "meaning": "timestamp and context",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"20171223-22:19:58:424|HiH_|30002312|initDataPrivacy\", \"groups\": [\"20171223-22:19:58:424\", \"HiH_\", \"30002312\", \"initDataPrivacy\"], \"failure\": \"ValueError: invalid literal for int() with base 10: 'HiH_|30002312|initDataPrivacy'\"}"
+    ],
+    "regex": "^([0-9]{8}-[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3})\\|([A-Za-z0-9_]+)\\|([0-9]+)\\|([A-Za-z0-9_]+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_context",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 15,
+    "kind": "python_exec",
+    "meaning": "timestamp and context",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([0-9]{8}-[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3})\\|([A-Za-z0-9_]+)\\|([0-9]+)\\|([A-Za-z0-9_]+)",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_context",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp_context"
+  },
+  {
+    "family_id": 15,
+    "kind": "python_exec",
+    "meaning": "timestamp and context",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "^([0-9]{8}-[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3})\\|([A-Za-z0-9_]+)\\|([0-9]+)\\|([A-Za-z0-9_]+)",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp_context",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp_context"
+  },
+  {
+    "family_id": 25,
+    "kind": "open_function",
+    "meaning": "complete timestamp",
+    "reasons": [],
+    "regex": "^(\\d{8})-(\\d{2}:\\d{2}:\\d{2}):(\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date_part = groups[0]\\n    time_part = groups[1]\\n    millis = groups[2]\\n    dt = datetime.strptime(f'{date_part} {time_part}', '%Y%m%d %H:%M:%S')\\n    timestamp = int(dt.timestamp() * 1000) + int(millis)\\n    return {'stored': [timestamp], 'layout': []}\\n\\ndef inverse(record):\\n    timestamp = int(record['stored'][0])\\n    millis = timestamp % 1000\\n    dt = datetime.fromtimestamp(timestamp // 1000)\\n    return f'{dt.strftime(\\\"%Y%m%d-%H:%M:%S\\\")}:{millis:03}'\",\"group_regex\":\"^(?:^(\\\\d{8})-(\\\\d{2}:\\\\d{2}:\\\\d{2}):(\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "A"
+  },
+  {
+    "family_id": 26,
+    "kind": "open_function",
+    "meaning": "complete timestamp",
+    "reasons": [],
+    "regex": "^(\\d{8})-(\\d{2}:\\d{2}:\\d{2}):(\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date_part = groups[0]\\n    time_part = groups[1]\\n    millis = groups[2]\\n    dt = datetime.strptime(f'{date_part} {time_part}', '%Y%m%d %H:%M:%S')\\n    timestamp = int(dt.timestamp() * 1000) + int(millis)\\n    return {'stored': [timestamp], 'layout': []}\\n\\ndef inverse(record):\\n    timestamp = int(record['stored'][0])\\n    millis = timestamp % 1000\\n    dt = datetime.fromtimestamp(timestamp // 1000)\\n    return f'{dt.strftime(\\\"%Y%m%d-%H:%M:%S\\\")}:{millis:03}'\",\"group_regex\":\"^(?:^(\\\\d{8})-(\\\\d{2}:\\\\d{2}:\\\\d{2}):(\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "B"
+  },
+  {
+    "family_id": 14,
+    "kind": "open_function",
+    "meaning": "complete timestamp",
+    "reasons": [],
+    "regex": "^(\\d{8})-(\\d{2}:\\d{2}:\\d{2}):(\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date_part = groups[0]\\n    time_part = groups[1]\\n    millis = groups[2]\\n    dt = datetime.strptime(f'{date_part} {time_part}', '%Y%m%d %H:%M:%S')\\n    timestamp = int(dt.timestamp() * 1000) + int(millis)\\n    return {'stored': [timestamp], 'layout': []}\\n\\ndef inverse(record):\\n    timestamp = int(record['stored'][0])\\n    millis = timestamp % 1000\\n    dt = datetime.fromtimestamp(timestamp // 1000)\\n    return f'{dt.strftime(\\\"%Y%m%d-%H:%M:%S\\\")}:{millis:03}'\",\"group_regex\":\"^(?:^(\\\\d{8})-(\\\\d{2}:\\\\d{2}:\\\\d{2}):(\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "C"
+  },
+  {
+    "family_id": 13,
+    "kind": "open_function",
+    "meaning": "complete timestamp",
+    "reasons": [],
+    "regex": "^(\\d{8})-(\\d{2}:\\d{2}:\\d{2}):(\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date_part = groups[0]\\n    time_part = groups[1]\\n    millis = groups[2]\\n    dt = datetime.strptime(f'{date_part} {time_part}', '%Y%m%d %H:%M:%S')\\n    timestamp = int(dt.timestamp() * 1000) + int(millis)\\n    return {'stored': [timestamp], 'layout': []}\\n\\ndef inverse(record):\\n    timestamp = int(record['stored'][0])\\n    millis = timestamp % 1000\\n    dt = datetime.fromtimestamp(timestamp // 1000)\\n    return f'{dt.strftime(\\\"%Y%m%d-%H:%M:%S\\\")}:{millis:03}'\",\"group_regex\":\"^(?:^(\\\\d{8})-(\\\\d{2}:\\\\d{2}:\\\\d{2}):(\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "D"
+  },
+  {
+    "family_id": 24,
+    "kind": "open_function",
+    "meaning": "complete timestamp",
+    "reasons": [],
+    "regex": "^(\\d{8})-(\\d{2}:\\d{2}:\\d{2}):(\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date_part = groups[0]\\n    time_part = groups[1]\\n    millis = groups[2]\\n    dt = datetime.strptime(f'{date_part} {time_part}', '%Y%m%d %H:%M:%S')\\n    timestamp = int(dt.timestamp() * 1000) + int(millis)\\n    return {'stored': [timestamp], 'layout': []}\\n\\ndef inverse(record):\\n    timestamp = int(record['stored'][0])\\n    millis = timestamp % 1000\\n    dt = datetime.fromtimestamp(timestamp // 1000)\\n    return f'{dt.strftime(\\\"%Y%m%d-%H:%M:%S\\\")}:{millis:03}'\",\"group_regex\":\"^(?:^(\\\\d{8})-(\\\\d{2}:\\\\d{2}:\\\\d{2}):(\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "E"
+  },
+  {
+    "family_id": 27,
+    "kind": "open_function",
+    "meaning": "complete timestamp",
+    "reasons": [],
+    "regex": "^(\\d{8})-(\\d{2}:\\d{2}:\\d{2}):(\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    date_part = groups[0]\\n    time_part = groups[1]\\n    millis = groups[2]\\n    dt = datetime.strptime(f'{date_part} {time_part}', '%Y%m%d %H:%M:%S')\\n    timestamp = int(dt.timestamp() * 1000) + int(millis)\\n    return {'stored': [timestamp], 'layout': []}\\n\\ndef inverse(record):\\n    timestamp = int(record['stored'][0])\\n    millis = timestamp % 1000\\n    dt = datetime.fromtimestamp(timestamp // 1000)\\n    return f'{dt.strftime(\\\"%Y%m%d-%H:%M:%S\\\")}:{millis:03}'\",\"group_regex\":\"^(?:^(\\\\d{8})-(\\\\d{2}:\\\\d{2}:\\\\d{2}):(\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "F"
+  }
+]

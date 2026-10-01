@@ -1,0 +1,133 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix with timestamp, log level, and component information.",
+    "functions": [
+      {
+        "tag": "log_timestamp",
+        "meaning": "timestamp_combined_date_and_time",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Combine date and time into one epoch-like integer value.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    date, sp1, time = groups\n    dt = datetime.strptime(date + ' ' + time, '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    sp1_len = int(record['layout'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    date = dt.strftime('%y/%m/%d')\n    time = dt.strftime('%H:%M:%S')\n    return date + (' ' * sp1_len) + time"
+        }
+      },
+      {
+        "tag": "log_component",
+        "meaning": "log_component_identifier",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(storage\\.MemoryStore:)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Preserve the exact component identifier string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "timestamp_combined_date_and_time",
+      "reason": "The date and time fields together form one semantic value."
+    },
+    {
+      "slot": "S3",
+      "action": "STREAM_RAW",
+      "meaning": "log_component_identifier",
+      "reason": "The component name is a stable identifier with a predictable structure."
+    },
+    {
+      "slot": "S5",
+      "action": "STREAM_RAW",
+      "meaning": "block_identifier",
+      "reason": "The block identifier changes across examples and is an opaque identifier."
+    },
+    {
+      "slot": "S13+S14",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "estimated_size_kb",
+      "reason": "The numeric size and unit together form one semantic value."
+    },
+    {
+      "slot": "S16+S17",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "free_size_kb",
+      "reason": "The numeric free size and unit together form one semantic value."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "block_identifier",
+      "meaning": "opaque_block_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "Block( +)([A-Za-z0-9_]+)",
+      "replacement": "Block{group1}{placeholder}",
+      "program": {
+        "intent": "Preserve the exact block identifier string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "estimated_size_kb",
+      "meaning": "estimated_size_in_kilobytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "\\(estimated( +)size( +)(\\d+\\.\\d+)( +)KB,",
+      "replacement": "(estimated{group1}size{group2}{placeholder}{group4}KB,",
+      "program": {
+        "intent": "Store the estimated size in kilobytes as a single integer value.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, sp2, size, sp3 = groups\n    major, minor = map(int, size.split('.'))\n    return {'stored': [major * 100 + minor], 'layout': [len(sp1), len(sp2), len(sp3)]}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    sp1, sp2, sp3 = record['layout']\n    major = v // 100\n    minor = v % 100\n    return '(estimated' + (' ' * sp1) + 'size' + (' ' * sp2) + str(major) + '.' + str(minor).zfill(1) + (' ' * sp3) + 'KB,'"
+      }
+    },
+    {
+      "tag": "free_size_kb",
+      "meaning": "free_size_in_kilobytes",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "free( +)(\\d+\\.\\d+)( +)KB\\)",
+      "replacement": "free{group1}{placeholder}{group3}KB)",
+      "program": {
+        "intent": "Store the free size in kilobytes as a single integer value.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, size, sp2 = groups\n    major, minor = map(int, size.split('.'))\n    return {'stored': [major * 100 + minor], 'layout': [len(sp1), len(sp2)]}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    sp1, sp2 = record['layout']\n    major = v // 100\n    minor = v % 100\n    return 'free' + (' ' * sp1) + str(major) + '.' + str(minor).zfill(1) + (' ' * sp2) + 'KB)'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

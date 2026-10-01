@@ -1,0 +1,85 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure that includes a timestamp, error level, and client IP address, which can be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "timestamp_as_epoch_microseconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "\\[([A-Z][a-z]{2})( +)([A-Z][a-z]{2})( +)(\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})( +)(\\d{4})\\]",
+        "replacement": "[{placeholder}]",
+        "program": {
+          "intent": "Parse weekday, month, day, time, and year into epoch microseconds and preserve formatting details for exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    weekday, sp1, month, sp2, day, sp3, time, sp4, year = groups\n    text = f\"{weekday} {month} {day} {time} {year}\"\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1), len(sp2), len(sp3), len(sp4), len(day)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, sp3_len, sp4_len, day_width = layout\n    dt = datetime.fromtimestamp(micros / 1000000)\n    weekday = dt.strftime('%a')\n    month = dt.strftime('%b')\n    day = str(dt.day).zfill(day_width)\n    time = dt.strftime('%H:%M:%S')\n    year = dt.strftime('%Y')\n    return weekday + (' ' * sp1_len) + month + (' ' * sp2_len) + day + (' ' * sp3_len) + time + (' ' * sp4_len) + year"
+        }
+      },
+      {
+        "tag": "H1",
+        "meaning": "client_ipv4_address",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "\\[client( +)((?:\\d{1,3}\\.){3}\\d{1,3})\\]",
+        "replacement": "[client{group1}{placeholder}]",
+        "program": {
+          "intent": "Extract client IPv4 address and preserve spacing.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': [len(groups[0])]} \n\ndef inverse(record):\n    spacing = ' ' * record['layout'][0]\n    return f\"client{spacing}{record['stored'][0]}\""
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1+S2+S3+S4",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "weekday, month, day, time, and year together as epoch microseconds",
+      "reason": "These fields together form the primary log timestamp."
+    },
+    {
+      "slot": "S6+S7",
+      "action": "STREAM_RAW",
+      "meaning": "client IPv4 address",
+      "reason": "The client IPv4 address is a structured identifier with separators and serves as a common variable."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "file_path",
+      "reason": "The file path is a structured identifier with separators and variable components."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "F1",
+      "meaning": "file_path_accessed",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "File( +)does( +)not( +)exist:( +)(/[^ ]+)",
+      "replacement": "File{group1}does{group2}not{group3}exist:{group4}{placeholder}",
+      "program": {
+        "intent": "Extract full file path accessed by the client and preserve spacing.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[4]], 'layout': [len(groups[0]), len(groups[1]), len(groups[2]), len(groups[3])]}\n\ndef inverse(record):\n    sp1, sp2, sp3, sp4 = record['layout']\n    file_path = record['stored'][0]\n    return 'File' + (' ' * sp1) + 'does' + (' ' * sp2) + 'not' + (' ' * sp3) + 'exist:' + (' ' * sp4) + file_path"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

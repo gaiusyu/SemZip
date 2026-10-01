@@ -1,0 +1,95 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T03:07:46.689813+00:00",
+  "dataset": "HealthApp",
+  "codec": "zstd19",
+  "trial": 1,
+  "workers": 3,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+    "bytes": 23529930,
+    "mtime_ns": 1789369303348633000,
+    "device": 1048818,
+    "inode": 199002808556006449
+  },
+  "raw_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+  "raw_bytes": 23529930,
+  "records": 253395,
+  "codec_spec": {
+    "exe": "zstd",
+    "encode": [
+      "-19",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "decode": [
+      "-d",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "suffix": ".zst",
+    "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+    "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+    "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/full_20260929/HealthApp/zstd19/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.zst",
+      "archive_bytes": 568944,
+      "block_encode_seconds": 13.74451731145382,
+      "raw_bytes": 9343767,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68",
+      "archive_sha256": "d4ac71ee767aa2d233e5a7a7ee61aa8c27014ea33a5ea24a0cb0e51aa6580903",
+      "decoded_sha256": "2376759a90926b30c53c0b8a944016d8acdf33dae5eaa59fa0ab3067042d4e68"
+    },
+    {
+      "index": 1,
+      "archive": "archives/block_000001.zst",
+      "archive_bytes": 563338,
+      "block_encode_seconds": 12.139705762267113,
+      "raw_bytes": 9260166,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd",
+      "archive_sha256": "76f2798d9645b19d5382541ba173f71a4c583bda2e79894b7e0af8ac2ca5100b",
+      "decoded_sha256": "52125d7cb8f859dfb940b4fbff3ebb7a8199cbbab7f591dc8d985abe5c611ddd"
+    },
+    {
+      "index": 2,
+      "archive": "archives/block_000002.zst",
+      "archive_bytes": 307607,
+      "block_encode_seconds": 6.465374797582626,
+      "raw_bytes": 4925997,
+      "lf_count": 53395,
+      "records": 53395,
+      "ends_with_lf": true,
+      "raw_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1",
+      "archive_sha256": "cdd8908f82984eecf960d8a5089ab3a986b9392efbfe6eb3ebcfeff99ef16dd5",
+      "decoded_sha256": "f17531ae2c3d255b03ab0dee8fdc93310ad56a340e09321b43dc2a19b2b2d5e1"
+    }
+  ],
+  "encode_seconds": 13.841598972678185,
+  "block_archive_bytes": 1439889,
+  "archive_bytes": 1439889,
+  "decode_seconds": 0.24817582964897156,
+  "restored_settle_seconds": 2.0039593428373337,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "d9d76ad2fb8f34ebba9ceda27d4ec9577ad7d5a3ec711f3396680e41d3f0d29c",
+  "audit_seconds": 0.17549142241477966,
+  "compression_ratio": 16.341488823096782,
+  "encode_MB_per_s": 1.6999430518428926,
+  "decode_MB_per_s": 94.8115295243761,
+  "finished_at": "2026-09-29T03:08:02.981596+00:00"
+}

@@ -1,0 +1,73 @@
+{
+  "version": "QG-V1",
+  "implementation": "qg_select2 (parallel evaluation, same decisions)",
+  "dataset": "Android",
+  "input_plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/train_k/Android/t0.7_k4/training_work/Android/replay_plan.json",
+  "input_plan_sha256": "0128ada417bf3736674f8074bb3c198819d6ca904d1d3f573d160ded1a8a24d1",
+  "training_block_sha256": "cbe7f87160bea64efdec92247873b1dc494453c1f84efa3989bd2f3f51a68a20",
+  "selected_plan_sha256": "c9886e6112a69927fd340db053d19d0bbd5f267c377b938b80825ba83fd67537",
+  "original_train_archive_bytes": 394475,
+  "empty_train_archive_bytes": 410571,
+  "selected_train_archive_bytes": 394475,
+  "removed_tags": [],
+  "kept_tags": [
+    "TS",
+    "C"
+  ],
+  "evaluations": 4,
+  "decisions": [
+    {
+      "stage": "B",
+      "tag": "C",
+      "before": 394475,
+      "after": 394527,
+      "accepted": false,
+      "all": {
+        "C": 394527,
+        "TS": 410659
+      }
+    }
+  ],
+  "eval_log": [
+    {
+      "eval": 2,
+      "key": "4f7a27511d7e",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 410571,
+      "seconds": 9.45
+    },
+    {
+      "eval": 2,
+      "key": "fce385ed7263",
+      "label": "original",
+      "tags": [
+        "TS",
+        "C"
+      ],
+      "archive_bytes": 394475,
+      "seconds": 48.27
+    },
+    {
+      "eval": 4,
+      "key": "a1e264014a20",
+      "label": "B:-TS",
+      "tags": [
+        "C"
+      ],
+      "archive_bytes": 410659,
+      "seconds": 9.99
+    },
+    {
+      "eval": 4,
+      "key": "e5f3293d206e",
+      "label": "B:-C",
+      "tags": [
+        "TS"
+      ],
+      "archive_bytes": 394527,
+      "seconds": 44.3
+    }
+  ],
+  "llm_calls": 0
+}

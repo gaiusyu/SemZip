@@ -1,0 +1,892 @@
+[
+  {
+    "family_id": 0,
+    "kind": "auto",
+    "meaning": "log_file_name_with_timestamp",
+    "reasons": [],
+    "regex": "(nova-api\\.log\\.\\d\\.\\d{4}-\\d{2}-\\d{2}_(\\d{2}):(\\d{2}):(\\d{2}))",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:year:{\"code\":\"def forward(groups):\\n    return {'stored': [groups[0]], 'layout': []}\\n\\ndef inverse(record):\\n    return str(record['stored'][0])\",\"intent\":\"Extract the log file name with timestamp as a raw string.\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_header",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 16,
+    "tag": "A"
+  },
+  {
+    "family_id": 0,
+    "kind": "open_function",
+    "meaning": "log_record_timestamp",
+    "reasons": [],
+    "regex": "(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    year, month, day, sp1, hour, minute, second, millis = groups\\n    dt = datetime.strptime(f\\\"{year}-{month}-{day} {hour}:{minute}:{second}.{millis}\\\", \\\"%Y-%m-%d %H:%M:%S.%f\\\")\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    layout = record.get('layout', [])\\n    sp1_len = layout[0]\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime(f\\\"%Y-%m-%d{' ' * sp1_len}%H:%M:%S.%f\\\")[:-3]\",\"group_regex\":\"^(?:(\\\\d{4})-(\\\\d{2})-(\\\\d{2})( +)(\\\\d{2}):(\\\\d{2}):(\\\\d{2})\\\\.(\\\\d{3}))$\",\"intent\":\"Convert the log timestamp into epoch microseconds and reconstruct the original format.\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 16,
+    "tag": "B"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 0,
+    "meaning": "process_identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"09132\", \"groups\": [\"09132\"], \"record\": {\"stored\": [9132], \"layout\": []}, \"inverse\": \"9132\", \"restored_match\": \"9132\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "(\\d{5})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "process_id",
+    "status": "verifier_repair_produced_candidates",
+    "support": 16
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "process_identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{5})",
+    "replacement": "{placeholder}",
+    "source_tag": "process_id",
+    "status": "rejected_semantic_three_class",
+    "support": 16,
+    "tag": "process_id"
+  },
+  {
+    "family_id": 0,
+    "kind": "auto",
+    "meaning": "log_severity_level",
+    "reasons": [],
+    "regex": "(INFO|ERROR|DEBUG|WARNING)",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "log_level",
+    "status": "pruned_constant_local_stream",
+    "support": 16
+  },
+  {
+    "family_id": 0,
+    "kind": "auto",
+    "meaning": "component_name_in_log",
+    "reasons": [
+      "C:function C consumed earlier placeholder A"
+    ],
+    "regex": "([a-zA-Z0-9_\\.]+)",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "component_name",
+    "status": "rejected_validation",
+    "support": 16,
+    "tag": "C"
+  },
+  {
+    "family_id": 0,
+    "kind": "open_function",
+    "meaning": "http_status_code",
+    "reasons": [],
+    "regex": "status:( +)(\\d+)",
+    "replacement": "status:{group1}{placeholder}",
+    "semantic_key": "",
+    "source_tag": "http_status",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 16,
+    "tag": "C"
+  },
+  {
+    "family_id": 0,
+    "kind": "open_function",
+    "meaning": "response_length_in_bytes",
+    "reasons": [],
+    "regex": "len:( +)(\\d+)",
+    "replacement": "len:{group1}{placeholder}",
+    "semantic_key": "",
+    "source_tag": "response_length",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 16,
+    "tag": "D"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 0,
+    "meaning": "response_time_in_seconds",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"time: 0.2477829\", \"groups\": [\" \", \"0.2477829\"], \"record\": {\"stored\": [247782], \"layout\": [1]}, \"inverse\": \"time: 0.2477820\", \"restored_match\": \"time: time: 0.2477820\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "time:( +)(\\d+\\.\\d+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "time:{group1}{placeholder}",
+    "source_tag": "response_time",
+    "status": "verifier_repair_produced_candidates",
+    "support": 16
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "response_time_in_seconds",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "time:( +)(\\d+\\.\\d+)",
+    "replacement": "time:{group1}{placeholder}",
+    "source_tag": "response_time",
+    "status": "rejected_semantic_three_class",
+    "support": 16,
+    "tag": "response_time"
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "process_identifier",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "(\\d{5})",
+    "replacement": "{placeholder}",
+    "source_tag": "process_id",
+    "status": "rejected_semantic_three_class",
+    "support": 16,
+    "tag": "process_id"
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "response_time_in_seconds",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "time:( +)(\\d+\\.\\d+)",
+    "replacement": "time:{group1}{placeholder}",
+    "source_tag": "response_time",
+    "status": "rejected_semantic_three_class",
+    "support": 16,
+    "tag": "response_time"
+  },
+  {
+    "family_id": 1,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 6
+  },
+  {
+    "family_id": 1,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 6
+  },
+  {
+    "family_id": 1,
+    "kind": "auto",
+    "meaning": "instance UUID",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_uuid",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 6,
+    "tag": "E"
+  },
+  {
+    "family_id": 4,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 6
+  },
+  {
+    "family_id": 4,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 6
+  },
+  {
+    "family_id": 4,
+    "kind": "auto",
+    "meaning": "file path",
+    "reasons": [],
+    "regex": "files: ([^ ]+)",
+    "replacement": "files: {placeholder}",
+    "semantic_key": "",
+    "source_tag": "file_path",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 6,
+    "tag": "F"
+  },
+  {
+    "family_id": 3,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 4
+  },
+  {
+    "family_id": 3,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 4
+  },
+  {
+    "family_id": 3,
+    "kind": "auto",
+    "meaning": "image UUID",
+    "reasons": [],
+    "regex": "image ([a-f0-9-]+)",
+    "replacement": "image {placeholder}",
+    "semantic_key": "",
+    "source_tag": "image_uuid",
+    "status": "pruned_constant_local_stream",
+    "support": 4
+  },
+  {
+    "family_id": 3,
+    "kind": "auto",
+    "meaning": "file path",
+    "reasons": [],
+    "regex": "at \\(([^)]+)\\):",
+    "replacement": "at ({placeholder}):",
+    "semantic_key": "",
+    "source_tag": "file_path",
+    "status": "pruned_constant_local_stream",
+    "support": 4
+  },
+  {
+    "family_id": 15,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 4
+  },
+  {
+    "family_id": 15,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 4
+  },
+  {
+    "family_id": 15,
+    "kind": "auto",
+    "meaning": "instance UUID",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_uuid",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 4,
+    "tag": "G"
+  },
+  {
+    "family_id": 15,
+    "kind": "auto",
+    "meaning": "request UUID",
+    "reasons": [],
+    "regex": "\\[req-([a-f0-9-]+)",
+    "replacement": "[req-{placeholder}",
+    "semantic_key": "",
+    "source_tag": "request_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 4,
+    "tag": "H"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 15,
+    "meaning": "project UUID",
+    "reasons": [
+      "I:no surviving matches for tag I",
+      "executed_counterexample={\"whole_match\": \"[req-6a763803-4838-49c7-814e-eaefbaddee9d 113d3a99c3da401fbd62cc2caa5b96d2\", \"groups\": [\"113d3a99c3da401fbd62cc2caa5b96d2\"], \"record\": {\"stored\": [\"113d3a99c3da401fbd62cc2caa5b96d2\"], \"layout\": []}, \"inverse\": \"113d3a99c3da401fbd62cc2caa5b96d2\", \"restored_match\": \"[req-113d3a99c3da401fbd62cc2caa5b96d2 113d3a99c3da401fbd62cc2caa5b96d2\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "\\[req-[a-f0-9-]+ ([a-f0-9]+)",
+    "repair_candidates": 0,
+    "repair_category": "executed_counterexample",
+    "replacement": "[req-{group1} {placeholder}",
+    "source_tag": "project_id",
+    "status": "verifier_repair_no_candidate",
+    "support": 4
+  },
+  {
+    "family_id": 15,
+    "kind": "auto",
+    "meaning": "project UUID",
+    "reasons": [
+      "I:no surviving matches for tag I"
+    ],
+    "regex": "\\[req-[a-f0-9-]+ ([a-f0-9]+)",
+    "replacement": "[req-{group1} {placeholder}",
+    "semantic_key": "",
+    "source_tag": "project_id",
+    "status": "rejected_validation",
+    "support": 4,
+    "tag": "I"
+  },
+  {
+    "family_id": 2,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 4
+  },
+  {
+    "family_id": 2,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 4
+  },
+  {
+    "family_id": 2,
+    "kind": "auto",
+    "meaning": "image identifier",
+    "reasons": [],
+    "regex": "image ([a-f0-9-]+)",
+    "replacement": "image {placeholder}",
+    "semantic_key": "",
+    "source_tag": "image_id",
+    "status": "pruned_constant_local_stream",
+    "support": 4
+  },
+  {
+    "family_id": 2,
+    "kind": "auto",
+    "meaning": "file path",
+    "reasons": [],
+    "regex": "at \\(([^)]+)\\):",
+    "replacement": "at ({placeholder}):",
+    "semantic_key": "",
+    "source_tag": "file_path",
+    "status": "pruned_constant_local_stream",
+    "support": 4
+  },
+  {
+    "family_id": 10,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 4
+  },
+  {
+    "family_id": 10,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 4
+  },
+  {
+    "family_id": 10,
+    "kind": "auto",
+    "meaning": "instance identifier",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 4,
+    "tag": "I"
+  },
+  {
+    "family_id": 19,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 19,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 19,
+    "kind": "auto",
+    "meaning": "instance identifier",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "J"
+  },
+  {
+    "family_id": 16,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 16,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 16,
+    "kind": "auto",
+    "meaning": "instance identifier",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "K"
+  },
+  {
+    "family_id": 17,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 17,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 17,
+    "kind": "auto",
+    "meaning": "instance identifier",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "L"
+  },
+  {
+    "family_id": 14,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 14,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 14,
+    "kind": "auto",
+    "meaning": "instance identifier",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "M"
+  },
+  {
+    "family_id": 18,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 18,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 18,
+    "kind": "auto",
+    "meaning": "instance identifier",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "N"
+  },
+  {
+    "family_id": 7,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 7,
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_no_verified_program",
+    "support": 2
+  },
+  {
+    "family_id": 7,
+    "kind": "auto",
+    "meaning": "instance identifier",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_id",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 22,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "([0-9]{4}-[0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(([0-9]{4}-[0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "O"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 22,
+    "meaning": "log timestamp",
+    "reasons": [
+      "P:no surviving matches for tag P",
+      "executed_counterexample={\"whole_match\": \"2017-05-16 00:00:18.450\", \"groups\": [\"2017-05-16\", \"00:00:18.450\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 22,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "P:no surviving matches for tag P"
+    ],
+    "regex": "([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "P"
+  },
+  {
+    "family_id": 22,
+    "kind": "auto",
+    "meaning": "UUID of the instance",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "P"
+  },
+  {
+    "family_id": 22,
+    "kind": "auto",
+    "meaning": "path to instance files",
+    "reasons": [],
+    "regex": "Deleting instance files (.+)",
+    "replacement": "Deleting instance files {placeholder}",
+    "semantic_key": "",
+    "source_tag": "file_path",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "Q"
+  },
+  {
+    "family_id": 22,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "R:no surviving matches for tag R"
+    ],
+    "regex": "([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "R"
+  },
+  {
+    "family_id": 23,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "([0-9]{4}-[0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^(([0-9]{4}-[0-9]{2}-[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "R"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 23,
+    "meaning": "log timestamp",
+    "reasons": [
+      "S:no surviving matches for tag S",
+      "executed_counterexample={\"whole_match\": \"2017-05-16 00:00:18.451\", \"groups\": [\"2017-05-16\", \"00:00:18.451\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 23,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "S:no surviving matches for tag S"
+    ],
+    "regex": "([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "S"
+  },
+  {
+    "family_id": 23,
+    "kind": "auto",
+    "meaning": "UUID of the instance",
+    "reasons": [],
+    "regex": "\\[instance: ([a-f0-9-]+)\\]",
+    "replacement": "[instance: {placeholder}]",
+    "semantic_key": "",
+    "source_tag": "instance_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "S"
+  },
+  {
+    "family_id": 23,
+    "kind": "auto",
+    "meaning": "path to instance files",
+    "reasons": [],
+    "regex": "Deletion of (.+) complete",
+    "replacement": "Deletion of {placeholder} complete",
+    "semantic_key": "",
+    "source_tag": "file_path",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "T"
+  },
+  {
+    "family_id": 23,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "U:no surviving matches for tag U"
+    ],
+    "regex": "([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "U"
+  },
+  {
+    "family_id": 25,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "(\\d{4}-\\d{2}-\\d{2})( +)(\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\",\"group_regex\":\"^((\\\\d{4}-\\\\d{2}-\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "U"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 25,
+    "meaning": "log timestamp",
+    "reasons": [
+      "V:no surviving matches for tag V",
+      "executed_counterexample={\"whole_match\": \"2017-05-16 00:00:14.329\", \"groups\": [\"2017-05-16\", \"00:00:14.329\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 25,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "V:no surviving matches for tag V"
+    ],
+    "regex": "(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "V"
+  },
+  {
+    "family_id": 25,
+    "kind": "auto",
+    "meaning": "structured variable with separators",
+    "reasons": [],
+    "regex": "(cp-1\\.slowvm1\\.tcloud-pg0\\.utah\\.cloudlab\\.us:cp-1\\.slowvm1\\.tcloud-pg0\\.utah\\.cloudlab\\.us)",
+    "replacement": "{placeholder}",
+    "semantic_key": "",
+    "source_tag": "structured_variable",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 25,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "V:no surviving matches for tag V"
+    ],
+    "regex": "(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}\\.\\d{3})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "V"
+  }
+]

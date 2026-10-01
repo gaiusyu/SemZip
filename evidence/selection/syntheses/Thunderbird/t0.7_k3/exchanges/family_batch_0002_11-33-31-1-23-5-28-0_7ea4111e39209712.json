@@ -1,0 +1,970 @@
+{
+  "families": [
+    {
+      "family_id": 11,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "2005.11.09",
+              "Nov",
+              "9",
+              "11:13:43"
+            ],
+            "reason": "date and time components together represent one timestamp value",
+            "target_value": "one integer-like timestamp value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "mac_address_variable",
+            "tokens": [
+              "00:11:43:32:c6:8c"
+            ],
+            "reason": "intrinsically structured variable with multiple explicit separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "network_class_variable",
+            "tokens": [
+              "eth1",
+              "C_net"
+            ],
+            "reason": "plain values introduced by stable field-name literals",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2+S4+S5+S6",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA",
+          "meaning": "log timestamp",
+          "reason": "tokens together represent a composed timestamp value"
+        },
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "MAC address",
+          "reason": "structured variable with separator encoded by regex"
+        },
+        {
+          "slot": "S13+S15",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "network class and interface",
+          "reason": "stable field-name literal introduces plain variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "mac_address_variable",
+          "network_class_variable"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composition",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "tokens together form one semantic unit"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^\\d{4}\\.\\d{2}\\.\\d{2} [A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2}",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%Y.%m.%d %b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "mac_address",
+          "meaning": "MAC address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "MAC address",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "from ([A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2})",
+          "replacement": "from {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "network_class",
+          "meaning": "network class and interface",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "network class/interface",
+            "context_source": null,
+            "why_not_merge_raw": "stable field-name literal introduces plain variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "network ([A-Za-z_]+):",
+          "replacement": "network {placeholder}:",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 33,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "2005.11.09",
+              "Nov",
+              "9",
+              "13:56:56"
+            ],
+            "reason": "date and time components together represent one timestamp value",
+            "target_value": "one integer-like timestamp value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "guid_variable",
+            "tokens": [
+              "0005AD000003947D"
+            ],
+            "reason": "intrinsically structured variable with explicit separators encoded by regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "lid_variable",
+            "tokens": [
+              "738"
+            ],
+            "reason": "stable field-name literal introduces plain variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2+S4+S5+S6",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA",
+          "meaning": "log timestamp",
+          "reason": "tokens together represent a composed timestamp value"
+        },
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "GUID",
+          "reason": "intrinsically structured variable"
+        },
+        {
+          "slot": "S17",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "LID",
+          "reason": "stable field-name literal introduces plain variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "guid_variable",
+          "lid_variable"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composition",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "tokens together form one semantic unit"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^\\d{4}\\.\\d{2}\\.\\d{2} [A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2}",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%Y.%m.%d %b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "guid",
+          "meaning": "GUID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "GUID",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "GUID ([A-Fa-f0-9]{16})",
+          "replacement": "GUID {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "lid",
+          "meaning": "LID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "LID",
+            "context_source": null,
+            "why_not_merge_raw": "stable field-name literal introduces plain variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "LID (\\d+)",
+          "replacement": "LID {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 31,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_composition",
+            "tokens": [
+              "2005.11.09",
+              "Nov",
+              "9",
+              "11:14:35"
+            ],
+            "reason": "date and time components together represent one timestamp value",
+            "target_value": "one integer-like timestamp value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "device_id",
+            "tokens": [
+              "0000:00:1d.0"
+            ],
+            "reason": "intrinsically structured variable with explicit separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "latency_timer_value",
+            "tokens": [
+              "64"
+            ],
+            "reason": "stable field-name literal introduces plain variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1+S2+S4+S5+S6",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA",
+          "meaning": "log timestamp",
+          "reason": "tokens together represent a composed timestamp value"
+        },
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "device ID",
+          "reason": "structured variable with separator encoded by regex"
+        },
+        {
+          "slot": "S17",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "latency timer value",
+          "reason": "stable field-name literal introduces plain numeric variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_composition"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "device_id",
+          "latency_timer_value"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp_composition",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "composed timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "tokens together form one semantic unit"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^\\d{4}\\.\\d{2}\\.\\d{2} [A-Za-z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2}",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    text = groups[0]\n    dt = datetime.strptime(text, '%Y.%m.%d %b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y.%m.%d %b %d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "device_id",
+          "meaning": "PCI device ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "device ID",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "device ([0-9A-Fa-f]{4}:[0-9A-Fa-f]{2}:[0-9A-Fa-f]{1}\\.[0-9A-Fa-f]{1})",
+          "replacement": "device {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "latency_timer",
+          "meaning": "latency timer value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "latency timer value",
+            "context_source": null,
+            "why_not_merge_raw": "stable field-name literal introduces plain numeric variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "to (\\d+)",
+          "replacement": "to {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "ip_address_variable",
+            "tokens": [
+              "10.100.18.250",
+              "10.100.20.250"
+            ],
+            "reason": "intrinsically structured variable with explicit separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "stratum_variable",
+            "tokens": [
+              "3"
+            ],
+            "reason": "stable field-name literal introduces plain numeric variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "IP address",
+          "reason": "structured variable with separator encoded by regex"
+        },
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "stratum value",
+          "reason": "stable field-name literal introduces plain numeric variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "ip_address_variable",
+          "stratum_variable"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "ip_address",
+          "meaning": "IP address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "IP address",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "to ([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}),",
+          "replacement": "to {placeholder},",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "stratum",
+          "meaning": "stratum value",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "stratum value",
+            "context_source": null,
+            "why_not_merge_raw": "stable field-name literal introduces plain numeric variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "stratum (\\d+)",
+          "replacement": "stratum {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 23,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "host_name_variable",
+            "tokens": [
+              "dadmin1",
+              "eadmin1"
+            ],
+            "reason": "plain value introduced by stable field-name literal in regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "host name",
+          "reason": "stable field-name literal introduces plain variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "host_name_variable"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "host_name",
+          "meaning": "host name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "host name",
+            "context_source": null,
+            "why_not_merge_raw": "stable field-name literal introduces plain variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(([^)]+)\\)",
+          "replacement": "({placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'({record['stored'][0]})'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 5,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "switch_id_variable",
+            "tokens": [
+              "5ad0000026dd6"
+            ],
+            "reason": "intrinsically structured variable with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "switch ID",
+          "reason": "intrinsically structured variable with encoded separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "switch_id_variable"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "switch_id",
+          "meaning": "switch ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "switch ID",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "switch=([A-Fa-f0-9]+)",
+          "replacement": "switch={placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'switch={record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 28,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "hub_ports_variable",
+            "tokens": [
+              "1-0:1.0",
+              "1-3:1.0"
+            ],
+            "reason": "intrinsically structured variable with encoded explicit separators",
+            "must_emit_function": true
+          },
+          {
+            "name": "ports_count_variable",
+            "tokens": [
+              "6",
+              "2"
+            ],
+            "reason": "stable field-name literal introduces plain variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S10",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "hub ports variable",
+          "reason": "structured variable with encoded explicit separators"
+        },
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "ports count variable",
+          "reason": "stable field-name literal introduces plain variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "hub_ports_variable",
+          "ports_count_variable"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "hub_ports",
+          "meaning": "hub ports variable",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "hub ports variable",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "hub ([0-9]+-[0-9]+:[0-9]+\\.[0-9]+):",
+          "replacement": "hub {placeholder}:",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'hub {record['stored'][0]}:'"
+          }
+        },
+        {
+          "tag": "ports_count",
+          "meaning": "ports count variable",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "ports count variable",
+            "context_source": null,
+            "why_not_merge_raw": "stable field-name literal introduces plain variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(\\d+) ports detected",
+          "replacement": "{placeholder} ports detected",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'{record['stored'][0]} ports detected'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "datasource_identifier",
+            "tokens": [
+              "[Thunderbird_A1]",
+              "[Thunderbird_B4]"
+            ],
+            "reason": "intrinsically structured variable with explicit separators encoded",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S15",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "datasource identifier",
+          "reason": "structured variable with encoded explicit separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "datasource_identifier"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "datasource",
+          "meaning": "datasource identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "datasource identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "got not answer from any \\[([^\\]]+)\\] datasource",
+          "replacement": "got not answer from any [{placeholder}] datasource",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'got not answer from any [{record['stored'][0]}] datasource'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "protocol_family_id",
+            "tokens": [
+              "1",
+              "16"
+            ],
+            "reason": "stable field-name literal introduces plain numeric variable",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S13",
+          "action": "STREAM_RAW | DICT_RANK | UINT_DELTA",
+          "meaning": "protocol family ID",
+          "reason": "stable field-name literal introduces plain numeric variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "protocol_family_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "protocol_family",
+          "meaning": "protocol family ID",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "protocol family ID",
+            "context_source": null,
+            "why_not_merge_raw": "stable field-name literal introduces plain numeric variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "family (\\d+)",
+          "replacement": "family {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'family {record['stored'][0]}'"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 30,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "routing_table_identifier",
+            "tokens": [
+              "[\\_SB_.PCI0.PALO._PRT]",
+              "[\\_SB_.PCI0.PBHI._PRT]"
+            ],
+            "reason": "intrinsically structured variable with explicit separators",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S14",
+          "action": "STREAM_RAW | DICT_RANK",
+          "meaning": "routing table identifier",
+          "reason": "structured variable with encoded explicit separators"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "routing_table_identifier"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "routing_table",
+          "meaning": "routing table identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "routing table identifier",
+            "context_source": null,
+            "why_not_merge_raw": "intrinsically structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Table \\[(.+?)\\]",
+          "replacement": "Table [{placeholder}]",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'Table [{record['stored'][0]}]'"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

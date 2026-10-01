@@ -1,0 +1,67 @@
+{
+  "schema": "semzip.r76.logshrink.v1",
+  "dataset": "Android",
+  "started_at": "2026-09-29T03:55:35.772284+00:00",
+  "finished_at": "2026-09-29T04:15:01.048236+00:00",
+  "partial_first_blocks_only": false,
+  "upstream": "github.com/IntelligentDDS/LogShrink",
+  "upstream_commit": "59ce49434eec06c709c7e16027a46214a6c37961",
+  "header_length_L": 6,
+  "L_mode": "official",
+  "params": "-E E -C -K lzma -V -S -P -wh 20 -th 4 -NC 16 -mt 0.5 (sample_rate 0.1), seed 0",
+  "workers": 3,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Android/Android.log",
+    "bytes": 192270829,
+    "mtime_ns": 1789372310586122000,
+    "device": 1048818,
+    "inode": 199002808556011222
+  },
+  "raw_bytes": 192270829,
+  "raw_sha256": "0f35aa11b67ec07cd34950e5c518961cb841ec0925ce007f16f3eeb0a7d35a07",
+  "stream_full_sha256": "0f35aa11b67ec07cd34950e5c518961cb841ec0925ce007f16f3eeb0a7d35a07",
+  "input_matches_r68_inventory": true,
+  "blocks": 16,
+  "blocks_status_ok": 16,
+  "failed_blocks": [],
+  "native": {
+    "archive_bytes": 8950164,
+    "ratio": 21.48238054632295,
+    "suffix_raw_bytes": 180436054,
+    "suffix_archive_bytes": 8320294,
+    "suffix_ratio": 21.686259403814336,
+    "lossless_blocks": 0,
+    "full_sha256_match": false,
+    "lossless": false,
+    "payload_7z_bytes": 8871585,
+    "model_7z_bytes": 78419,
+    "model_raw_bytes": 182874,
+    "header_bytes": 160
+  },
+  "repaired": {
+    "archive_bytes": 9181984,
+    "ratio": 20.940009152705994,
+    "suffix_archive_bytes": 8539462,
+    "suffix_ratio": 21.12967467973978,
+    "residual_bytes": 231820,
+    "lossless_blocks": 16,
+    "full_sha256_match": true,
+    "lossless": true,
+    "fallback_blocks": 0,
+    "differing_lines": 1555005
+  },
+  "timing": {
+    "wall_seconds_encode_decode_audit": 1165.2758616507053,
+    "sum_block_encode_seconds": 2062.0483898073435,
+    "sum_block_decode_seconds": 1674.7231653630733,
+    "sum_residual_seconds": 13.356221348047256,
+    "sum_patch_seconds": 4.456972256302834,
+    "encode_MB_per_s_single_worker": 0.09324263676371038,
+    "decode_MB_per_s_single_worker": 0.11480752937355856,
+    "resumed_blocks": 3
+  },
+  "host": {
+    "node": "<DEV_HOST>",
+    "python": "3.9.2"
+  }
+}

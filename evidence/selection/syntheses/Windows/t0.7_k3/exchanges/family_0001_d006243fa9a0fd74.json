@@ -1,0 +1,151 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header ('2016-10-11 03:02:50, Info                  CBS    Appl: Selfupdate') with varying fields such as timestamp, component, elevation, and version.",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "log_date_time_combined",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2}),(\\d)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Convert timestamp into epoch microseconds while preserving layout details.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day, sp1, hour, minute, second, millisec = groups\n    dt = datetime.strptime(f\"{year}-{month}-{day} {hour}:{minute}:{second}.{millisec}00\", \"%Y-%m-%d %H:%M:%S.%f\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return f\"{dt.strftime('%Y-%m-%d')}\" + (' ' * sp1_len) + f\"{dt.strftime('%H:%M:%S')},{str(int(dt.microsecond / 1000)).zfill(3)}\""
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log primary timestamp",
+      "reason": "The date and time fields together form a single semantic timestamp value. It should be stored as an epoch microsecond integer for compression efficiency."
+    },
+    {
+      "slot": "S4",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "static label indicating application type",
+      "reason": "The 'Appl:' field is stable and does not vary across examples, so it is kept as a literal in the main template."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "human-readable operation type",
+      "reason": "The 'Selfupdate,' field is stable and does not vary across examples, so it is kept as a literal in the main template."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "static label indicating component",
+      "reason": "The 'Component:' field is stable and does not vary across examples, so it is kept as a literal in the main template."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "component_identifier",
+      "reason": "This field contains a complex identifier that includes multiple subfields separated by dots, underscores, and dashes. It is treated as a raw structured variable for exact preservation."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "component_version",
+      "reason": "The component version in parentheses is numeric and varies across examples. It should be stored as a numeric stream for compression efficiency."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "elevation_level",
+      "reason": "Elevation level is numeric and varies across examples. It should be stored as an integer delta stream."
+    },
+    {
+      "slot": "S13+S14",
+      "action": "STREAM_RAW",
+      "meaning": "lower_version_holder_revision",
+      "reason": "The 'holder: 0.0.0.0' field is treated as one semantic span. It varies across examples and contains a structured version number."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "component_version",
+      "meaning": "version_in_parentheses",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\((\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)\\),",
+      "replacement": "({placeholder}),",
+      "program": {
+        "intent": "Parse version numbers as a single numeric value for compression efficiency.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    major, minor, build, revision = map(int, groups)\n    return {'stored': [major * 10**12 + minor * 10**8 + build * 10**4 + revision], 'layout': []}\n\ndef inverse(record):\n    v = int(record['stored'][0])\n    major = v // 10**12\n    minor = (v // 10**8) % 10**4\n    build = (v // 10**4) % 10**4\n    revision = v % 10**4\n    return f\"{major}.{minor}.{build}.{revision}\""
+      }
+    },
+    {
+      "tag": "elevation",
+      "meaning": "elevation_level_number",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "elevation:(\\d+),",
+      "replacement": "elevation:{placeholder},",
+      "program": {
+        "intent": "Store elevation level as an integer for compression efficiency.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "component_identifier",
+      "meaning": "full_component_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "Component:( +)([\\w\\-.]+_[\\w\\-.]+_[\\d\\.]+_[\\w\\-.]+)",
+      "replacement": "Component:{group1}{placeholder}",
+      "program": {
+        "intent": "Preserve component identifier with exact structure.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "lower_version_holder",
+      "meaning": "lower_version_revision_holder",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "holder:( +)([\\d\\.]+)",
+      "replacement": "holder:{group1}{placeholder}",
+      "program": {
+        "intent": "Preserve the lower version revision holder as a raw structured variable.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

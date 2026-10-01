@@ -1,0 +1,117 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure. Changing fields like timestamp, component, thread ID, and source IP/port should be extracted as side streams for compression efficiency.",
+    "functions": [
+      {
+        "tag": "timestamp_monotonic",
+        "meaning": "month_day_time_as_monotonic_integer",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack month, day, and time into one monotonic integer preserving original spacing.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    text = month + ' ' + day + ' ' + time\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    month_offset = (dt.month - 1) * 31 * 86400\n    day_offset = (dt.day - 1) * 86400\n    time_seconds = dt.hour * 3600 + dt.minute * 60 + dt.second\n    monotonic_seconds = month_offset + day_offset + time_seconds\n    return {'stored': [monotonic_seconds], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    monotonic_seconds = record['stored'][0]\n    layout = record['layout']\n    sp1, sp2, day_width = layout\n    days_in_month = 31\n    month = monotonic_seconds // (days_in_month * 86400) + 1\n    remaining_seconds = monotonic_seconds % (days_in_month * 86400)\n    day = remaining_seconds // 86400 + 1\n    time_seconds = remaining_seconds % 86400\n    hour = time_seconds // 3600\n    minute = (time_seconds % 3600) // 60\n    second = time_seconds % 60\n    dt = datetime(2024, month, day, hour, minute, second)  # Arbitrary year\n    month_text = dt.strftime('%b')\n    day_text = str(dt.day).zfill(day_width)\n    time_text = dt.strftime('%H:%M:%S')\n    return month_text + (' ' * sp1) + day_text + (' ' * sp2) + time_text"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "timestamp date-time as monotonic integer",
+      "reason": "The month, day, and time form one semantic timestamp value that can be packed into an integer for lossless reconstruction."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "component PID label",
+      "reason": "The component label with PID is a recurring, structured field with high entropy due to the PID variation."
+    },
+    {
+      "slot": "S10",
+      "action": "STREAM_RAW",
+      "meaning": "source IPv4 address",
+      "reason": "The source IP is a structured field with high entropy due to varying numeric components."
+    },
+    {
+      "slot": "S12",
+      "action": "UINT_DELTA",
+      "meaning": "source port number",
+      "reason": "The port is a numeric field with locality near the source IP; using context improves compression."
+    },
+    {
+      "slot": "S13",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "ssh2 protocol identifier",
+      "reason": "The protocol identifier is stable and shared across examples, making it suitable to remain in the main template."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "component_pid",
+      "meaning": "component_label_with_pid",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "sshd\\[(\\d+)\\]:",
+      "replacement": "sshd[{placeholder}]:",
+      "program": {
+        "intent": "Extract the PID from the component label while preserving the exact format.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "source_ipv4",
+      "meaning": "source_ipv4_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "from( +)((?:\\d{1,3}\\.){3}\\d{1,3})",
+      "replacement": "from{group1}{placeholder}",
+      "program": {
+        "intent": "Extract the structured IPv4 address while preserving exact formatting.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "source_port",
+      "meaning": "port_number_conditioned_by_source_ip",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": {
+        "code": "def project_context(line, groups):\n    m = re.search(r'from( +)((?:\\d{1,3}\\.){3}\\d{1,3})', line)\n    if m:\n        return m.group(2)\n    return None"
+      },
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "port( +)(\\d+)",
+      "replacement": "port{group1}{placeholder}",
+      "program": {
+        "intent": "Extract the port number while associating its distribution with the source IP.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T03:02:55.504275+00:00",
+  "dataset": "Apache",
+  "codec": "delog_generic",
+  "trial": 1,
+  "workers": 3,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+    "bytes": 5135876,
+    "mtime_ns": 1789369148595142000,
+    "device": 1048818,
+    "inode": 199002808556005632
+  },
+  "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+  "raw_bytes": 5135876,
+  "records": 56482,
+  "codec_spec": {
+    "suffix": ".tar.xz",
+    "mode": "official-cli-independent-block-adapter",
+    "variant": "official DeLog sources with empty dataset-name regex_map (R76 DeLog-generic)",
+    "encoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/Delog_compress",
+    "decoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/decompress",
+    "encoder_sha256": "bc357a51b83d0ea03310b0b0332f67bb989ccda7f3336879a9c9552491713a8a",
+    "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+    "encode_arguments": [
+      "DATASET",
+      "text",
+      "100000",
+      "1",
+      "0",
+      "lzma",
+      "normal"
+    ],
+    "decode_arguments": [
+      "ARCHIVE_DIRECTORY",
+      "OUTPUT_FILE",
+      "1"
+    ],
+    "compressor_source_sha256": "192f6a3f910033f7e3ab00ea0962abd7b75f0b322e8bebd66042e99480bd643d"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/full_20260929/Apache/delog_generic/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.tar.xz",
+      "archive_bytes": 111504,
+      "block_encode_seconds": 0.8493850380182266,
+      "raw_bytes": 5135876,
+      "lf_count": 56481,
+      "records": 56482,
+      "ends_with_lf": false,
+      "raw_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+      "archive_sha256": "f22a0b7ce9469466a58a8ece7f85f7bc5de8c8d4df0538545e4ae8519981c5e5",
+      "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b"
+    }
+  ],
+  "encode_seconds": 0.8782396763563156,
+  "block_archive_bytes": 111504,
+  "archive_bytes": 111504,
+  "decode_seconds": 0.6890058517456055,
+  "restored_settle_seconds": 2.0039352774620056,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "23e616a1ed529bab9b20b9bc345d37035061eee971d246102bcc4937e51a039b",
+  "audit_seconds": 0.031208083033561707,
+  "compression_ratio": 46.060015784187115,
+  "encode_MB_per_s": 5.847920719441847,
+  "decode_MB_per_s": 7.454038288627288,
+  "finished_at": "2026-09-29T03:02:59.154622+00:00"
+}

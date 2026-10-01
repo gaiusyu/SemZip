@@ -1,0 +1,108 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "Zookeeper",
+  "candidates": [
+    {
+      "cid": "c0",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c0/Zookeeper/selected_plan.json",
+      "train_cost": 56745
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c2/Zookeeper/selected_plan.json",
+      "train_cost": 57917
+    },
+    {
+      "cid": "c3",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c3/Zookeeper/selected_plan.json",
+      "train_cost": 60065
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c4/Zookeeper/selected_plan.json",
+      "train_cost": 64601
+    },
+    {
+      "cid": "c1",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c1/Zookeeper/selected_plan.json",
+      "train_cost": 65929
+    }
+  ],
+  "start": "c0",
+  "start_train_bytes": 56745,
+  "start_cost_reproduced": true,
+  "pool_groups": 20,
+  "duplicate_groups_skipped": 3,
+  "selected_train_bytes": 55045,
+  "selected_tags": [
+    "TS0",
+    "HP",
+    "X3B",
+    "X4DU"
+  ],
+  "selected_plan_sha256": "c74525d5a2beda06bd0a1846034fee21053497a569b694b2eda753dd10c9889f",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 37,
+      "n_improving": 1,
+      "before": 56745,
+      "accepted": [
+        {
+          "move": "replace:B->X3B",
+          "screen_cost": 55285,
+          "applied_cost": 55285
+        }
+      ],
+      "after": 55285
+    },
+    {
+      "round": 1,
+      "n_moves": 34,
+      "n_improving": 1,
+      "before": 55285,
+      "accepted": [
+        {
+          "move": "remove:I",
+          "screen_cost": 55057,
+          "applied_cost": 55057
+        }
+      ],
+      "after": 55057
+    },
+    {
+      "round": 2,
+      "n_moves": 33,
+      "n_improving": 1,
+      "before": 55057,
+      "accepted": [
+        {
+          "move": "replace:DU->X4DU",
+          "screen_cost": 55045,
+          "applied_cost": 55045
+        }
+      ],
+      "after": 55045
+    },
+    {
+      "round": 3,
+      "n_moves": 29,
+      "n_improving": 0,
+      "before": 55045,
+      "accepted": [],
+      "after": 55045
+    },
+    {
+      "stage": "eliminate",
+      "tag": "X4DU",
+      "before": 55045,
+      "after": 55173,
+      "accepted": false
+    }
+  ],
+  "evaluations": 132,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "5c793ff30e960e387845fa81e595977a9037bc4801ef67f6c3298622d5d4572a"
+}

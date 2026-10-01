@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"component_version\",\n      \"meaning\": \"component_version_number\",\n      \"class\": \"class_2_formatted_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"regex\": \"\\\\((\\\\d+)\\\\.(\\\\d+)\\\\.(\\\\d+)\\\\.(\\\\d+)\\\\),\",\n      \"replacement\": \"({placeholder}),\",\n      \"program\": {\n        \"intent\": \"Parse the version number into a single integer and reconstruct the original format.\",\n        \"op\": \"python_exec\",\n        \"parameters\": {},\n        \"code\": \"def forward(groups):\\n    major, minor, build, revision = map(int, groups)\\n    version = (major << 48) + (minor << 32) + (build << 16) + revision\\n    return {'stored': [version], 'layout': []}\\n\\ndef inverse(record):\\n    version = record['stored'][0]\\n    major = (version >> 48) & 0xFFFF\\n    minor = (version >> 32) & 0xFFFF\\n    build = (version >> 16) & 0xFFFF\\n    revision = version & 0xFFFF\\n    return f\\\"({major}.{minor}.{build}.{revision})\\\"\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 293,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1570,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1863
+  }
+}

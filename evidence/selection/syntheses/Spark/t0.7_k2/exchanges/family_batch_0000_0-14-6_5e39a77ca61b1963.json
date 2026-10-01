@@ -1,0 +1,341 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp",
+            "tokens": [
+              "16/04/07",
+              "10:46:42"
+            ],
+            "reason": "date and time together represent one timestamp value",
+            "target_value": "timestamp in microseconds",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "size_value",
+            "tokens": [
+              "6.1 KB",
+              "105.0 B"
+            ],
+            "reason": "different units represent the same size in bytes",
+            "target_value": "one canonical byte size value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "broadcast_id",
+            "tokens": [
+              "broadcast_6_piece0",
+              "broadcast_1_piece0",
+              "broadcast_7_piece0"
+            ],
+            "reason": "the broadcast id contains structured components that are encoded in the regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "host_port",
+            "tokens": [
+              "mesos-slave-26:58204",
+              "10.10.34.25:55299"
+            ],
+            "reason": "the host and port are separated by a colon, which is explicitly encoded in the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines have a common timestamp and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp of the log event",
+          "reason": "timestamp is a key component of the log lines"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "size_value"
+        ],
+        "class_3_common_variable": [
+          "broadcast_id",
+          "host_port"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "date and time",
+            "context_source": null,
+            "why_not_merge_raw": "date and time together represent one timestamp value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder} INFO",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(groups[0] + ' ' + groups[1], '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%y/%m/%d %H:%M:%S')"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "size_value",
+          "meaning": "size in bytes",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "canonical byte size",
+            "context_source": null,
+            "why_not_merge_raw": "unit conversions represent the same size"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(size: (\\d+\\.\\d+) (KB|B|MB)\\)",
+          "replacement": "(size: {placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    size = float(groups[0])\n    unit = groups[1]\n    factor = {'B': 1, 'KB': 1024, 'MB': 1024**2}[unit]\n    return {'stored': [int(size * factor)], 'layout': [factor]}\n\ndef inverse(record):\n    bytes_size = record['stored'][0]\n    factor = record['layout'][0]\n    if factor == 1:\n        unit = 'B'\n        value = bytes_size\n    elif factor == 1024:\n        unit = 'KB'\n        value = bytes_size / 1024\n    else:\n        unit = 'MB'\n        value = bytes_size / (1024 ** 2)\n    return f'size: {value:.1f} {unit}'"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "broadcast_id",
+          "meaning": "broadcast identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "broadcast id span",
+            "context_source": null,
+            "why_not_merge_raw": "structured variable with specific format"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "broadcast_\\d+_piece\\d+",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "host_port",
+          "meaning": "host and port",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "host:port span",
+            "context_source": null,
+            "why_not_merge_raw": "host and port are structured together"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(\\w+-\\w+-\\d+:\\d+|\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "input_split_path",
+            "tokens": [
+              "/yxsu/dataset/ImageNet/ILSVRC2012_img_test/ILSVRC2012_test_00001334.JPEG:0+75678",
+              "hdfs://10.10.34.11:9000/pjhe/logs/sosp_29_withID.log:1342177280+134217728"
+            ],
+            "reason": "captured value contains structured components explicitly encoded in the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines share a common timestamp and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp of the log event",
+          "reason": "timestamp is a key component of the log lines"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "input_split_path"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "input_split_path",
+          "meaning": "input split path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "input split path span",
+            "context_source": null,
+            "why_not_merge_raw": "value contains structured components"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "(Paths:[^\\s]+|hdfs://[^\\s]+)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "size_value",
+            "tokens": [
+              "19.6 KB",
+              "1097.0 B"
+            ],
+            "reason": "different units represent the same size in bytes",
+            "target_value": "one canonical byte size value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "broadcast_id",
+            "tokens": [
+              "broadcast_1_piece0",
+              "broadcast_0_piece0"
+            ],
+            "reason": "the broadcast id contains structured components that are encoded in the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "log lines share a common timestamp and INFO prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | KEEP_IN_MAIN",
+          "meaning": "timestamp of the log event",
+          "reason": "timestamp is a key component of the log lines"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "size_value"
+        ],
+        "class_3_common_variable": [
+          "broadcast_id"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "size_value",
+          "meaning": "size in bytes",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "canonical byte size",
+            "context_source": null,
+            "why_not_merge_raw": "unit conversions represent the same size"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(estimated size (\\d+\\.\\d+) (KB|MB|B), free (\\d+\\.\\d+) (MB)\\)",
+          "replacement": "(estimated size {placeholder}, free {group2} {group3})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    size = float(groups[0])\n    unit = groups[1]\n    free = float(groups[2])\n    free_unit = groups[3]\n    size_factor = {'B': 1, 'KB': 1024, 'MB': 1024**2}[unit]\n    free_factor = {'MB': 1024**2}[free_unit]\n    return {'stored': [int(size * size_factor)], 'layout': [free, free_factor]}\n\ndef inverse(record):\n    bytes_size = record['stored'][0]\n    free = record['layout'][0]\n    free_factor = record['layout'][1]\n    if bytes_size < 1024:\n        size = bytes_size\n        unit = 'B'\n    elif bytes_size < 1024**2:\n        size = bytes_size / 1024\n        unit = 'KB'\n    else:\n        size = bytes_size / (1024**2)\n        unit = 'MB'\n    return f'estimated size {size:.1f} {unit}, free {free:.1f} MB'"
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "broadcast_id",
+          "meaning": "broadcast identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "broadcast id span",
+            "context_source": null,
+            "why_not_merge_raw": "structured variable with specific format"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "broadcast_\\d+(_piece\\d+)?",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

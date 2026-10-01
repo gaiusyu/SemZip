@@ -1,0 +1,237 @@
+{
+  "families": [
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "S0",
+              "S4"
+            ],
+            "reason": "S0 and S4 together represent a timestamp-like value with high entropy",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "S1",
+              "S6",
+              "S8"
+            ],
+            "reason": "S1, S6, and S8 are introduced by stable field-name literals encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp-like value",
+          "reason": "S0 and S4 together represent a timestamp-like value with high entropy"
+        },
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "node identifier",
+          "reason": "S1 is a stable field introduced by 'node-'"
+        },
+        {
+          "slot": "S6",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "action type",
+          "reason": "S6 is a stable field introduced by action keywords"
+        },
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "command identifier",
+          "reason": "S8 is a stable field introduced by '(command '"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_or_other_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node_identifier",
+          "action_type",
+          "command_identifier"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "composed_timestamp",
+          "meaning": "timestamp composed from S0 and S4",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S0 and S4 together represent one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{7}) node-\\d+ action start (\\d{10})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    s0 = int(groups[0])\n    s4 = int(groups[1])\n    composed = s0 * 10000000000 + s4\n    return {'stored': [composed], 'layout': []}\n\ndef inverse(record):\n    composed = record['stored'][0]\n    s0 = composed // 10000000000\n    s4 = composed % 10000000000\n    return f\"{s0} node-XXX action start {s4}\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_identifier",
+          "meaning": "node identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "node identifier",
+            "context_source": null,
+            "why_not_merge_raw": "S1 is a stable field introduced by 'node-'"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "node-(\\d+)",
+          "replacement": "node-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"node-{record['stored'][0]}\""
+          }
+        },
+        {
+          "tag": "action_type",
+          "meaning": "action type",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "action type",
+            "context_source": null,
+            "why_not_merge_raw": "S6 is a stable field introduced by action keywords"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "(boot|wait|halt|risBoot|clusterAddMember|bootGenvmunix)",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        },
+        {
+          "tag": "command_identifier",
+          "meaning": "command identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "command identifier",
+            "context_source": null,
+            "why_not_merge_raw": "S8 is a stable field introduced by '(command '"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "\\(command (\\d+)\\)",
+          "replacement": "(command {placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"(command {record['stored'][0]})\""
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 10,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "S0",
+              "S4"
+            ],
+            "reason": "S0 and S4 together represent a timestamp-like value with high entropy",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix/header detected"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0+S4",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp-like value",
+          "reason": "S0 and S4 together represent a timestamp-like value with high entropy"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "timestamp_or_other_composed_value"
+        ],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "composed_timestamp",
+          "meaning": "timestamp composed from S0 and S4",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "S0 and S4 together represent one semantic quantity"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{7}) full partition status (\\d{10})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    s0 = int(groups[0])\n    s4 = int(groups[1])\n    composed = s0 * 10000000000 + s4\n    return {'stored': [composed], 'layout': []}\n\ndef inverse(record):\n    composed = record['stored'][0]\n    s0 = composed // 10000000000\n    s4 = composed % 10000000000\n    return f\"{s0} full partition status {s4}\""
+          }
+        }
+      ],
+      "class_2_functions": [],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

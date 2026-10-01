@@ -1,0 +1,1622 @@
+[
+  {
+    "family_id": 0,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^(([0-9]{2}/[0-9]{2}/[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 10,
+    "tag": "A"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 0,
+    "meaning": "log timestamp",
+    "reasons": [
+      "B:no surviving matches for tag B",
+      "executed_counterexample={\"whole_match\": \"16/04/07 10:46:42\", \"groups\": [\"16/04/07\", \"10:46:42\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 10
+  },
+  {
+    "family_id": 0,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "B:no surviving matches for tag B"
+    ],
+    "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 10,
+    "tag": "B"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 0,
+    "meaning": "size in bytes with unit",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"(size: 6.1 KB,\", \"groups\": [\"6.1\", \"KB\"], \"failure\": \"ValueError: invalid literal for int() with base 10: 'KB'\"}"
+    ],
+    "regex": "\\(size: ([0-9]+\\.[0-9]+) (B|KB|MB|GB),",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "(size: {placeholder},",
+    "source_tag": "size_display",
+    "status": "verifier_repair_produced_candidates",
+    "support": 10
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "size in bytes with unit",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\(size: ([0-9]+\\.[0-9]+) (B|KB|MB|GB),",
+    "replacement": "(size: {placeholder},",
+    "source_tag": "size_display",
+    "status": "rejected_semantic_three_class",
+    "support": 10,
+    "tag": "size_display"
+  },
+  {
+    "family_id": 0,
+    "kind": "auto",
+    "meaning": "host and port",
+    "reasons": [],
+    "regex": "on ([a-zA-Z0-9.-]+:[0-9]+)",
+    "replacement": "on {placeholder}",
+    "semantic_key": "port:auto",
+    "source_tag": "host_port",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 10,
+    "tag": "B"
+  },
+  {
+    "family_id": 0,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "C:no surviving matches for tag C"
+    ],
+    "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 10,
+    "tag": "C"
+  },
+  {
+    "family_id": 0,
+    "kind": "python_exec",
+    "meaning": "size in bytes with unit",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\(size: ([0-9]+\\.[0-9]+) (B|KB|MB|GB),",
+    "replacement": "(size: {placeholder},",
+    "source_tag": "size_display",
+    "status": "rejected_semantic_three_class",
+    "support": 10,
+    "tag": "size_display"
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^(([0-9]{2}/[0-9]{2}/[0-9]{2})( +)([0-9]{2}:[0-9]{2}:[0-9]{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "C"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 6,
+    "meaning": "log timestamp",
+    "reasons": [
+      "D:no surviving matches for tag D",
+      "executed_counterexample={\"whole_match\": \"15/09/01 18:16:43\", \"groups\": [\"15/09/01\", \"18:16:43\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "D:no surviving matches for tag D"
+    ],
+    "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 4,
+    "tag": "D"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 6,
+    "meaning": "size in bytes with unit",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"(estimated size 1097.0 B,\", \"groups\": [\"1097.0\", \"B\"], \"failure\": \"ValueError: invalid literal for int() with base 10: 'B'\"}"
+    ],
+    "regex": "\\(estimated size ([0-9]+\\.[0-9]+) (B|KB|MB),",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "(estimated size {placeholder},",
+    "source_tag": "size_display",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 6,
+    "kind": "python_exec",
+    "meaning": "size in bytes with unit",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\(estimated size ([0-9]+\\.[0-9]+) (B|KB|MB),",
+    "replacement": "(estimated size {placeholder},",
+    "source_tag": "size_display",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "size_display"
+  },
+  {
+    "family_id": 6,
+    "kind": "auto",
+    "meaning": "broadcast block identifier",
+    "reasons": [],
+    "regex": "Block ([a-zA-Z0-9_]+)",
+    "replacement": "Block {placeholder}",
+    "semantic_key": "",
+    "source_tag": "broadcast_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 4,
+    "tag": "D"
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "E:no surviving matches for tag E"
+    ],
+    "regex": "^([0-9]{2}/[0-9]{2}/[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 4,
+    "tag": "E"
+  },
+  {
+    "family_id": 6,
+    "kind": "python_exec",
+    "meaning": "size in bytes with unit",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\(estimated size ([0-9]+\\.[0-9]+) (B|KB|MB),",
+    "replacement": "(estimated size {placeholder},",
+    "source_tag": "size_display",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "size_display"
+  },
+  {
+    "family_id": 10,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "E"
+  },
+  {
+    "family_id": 10,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "F:no surviving matches for tag F"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 4,
+    "tag": "F"
+  },
+  {
+    "family_id": 30,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 4,
+    "tag": "F"
+  },
+  {
+    "family_id": 30,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "G:no surviving matches for tag G"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 4,
+    "tag": "G"
+  },
+  {
+    "family_id": 1,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "G"
+  },
+  {
+    "family_id": 1,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "H:no surviving matches for tag H"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "H"
+  },
+  {
+    "family_id": 2,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "H"
+  },
+  {
+    "family_id": 2,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "I:no surviving matches for tag I"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "I"
+  },
+  {
+    "family_id": 5,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "I"
+  },
+  {
+    "family_id": 5,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "J:no surviving matches for tag J"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "J"
+  },
+  {
+    "family_id": 29,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "J"
+  },
+  {
+    "family_id": 29,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "K:no surviving matches for tag K"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "K"
+  },
+  {
+    "family_id": 3,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "K"
+  },
+  {
+    "family_id": 3,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "L:no surviving matches for tag L"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "L"
+  },
+  {
+    "family_id": 16,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "L"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 16,
+    "meaning": "log timestamp",
+    "reasons": [
+      "M:no surviving matches for tag M",
+      "executed_counterexample={\"whole_match\": \"16/04/07 10:58:59\", \"groups\": [\"16/04/07\", \"10:58:59\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 16,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "M:no surviving matches for tag M"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "M"
+  },
+  {
+    "family_id": 16,
+    "kind": "open_function",
+    "meaning": "number of blocks",
+    "reasons": [],
+    "regex": "Getting (\\d+) non-empty blocks out of (\\d+) blocks",
+    "replacement": "Getting {placeholder} non-empty blocks out of {group2} blocks",
+    "semantic_key": "",
+    "source_tag": "block_count",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "M"
+  },
+  {
+    "family_id": 16,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "N:no surviving matches for tag N"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "N"
+  },
+  {
+    "family_id": 8,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "N"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 8,
+    "meaning": "log timestamp",
+    "reasons": [
+      "O:no surviving matches for tag O",
+      "executed_counterexample={\"whole_match\": \"15/09/01 18:16:43\", \"groups\": [\"15/09/01\", \"18:16:43\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 8,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "O:no surviving matches for tag O"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "O"
+  },
+  {
+    "family_id": 8,
+    "kind": "open_function",
+    "meaning": "broadcast variable ID",
+    "reasons": [],
+    "regex": "Reading broadcast variable (\\d+)",
+    "replacement": "Reading broadcast variable {placeholder}",
+    "semantic_key": "",
+    "source_tag": "broadcast_variable",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "O"
+  },
+  {
+    "family_id": 8,
+    "kind": "open_function",
+    "meaning": "time taken in milliseconds",
+    "reasons": [],
+    "regex": "took (\\d+) ms",
+    "replacement": "took {placeholder} ms",
+    "semantic_key": "",
+    "source_tag": "duration",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "P"
+  },
+  {
+    "family_id": 8,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "Q:no surviving matches for tag Q"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "Q"
+  },
+  {
+    "family_id": 22,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "Q"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 22,
+    "meaning": "log timestamp",
+    "reasons": [
+      "R:no surviving matches for tag R",
+      "executed_counterexample={\"whole_match\": \"16/04/07 10:54:15\", \"groups\": [\"16/04/07\", \"10:54:15\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 22,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "R:no surviving matches for tag R"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "R"
+  },
+  {
+    "family_id": 22,
+    "kind": "auto",
+    "meaning": "task attempt ID",
+    "reasons": [],
+    "regex": "task ('attempt_[^']+')",
+    "replacement": "task {placeholder}",
+    "semantic_key": "",
+    "source_tag": "task_attempt_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "R"
+  },
+  {
+    "family_id": 22,
+    "kind": "auto",
+    "meaning": "HDFS path",
+    "reasons": [],
+    "regex": "to (hdfs://[^ ]+)",
+    "replacement": "to {placeholder}",
+    "semantic_key": "",
+    "source_tag": "hdfs_path",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "S"
+  },
+  {
+    "family_id": 22,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "T:no surviving matches for tag T"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "T"
+  },
+  {
+    "family_id": 15,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "T"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 15,
+    "meaning": "log timestamp",
+    "reasons": [
+      "U:no surviving matches for tag U",
+      "executed_counterexample={\"whole_match\": \"16/04/07 10:58:59\", \"groups\": [\"16/04/07\", \"10:58:59\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 15,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "U:no surviving matches for tag U"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "U"
+  },
+  {
+    "family_id": 15,
+    "kind": "open_function",
+    "meaning": "number of remote fetches",
+    "reasons": [],
+    "regex": "Started (\\d+) remote fetches",
+    "replacement": "Started {placeholder} remote fetches",
+    "semantic_key": "",
+    "source_tag": "remote_fetch_count",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "U"
+  },
+  {
+    "family_id": 15,
+    "kind": "open_function",
+    "meaning": "time taken in milliseconds",
+    "reasons": [],
+    "regex": "in (\\d+) ms",
+    "replacement": "in {placeholder} ms",
+    "semantic_key": "",
+    "source_tag": "duration",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "V"
+  },
+  {
+    "family_id": 15,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "W:no surviving matches for tag W"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "W"
+  },
+  {
+    "family_id": 17,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "W"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 17,
+    "meaning": "log timestamp",
+    "reasons": [
+      "X:no surviving matches for tag X",
+      "executed_counterexample={\"whole_match\": \"16/04/07 10:58:58\", \"groups\": [\"16/04/07\", \"10:58:58\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 17,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "X:no surviving matches for tag X"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "X"
+  },
+  {
+    "family_id": 17,
+    "kind": "open_function",
+    "meaning": "shuffle ID",
+    "reasons": [],
+    "regex": "shuffle (\\d+),",
+    "replacement": "shuffle {placeholder},",
+    "semantic_key": "",
+    "source_tag": "shuffle_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "X"
+  },
+  {
+    "family_id": 17,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "Y:no surviving matches for tag Y"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "Y"
+  },
+  {
+    "family_id": 21,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "Y"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 21,
+    "meaning": "log timestamp",
+    "reasons": [
+      "Z:no surviving matches for tag Z",
+      "executed_counterexample={\"whole_match\": \"16/04/07 11:02:23\", \"groups\": [\"16/04/07\", \"11:02:23\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 21,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "Z:no surviving matches for tag Z"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "Z"
+  },
+  {
+    "family_id": 21,
+    "kind": "auto",
+    "meaning": "RDD ID",
+    "reasons": [],
+    "regex": "Partition (rdd_\\d+_\\d+)",
+    "replacement": "Partition {placeholder}",
+    "semantic_key": "",
+    "source_tag": "rdd_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "Z"
+  },
+  {
+    "family_id": 21,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "A1:no surviving matches for tag A1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "A1"
+  },
+  {
+    "family_id": 25,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "A1"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 25,
+    "meaning": "log timestamp",
+    "reasons": [
+      "B1:no surviving matches for tag B1",
+      "executed_counterexample={\"whole_match\": \"16/04/07 10:46:41\", \"groups\": [\"16/04/07\", \"10:46:41\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 25,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "B1:no surviving matches for tag B1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "B1"
+  },
+  {
+    "family_id": 25,
+    "kind": "open_function",
+    "meaning": "number of tasks",
+    "reasons": [],
+    "regex": "with (\\d+) tasks",
+    "replacement": "with {placeholder} tasks",
+    "semantic_key": "",
+    "source_tag": "task_count",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "B1"
+  },
+  {
+    "family_id": 25,
+    "kind": "auto",
+    "meaning": "task set ID",
+    "reasons": [],
+    "regex": "task set (\\d+\\.\\d+)",
+    "replacement": "task set {placeholder}",
+    "semantic_key": "",
+    "source_tag": "task_set_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "C1"
+  },
+  {
+    "family_id": 25,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "D1:no surviving matches for tag D1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "D1"
+  },
+  {
+    "family_id": 26,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "D1"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 26,
+    "meaning": "log timestamp",
+    "reasons": [
+      "E1:no surviving matches for tag E1",
+      "executed_counterexample={\"whole_match\": \"16/04/07 10:47:15\", \"groups\": [\"16/04/07\", \"10:47:15\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 26,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "E1:no surviving matches for tag E1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "E1"
+  },
+  {
+    "family_id": 26,
+    "kind": "auto",
+    "meaning": "task set ID",
+    "reasons": [],
+    "regex": "TaskSet (\\d+\\.\\d+),",
+    "replacement": "TaskSet {placeholder},",
+    "semantic_key": "",
+    "source_tag": "task_set_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "E1"
+  },
+  {
+    "family_id": 26,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "F1:no surviving matches for tag F1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "F1"
+  },
+  {
+    "family_id": 12,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "F1"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 12,
+    "meaning": "log timestamp",
+    "reasons": [
+      "G1:no surviving matches for tag G1",
+      "executed_counterexample={\"whole_match\": \"16/04/07 10:47:15\", \"groups\": [\"16/04/07\", \"10:47:15\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 12,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "G1:no surviving matches for tag G1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "G1"
+  },
+  {
+    "family_id": 12,
+    "kind": "open_function",
+    "meaning": "shuffle ID",
+    "reasons": [],
+    "regex": "shuffle (\\d+)",
+    "replacement": "shuffle {placeholder}",
+    "semantic_key": "",
+    "source_tag": "shuffle_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "G1"
+  },
+  {
+    "family_id": 12,
+    "kind": "auto",
+    "meaning": "tracker endpoint",
+    "reasons": [],
+    "regex": "to ([^ ]+)",
+    "replacement": "to {placeholder}",
+    "semantic_key": "",
+    "source_tag": "endpoint",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "H1"
+  },
+  {
+    "family_id": 12,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "I1:no surviving matches for tag I1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "I1"
+  },
+  {
+    "family_id": 18,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "I1"
+  },
+  {
+    "failed_status": "rejected_validation",
+    "family_id": 18,
+    "meaning": "log timestamp",
+    "reasons": [
+      "J1:no surviving matches for tag J1",
+      "executed_counterexample={\"whole_match\": \"16/04/07 10:58:58\", \"groups\": [\"16/04/07\", \"10:58:58\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "{placeholder}",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 18,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "J1:no surviving matches for tag J1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "J1"
+  },
+  {
+    "family_id": 18,
+    "kind": "auto",
+    "meaning": "tracker endpoint",
+    "reasons": [],
+    "regex": "endpoint = (NettyRpcEndpointRef\\(spark://[^)]+\\))",
+    "replacement": "endpoint = {placeholder}",
+    "semantic_key": "",
+    "source_tag": "tracker_endpoint",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 18,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "J1:no surviving matches for tag J1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "J1"
+  },
+  {
+    "family_id": 24,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "J1"
+  },
+  {
+    "family_id": 24,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "K1:no surviving matches for tag K1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "K1"
+  },
+  {
+    "family_id": 24,
+    "kind": "auto",
+    "meaning": "source location",
+    "reasons": [],
+    "regex": "at ([^ ]+)",
+    "replacement": "at {placeholder}",
+    "semantic_key": "",
+    "source_tag": "source_location",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "K1"
+  },
+  {
+    "family_id": 4,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "L1"
+  },
+  {
+    "family_id": 4,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "M1:no surviving matches for tag M1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "M1"
+  },
+  {
+    "family_id": 4,
+    "kind": "open_function",
+    "meaning": "task identifier",
+    "reasons": [],
+    "regex": "task (\\d+)",
+    "replacement": "task {placeholder}",
+    "semantic_key": "",
+    "source_tag": "task_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "M1"
+  },
+  {
+    "family_id": 7,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "N1"
+  },
+  {
+    "family_id": 7,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "O1:no surviving matches for tag O1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "O1"
+  },
+  {
+    "family_id": 7,
+    "kind": "open_function",
+    "meaning": "broadcast variable identifier",
+    "reasons": [],
+    "regex": "variable (\\d+)",
+    "replacement": "variable {placeholder}",
+    "semantic_key": "",
+    "source_tag": "broadcast_variable_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "O1"
+  },
+  {
+    "family_id": 9,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "P1"
+  },
+  {
+    "family_id": 9,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "Q1:no surviving matches for tag Q1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "Q1"
+  },
+  {
+    "family_id": 9,
+    "kind": "open_function",
+    "meaning": "RDD identifier",
+    "reasons": [],
+    "regex": "RDD (\\d+)",
+    "replacement": "RDD {placeholder}",
+    "semantic_key": "",
+    "source_tag": "rdd_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "Q1"
+  },
+  {
+    "family_id": 11,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "R1"
+  },
+  {
+    "family_id": 11,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "S1:no surviving matches for tag S1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "S1"
+  },
+  {
+    "family_id": 11,
+    "kind": "open_function",
+    "meaning": "epoch identifier",
+    "reasons": [],
+    "regex": "to (\\d+)",
+    "replacement": "to {placeholder}",
+    "semantic_key": "",
+    "source_tag": "epoch_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "S1"
+  },
+  {
+    "family_id": 13,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "T1"
+  },
+  {
+    "family_id": 13,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "U1:no surviving matches for tag U1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "U1"
+  },
+  {
+    "family_id": 13,
+    "kind": "auto",
+    "meaning": "block identifier",
+    "reasons": [],
+    "regex": "block (rdd_\\d+_\\d+)",
+    "replacement": "block {placeholder}",
+    "semantic_key": "",
+    "source_tag": "block_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "U1"
+  },
+  {
+    "family_id": 27,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "V1"
+  },
+  {
+    "family_id": 27,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "W1:no surviving matches for tag W1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "W1"
+  },
+  {
+    "family_id": 27,
+    "kind": "open_function",
+    "meaning": "accumulator identifier",
+    "reasons": [],
+    "regex": "accumulator (\\d+)",
+    "replacement": "accumulator {placeholder}",
+    "semantic_key": "",
+    "source_tag": "accumulator_id",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "W1"
+  },
+  {
+    "family_id": 20,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "X1"
+  },
+  {
+    "family_id": 20,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "Y1:no surviving matches for tag Y1"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "Y1"
+  },
+  {
+    "family_id": 20,
+    "kind": "open_function",
+    "meaning": "algorithm version",
+    "reasons": [],
+    "regex": "version is (\\d+)",
+    "replacement": "version is {placeholder}",
+    "semantic_key": "",
+    "source_tag": "algorithm_version",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 2,
+    "tag": "Y1"
+  },
+  {
+    "family_id": 19,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"_space_layout_repair\":true,\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"group_regex\":\"^((\\\\d{2}/\\\\d{2}/\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "Z1"
+  },
+  {
+    "family_id": 19,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [
+      "A2:no surviving matches for tag A2"
+    ],
+    "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+    "replacement": "{placeholder}",
+    "semantic_key": "raw_time:generic:{\"code\":\"def forward(groups):\\n    text = groups[0]\\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%y/%m/%d %H:%M:%S')\",\"op\":\"python_exec\"}:{placeholder}",
+    "source_tag": "log_timestamp",
+    "status": "rejected_validation",
+    "support": 2,
+    "tag": "A2"
+  }
+]

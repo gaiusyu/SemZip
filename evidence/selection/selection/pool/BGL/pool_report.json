@@ -1,0 +1,101 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "BGL",
+  "candidates": [
+    {
+      "cid": "c3",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c3/BGL/selected_plan.json",
+      "train_cost": 312915
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c2/BGL/selected_plan.json",
+      "train_cost": 317687
+    },
+    {
+      "cid": "c1",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c1/BGL/selected_plan.json",
+      "train_cost": 331079
+    },
+    {
+      "cid": "c0",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c0/BGL/selected_plan.json",
+      "train_cost": 377191
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c4/BGL/selected_plan.json",
+      "train_cost": 377723
+    }
+  ],
+  "start": "c3",
+  "start_train_bytes": 312915,
+  "start_cost_reproduced": true,
+  "pool_groups": 23,
+  "duplicate_groups_skipped": 1,
+  "selected_train_bytes": 272715,
+  "selected_tags": [
+    "TS",
+    "A",
+    "C",
+    "X4G",
+    "X2B",
+    "X1D"
+  ],
+  "selected_plan_sha256": "0b2be563ad191d57fd8eda4681ab3096f5df008092aa5ac6c151cebc320ce0c4",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 60,
+      "n_improving": 3,
+      "before": 312915,
+      "accepted": [
+        {
+          "move": "add:X4G",
+          "screen_cost": 273255,
+          "applied_cost": 273255
+        },
+        {
+          "move": "add:X2B",
+          "screen_cost": 312783,
+          "applied_cost": 273059
+        }
+      ],
+      "after": 273059
+    },
+    {
+      "round": 1,
+      "n_moves": 58,
+      "n_improving": 1,
+      "before": 273059,
+      "accepted": [
+        {
+          "move": "add:X1D",
+          "screen_cost": 272715,
+          "applied_cost": 272715
+        }
+      ],
+      "after": 272715
+    },
+    {
+      "round": 2,
+      "n_moves": 58,
+      "n_improving": 0,
+      "before": 272715,
+      "accepted": [],
+      "after": 272715
+    },
+    {
+      "stage": "eliminate",
+      "tag": "C",
+      "before": 272715,
+      "after": 272715,
+      "accepted": false
+    }
+  ],
+  "evaluations": 175,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "d6b55a02a67d9ab027abae4b60c365edbf9a892fcb6810ff780528512ca01c83"
+}

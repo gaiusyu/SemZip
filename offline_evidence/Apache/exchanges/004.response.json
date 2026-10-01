@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"child_init_values\",\n      \"meaning\": \"child init values\",\n      \"class\": \"class_1_composed_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"regex\": \"init (\\\\d+) ([-]?\\\\d+)\",\n      \"replacement\": \"init {placeholder}\",\n      \"program\": {\n        \"op\": \"python_exec\",\n        \"code\": \"def forward(groups):\\n    combined_value = int(groups[0]) * 1000 + int(groups[1])\\n    return {'stored': [combined_value], 'layout': []}\\n\\ndef inverse(record):\\n    combined_value = record['stored'][0]\\n    group0 = combined_value // 1000\\n    group1 = combined_value % 1000\\n    if group1 > 500:  # Adjust for negative values\\n        group1 -= 1000\\n    return f\\\"{group0} {group1}\\\"\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 230,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1058,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1288
+  }
+}

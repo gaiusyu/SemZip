@@ -1,0 +1,135 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix containing a timestamp, hostname, and process information, which can be extracted into side streams.",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "log_prefix_with_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Extracts the log timestamp and converts it into a packed monotonic integer. Preserves spacing around the day field.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    month_map = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}\n    month_val = month_map[month]\n    day_width = len(day)\n    day = int(day)\n    hour, minute, second = map(int, time.split(':'))\n    packed = (month_val * 31 * 24 * 60 * 60) + (day * 24 * 60 * 60) + (hour * 60 * 60) + (minute * 60) + second\n    return {'stored': [packed], 'layout': [len(sp1), len(sp2), day_width]}\n\ndef inverse(record):\n    packed = record['stored'][0]\n    layout = record['layout']\n    sp1_len, sp2_len, day_width = layout\n    second = packed % 60\n    packed //= 60\n    minute = packed % 60\n    packed //= 60\n    hour = packed % 24\n    packed //= 24\n    day = packed % 31\n    packed //= 31\n    month_val = packed\n    month_map = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}\n    month = month_map[month_val]\n    day_str = str(day).zfill(day_width)\n    time = f\"{hour:02}:{minute:02}:{second:02}\"\n    return month + (' ' * sp1_len) + day_str + (' ' * sp2_len) + time"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log timestamp",
+      "reason": "The tokens S0, S1, and S2 together represent a single timestamp, which can be composed into a monotonic numeric value for compression and exact reconstruction."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "process_name_and_pid",
+      "reason": "The process name and PID are presented together in a structured format, making it suitable for storage as a raw stream."
+    },
+    {
+      "slot": "S10",
+      "action": "STREAM_RAW",
+      "meaning": "username_or_ip",
+      "reason": "The slot contains usernames or IP addresses, which vary independently and should be stored as raw streams for exact reconstruction."
+    },
+    {
+      "slot": "S12",
+      "action": "DICT_RANK",
+      "meaning": "source_ip",
+      "reason": "The slot contains source IP addresses, which are structured and frequently repeated, making them suitable for dictionary ranking."
+    },
+    {
+      "slot": "S14",
+      "action": "UINT_DELTA",
+      "meaning": "source_port",
+      "reason": "The source port is numeric and varies locally within the scope of its associated IP address, making it suitable for delta compression."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "process_name_pid",
+      "meaning": "ssh_process_name_and_pid",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "sshd\\[(\\d+)\\]:",
+      "replacement": "sshd[{placeholder}]:",
+      "program": {
+        "intent": "Extracts the process name and PID for structured storage and exact reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "source_ip",
+      "meaning": "source_ipv4_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "from( +)((?:\\d{1,3}\\.){3}\\d{1,3})",
+      "replacement": "from{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the source IPv4 address for structured storage and exact reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "source_port",
+      "meaning": "source_port_conditioned_by_source_ip",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": {
+        "code": "def project_context(line, groups):\n    m = re.search(r'from( +)((?:\\d{1,3}\\.){3}\\d{1,3})', line)\n    if m:\n        return m.group(2)\n    return None"
+      },
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "port( +)(\\d+)",
+      "replacement": "port{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the source port, which is conditioned on the source IP address, for compact numeric storage and exact reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "ssh_protocol_version",
+      "meaning": "ssh_protocol_version",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "(ssh\\d)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extracts the SSH protocol version for structured storage and exact reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

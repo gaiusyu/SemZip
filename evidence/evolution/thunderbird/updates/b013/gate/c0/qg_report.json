@@ -1,0 +1,2133 @@
+{
+  "version": "QG-V1",
+  "implementation": "qg_select2 (parallel evaluation, same decisions)",
+  "dataset": "Thunderbird",
+  "input_plan": "<WORKSPACE>/r75_fallback_evolution_20260927/upd/b013/train_k/Thunderbird/t0.0_k1/training_work/Thunderbird/replay_plan.json",
+  "input_plan_sha256": "8bf6f4f1bf289d672f0133959c117f03caa5ca4e9d9831cf00c85b3ea9455bb4",
+  "training_block_sha256": "19230780f956702a66a388aa2db5fb0a7f38fc53b3b791ce17f1403e4a910a72",
+  "selected_plan_sha256": "615118c5df5b7c51f4a39a3ac160b2a5377a035edbcee9ae40916b359bda1d12",
+  "original_train_archive_bytes": 297727,
+  "empty_train_archive_bytes": 236187,
+  "selected_train_archive_bytes": 228291,
+  "removed_tags": [
+    "I",
+    "M",
+    "PD",
+    "G",
+    "L",
+    "D",
+    "E"
+  ],
+  "kept_tags": [
+    "TS",
+    "IP",
+    "C"
+  ],
+  "evaluations": 62,
+  "decisions": [
+    {
+      "stage": "A",
+      "spec_index": 0,
+      "tag": "TS",
+      "variant": "width_agnostic",
+      "before": 297727,
+      "after": 297703,
+      "accepted": true
+    },
+    {
+      "stage": "A",
+      "spec_index": 7,
+      "tag": "C",
+      "variant": "width_agnostic",
+      "before": 297703,
+      "after": 297703,
+      "accepted": false
+    },
+    {
+      "stage": "B",
+      "tag": "I",
+      "before": 297703,
+      "after": 279299,
+      "accepted": true,
+      "all": {
+        "C": 297703,
+        "D": 297703,
+        "E": 297703,
+        "G": 308727,
+        "I": 279299,
+        "IP": 298471,
+        "L": 298275,
+        "M": 285311,
+        "PD": 294835,
+        "TS": 297819
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "M",
+      "before": 279299,
+      "after": 267967,
+      "accepted": true,
+      "all": {
+        "C": 284839,
+        "D": 279299,
+        "E": 279299,
+        "G": 299167,
+        "IP": 279903,
+        "L": 278307,
+        "M": 267967,
+        "PD": 275683,
+        "TS": 281983
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "PD",
+      "before": 267967,
+      "after": 248535,
+      "accepted": true,
+      "all": {
+        "C": 273871,
+        "D": 267967,
+        "E": 267967,
+        "G": 249827,
+        "IP": 267991,
+        "L": 267023,
+        "PD": 248535,
+        "TS": 270551
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "G",
+      "before": 248535,
+      "after": 229951,
+      "accepted": true,
+      "all": {
+        "C": 255383,
+        "D": 248535,
+        "E": 248535,
+        "G": 229951,
+        "IP": 249131,
+        "L": 247643,
+        "TS": 251319
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "L",
+      "before": 229951,
+      "after": 229267,
+      "accepted": true,
+      "all": {
+        "C": 235711,
+        "D": 229859,
+        "E": 229283,
+        "IP": 231723,
+        "L": 229267,
+        "TS": 231767
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "D",
+      "before": 229267,
+      "after": 229199,
+      "accepted": true,
+      "all": {
+        "C": 234271,
+        "D": 229199,
+        "E": 229523,
+        "IP": 230451,
+        "TS": 232015
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "E",
+      "before": 229199,
+      "after": 228291,
+      "accepted": true,
+      "all": {
+        "C": 234447,
+        "E": 228291,
+        "IP": 230427,
+        "TS": 231315
+      }
+    },
+    {
+      "stage": "B",
+      "tag": "TS",
+      "before": 228291,
+      "after": 230195,
+      "accepted": false,
+      "all": {
+        "C": 235111,
+        "IP": 231019,
+        "TS": 230195
+      }
+    },
+    {
+      "stage": "C",
+      "tag": "I",
+      "before": 228291,
+      "after": 286131,
+      "accepted": false
+    },
+    {
+      "stage": "C",
+      "tag": "M",
+      "before": 228291,
+      "after": 294235,
+      "accepted": false
+    },
+    {
+      "stage": "C",
+      "tag": "PD",
+      "before": 228291,
+      "after": 250419,
+      "accepted": false
+    },
+    {
+      "stage": "C",
+      "tag": "G",
+      "before": 228291,
+      "after": 247643,
+      "accepted": false
+    },
+    {
+      "stage": "C",
+      "tag": "L",
+      "before": 228291,
+      "after": 229371,
+      "accepted": false
+    },
+    {
+      "stage": "C",
+      "tag": "D",
+      "before": 228291,
+      "after": 229523,
+      "accepted": false
+    },
+    {
+      "stage": "C",
+      "tag": "E",
+      "before": 228291,
+      "after": 229199,
+      "accepted": false
+    }
+  ],
+  "eval_log": [
+    {
+      "eval": 1,
+      "key": "82dca0f4a1dc",
+      "label": "original",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297727,
+      "seconds": 48.89
+    },
+    {
+      "eval": 2,
+      "key": "2001d3d645a6",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 236187,
+      "seconds": 6.04
+    },
+    {
+      "eval": 1,
+      "key": "82dca0f4a1dc",
+      "label": "original",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297727,
+      "seconds": 48.89,
+      "cached": true
+    },
+    {
+      "eval": 2,
+      "key": "2001d3d645a6",
+      "label": "empty_residual_only",
+      "tags": [],
+      "archive_bytes": 236187,
+      "seconds": 6.04,
+      "cached": true
+    },
+    {
+      "eval": 3,
+      "key": "d8a0d556b6d7",
+      "label": "A:TS:width_agnostic",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297703,
+      "seconds": 54.01
+    },
+    {
+      "eval": 4,
+      "key": "4b8577366bb0",
+      "label": "A:C:width_agnostic",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297727,
+      "seconds": 47.1
+    },
+    {
+      "eval": 3,
+      "key": "d8a0d556b6d7",
+      "label": "A:TS:width_agnostic",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297703,
+      "seconds": 54.01,
+      "cached": true
+    },
+    {
+      "eval": 4,
+      "key": "4b8577366bb0",
+      "label": "A:C:width_agnostic",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297727,
+      "seconds": 47.1,
+      "cached": true
+    },
+    {
+      "eval": 3,
+      "key": "d8a0d556b6d7",
+      "label": "A:TS:width_agnostic",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297703,
+      "seconds": 54.01,
+      "cached": true
+    },
+    {
+      "eval": 5,
+      "key": "2f4e172483a5",
+      "label": "A:C:width_agnostic",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297703,
+      "seconds": 55.77
+    },
+    {
+      "eval": 6,
+      "key": "ac93eab8165a",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297703,
+      "seconds": 44.33
+    },
+    {
+      "eval": 7,
+      "key": "8b6b60bd267c",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 297703,
+      "seconds": 39.9
+    },
+    {
+      "eval": 8,
+      "key": "83f0d2602675",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 297703,
+      "seconds": 48.4
+    },
+    {
+      "eval": 9,
+      "key": "ab7cb5de02ae",
+      "label": "B:-G",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 308727,
+      "seconds": 50.66
+    },
+    {
+      "eval": 10,
+      "key": "e69f5e7d5b43",
+      "label": "B:-I",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 279299,
+      "seconds": 43.84
+    },
+    {
+      "eval": 11,
+      "key": "886d54d9b70a",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 298471,
+      "seconds": 48.02
+    },
+    {
+      "eval": 12,
+      "key": "b16cb11f9b56",
+      "label": "B:-L",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 298275,
+      "seconds": 46.03
+    },
+    {
+      "eval": 13,
+      "key": "355e3cd96602",
+      "label": "B:-M",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 285311,
+      "seconds": 48.16
+    },
+    {
+      "eval": 14,
+      "key": "09225caf974c",
+      "label": "B:-PD",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 294835,
+      "seconds": 42.26
+    },
+    {
+      "eval": 15,
+      "key": "5b82eb03f7ba",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297819,
+      "seconds": 34.16
+    },
+    {
+      "eval": 6,
+      "key": "ac93eab8165a",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297703,
+      "seconds": 44.33,
+      "cached": true
+    },
+    {
+      "eval": 7,
+      "key": "8b6b60bd267c",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 297703,
+      "seconds": 39.9,
+      "cached": true
+    },
+    {
+      "eval": 8,
+      "key": "83f0d2602675",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 297703,
+      "seconds": 48.4,
+      "cached": true
+    },
+    {
+      "eval": 9,
+      "key": "ab7cb5de02ae",
+      "label": "B:-G",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 308727,
+      "seconds": 50.66,
+      "cached": true
+    },
+    {
+      "eval": 10,
+      "key": "e69f5e7d5b43",
+      "label": "B:-I",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 279299,
+      "seconds": 43.84,
+      "cached": true
+    },
+    {
+      "eval": 11,
+      "key": "886d54d9b70a",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 298471,
+      "seconds": 48.02,
+      "cached": true
+    },
+    {
+      "eval": 12,
+      "key": "b16cb11f9b56",
+      "label": "B:-L",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 298275,
+      "seconds": 46.03,
+      "cached": true
+    },
+    {
+      "eval": 13,
+      "key": "355e3cd96602",
+      "label": "B:-M",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 285311,
+      "seconds": 48.16,
+      "cached": true
+    },
+    {
+      "eval": 14,
+      "key": "09225caf974c",
+      "label": "B:-PD",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 294835,
+      "seconds": 42.26,
+      "cached": true
+    },
+    {
+      "eval": 15,
+      "key": "5b82eb03f7ba",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "I",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 297819,
+      "seconds": 34.16,
+      "cached": true
+    },
+    {
+      "eval": 16,
+      "key": "1af4db395d59",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 284839,
+      "seconds": 29.41
+    },
+    {
+      "eval": 17,
+      "key": "f6dc0a7c9bd1",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 279299,
+      "seconds": 34.47
+    },
+    {
+      "eval": 18,
+      "key": "0c46fa980a17",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 279299,
+      "seconds": 34.28
+    },
+    {
+      "eval": 19,
+      "key": "d59c09d9ab7b",
+      "label": "B:-G",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 299167,
+      "seconds": 33.58
+    },
+    {
+      "eval": 20,
+      "key": "3c80ebd6942b",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 279903,
+      "seconds": 32.8
+    },
+    {
+      "eval": 21,
+      "key": "e8a631de7f1d",
+      "label": "B:-L",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "G",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 278307,
+      "seconds": 31.63
+    },
+    {
+      "eval": 22,
+      "key": "791fd1f785fc",
+      "label": "B:-M",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 267967,
+      "seconds": 35.22
+    },
+    {
+      "eval": 23,
+      "key": "f9dc5d57efb1",
+      "label": "B:-PD",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 275683,
+      "seconds": 30.75
+    },
+    {
+      "eval": 24,
+      "key": "9fd9713b7b7f",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 281983,
+      "seconds": 26.94
+    },
+    {
+      "eval": 16,
+      "key": "1af4db395d59",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 284839,
+      "seconds": 29.41,
+      "cached": true
+    },
+    {
+      "eval": 17,
+      "key": "f6dc0a7c9bd1",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 279299,
+      "seconds": 34.47,
+      "cached": true
+    },
+    {
+      "eval": 18,
+      "key": "0c46fa980a17",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 279299,
+      "seconds": 34.28,
+      "cached": true
+    },
+    {
+      "eval": 19,
+      "key": "d59c09d9ab7b",
+      "label": "B:-G",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 299167,
+      "seconds": 33.58,
+      "cached": true
+    },
+    {
+      "eval": 20,
+      "key": "3c80ebd6942b",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 279903,
+      "seconds": 32.8,
+      "cached": true
+    },
+    {
+      "eval": 21,
+      "key": "e8a631de7f1d",
+      "label": "B:-L",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "G",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 278307,
+      "seconds": 31.63,
+      "cached": true
+    },
+    {
+      "eval": 22,
+      "key": "791fd1f785fc",
+      "label": "B:-M",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 267967,
+      "seconds": 35.22,
+      "cached": true
+    },
+    {
+      "eval": 23,
+      "key": "f9dc5d57efb1",
+      "label": "B:-PD",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 275683,
+      "seconds": 30.75,
+      "cached": true
+    },
+    {
+      "eval": 24,
+      "key": "9fd9713b7b7f",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "M",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 281983,
+      "seconds": 26.94,
+      "cached": true
+    },
+    {
+      "eval": 25,
+      "key": "40a8d28b07a4",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 273871,
+      "seconds": 29.34
+    },
+    {
+      "eval": 26,
+      "key": "0f0c548cfff9",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 267967,
+      "seconds": 35.05
+    },
+    {
+      "eval": 27,
+      "key": "681eda9947d7",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 267967,
+      "seconds": 35.04
+    },
+    {
+      "eval": 28,
+      "key": "2404ea0d5f98",
+      "label": "B:-G",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 249827,
+      "seconds": 26.0
+    },
+    {
+      "eval": 29,
+      "key": "f93663dd26c0",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "PD",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 267991,
+      "seconds": 33.15
+    },
+    {
+      "eval": 30,
+      "key": "88b37b39cc1a",
+      "label": "B:-L",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 267023,
+      "seconds": 32.23
+    },
+    {
+      "eval": 31,
+      "key": "6d6ce85c5897",
+      "label": "B:-PD",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 248535,
+      "seconds": 31.7
+    },
+    {
+      "eval": 32,
+      "key": "2360b05300ad",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 270551,
+      "seconds": 28.36
+    },
+    {
+      "eval": 25,
+      "key": "40a8d28b07a4",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 273871,
+      "seconds": 29.34,
+      "cached": true
+    },
+    {
+      "eval": 26,
+      "key": "0f0c548cfff9",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 267967,
+      "seconds": 35.05,
+      "cached": true
+    },
+    {
+      "eval": 27,
+      "key": "681eda9947d7",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 267967,
+      "seconds": 35.04,
+      "cached": true
+    },
+    {
+      "eval": 28,
+      "key": "2404ea0d5f98",
+      "label": "B:-G",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "L",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 249827,
+      "seconds": 26.0,
+      "cached": true
+    },
+    {
+      "eval": 29,
+      "key": "f93663dd26c0",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "PD",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 267991,
+      "seconds": 33.15,
+      "cached": true
+    },
+    {
+      "eval": 30,
+      "key": "88b37b39cc1a",
+      "label": "B:-L",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 267023,
+      "seconds": 32.23,
+      "cached": true
+    },
+    {
+      "eval": 31,
+      "key": "6d6ce85c5897",
+      "label": "B:-PD",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 248535,
+      "seconds": 31.7,
+      "cached": true
+    },
+    {
+      "eval": 32,
+      "key": "2360b05300ad",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "PD",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 270551,
+      "seconds": 28.36,
+      "cached": true
+    },
+    {
+      "eval": 33,
+      "key": "bc95f0910f77",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 255383,
+      "seconds": 27.6
+    },
+    {
+      "eval": 34,
+      "key": "14a739f6150e",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 248535,
+      "seconds": 32.96
+    },
+    {
+      "eval": 35,
+      "key": "ca0122f70413",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 248535,
+      "seconds": 32.96
+    },
+    {
+      "eval": 36,
+      "key": "9f11465b7ff4",
+      "label": "B:-G",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 229951,
+      "seconds": 23.56
+    },
+    {
+      "eval": 37,
+      "key": "34a9d496014b",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 249131,
+      "seconds": 30.3
+    },
+    {
+      "eval": 38,
+      "key": "779b73be2a35",
+      "label": "B:-L",
+      "tags": [
+        "TS",
+        "IP",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 247643,
+      "seconds": 30.64
+    },
+    {
+      "eval": 39,
+      "key": "8bf7b2c0c989",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 251319,
+      "seconds": 24.83
+    },
+    {
+      "eval": 33,
+      "key": "bc95f0910f77",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 255383,
+      "seconds": 27.6,
+      "cached": true
+    },
+    {
+      "eval": 34,
+      "key": "14a739f6150e",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 248535,
+      "seconds": 32.96,
+      "cached": true
+    },
+    {
+      "eval": 35,
+      "key": "ca0122f70413",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "G",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 248535,
+      "seconds": 32.96,
+      "cached": true
+    },
+    {
+      "eval": 36,
+      "key": "9f11465b7ff4",
+      "label": "B:-G",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 229951,
+      "seconds": 23.56,
+      "cached": true
+    },
+    {
+      "eval": 37,
+      "key": "34a9d496014b",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 249131,
+      "seconds": 30.3,
+      "cached": true
+    },
+    {
+      "eval": 38,
+      "key": "779b73be2a35",
+      "label": "B:-L",
+      "tags": [
+        "TS",
+        "IP",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 247643,
+      "seconds": 30.64,
+      "cached": true
+    },
+    {
+      "eval": 39,
+      "key": "8bf7b2c0c989",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "L",
+        "G",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 251319,
+      "seconds": 24.83,
+      "cached": true
+    },
+    {
+      "eval": 40,
+      "key": "7b59c8368af2",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 235711,
+      "seconds": 18.89
+    },
+    {
+      "eval": 41,
+      "key": "ba2c0209378d",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 229859,
+      "seconds": 24.15
+    },
+    {
+      "eval": 42,
+      "key": "4e59f440788d",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 229283,
+      "seconds": 23.38
+    },
+    {
+      "eval": 43,
+      "key": "da70ee987b06",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "L",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 231723,
+      "seconds": 22.48
+    },
+    {
+      "eval": 44,
+      "key": "42ff3c2da99e",
+      "label": "B:-L",
+      "tags": [
+        "TS",
+        "IP",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 229267,
+      "seconds": 20.17
+    },
+    {
+      "eval": 45,
+      "key": "16937c9a5c43",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "L",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 231767,
+      "seconds": 15.23
+    },
+    {
+      "eval": 40,
+      "key": "7b59c8368af2",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 235711,
+      "seconds": 18.89,
+      "cached": true
+    },
+    {
+      "eval": 41,
+      "key": "ba2c0209378d",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 229859,
+      "seconds": 24.15,
+      "cached": true
+    },
+    {
+      "eval": 42,
+      "key": "4e59f440788d",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 229283,
+      "seconds": 23.38,
+      "cached": true
+    },
+    {
+      "eval": 43,
+      "key": "da70ee987b06",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "L",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 231723,
+      "seconds": 22.48,
+      "cached": true
+    },
+    {
+      "eval": 44,
+      "key": "42ff3c2da99e",
+      "label": "B:-L",
+      "tags": [
+        "TS",
+        "IP",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 229267,
+      "seconds": 20.17,
+      "cached": true
+    },
+    {
+      "eval": 45,
+      "key": "16937c9a5c43",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "L",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 231767,
+      "seconds": 15.23,
+      "cached": true
+    },
+    {
+      "eval": 46,
+      "key": "191f5b86750a",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 234271,
+      "seconds": 14.96
+    },
+    {
+      "eval": 47,
+      "key": "7e57b7dabdc2",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 229199,
+      "seconds": 19.73
+    },
+    {
+      "eval": 48,
+      "key": "a3433f280a62",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 229523,
+      "seconds": 19.96
+    },
+    {
+      "eval": 49,
+      "key": "f647047decfe",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 230451,
+      "seconds": 18.9
+    },
+    {
+      "eval": 50,
+      "key": "149b78204e90",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 232015,
+      "seconds": 13.01
+    },
+    {
+      "eval": 46,
+      "key": "191f5b86750a",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 234271,
+      "seconds": 14.96,
+      "cached": true
+    },
+    {
+      "eval": 47,
+      "key": "7e57b7dabdc2",
+      "label": "B:-D",
+      "tags": [
+        "TS",
+        "IP",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 229199,
+      "seconds": 19.73,
+      "cached": true
+    },
+    {
+      "eval": 48,
+      "key": "a3433f280a62",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 229523,
+      "seconds": 19.96,
+      "cached": true
+    },
+    {
+      "eval": 49,
+      "key": "f647047decfe",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 230451,
+      "seconds": 18.9,
+      "cached": true
+    },
+    {
+      "eval": 50,
+      "key": "149b78204e90",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "C",
+        "D",
+        "E"
+      ],
+      "archive_bytes": 232015,
+      "seconds": 13.01,
+      "cached": true
+    },
+    {
+      "eval": 51,
+      "key": "d1884970d774",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "E"
+      ],
+      "archive_bytes": 234447,
+      "seconds": 14.86
+    },
+    {
+      "eval": 52,
+      "key": "0e2f2922e2b7",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "C"
+      ],
+      "archive_bytes": 228291,
+      "seconds": 19.45
+    },
+    {
+      "eval": 53,
+      "key": "4c12895004e7",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 230427,
+      "seconds": 18.9
+    },
+    {
+      "eval": 54,
+      "key": "a6a412217fd9",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 231315,
+      "seconds": 12.69
+    },
+    {
+      "eval": 51,
+      "key": "d1884970d774",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP",
+        "E"
+      ],
+      "archive_bytes": 234447,
+      "seconds": 14.86,
+      "cached": true
+    },
+    {
+      "eval": 52,
+      "key": "0e2f2922e2b7",
+      "label": "B:-E",
+      "tags": [
+        "TS",
+        "IP",
+        "C"
+      ],
+      "archive_bytes": 228291,
+      "seconds": 19.45,
+      "cached": true
+    },
+    {
+      "eval": 53,
+      "key": "4c12895004e7",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 230427,
+      "seconds": 18.9,
+      "cached": true
+    },
+    {
+      "eval": 54,
+      "key": "a6a412217fd9",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 231315,
+      "seconds": 12.69,
+      "cached": true
+    },
+    {
+      "eval": 55,
+      "key": "5b83617c695f",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP"
+      ],
+      "archive_bytes": 235111,
+      "seconds": 13.79
+    },
+    {
+      "eval": 56,
+      "key": "3601f39497b5",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "C"
+      ],
+      "archive_bytes": 231019,
+      "seconds": 17.74
+    },
+    {
+      "eval": 57,
+      "key": "925773f7821f",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "C"
+      ],
+      "archive_bytes": 230195,
+      "seconds": 12.13
+    },
+    {
+      "eval": 55,
+      "key": "5b83617c695f",
+      "label": "B:-C",
+      "tags": [
+        "TS",
+        "IP"
+      ],
+      "archive_bytes": 235111,
+      "seconds": 13.79,
+      "cached": true
+    },
+    {
+      "eval": 56,
+      "key": "3601f39497b5",
+      "label": "B:-IP",
+      "tags": [
+        "TS",
+        "C"
+      ],
+      "archive_bytes": 231019,
+      "seconds": 17.74,
+      "cached": true
+    },
+    {
+      "eval": 57,
+      "key": "925773f7821f",
+      "label": "B:-TS",
+      "tags": [
+        "IP",
+        "C"
+      ],
+      "archive_bytes": 230195,
+      "seconds": 12.13,
+      "cached": true
+    },
+    {
+      "eval": 58,
+      "key": "7645d6418f9c",
+      "label": "C:+I",
+      "tags": [
+        "TS",
+        "IP",
+        "I",
+        "C"
+      ],
+      "archive_bytes": 286131,
+      "seconds": 30.93
+    },
+    {
+      "eval": 59,
+      "key": "61a3cf1292df",
+      "label": "C:+M",
+      "tags": [
+        "TS",
+        "IP",
+        "M",
+        "C"
+      ],
+      "archive_bytes": 294235,
+      "seconds": 27.12
+    },
+    {
+      "eval": 60,
+      "key": "c465490222d0",
+      "label": "C:+PD",
+      "tags": [
+        "TS",
+        "IP",
+        "PD",
+        "C"
+      ],
+      "archive_bytes": 250419,
+      "seconds": 22.61
+    },
+    {
+      "eval": 61,
+      "key": "ecbf1f381878",
+      "label": "C:+G",
+      "tags": [
+        "TS",
+        "IP",
+        "G",
+        "C"
+      ],
+      "archive_bytes": 247643,
+      "seconds": 27.68
+    },
+    {
+      "eval": 62,
+      "key": "e18b42f0f962",
+      "label": "C:+L",
+      "tags": [
+        "TS",
+        "IP",
+        "L",
+        "C"
+      ],
+      "archive_bytes": 229371,
+      "seconds": 21.56
+    },
+    {
+      "eval": 48,
+      "key": "a3433f280a62",
+      "label": "C:+D",
+      "tags": [
+        "TS",
+        "IP",
+        "C",
+        "D"
+      ],
+      "archive_bytes": 229523,
+      "seconds": 19.96,
+      "cached": true
+    },
+    {
+      "eval": 47,
+      "key": "7e57b7dabdc2",
+      "label": "C:+E",
+      "tags": [
+        "TS",
+        "IP",
+        "C",
+        "E"
+      ],
+      "archive_bytes": 229199,
+      "seconds": 19.73,
+      "cached": true
+    }
+  ],
+  "llm_calls": 0
+}

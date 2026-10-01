@@ -1,0 +1,57 @@
+{
+  "excluded_private_material": "Original command with private absolute input/output paths; machine filesystem identity fields.",
+  "export_compression_experiments": 0,
+  "export_network_accesses": 0,
+  "export_raw_corpus_reads": 0,
+  "original_command_sha256": "f3994ccfa5f3543e53a5f3e23b3171c924fe9bbac65df60c86828c2eef4e64ed",
+  "original_command_shipped": false,
+  "original_control_manifest_sha256": "46607968452e0a637ca83312d76587f7fac746eea98363b78a6b18ade10f796e",
+  "original_inputs_and_original_Q2_records_modified": false,
+  "original_report_sha256": "a9c0dc0881e512bbdb89dd020a6b9195547228b811ba97997326c29e2015f8e2",
+  "records": [
+    {
+      "byte_identical": false,
+      "export_bytes": 2853,
+      "export_file": "summary.json",
+      "export_sha256": "bbed4004ac4ca05e50ce159b71da6786368e39a20a721014fc6f6011d25f436b",
+      "original_bytes": 3053,
+      "original_file": "summary.json",
+      "original_sha256": "ca19d90916f7e2addf4e2aee3aff4febe7d47d30ff9ff48d3ab4a9d493dd9ced"
+    },
+    {
+      "byte_identical": true,
+      "export_bytes": 1447114,
+      "export_file": "actual_archive_members.json",
+      "export_sha256": "27fe4d1fad941da662d5f4714e8f04185b91dfe8497e2caf32a2aa7bc17d8280",
+      "original_bytes": 1447114,
+      "original_file": "actual_archive_members.json",
+      "original_sha256": "27fe4d1fad941da662d5f4714e8f04185b91dfe8497e2caf32a2aa7bc17d8280"
+    },
+    {
+      "byte_identical": true,
+      "export_bytes": 1465834,
+      "export_file": "historical_member_boundary_checks.json",
+      "export_sha256": "47f9c06c1e262d1f6dfdd1c7ee9126354950476f89adb315a85405613c438cb5",
+      "original_bytes": 1465834,
+      "original_file": "historical_member_boundary_checks.json",
+      "original_sha256": "47f9c06c1e262d1f6dfdd1c7ee9126354950476f89adb315a85405613c438cb5"
+    },
+    {
+      "byte_identical": true,
+      "export_bytes": 10402,
+      "export_file": "verify_spark_assembly.py",
+      "export_sha256": "faeb67ae602dbc35d95c9d331a9bb5f536784530799f3236b07dc4d5c7b03e08",
+      "original_bytes": 10402,
+      "original_file": "verify_spark_assembly.py",
+      "original_sha256": "faeb67ae602dbc35d95c9d331a9bb5f536784530799f3236b07dc4d5c7b03e08"
+    }
+  ],
+  "schema": "spark-assembly-public-evidence-v1",
+  "summary_transformations": [
+    "Removed machine inode and modification-time values; retained the measured unchanged-stat boolean.",
+    "Renamed codecs_run to compression_experiments; explicitly retained that ordinary gzip/tar inflation reads the source archive.",
+    "Labeled elapsed time as full-content read diagnostic, not a compression benchmark.",
+    "Added explicit remote-payload and original-script discovery boundaries.",
+    "Normalized JSON formatting."
+  ]
+}

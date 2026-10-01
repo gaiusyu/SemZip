@@ -1,0 +1,151 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure with a timestamp, log level, and component identifier, which should be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "log_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2})(,)",
+        "replacement": "{placeholder}{group4}{group8}",
+        "program": {
+          "intent": "Reversible transformation of ISO 8601-like timestamp into epoch microseconds.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day, sp1, hour, minute, second, comma = groups\n    dt = datetime.strptime(f\"{year}-{month}-{day} {hour}:{minute}:{second}\", \"%Y-%m-%d %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d') + (' ' * sp1_len) + dt.strftime('%H:%M:%S') + ','"
+        }
+      },
+      {
+        "tag": "H1",
+        "meaning": "log_level",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(Info)( +)CBS",
+        "replacement": "{placeholder}{group2}CBS",
+        "program": {
+          "intent": "Extracts the log level as a stable string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': [len(groups[1])]}\n\ndef inverse(record):\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    return record['stored'][0] + (' ' * sp1_len)"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log timestamp",
+      "reason": "The date and time fields together form a single semantic timestamp value."
+    },
+    {
+      "slot": "S2",
+      "action": "STREAM_RAW",
+      "meaning": "log level",
+      "reason": "The log level is a stable string that varies across log lines and is useful for filtering."
+    },
+    {
+      "slot": "S4+S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "application and update type",
+      "reason": "These fields are stable and do not vary across examples, so they are better kept in the main template."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "component label",
+      "reason": "This field is a stable literal and does not vary across examples."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "component identifier",
+      "reason": "The component identifier is a high-entropy string with a stable structure and varies across examples."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "component version",
+      "reason": "The version number is a numeric value with a stable structure and is likely to have local repetition."
+    },
+    {
+      "slot": "S9",
+      "action": "STREAM_RAW",
+      "meaning": "elevation level",
+      "reason": "The elevation level is a numeric value with a stable role but appears in a textual context that varies across examples."
+    },
+    {
+      "slot": "S13+S14",
+      "action": "STREAM_RAW",
+      "meaning": "lower version revision holder",
+      "reason": "The lower version revision holder is a structured numeric value that varies across examples."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "component_version",
+      "meaning": "component_version_number",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "\\((\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)\\)(,)",
+      "replacement": "({placeholder}){group5}",
+      "program": {
+        "intent": "Reversible transformation of version number into a single integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    major, minor, build, revision, comma = groups\n    version = (int(major) << 48) | (int(minor) << 32) | (int(build) << 16) | int(revision)\n    return {'stored': [version], 'layout': []}\n\ndef inverse(record):\n    version = int(record['stored'][0])\n    major = (version >> 48) & 0xFFFF\n    minor = (version >> 32) & 0xFFFF\n    build = (version >> 16) & 0xFFFF\n    revision = version & 0xFFFF\n    return f\"({major}.{minor}.{build}.{revision})\""
+      }
+    },
+    {
+      "tag": "elevation_level",
+      "meaning": "elevation_level_value",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "elevation:(\\d+),",
+      "replacement": "elevation:{placeholder},",
+      "program": {
+        "intent": "Extracts the elevation level as an integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return f\"elevation:{record['stored'][0]}\""
+      }
+    },
+    {
+      "tag": "lower_version_revision_holder",
+      "meaning": "lower_version_revision_holder_value",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "holder:( +)(\\d+\\.\\d+\\.\\d+\\.\\d+)",
+      "replacement": "holder:{group1}{placeholder}",
+      "program": {
+        "intent": "Extracts the lower version revision holder as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': [len(groups[0])]}\n\ndef inverse(record):\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    return 'holder:' + (' ' * sp1_len) + record['stored'][0]"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

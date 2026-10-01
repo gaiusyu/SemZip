@@ -1,0 +1,145 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure with a timestamp, component, and process/thread identifier, which can be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "H0",
+        "meaning": "syslog-like timestamp without year",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack month, day, and time into a monotonic integer while preserving display spacing.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    month_map = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}\n    month_num = month_map[month]\n    day_num = int(day)\n    h, m, s = map(int, time.split(':'))\n    packed = (((month_num * 31 + day_num) * 24 + h) * 60 + m) * 60 + s\n    return {'stored': [packed], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    packed = record['stored'][0]\n    layout = record['layout']\n    sp1_len, sp2_len, day_width = layout\n    s = packed % 60\n    packed //= 60\n    m = packed % 60\n    packed //= 60\n    h = packed % 24\n    packed //= 24\n    day_num = packed % 31\n    packed //= 31\n    month_num = packed\n    month_map = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}\n    month = month_map[month_num]\n    day = str(day_num).zfill(day_width)\n    time = f\"{h:02}:{m:02}:{s:02}\"\n    return month + (' ' * sp1_len) + day + (' ' * sp2_len) + time"
+        }
+      },
+      {
+        "tag": "H1",
+        "meaning": "process name and thread id",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "(sshd\\(pam_unix\\)\\[\\d+\\]:)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Store the process name and thread id as a raw string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "syslog-like timestamp without year",
+      "reason": "Month, day, and time form a single semantic timestamp value."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "process name and thread id",
+      "reason": "The process name and thread id are a structured identifier with stable format and variable thread id."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "authentication failure message",
+      "reason": "This is a stable literal message that does not vary across examples."
+    },
+    {
+      "slot": "S7",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "logname field",
+      "reason": "This is a stable literal field with no variable value."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "user id (uid)",
+      "reason": "The uid is a stable numeric value with potential locality for compression."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "effective user id (euid)",
+      "reason": "The euid is a stable numeric value with potential locality for compression."
+    },
+    {
+      "slot": "S10",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "tty field",
+      "reason": "This is a stable literal field with no variable value."
+    },
+    {
+      "slot": "S11",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "ruser field",
+      "reason": "This is a stable literal field with no variable value."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "remote host (rhost)",
+      "reason": "The rhost is a structured IPv4 or domain name with variable components."
+    },
+    {
+      "slot": "S13",
+      "action": "STREAM_RAW",
+      "meaning": "user field",
+      "reason": "The user field is a stable key=value pair with a variable value."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "rhost",
+      "meaning": "remote host (IPv4 or domain)",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "rhost=( +)([^ ]+)",
+      "replacement": "rhost={group1}{placeholder}",
+      "program": {
+        "intent": "Store the remote host (IPv4 or domain) as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "user",
+      "meaning": "user field value",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "user=( +)([A-Za-z0-9._-]+)",
+      "replacement": "user={group1}{placeholder}",
+      "program": {
+        "intent": "Store the user field value as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

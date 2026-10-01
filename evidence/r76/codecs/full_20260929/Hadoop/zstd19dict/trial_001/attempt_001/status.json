@@ -1,0 +1,123 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T03:11:33.855316+00:00",
+  "dataset": "Hadoop",
+  "codec": "zstd19dict",
+  "trial": 1,
+  "workers": 3,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/raw/Hadoop.log",
+    "bytes": 48595595,
+    "mtime_ns": 1789369517402558000,
+    "device": 1048818,
+    "inode": 199002808556008278
+  },
+  "raw_sha256": "e31aa21eed52aa4fc4945255b35c71295b0a49feedb052c192c4968644d9daf5",
+  "raw_bytes": 48595595,
+  "records": 394308,
+  "codec_spec": {
+    "exe": "zstd",
+    "encode": [
+      "-19",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "decode": [
+      "-d",
+      "-T1",
+      "-q",
+      "-c"
+    ],
+    "suffix": ".zst",
+    "mode": "block0-trained-dictionary-counted-once-per-file",
+    "train": [
+      "--train",
+      "-T1"
+    ],
+    "sample_records": 1000,
+    "dictionary_file": "dictionary.zdict",
+    "dictionary_size": "zstd-default(--maxdict unset)",
+    "executable": "<WORKDIR>/r76_additional_20260929/codecs/tools/zstd-1.5.6/programs/zstd",
+    "executable_sha256": "77a325b22dc395a39a3f71324aa92e62a6303d0c6ce63d3a37c1e68cc14b85e2",
+    "version": "*** Zstandard CLI (64-bit) v1.5.6, by Yann Collet ***\n"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/full_20260929/Hadoop/zstd19dict/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.zst",
+      "archive_bytes": 617887,
+      "block_encode_seconds": 15.600177943706512,
+      "raw_bytes": 17185963,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "8d13beb9b0ff65a4dd7136f18dd2713f58e0c1ff408e1b9f811f842fd0f72d19",
+      "archive_sha256": "c0ae0f4c7a8be4186856cbdb4d97399960b082fe49af48be6e583c9e06cf92a7",
+      "decoded_sha256": "8d13beb9b0ff65a4dd7136f18dd2713f58e0c1ff408e1b9f811f842fd0f72d19"
+    },
+    {
+      "index": 1,
+      "archive": "archives/block_000001.zst",
+      "archive_bytes": 113799,
+      "block_encode_seconds": 3.962140828371048,
+      "raw_bytes": 9548627,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "adfc92a221f7a4f2226abb4d382e4e340a3f68258bf7387396edcc74d43e149e",
+      "archive_sha256": "e4e9331b60d8444dca86bea0545b4d4d30735d683add56f0b230670f014a22d8",
+      "decoded_sha256": "adfc92a221f7a4f2226abb4d382e4e340a3f68258bf7387396edcc74d43e149e"
+    },
+    {
+      "index": 2,
+      "archive": "archives/block_000002.zst",
+      "archive_bytes": 107358,
+      "block_encode_seconds": 3.745298221707344,
+      "raw_bytes": 9595107,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "fcb603befdc60cb4345f0172be0dcedd0a5ed740db4b94da17e420e1e36742d4",
+      "archive_sha256": "b3a86e9beb1b5dffe2b0a09c088870f478b67eef83fd28006bf25f76b7833139",
+      "decoded_sha256": "fcb603befdc60cb4345f0172be0dcedd0a5ed740db4b94da17e420e1e36742d4"
+    },
+    {
+      "index": 3,
+      "archive": "archives/block_000003.zst",
+      "archive_bytes": 320504,
+      "block_encode_seconds": 8.73316504061222,
+      "raw_bytes": 12265898,
+      "lf_count": 94308,
+      "records": 94308,
+      "ends_with_lf": true,
+      "raw_sha256": "1f6ecaa64fb06abda3e16695d3392675e6792bd5c0e852afa46444dda208c682",
+      "archive_sha256": "6c31ff8bec03b9d104109b1d88438ca3db7c0cf2a40b6f5b64834af9295b3464",
+      "decoded_sha256": "1f6ecaa64fb06abda3e16695d3392675e6792bd5c0e852afa46444dda208c682"
+    }
+  ],
+  "encode_seconds": 25.981740295886993,
+  "block_archive_bytes": 1159548,
+  "archive_bytes": 1272188,
+  "samples": 100,
+  "sample_bytes": 17185963,
+  "dictionary_train_seconds": 1.4078553169965744,
+  "dictionary_archive": "archives/dictionary.zdict",
+  "dictionary_bytes": 112640,
+  "dictionary_sha256": "a78755d7c3389709c5a493565ed8537421f376cfb9a29b16476061acb4ff63d4",
+  "archive_components": "block archives + one dictionary file (counted once per file)",
+  "decode_seconds": 0.8846738040447235,
+  "restored_settle_seconds": 2.004047840833664,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "e31aa21eed52aa4fc4945255b35c71295b0a49feedb052c192c4968644d9daf5",
+  "audit_seconds": 0.2985503375530243,
+  "compression_ratio": 38.19843843834402,
+  "encode_MB_per_s": 1.8703749035507395,
+  "decode_MB_per_s": 54.930523293242345,
+  "finished_at": "2026-09-29T03:12:03.051604+00:00"
+}

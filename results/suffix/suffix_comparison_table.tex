@@ -1,0 +1,20 @@
+\begin{table*}[t]\centering\small
+\caption{Nontraining suffix archive-cost view on the fixed 12 original multi-block files. Every method uses the same original blocks 1 onward. Ratios count SemZip\textquotesingle s reconstructed suffix manifest and each external method\textquotesingle s existing independent archive files. No suffix is recompressed or separately timed. One-block files are excluded. Failed observations receive no ratio or reduced-denominator aggregate. *LogLite-BL-wide+tail+reservefix.}
+\label{tab:external-suffix}
+\begin{tabular}{lrrrrrr}\toprule
+Dataset & SemZip & DeLog & LogLite-BL* & gzip6 & XZ6 & Zstd3 \\ \midrule
+Mac & 31.42 & 26.77 & 18.97 & 10.10 & 20.41 & 15.23 \\
+HealthApp & 37.20 & 48.62 & 16.44 & 10.27 & 15.76 & 9.89 \\
+HPC & 30.50 & 43.80 & 19.32 & 9.92 & 18.89 & 9.33 \\
+Hadoop & 108.90 & 105.27 & 50.72 & 25.43 & 52.26 & 36.37 \\
+OpenStack & 26.72 & 22.95 & 17.40 & 11.93 & 16.40 & 12.76 \\
+OpenSSH & 111.50 & 104.48 & 32.58 & 15.93 & 21.32 & 14.21 \\
+Android & 34.77 & 29.55 & 17.06 & 7.56 & 19.45 & 12.62 \\
+BGL & 40.72 & 40.42 & 24.19 & 11.86 & 22.07 & 10.62 \\
+HDFS & 27.16 & 29.79 & 12.66 & 10.13 & 15.62 & 10.27 \\
+Spark & 56.23 & 59.11 & 37.13 & 16.06 & 23.08 & 15.26 \\
+Windows & 530.16 & 536.26 & 300.51 & 16.77 & 217.86 & 146.01 \\
+Thunderbird & 64.66 & 67.69 & 39.78 & 15.76 & 28.54 & 18.83 \\
+Arithmetic mean (12) & 91.66 & 92.89 & 48.90 & 13.48 & 39.31 & 25.95 \\
+Total suffix raw / archive & 96.04 & 100.35 & 57.23 & 15.86 & 43.01 & 28.18 \\
+\bottomrule\end{tabular}\end{table*}

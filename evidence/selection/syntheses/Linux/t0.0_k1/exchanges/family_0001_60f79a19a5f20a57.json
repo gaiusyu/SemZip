@@ -1,0 +1,91 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure with stable fields such as timestamp, component, and kernel identifier. Changing fields like function calls and memory addresses should be extracted as side streams.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "syslog-like timestamp without year",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack month, day, hour, minute, and second into one monotonic integer and preserve spacing for exact rendering.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, hms = groups\n    text = month + ' ' + day + ' ' + hms\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    packed = (dt.month * 1000000) + (dt.day * 10000) + (dt.hour * 100) + dt.minute * 1 + dt.second\n    return {'stored': [packed], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    packed = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, day_width = layout\n    month = datetime.strptime(str(packed // 1000000), '%m').strftime('%b')\n    day = str((packed // 10000) % 100).zfill(day_width)\n    hour = (packed // 100) % 100\n    minute = packed % 100\n    second = packed % 100\n    hms = f'{hour:02}:{minute:02}:{second:02}'\n    return month + (' ' * sp1_len) + day + (' ' * sp2_len) + hms"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "syslog-like timestamp without year",
+      "reason": "Month, day, and time together form one semantic timestamp value."
+    },
+    {
+      "slot": "S4",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "kernel identifier",
+      "reason": "The kernel identifier is stable and does not disturb the template structure."
+    },
+    {
+      "slot": "S5",
+      "action": "STREAM_RAW",
+      "meaning": "memory address in brackets",
+      "reason": "The memory address is a bounded opaque variable with intrinsic structure."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "function name and offset",
+      "reason": "The function name and offset are high-entropy identifiers with stable affixes."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "memory_address",
+      "meaning": "memory address in brackets",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\[<(\\w+)>\\]",
+      "replacement": "[<{placeholder}>]",
+      "program": {
+        "intent": "Store the exact memory address string and render it unchanged.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f'<{record['stored'][0]}>'"
+      }
+    },
+    {
+      "tag": "function_offset",
+      "meaning": "function name and offset",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "([A-Za-z_][A-Za-z0-9_]*)(\\+)(0x[0-9a-f]+)/(0x[0-9a-f]+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Store the exact function name and offset string and render it unchanged.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0] + groups[1] + groups[2] + '/' + groups[3]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

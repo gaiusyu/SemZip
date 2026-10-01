@@ -1,0 +1,22 @@
+--- official/src/common/constants.h
++++ wide/src/common/constants.h
+@@ -9,8 +9,8 @@
+ constexpr double Similarity_Threshold = 1 - 0.85; // default Sitha θ is 0.85
+ 
+ // the following 2 arameters smaller, the compress ratio better (if too small, it can not decompress)
+-constexpr int HEAD_BIT_LEN = 8;
+-constexpr int ORIGINAL_LENGTH_COUNT = 15;
++constexpr int HEAD_BIT_LEN = 8+8;
++constexpr int ORIGINAL_LENGTH_COUNT = 15+8;
+ 
+ // // for large dataset, have to use the following.
+ // // Note that you must add multiples of 8 !!!
+@@ -23,7 +23,7 @@
+ 
+ //Reserved memory GB
+ //Adjust according to the size of the compressed file
+-constexpr double Reserved_Memory = 33;
++constexpr double Reserved_Memory = 0;
+ 
+ 
+ //====================================//

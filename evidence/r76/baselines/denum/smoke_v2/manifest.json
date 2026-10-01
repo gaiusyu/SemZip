@@ -1,0 +1,100 @@
+{
+  "created_at": "2026-09-29T02:46:16.426060+00:00",
+  "protocol": {
+    "schema": "semzip.external-cli.v1",
+    "block_records": 100000,
+    "workers": 2,
+    "trials": 1,
+    "order": "rotate",
+    "timeout_per_block_seconds": 3600,
+    "codecs": {
+      "denum": {
+        "suffix": ".tar.xz",
+        "mode": "official-cli-independent-block-adapter+official-python-decompressor",
+        "commit": "a3a697564e378643461e27ab92ea44b098424c35",
+        "encoder": "<WORKDIR>/r76_additional_20260929/baselines/denum/bin/denum_compress",
+        "encoder_sha256": "1f2a9406a9f68d6b8b58d69603182cbee8d4a2598366f7e17b7cec0869c885e8",
+        "encoder_source_sha256": "b23a6ebff714337f498cf659a3a0569519c1cd9763aabb516c8cfeb63672a2db",
+        "decoder_files_sha256": {
+          "decompress.py": "c3becae288d140314a6db55c4b48f629ea3bde38cd18e6b77ee8738ea637bc5c",
+          "Denum_simplel.py": "8807c1cf60c862595be973697db1c1120bfabb21b466c8c0e11191c03100dde1"
+        },
+        "python": "/usr/bin/python3",
+        "pydeps": "<WORKDIR>/r76_additional_20260929/baselines/denum/pydeps",
+        "tar": "/bin/tar",
+        "tar_sha256": "8498b0a43e820b0f8ed5cc61accfdfadffc7bd43ff6b0a91256a09ffc19dad38",
+        "xz": "/usr/bin/xz",
+        "xz_sha256": "927ef7f08691e6cc6cb731e4f0704f35835381e6bb66d23ca63a86c1cad5a1e9",
+        "encode_arguments": [
+          "DATASET",
+          "100000",
+          "1"
+        ],
+        "decode_arguments": [
+          "DATASET"
+        ],
+        "archive": "byte-for-byte official output/DATASET/compressed0.xz (tar -cJf of output/DATASET/0/)"
+      }
+    },
+    "inputs": [
+      {
+        "dataset": "Proxifier",
+        "source": {
+          "path": "<WORKDIR>/data/loghub1/original/Proxifier/Proxifier.log",
+          "bytes": 2541814,
+          "mtime_ns": 1789369147018069000,
+          "device": 1048818,
+          "inode": 199002808556005618
+        }
+      },
+      {
+        "dataset": "Linux",
+        "source": {
+          "path": "<WORKDIR>/data/loghub1/original/Linux/Linux.log",
+          "bytes": 2349686,
+          "mtime_ns": 1789369143539147000,
+          "device": 1048818,
+          "inode": 199002808556005597
+        }
+      },
+      {
+        "dataset": "Apache",
+        "source": {
+          "path": "<WORKDIR>/data/loghub1/original/Apache/Apache.log",
+          "bytes": 5135876,
+          "mtime_ns": 1789369148595142000,
+          "device": 1048818,
+          "inode": 199002808556005632
+        }
+      },
+      {
+        "dataset": "Zookeeper",
+        "source": {
+          "path": "<WORKDIR>/data/loghub1/original/Zookeeper/Zookeeper.log",
+          "bytes": 10426438,
+          "mtime_ns": 1789369165659907000,
+          "device": 1048818,
+          "inode": 199002808556005705
+        }
+      },
+      {
+        "dataset": "HealthApp",
+        "source": {
+          "path": "<WORKDIR>/data/loghub1/original/HealthApp/HealthApp.log",
+          "bytes": 23529930,
+          "mtime_ns": 1789369303348633000,
+          "device": 1048818,
+          "inode": 199002808556006449
+        }
+      }
+    ],
+    "script_sha256": "de4daaf45478a501963c2d958ba2460eac860ce5411854a36101fefd00121ff3",
+    "decode_output": "materialized-file",
+    "keep_decoded": true
+  },
+  "host": "<DEV_HOST>",
+  "platform": "Linux-<KERNEL>-x86_64-with-glibc2.31",
+  "python": "3.9.2 (default, Feb 28 2021, 17:03:44) \n[GCC 10.2.1 20210110]",
+  "logical_cpus": 128,
+  "timing_notes": "Full streaming split and CLI process wall, all archive writes; decode all CLI outputs and ordered full-file assembly. SHA/inventory audits excluded. OS buffered I/O; no fsync or cache drop. Historical R59 internal timers are not directly comparable."
+}

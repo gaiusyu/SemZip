@@ -1,0 +1,109 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The log lines share a repeated prefix including a timestamp, hostname, and component name. These fields are stable and should be extracted as side streams to improve compression and reduce redundancy.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "date_and_time_as_epoch_seconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Convert month, day, and time into epoch seconds and store it as numeric value.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    text = month + ' ' + day.zfill(2) + ' ' + time\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    epoch_seconds = int(dt.timestamp())\n    return {'stored': [epoch_seconds], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    epoch_seconds = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, day_width = layout\n    dt = datetime.fromtimestamp(epoch_seconds)\n    month = dt.strftime('%b')\n    day = str(dt.day).zfill(day_width)\n    time = dt.strftime('%H:%M:%S')\n    return month + (' ' * sp1_len) + day + (' ' * sp2_len) + time"
+        }
+      },
+      {
+        "tag": "header_component",
+        "meaning": "component_name",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "(combo)( +)(kernel:)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Extract stable component name as a raw string stream.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': [len(groups[1])]}\n\ndef inverse(record):\n    layout = record.get('layout', [])\n    sp_len = layout[0]\n    return str(record['stored'][0]) + (' ' * sp_len) + 'kernel:'"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "header_timestamp",
+      "reason": "The month, day, and time together describe one timestamp as epoch seconds."
+    },
+    {
+      "slot": "S3+S4",
+      "action": "STREAM_RAW",
+      "meaning": "header_component",
+      "reason": "The component name `combo` and `kernel:` are stable and should be extracted as a raw string."
+    },
+    {
+      "slot": "S5",
+      "action": "STREAM_RAW",
+      "meaning": "stack_address",
+      "reason": "The hexadecimal stack address is high entropy and structurally delimited, suitable for raw extraction."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "function_name_and_offset",
+      "reason": "The function name with offsets and slashes is structurally complex and varies across templates; extracting it as a raw stream is recommended."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "stack_address",
+      "meaning": "hexadecimal_stack_address",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\[<(\\w+)>\\]",
+      "replacement": "[<{placeholder}>]",
+      "program": {
+        "intent": "Extract the hexadecimal stack address as a raw string stream.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return '<' + str(record['stored'][0]) + '>'"
+      }
+    },
+    {
+      "tag": "function_name_and_offset",
+      "meaning": "function_name_with_offsets",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "([a-zA-Z_]+\\w*)(\\+)(0x[0-9a-f]+)(/)(0x[0-9a-f]+)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract function name with offsets and slashes as a raw string stream.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0] + groups[1] + groups[2] + groups[3] + groups[4]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

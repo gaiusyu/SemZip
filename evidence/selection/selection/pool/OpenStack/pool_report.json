@@ -1,0 +1,107 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "OpenStack",
+  "candidates": [
+    {
+      "cid": "c3",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c3/OpenStack/selected_plan.json",
+      "train_cost": 1242117
+    },
+    {
+      "cid": "c0",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c0/OpenStack/selected_plan.json",
+      "train_cost": 1255921
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c2/OpenStack/selected_plan.json",
+      "train_cost": 1299513
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c4/OpenStack/selected_plan.json",
+      "train_cost": 1335261
+    },
+    {
+      "cid": "c1",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c1/OpenStack/selected_plan.json",
+      "train_cost": 1338969
+    }
+  ],
+  "start": "c3",
+  "start_train_bytes": 1242117,
+  "start_cost_reproduced": true,
+  "pool_groups": 34,
+  "duplicate_groups_skipped": 8,
+  "selected_train_bytes": 1223421,
+  "selected_tags": [
+    "A",
+    "E",
+    "RV0",
+    "RV1",
+    "X0TS",
+    "X2A",
+    "X2TS"
+  ],
+  "selected_plan_sha256": "e173464e8149647394382db21b2336c69b7f4bda2185d9482134effbaf3366d6",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 66,
+      "n_improving": 8,
+      "before": 1242117,
+      "accepted": [
+        {
+          "move": "add:X0TS",
+          "screen_cost": 1228165,
+          "applied_cost": 1228165
+        },
+        {
+          "move": "add:X2A",
+          "screen_cost": 1240217,
+          "applied_cost": 1226357
+        },
+        {
+          "move": "replace:TS->X2TS",
+          "screen_cost": 1241329,
+          "applied_cost": 1225609
+        }
+      ],
+      "after": 1225609
+    },
+    {
+      "round": 1,
+      "n_moves": 62,
+      "n_improving": 1,
+      "before": 1225609,
+      "accepted": [
+        {
+          "move": "remove:IP",
+          "screen_cost": 1223421,
+          "applied_cost": 1223421
+        }
+      ],
+      "after": 1223421
+    },
+    {
+      "round": 2,
+      "n_moves": 61,
+      "n_improving": 0,
+      "before": 1223421,
+      "accepted": [],
+      "after": 1223421
+    },
+    {
+      "stage": "eliminate",
+      "tag": "RV0",
+      "before": 1223421,
+      "after": 1223421,
+      "accepted": false
+    }
+  ],
+  "evaluations": 192,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "a5e386451f1ad9e521026a9cb2a93d7341b7d4ebf8ad8d4f72325b8192d0f98f"
+}

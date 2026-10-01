@@ -1,0 +1,731 @@
+[
+  {
+    "family_id": 0,
+    "kind": "open_function",
+    "meaning": "weekday_month_day_time_year_as_epoch_seconds",
+    "reasons": [],
+    "regex": "\\[([A-Z][a-z]{2})( +)([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})( +)(\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "semantic_key": "",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 20,
+    "tag": "A"
+  },
+  {
+    "family_id": 0,
+    "kind": "open_function",
+    "meaning": "recurring_client_ipv4_address",
+    "reasons": [],
+    "regex": "\\[client( +)((?:\\d{1,3}\\.){3}\\d{1,3})\\]",
+    "replacement": "[client{group1}{placeholder}]",
+    "semantic_key": "ipv4:auto",
+    "source_tag": "client_ipv4",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 20,
+    "tag": "B"
+  },
+  {
+    "context_projector_values": 20,
+    "family_id": 0,
+    "kind": "open_function",
+    "meaning": "file_path_accessed_by_client",
+    "reasons": [],
+    "regex": "File( +)does( +)not( +)exist:( +)(/[^ ]+)",
+    "replacement": "File{group1}does{group2}not{group3}exist:{group4}{placeholder}",
+    "semantic_key": "",
+    "source_tag": "file_path",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 20,
+    "tag": "C"
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "log_timestamp",
+    "reasons": [],
+    "regex": "\\[([A-Z][a-z]{2})( +)([A-Z][a-z]{2})( +)(\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})( +)(\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    weekday, sp1, month, sp2, day, sp3, hms, sp4, year = groups\\n    text = weekday + ' ' + month + ' ' + day + ' ' + hms + ' ' + year\\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1), len(sp2), len(sp3), len(sp4), len(day)]}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    layout = record.get('layout', [])\\n    s1, s2, s3, s4, day_width = layout\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    weekday = dt.strftime('%a')\\n    month = dt.strftime('%b')\\n    day = str(dt.day).zfill(int(day_width))\\n    hms = dt.strftime('%H:%M:%S')\\n    year = dt.strftime('%Y')\\n    return weekday + (' ' * int(s1)) + month + (' ' * int(s2)) + day + (' ' * int(s3)) + hms + (' ' * int(s4)) + year\",\"group_regex\":\"^(?:\\\\[([A-Z][a-z]{2})( +)([A-Z][a-z]{2})( +)(\\\\d{2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2})( +)(\\\\d{4})\\\\])$\",\"intent\":\"Reversible transformation of a composed timestamp into epoch microseconds.\",\"op\":\"python_exec\"}:[{placeholder}]",
+    "source_tag": "H0",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 16,
+    "tag": "D"
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "recurring_client_ipv4_address",
+    "reasons": [],
+    "regex": "\\[client( +)((?:\\d{1,3}\\.){3}\\d{1,3})\\]",
+    "replacement": "[client{group1}{placeholder}]",
+    "semantic_key": "ipv4:auto",
+    "source_tag": "client_ipv4",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 16,
+    "tag": "E"
+  },
+  {
+    "family_id": 6,
+    "kind": "open_function",
+    "meaning": "accessed_directory_path",
+    "reasons": [],
+    "regex": "rule:( +)(/[^ ]+)",
+    "replacement": "rule:{group1}{placeholder}",
+    "semantic_key": "",
+    "source_tag": "directory_path",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 16,
+    "tag": "F"
+  },
+  {
+    "family_id": 1,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "\\[([A-Z][a-z]{2}) ([A-Z][a-z]{2}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = f\\\"{groups[0]} {groups[1]} {groups[2]} {groups[3]} {groups[4]}\\\"\\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%a %b %d %H:%M:%S %Y')\",\"group_regex\":\"^(?:\\\\[([A-Z][a-z]{2}) ([A-Z][a-z]{2}) (\\\\d{2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}) (\\\\d{4})\\\\])$\",\"op\":\"python_exec\"}:[{placeholder}]",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 13,
+    "tag": "G"
+  },
+  {
+    "family_id": 1,
+    "kind": "auto",
+    "meaning": "client IP address",
+    "reasons": [],
+    "regex": "\\[client ((?:\\d{1,3}\\.){3}\\d{1,3})\\]",
+    "replacement": "[client {placeholder}]",
+    "semantic_key": "ipv4:auto",
+    "source_tag": "client_ip",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 13,
+    "tag": "H"
+  },
+  {
+    "family_id": 1,
+    "kind": "auto",
+    "meaning": "script path",
+    "reasons": [],
+    "regex": "stat: (.+)",
+    "replacement": "stat: {placeholder}",
+    "semantic_key": "",
+    "source_tag": "script_path",
+    "status": "admitted",
+    "store_group": 1,
+    "support": 13,
+    "tag": "I"
+  },
+  {
+    "family_id": 9,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "\\[([A-Z][a-z]{2}) ([A-Z][a-z]{2}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = f\\\"{groups[0]} {groups[1]} {groups[2]} {groups[3]} {groups[4]}\\\"\\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%a %b %d %H:%M:%S %Y')\",\"group_regex\":\"^(?:\\\\[([A-Z][a-z]{2}) ([A-Z][a-z]{2}) (\\\\d{2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}) (\\\\d{4})\\\\])$\",\"op\":\"python_exec\"}:[{placeholder}]",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 5,
+    "tag": "J"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 9,
+    "meaning": "child init values",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"init 1 0\", \"groups\": [\"1\", \"0\"], \"failure\": \"ValueError: python_exec currently supports exactly one stored scalar\"}"
+    ],
+    "regex": "init (\\d+) ([-]?\\d+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "init {placeholder}",
+    "source_tag": "child_init_values",
+    "status": "verifier_repair_produced_candidates",
+    "support": 5
+  },
+  {
+    "family_id": 9,
+    "kind": "python_exec",
+    "meaning": "child init values",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "init (\\d+) ([-]?\\d+)",
+    "replacement": "init {placeholder}",
+    "source_tag": "child_init_values",
+    "status": "rejected_semantic_three_class",
+    "support": 5,
+    "tag": "child_init_values"
+  },
+  {
+    "family_id": 9,
+    "kind": "python_exec",
+    "meaning": "child init values",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "init (\\d+) ([-]?\\d+)",
+    "replacement": "init {placeholder}",
+    "source_tag": "child_init_values",
+    "status": "rejected_semantic_three_class",
+    "support": 5,
+    "tag": "child_init_values"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 2,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"[Thu Nov 03 16:16:27 2005]\", \"groups\": [\"Thu\", \"Nov\", \"03\", \"16:16:27\", \"2005\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 2,
+    "meaning": "child process ID",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"Found child 5649\", \"groups\": [\"5649\"], \"record\": {\"stored\": [5649], \"layout\": []}, \"inverse\": \"Found child 5649\", \"restored_match\": \"Found child Found child 5649\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "Found child (\\d+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "Found child {placeholder}",
+    "source_tag": "child_id",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "child process ID",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "Found child (\\d+)",
+    "replacement": "Found child {placeholder}",
+    "source_tag": "child_id",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "child_id"
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "scoreboard slot ID",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "slot (\\d+)",
+    "replacement": "slot {placeholder}",
+    "source_tag": "slot_id",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "slot_id"
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 2,
+    "kind": "python_exec",
+    "meaning": "child process ID",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "Found child (\\d+)",
+    "replacement": "Found child {placeholder}",
+    "source_tag": "child_id",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "child_id"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 3,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"[Thu Nov 03 16:16:27 2005]\", \"groups\": [\"Thu\", \"Nov\", \"03\", \"16:16:27\", \"2005\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 4
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 3,
+    "kind": "auto",
+    "meaning": "configuration file path",
+    "reasons": [],
+    "regex": "ok (/.+)",
+    "replacement": "ok {placeholder}",
+    "semantic_key": "",
+    "source_tag": "file_path",
+    "status": "pruned_constant_local_stream",
+    "support": 4
+  },
+  {
+    "family_id": 3,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 4,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 13,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"[Thu Nov 03 16:16:29 2005]\", \"groups\": [\"Thu\", \"Nov\", \"03\", \"16:16:29\", \"2005\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 13,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 13,
+    "meaning": "child process ID",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"find child 5651\", \"groups\": [\"5651\"], \"record\": {\"stored\": [5651], \"layout\": []}, \"inverse\": \"find child 5651\", \"restored_match\": \"find child find child 5651\", \"failure\": \"roundtrip_mismatch\"}"
+    ],
+    "regex": "find child (\\d+)",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "find child {placeholder}",
+    "source_tag": "child_id",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 13,
+    "kind": "python_exec",
+    "meaning": "child process ID",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "find child (\\d+)",
+    "replacement": "find child {placeholder}",
+    "source_tag": "child_id",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "child_id"
+  },
+  {
+    "family_id": 13,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 13,
+    "kind": "python_exec",
+    "meaning": "child process ID",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "find child (\\d+)",
+    "replacement": "find child {placeholder}",
+    "source_tag": "child_id",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "child_id"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 4,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"[Sun Nov 06 04:06:14 2005]\", \"groups\": [\"Sun\", \"Nov\", \"06\", \"04:06:14\", \"2005\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 4,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 4,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 7,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"[Sun Jan 01 04:02:20 2006]\", \"groups\": [\"Sun\", \"Jan\", \"01\", \"04:02:20\", \"2006\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 7,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 7,
+    "kind": "auto",
+    "meaning": "configuration file path",
+    "reasons": [],
+    "regex": "ok (/.+)",
+    "replacement": "ok {placeholder}",
+    "semantic_key": "",
+    "source_tag": "file_path",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 7,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 10,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"[Wed Feb 01 05:08:51 2006]\", \"groups\": [\"Wed\", \"Feb\", \"01\", \"05:08:51\", \"2006\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 10,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 10,
+    "kind": "auto",
+    "meaning": "configuration file path",
+    "reasons": [],
+    "regex": "ok (/.+)",
+    "replacement": "ok {placeholder}",
+    "semantic_key": "",
+    "source_tag": "file_path",
+    "status": "pruned_constant_local_stream",
+    "support": 2
+  },
+  {
+    "family_id": 10,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 5,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"[Thu Dec 01 11:45:17 2005]\", \"groups\": [\"Thu\", \"Dec\", \"01\", \"11:45:17\", \"2005\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 5,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 5,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "failed_status": "rejected_semantic_three_class",
+    "family_id": 8,
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3",
+      "executed_counterexample={\"whole_match\": \"[Sun Jan 01 04:02:13 2006]\", \"groups\": [\"Sun\", \"Jan\", \"01\", \"04:02:13\", \"2006\"], \"failure\": \"ValueError: unsafe generated Python node: ImportFrom\"}"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "repair_candidates": 1,
+    "repair_category": "executed_counterexample",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "verifier_repair_produced_candidates",
+    "support": 2
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 8,
+    "kind": "python_exec",
+    "meaning": "log timestamp",
+    "reasons": [
+      "three-class mode requires class_1/class_2 python_exec programs to store one integer plus optional layout, and allows raw identity only for class_3"
+    ],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "source_tag": "timestamp",
+    "status": "rejected_semantic_three_class",
+    "support": 2,
+    "tag": "timestamp"
+  },
+  {
+    "family_id": 11,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = f\\\"{groups[0]} {groups[1]} {groups[2]} {groups[3]} {groups[4]}\\\"\\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%a %b %d %H:%M:%S %Y')\",\"group_regex\":\"^(?:\\\\[(\\\\w{3}) (\\\\w{3}) (\\\\d{2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}) (\\\\d{4})\\\\])$\",\"op\":\"python_exec\"}:[{placeholder}]",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "K"
+  },
+  {
+    "family_id": 12,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = f\\\"{groups[0]} {groups[1]} {groups[2]} {groups[3]} {groups[4]}\\\"\\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%a %b %d %H:%M:%S %Y')\",\"group_regex\":\"^(?:\\\\[(\\\\w{3}) (\\\\w{3}) (\\\\d{2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}) (\\\\d{4})\\\\])$\",\"op\":\"python_exec\"}:[{placeholder}]",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 2,
+    "tag": "L"
+  },
+  {
+    "family_id": 14,
+    "kind": "open_function",
+    "meaning": "log timestamp",
+    "reasons": [],
+    "regex": "\\[(\\w{3}) (\\w{3}) (\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\d{4})\\]",
+    "replacement": "[{placeholder}]",
+    "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    text = f\\\"{groups[0]} {groups[1]} {groups[2]} {groups[3]} {groups[4]}\\\"\\n    dt = datetime.strptime(text, '%a %b %d %H:%M:%S %Y')\\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\\n\\ndef inverse(record):\\n    micros = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(micros / 1000000)\\n    return dt.strftime('%a %b %d %H:%M:%S %Y')\",\"group_regex\":\"^(?:\\\\[(\\\\w{3}) (\\\\w{3}) (\\\\d{2}) (\\\\d{2}:\\\\d{2}:\\\\d{2}) (\\\\d{4})\\\\])$\",\"op\":\"python_exec\"}:[{placeholder}]",
+    "source_tag": "log_timestamp",
+    "status": "admitted",
+    "store_group": 0,
+    "support": 1,
+    "tag": "M"
+  },
+  {
+    "family_id": 14,
+    "kind": "auto",
+    "meaning": "child initialization value",
+    "reasons": [],
+    "regex": "child init (-?\\d+)",
+    "replacement": "child init {placeholder}",
+    "semantic_key": "",
+    "source_tag": "child_init_value",
+    "status": "pruned_constant_local_stream",
+    "support": 1
+  }
+]

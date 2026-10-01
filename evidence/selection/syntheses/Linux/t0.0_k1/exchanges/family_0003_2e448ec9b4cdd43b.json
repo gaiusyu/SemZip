@@ -1,0 +1,67 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure with changing fields that should be extracted as side streams for compression.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "month_day_time_as_monotonic_integer",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Pack month, day, and time into one monotonic integer for efficient storage and exact reconstruction.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    text = month + ' ' + day + ' ' + time\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [int(dt.timestamp())], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    timestamp = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len, sp2_len, day_width = layout\n    dt = datetime.fromtimestamp(timestamp)\n    month = dt.strftime('%b')\n    day = str(dt.day).zfill(day_width)\n    time = dt.strftime('%H:%M:%S')\n    return month + (' ' * sp1_len) + day + (' ' * sp2_len) + time"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "month_day_time_as_monotonic_integer",
+      "reason": "Month, day, and time together form one semantic timestamp value that can be stored as a monotonic integer."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "process_name_and_pid",
+      "reason": "The process name and PID are a bounded system variable with intrinsic structure, including brackets and separators."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "message context",
+      "reason": "The 'pass;' token is stable and does not vary across examples, making it suitable to remain in the main template."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "process_name_pid",
+      "meaning": "process_name_and_pid_with_brackets",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "([A-Za-z_]+\\([A-Za-z_]+\\)\\[(\\d+)\\]:)",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Extract the process name and PID as a raw string for exact reconstruction.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

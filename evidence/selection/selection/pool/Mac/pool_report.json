@@ -1,0 +1,147 @@
+{
+  "version": "QG-POOL-V2",
+  "dataset": "Mac",
+  "candidates": [
+    {
+      "cid": "c0",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c0/Mac/selected_plan.json",
+      "train_cost": 241067
+    },
+    {
+      "cid": "c4",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c4/Mac/selected_plan.json",
+      "train_cost": 243387
+    },
+    {
+      "cid": "c1",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c1/Mac/selected_plan.json",
+      "train_cost": 245011
+    },
+    {
+      "cid": "c3",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c3/Mac/selected_plan.json",
+      "train_cost": 245903
+    },
+    {
+      "cid": "c2",
+      "plan": "<WORKSPACE>/r73_quality_gate_20260927/r73_qg/runs/qg/c2/Mac/selected_plan.json",
+      "train_cost": 248855
+    }
+  ],
+  "start": "c0",
+  "start_train_bytes": 241067,
+  "start_cost_reproduced": true,
+  "pool_groups": 24,
+  "duplicate_groups_skipped": 0,
+  "selected_train_bytes": 237723,
+  "selected_tags": [
+    "TS",
+    "K",
+    "C",
+    "RV0",
+    "X2TS0",
+    "X2A",
+    "X2PT",
+    "X3TS0",
+    "X3N",
+    "X1E",
+    "X1B",
+    "X3G"
+  ],
+  "selected_plan_sha256": "ecd9095b47e9ae70ed364b245f5adb2a6bc95202af0645e082d72f565ac8c44d",
+  "rounds": [
+    {
+      "round": 0,
+      "n_moves": 40,
+      "n_improving": 3,
+      "before": 241067,
+      "accepted": [
+        {
+          "move": "add:X2TS0",
+          "screen_cost": 239951,
+          "applied_cost": 239951
+        },
+        {
+          "move": "add:X2A",
+          "screen_cost": 240475,
+          "applied_cost": 239043
+        },
+        {
+          "move": "add:X2PT",
+          "screen_cost": 240843,
+          "applied_cost": 238735
+        }
+      ],
+      "after": 238735
+    },
+    {
+      "round": 1,
+      "n_moves": 40,
+      "n_improving": 4,
+      "before": 238735,
+      "accepted": [
+        {
+          "move": "remove:TS1",
+          "screen_cost": 238215,
+          "applied_cost": 238215
+        },
+        {
+          "move": "add:X3TS0",
+          "screen_cost": 238291,
+          "applied_cost": 237999
+        },
+        {
+          "move": "add:X3N",
+          "screen_cost": 238727,
+          "applied_cost": 237971
+        }
+      ],
+      "after": 237971
+    },
+    {
+      "round": 2,
+      "n_moves": 38,
+      "n_improving": 3,
+      "before": 237971,
+      "accepted": [
+        {
+          "move": "add:X1E",
+          "screen_cost": 237851,
+          "applied_cost": 237851
+        },
+        {
+          "move": "add:X1B",
+          "screen_cost": 237883,
+          "applied_cost": 237747
+        }
+      ],
+      "after": 237747
+    },
+    {
+      "round": 3,
+      "n_moves": 38,
+      "n_improving": 1,
+      "before": 237747,
+      "accepted": [
+        {
+          "move": "replace:G->X3G",
+          "screen_cost": 237723,
+          "applied_cost": 237723
+        }
+      ],
+      "after": 237723
+    },
+    {
+      "stage": "eliminate",
+      "tag": "RV0",
+      "before": 237723,
+      "after": 237723,
+      "accepted": false
+    }
+  ],
+  "evaluations": 170,
+  "max_rounds": 4,
+  "max_evals": 600,
+  "llm_calls": 0,
+  "training_block_sha256": "53e407728d4d34f1aacabe138d70e9a1390d0d6d3e026c47fddaf96e97777444"
+}

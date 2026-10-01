@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"header\": {\n    \"has_unified_header\": true,\n    \"reason\": \"The sampled lines share a repeated prefix structure with a timestamp, component, and kernel identifier. The changing fields should be extracted as side streams.\",\n    \"functions\": [\n      {\n        \"tag\": \"log_timestamp\",\n        \"meaning\": \"syslog_timestamp\",\n        \"class\": \"class_1_composed_numeric\",\n        \"value_type\": \"numeric\",\n        \"target_role\": \"log_timestamp\",\n        \"context\": null,\n        \"general\": true,\n        \"order_hint\": \"global_composed\",\n        \"regex\": \"([A-Z][a-z]{2})( +)(\\\\d{1,2})( +)(\\\\d{2}:\\\\d{2}:\\\\d{2})\",\n        \"replacement\": \"{placeholder}\",\n        \"program\": {\n          \"intent\": \"Parse syslog-like timestamp into a monotonic integer and reconstruct the exact original text.\",\n          \"op\": \"python_exec\",\n          \"parameters\": {},\n          \"code\": \"def forward(groups):\\n    month, sp1, day, sp2, time = groups\\n    text = month + ' ' + day.zfill(2) + ' ' + time\\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\\n    monotonic = (dt.month - 1) * 31 * 86400 + (int(day) - 1) * 86400 + dt.hour * 3600 + dt.minute * 60 + dt.second\\n    return {'stored': [monotonic], 'layout': [len(sp1), len(sp2), len(day)]}\\n\\ndef inverse(record):\\n    monotonic = int(record['stored'][0])\\n    layout = record.get('layout', [])\\n    sp1_len, sp2_len, day_width = layout\\n    seconds = monotonic % 60\\n    minutes = (monotonic // 60) % 60\\n    hours = (monotonic // 3600) % 24\\n    days = (monotonic // 86400) % 31 + 1\\n    months = (monotonic // (31 * 86400)) + 1\\n    dt = datetime(1900, months, days, hours, minutes, seconds)\\n    month = dt.strftime('%b')\\n    day = str(dt.day).zfill(day_width)\\n    time = dt.strftime('%H:%M:%S')\\n    return month + (' ' * sp1_len) + day + (' ' * sp2_len) + time\"\n        }\n      }\n    ]\n  },\n  \"slot_actions\": [\n    {\n      \"slot\": \"S1+S2\",\n      \"action\": \"COMPOSE_FIELDS_TO_INT\",\n      \"meaning\": \"syslog timestamp\",\n      \"reason\": \"The month, day, and time form a single semantic timestamp value that can be compactly stored as a monotonic integer.\"\n    },\n    {\n      \"slot\": \"S4\",\n      \"action\": \"KEEP_IN_MAIN\",\n      \"meaning\": \"kernel identifier\",\n      \"reason\": \"The 'kernel:' field is a stable literal structure and does not vary across examples.\"\n    },\n    {\n      \"slot\": \"S5\",\n      \"action\": \"STREAM_RAW\",\n      \"meaning\": \"kernel function address\",\n      \"reason\": \"The '[<...>]' field contains a hexadecimal address with a stable structure and high entropy, making it suitable for raw extraction.\"\n    },\n    {\n      \"slot\": \"S6\",\n      \"action\": \"STREAM_RAW\",\n      \"meaning\": \"kernel function name and offsets\",\n      \"reason\": \"The function name and offsets are a high-entropy identifier with a stable structure, making it suitable for raw extraction.\"\n    }\n  ],\n  \"functions\": [\n    {\n      \"tag\": \"kernel_function_address\",\n      \"meaning\": \"kernel_function_address_hex\",\n      \"class\": \"class_3_common_variable\",\n      \"value_type\": \"string\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"general\": true,\n      \"order_hint\": \"global_atomic\",\n      \"regex\": \"\\\\[<(\\\\w+)>\\\\]\",\n      \"replacement\": \"[<{placeholder}>]\",\n      \"program\": {\n        \"intent\": \"Extract the hexadecimal kernel function address as a raw string.\",\n        \"op\": \"python_exec\",\n        \"parameters\": {},\n        \"code\": \"def forward(groups):\\n    return {'stored': [groups[0]], 'layout': []}\\n\\ndef inverse(record):\\n    return '<' + str(record['stored'][0]) + '>'\"\n      }\n    },\n    {\n      \"tag\": \"kernel_function_name_offsets\",\n      \"meaning\": \"kernel_function_name_and_offsets\",\n      \"class\": \"class_3_common_variable\",\n      \"value_type\": \"string\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"general\": true,\n      \"order_hint\": \"global_atomic\",\n      \"regex\": \"([a-zA-Z0-9_]+\\\\+[0-9a-fx]+/[0-9a-fx]+)\",\n      \"replacement\": \"{placeholder}\",\n      \"program\": {\n        \"intent\": \"Extract the kernel function name and offsets as a raw string.\",\n        \"op\": \"python_exec\",\n        \"parameters\": {},\n        \"code\": \"def forward(groups):\\n    return {'stored': [groups[0]], 'layout': []}\\n\\ndef inverse(record):\\n    return str(record['stored'][0])\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 1189,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 10839,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 12028
+  }
+}

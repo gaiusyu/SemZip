@@ -1,0 +1,139 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "Repeated prefix includes timestamp, log level, and component name, which are stable across lines and provide context for varying fields.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "log_entry_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{2}/\\d{2}/\\d{2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Parse date and time into epoch microseconds and reconstruct original timestamp with spacing.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    date, sp1, time = groups\n    text = date + ' ' + time\n    dt = datetime.strptime(text, '%y/%m/%d %H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    sp1 = record.get('layout', [])[0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    date = dt.strftime('%y/%m/%d')\n    time = dt.strftime('%H:%M:%S')\n    return date + (' ' * int(sp1)) + time"
+        }
+      },
+      {
+        "tag": "log_component",
+        "meaning": "log_source_component",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_atomic",
+        "regex": "(storage\\.MemoryStore:)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Store and reconstruct the exact component name.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "log_entry_timestamp",
+      "reason": "Timestamp is composed of date and time fields; storing as epoch microseconds reduces redundancy and allows exact reconstruction."
+    },
+    {
+      "slot": "S3",
+      "action": "DICT_RANK",
+      "meaning": "log_source_component",
+      "reason": "Component name is stable and used to provide context for other fields."
+    },
+    {
+      "slot": "S5",
+      "action": "STREAM_RAW",
+      "meaning": "block_name",
+      "reason": "Block name is a structured identifier with stable affixes; its format is consistent across examples."
+    },
+    {
+      "slot": "S13",
+      "action": "UINT_DELTA",
+      "meaning": "estimated_size_in_centi_kb",
+      "reason": "Numeric field with unit, representing estimated size in KB with centi precision; compactly stored as integer with exact reconstruction."
+    },
+    {
+      "slot": "S16",
+      "action": "UINT_DELTA",
+      "meaning": "free_size_in_centi_kb",
+      "reason": "Numeric field with unit, representing free size in KB with centi precision; compactly stored as integer with exact reconstruction."
+    },
+    {
+      "slot": "S14+S17",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "unit_marker",
+      "reason": "Unit markers (KB, KB,) are stable literals and do not need extraction as side streams."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "block_name",
+      "meaning": "block_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "Block( +)([A-Za-z]+_\\d+_piece\\d+)",
+      "replacement": "Block{group1}{placeholder}",
+      "program": {
+        "intent": "Store and reconstruct the exact block identifier.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "estimated_size",
+      "meaning": "estimated_size_in_centi_kb",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "estimated( +)size( +)(\\d+)\\.(\\d{1})( +)KB",
+      "replacement": "estimated{group1}size{group2}{placeholder}{group5}KB",
+      "program": {
+        "intent": "Parse size in KB with centi precision; store as integer and reconstruct original format.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, sp2, whole, frac, sp3 = groups\n    return {'stored': [int(whole) * 10 + int(frac)], 'layout': [len(sp1), len(sp2), len(sp3)]}\n\ndef inverse(record):\n    size = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1, sp2, sp3 = layout\n    whole = size // 10\n    frac = size % 10\n    return 'estimated' + (' ' * sp1) + 'size' + (' ' * sp2) + str(whole) + '.' + str(frac) + (' ' * sp3) + 'KB'"
+      }
+    },
+    {
+      "tag": "free_size",
+      "meaning": "free_size_in_centi_kb",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "free( +)(\\d+)\\.(\\d{1})( +)KB",
+      "replacement": "free{group1}{placeholder}{group3}KB",
+      "program": {
+        "intent": "Parse free size in KB with centi precision; store as integer and reconstruct original format.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    sp1, whole, frac, sp2 = groups\n    return {'stored': [int(whole) * 10 + int(frac)], 'layout': [len(sp1), len(sp2)]}\n\ndef inverse(record):\n    size = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1, sp2 = layout\n    whole = size // 10\n    frac = size % 10\n    return 'free' + (' ' * sp1) + str(whole) + '.' + str(frac) + (' ' * sp2) + 'KB'"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

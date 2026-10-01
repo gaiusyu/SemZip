@@ -1,0 +1,527 @@
+{
+ "dataset": "Spark",
+ "execution_plan": {
+  "family_first_replay": false,
+  "global_function_feature_router": false,
+  "global_long_span_first": false,
+  "global_tags": [
+   "X3TS"
+  ],
+  "local_families": [
+   {
+    "key": [
+     "info",
+     "block",
+     "stored",
+     "as",
+     "bytes",
+     "in",
+     "memory",
+     "estimated",
+     "size",
+     "b",
+     "free",
+     "mb"
+    ],
+    "tags": [
+     "C"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "started",
+     "reading",
+     "broadcast",
+     "variable"
+    ],
+    "tags": [
+     "U"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "reading",
+     "broadcast",
+     "variable",
+     "took",
+     "ms"
+    ],
+    "tags": [
+     "F",
+     "G"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "removing",
+     "rdd"
+    ],
+    "tags": [
+     "V"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "updating",
+     "epoch",
+     "to",
+     "and",
+     "clearing",
+     "cache"
+    ],
+    "tags": [
+     "W"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "found",
+     "block",
+     "rdd",
+     "locally"
+    ],
+    "tags": [
+     "X"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "started",
+     "remote",
+     "fetches",
+     "in",
+     "ms"
+    ],
+    "tags": [
+     "K"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "have",
+     "map",
+     "outputs",
+     "for",
+     "shuffle",
+     "fetching",
+     "them"
+    ],
+    "tags": [
+     "L"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "partition",
+     "rdd",
+     "not",
+     "found",
+     "computing",
+     "it"
+    ],
+    "tags": [
+     "M"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "saved",
+     "output",
+     "of",
+     "task",
+     "to"
+    ],
+    "tags": [
+     "I"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "removed",
+     "taskset",
+     "whose",
+     "tasks",
+     "have",
+     "all",
+     "completed",
+     "from",
+     "pool"
+    ],
+    "tags": [
+     "P"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "cleaned",
+     "accumulator"
+    ],
+    "tags": [
+     "Y"
+    ]
+   },
+   {
+    "key": [
+     "info",
+     "input",
+     "split"
+    ],
+    "tags": [
+     "X1C"
+    ]
+   }
+  ],
+  "mode": "semantic_global_replay_scope_v1",
+  "validated_program_family_cache": false,
+  "validated_program_reindex": true,
+  "version": 1
+ },
+ "placeholders": {
+  "C": "<C>",
+  "F": "<F>",
+  "G": "<G>",
+  "I": "<I>",
+  "K": "<K>",
+  "L": "<L>",
+  "M": "<M>",
+  "P": "<P>",
+  "U": "<U>",
+  "V": "<V>",
+  "W": "<W>",
+  "X": "<X>",
+  "Y": "<Y>",
+  "X1C": "<X1C>",
+  "X3TS": "<X3TS>"
+ },
+ "spec_count": 15,
+ "specs": [
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "Block ([a-zA-Z0-9_]+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]",
+    "op": "python_exec"
+   },
+   "proposal_tag": "broadcast_id",
+   "replacement": "Block {placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "C",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "variable (\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "broadcast_variable_id",
+   "replacement": "variable {placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "U",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "Reading broadcast variable (\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "broadcast_variable",
+   "replacement": "Reading broadcast variable {placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "F",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "took (\\d+) ms",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "duration",
+   "replacement": "took {placeholder} ms",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "G",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "RDD (\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "rdd_id",
+   "replacement": "RDD {placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "V",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "to (\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "epoch_id",
+   "replacement": "to {placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "W",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "block (rdd_\\d+_\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "block_id",
+   "replacement": "block {placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "X",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "in (\\d+) ms",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "duration",
+   "replacement": "in {placeholder} ms",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "K",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "shuffle (\\d+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "shuffle_id",
+   "replacement": "shuffle {placeholder},",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "L",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "Partition (rdd_\\d+_\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]",
+    "op": "python_exec"
+   },
+   "proposal_tag": "rdd_id",
+   "replacement": "Partition {placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "M",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "to (hdfs://[^ ]+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]",
+    "op": "python_exec"
+   },
+   "proposal_tag": "hdfs_path",
+   "replacement": "to {placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "I",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "auto",
+   "order_hint": "family_structured",
+   "pattern": "TaskSet (\\d+\\.\\d+),",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]",
+    "op": "python_exec"
+   },
+   "proposal_tag": "task_set_id",
+   "replacement": "TaskSet {placeholder},",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "P",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": false,
+   "kind": "open_function",
+   "order_hint": "family_structured",
+   "pattern": "accumulator (\\d+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "accumulator_id",
+   "replacement": "accumulator {placeholder}",
+   "semantic_class": "class_2_formatted_numeric",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "Y",
+   "value_type": "numeric"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "auto",
+   "order_hint": "global_atomic",
+   "pattern": "Input split: (.+)",
+   "program": {
+    "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])",
+    "op": "python_exec"
+   },
+   "proposal_tag": "input_split",
+   "replacement": "Input split: {placeholder}",
+   "semantic_class": "class_3_common_variable",
+   "semantic_key": "",
+   "store_group": 1,
+   "tag": "X1C",
+   "value_type": "string"
+  },
+  {
+   "context_group": 0,
+   "context_policy": "none",
+   "context_ref": "",
+   "full_match_groups": false,
+   "general": true,
+   "kind": "open_function",
+   "order_hint": "global_composed",
+   "pattern": "^(\\d{2})/(\\d{2})/(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})",
+   "program": {
+    "code": "def forward(groups):\n    dt_text = f\"20{groups[0]}-{groups[1]}-{groups[2]}T{groups[3]}:{groups[4]}:{groups[5]}\"\n    dt = datetime.strptime(dt_text, '%Y-%m-%dT%H:%M:%S')\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\n\ndef inverse(record):\n    ts = int(record['stored'][0])\n    dt = datetime.fromtimestamp(ts / 1000)\n    return f\"{dt.strftime('%y/%m/%d %H:%M:%S')}\"",
+    "group_regex": "^(?:^(\\d{2})/(\\d{2})/(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2}))$",
+    "op": "python_exec"
+   },
+   "proposal_tag": "log_timestamp",
+   "replacement": "{placeholder}",
+   "semantic_class": "class_1_composed_numeric",
+   "semantic_key": "raw_time:asctime_year:{\"code\":\"def forward(groups):\\n    dt_text = f\\\"20{groups[0]}-{groups[1]}-{groups[2]}T{groups[3]}:{groups[4]}:{groups[5]}\\\"\\n    dt = datetime.strptime(dt_text, '%Y-%m-%dT%H:%M:%S')\\n    return {'stored': [int(dt.timestamp() * 1000)], 'layout': []}\\n\\ndef inverse(record):\\n    ts = int(record['stored'][0])\\n    dt = datetime.fromtimestamp(ts / 1000)\\n    return f\\\"{dt.strftime('%y/%m/%d %H:%M:%S')}\\\"\",\"group_regex\":\"^(?:^(\\\\d{2})/(\\\\d{2})/(\\\\d{2}) (\\\\d{2}):(\\\\d{2}):(\\\\d{2}))$\",\"op\":\"python_exec\"}:{placeholder}",
+   "store_group": 0,
+   "tag": "X3TS",
+   "value_type": "numeric"
+  }
+ ],
+ "version": 1
+}

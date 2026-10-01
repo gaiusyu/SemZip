@@ -1,0 +1,100 @@
+{
+  "schema": "semzip.external-cli.r76.v1",
+  "status": "PASS",
+  "started_at": "2026-09-29T03:14:05.295103+00:00",
+  "dataset": "OpenStack",
+  "codec": "delog_generic",
+  "trial": 1,
+  "workers": 3,
+  "block_records": 100000,
+  "source": {
+    "path": "<WORKDIR>/data/loghub1/raw/OpenStack.log",
+    "bytes": 61442082,
+    "mtime_ns": 1789369656944920000,
+    "device": 1048818,
+    "inode": 199002808556008835
+  },
+  "raw_sha256": "94df6daec483b9285f63d58e7211dffa793c4eccea23fb45a347dec188f73897",
+  "raw_bytes": 61442082,
+  "records": 207820,
+  "codec_spec": {
+    "suffix": ".tar.xz",
+    "mode": "official-cli-independent-block-adapter",
+    "variant": "official DeLog sources with empty dataset-name regex_map (R76 DeLog-generic)",
+    "encoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/Delog_compress",
+    "decoder": "<WORKDIR>/r76_additional_20260929/codecs/delog/generic/decompress",
+    "encoder_sha256": "bc357a51b83d0ea03310b0b0332f67bb989ccda7f3336879a9c9552491713a8a",
+    "decoder_sha256": "b722179d197ed686c122676791e900fbf047d25809f80990eae60dbce86a0831",
+    "encode_arguments": [
+      "DATASET",
+      "text",
+      "100000",
+      "1",
+      "0",
+      "lzma",
+      "normal"
+    ],
+    "decode_arguments": [
+      "ARCHIVE_DIRECTORY",
+      "OUTPUT_FILE",
+      "1"
+    ],
+    "compressor_source_sha256": "192f6a3f910033f7e3ab00ea0962abd7b75f0b322e8bebd66042e99480bd643d"
+  },
+  "attempt": "<WORKDIR>/r76_additional_20260929/codecs/full_20260929/OpenStack/delog_generic/trial_001/attempt_001",
+  "timing_scope": "full-file-cli-split-and-materialized-output-v1",
+  "blocks": [
+    {
+      "index": 0,
+      "archive": "archives/block_000000.tar.xz",
+      "archive_bytes": 1532688,
+      "block_encode_seconds": 7.520062074065208,
+      "raw_bytes": 29603861,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "a5e386451f1ad9e521026a9cb2a93d7341b7d4ebf8ad8d4f72325b8192d0f98f",
+      "archive_sha256": "6191a56b387ddc99a1396ee773dfd5d0dadc8bf98692403773705687fccfe9a2",
+      "decoded_sha256": "a5e386451f1ad9e521026a9cb2a93d7341b7d4ebf8ad8d4f72325b8192d0f98f"
+    },
+    {
+      "index": 1,
+      "archive": "archives/block_000001.tar.xz",
+      "archive_bytes": 1480704,
+      "block_encode_seconds": 6.887168452143669,
+      "raw_bytes": 29579809,
+      "lf_count": 100000,
+      "records": 100000,
+      "ends_with_lf": true,
+      "raw_sha256": "46399cf09ee6ae6144156ea73232cf6f403dfb0712031fa70a6e66742f0a27d4",
+      "archive_sha256": "eff0e74d1f8cecdbd1613270fa54729afe8ad5a003fed38670b729781719eac0",
+      "decoded_sha256": "46399cf09ee6ae6144156ea73232cf6f403dfb0712031fa70a6e66742f0a27d4"
+    },
+    {
+      "index": 2,
+      "archive": "archives/block_000002.tar.xz",
+      "archive_bytes": 25404,
+      "block_encode_seconds": 0.9815902709960938,
+      "raw_bytes": 2258412,
+      "lf_count": 7820,
+      "records": 7820,
+      "ends_with_lf": true,
+      "raw_sha256": "4bbb8eb871c102164bb8794977c0747193f8c9b4af0d2cc80780246ba7d7de0a",
+      "archive_sha256": "3277e7baaecab31aa94197dc4c6cca6495537edda37122beb8f0170139389777",
+      "decoded_sha256": "4bbb8eb871c102164bb8794977c0747193f8c9b4af0d2cc80780246ba7d7de0a"
+    }
+  ],
+  "encode_seconds": 7.640907168388367,
+  "block_archive_bytes": 3038796,
+  "archive_bytes": 3038796,
+  "decode_seconds": 2.196685418486595,
+  "restored_settle_seconds": 2.0036014318466187,
+  "roundtrip": "byte-exact",
+  "archive_only_decode": true,
+  "decoded_sha256": "94df6daec483b9285f63d58e7211dffa793c4eccea23fb45a347dec188f73897",
+  "audit_seconds": 0.28902333974838257,
+  "compression_ratio": 20.219219059127365,
+  "encode_MB_per_s": 8.041202522940672,
+  "decode_MB_per_s": 27.9703600173804,
+  "finished_at": "2026-09-29T03:14:17.467779+00:00"
+}

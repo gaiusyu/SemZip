@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"domain_name\",\n      \"meaning\": \"domain_name_value\",\n      \"class\": \"class_3_common_variable\",\n      \"value_type\": \"string\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"general\": true,\n      \"order_hint\": \"global_atomic\",\n      \"regex\": \"domain( +)([A-Za-z0-9_]+)\",\n      \"replacement\": \"domain{group1}{placeholder}\",\n      \"program\": {\n        \"intent\": \"Extracts the domain name as a raw string.\",\n        \"op\": \"python_exec\",\n        \"parameters\": {},\n        \"code\": \"def forward(groups):\\n    return {'stored': [groups[1]], 'layout': [len(groups[0])]} if groups[0] else {'stored': [groups[1]], 'layout': [0]}\\n\\ndef inverse(record):\\n    spacing = ' ' * record['layout'][0]\\n    return 'domain' + spacing + record['stored'][0]\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 232,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1177,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1409
+  }
+}

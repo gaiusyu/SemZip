@@ -1,0 +1,679 @@
+{
+  "families": [
+    {
+      "family_id": 6,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "node-127",
+              "node-D7"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix or header found"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "node identifier",
+          "reason": "explicitly role-anchored plain variable"
+        },
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "timestamp-like value",
+          "reason": "deterministic integer"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node_identifier"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_identifier",
+          "meaning": "node identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "node identifier",
+            "context_source": null,
+            "why_not_merge_raw": "node identifier is a standalone field"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "node-([A-Za-z0-9]+)",
+          "replacement": "node-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'node-' + str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 14,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "unix.hw",
+              "net.niff.down",
+              "5.5.226.0",
+              "alt0"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix or header found"
+      },
+      "slot_actions": [
+        {
+          "slot": "S16",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "network address",
+          "reason": "intrinsically structured variable"
+        },
+        {
+          "slot": "S19",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "interface identifier",
+          "reason": "intrinsically structured variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "network_address",
+          "interface_identifier"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "network_address",
+          "meaning": "IPv4 address",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "IPv4 address",
+            "context_source": null,
+            "why_not_merge_raw": "network address is standalone"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "network ((?:\\d{1,3}\\.){3}\\d{1,3})",
+          "replacement": "network {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'network ' + str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "interface_identifier",
+          "meaning": "interface",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "interface identifier",
+            "context_source": null,
+            "why_not_merge_raw": "interface identifier is standalone"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "interface ([A-Za-z0-9]+)",
+          "replacement": "interface {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'interface ' + str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 13,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "domains:node-D7",
+              "nodes:node-[224-231]"
+            ],
+            "reason": "the captured value itself contains at least two explicit structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix or header found"
+      },
+      "slot_actions": [
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "domain targeting",
+          "reason": "intrinsically structured variable"
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "node range",
+          "reason": "intrinsically structured variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "domain_targeting",
+          "node_range"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "domain_targeting",
+          "meaning": "domain identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "domain identifier",
+            "context_source": null,
+            "why_not_merge_raw": "domain targeting is standalone"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "domains:(node-[A-Za-z0-9]+)",
+          "replacement": "domains:{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'domains:' + str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "node_range",
+          "meaning": "node range identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "node range identifier",
+            "context_source": null,
+            "why_not_merge_raw": "node range is standalone"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "nodes:(node-\\[[0-9]+-[0-9]+\\])",
+          "replacement": "nodes:{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'nodes:' + str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 17,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "domains:node-D7",
+              "nodes:node-127"
+            ],
+            "reason": "the captured value itself contains structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix or header found"
+      },
+      "slot_actions": [
+        {
+          "slot": "S7",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "domain targeting",
+          "reason": "intrinsically structured variable"
+        },
+        {
+          "slot": "S9",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "node identifier",
+          "reason": "intrinsically structured variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "domain_targeting",
+          "node_identifier"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "domain_targeting",
+          "meaning": "domain identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "domain identifier",
+            "context_source": null,
+            "why_not_merge_raw": "domain targeting is standalone"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "domains:(node-[A-Za-z0-9]+)",
+          "replacement": "domains:{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'domains:' + str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "node_identifier",
+          "meaning": "node identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "node identifier",
+            "context_source": null,
+            "why_not_merge_raw": "node identifier is standalone"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "nodes:(node-[A-Za-z0-9]+)",
+          "replacement": "nodes:{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'nodes:' + str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 12,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "Interconnect-0T00",
+              "Interconnect-0T00:00:2:1"
+            ],
+            "reason": "the captured value itself contains structural separators encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix or header found"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "interconnect identifier",
+          "reason": "intrinsically structured variable"
+        },
+        {
+          "slot": "S11",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "detailed interconnect path",
+          "reason": "intrinsically structured variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "interconnect_identifier",
+          "interconnect_path"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "interconnect_identifier",
+          "meaning": "interconnect name",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "interconnect name",
+            "context_source": null,
+            "why_not_merge_raw": "interconnect identifier is standalone"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "Interconnect-([A-Za-z0-9]+)",
+          "replacement": "Interconnect-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'Interconnect-' + str(record['stored'][0])"
+          }
+        },
+        {
+          "tag": "interconnect_path",
+          "meaning": "interconnect path",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "interconnect path",
+            "context_source": null,
+            "why_not_merge_raw": "detailed path is standalone"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Interconnect-([A-Za-z0-9]+:[0-9]+:[0-9]+:[0-9]+)",
+          "replacement": "Interconnect-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'Interconnect-' + str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 16,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "ambient=26",
+              "ambient=27"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix or header found"
+      },
+      "slot_actions": [
+        {
+          "slot": "S8",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "ambient temperature",
+          "reason": "explicitly role-anchored plain variable"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "ambient_temperature"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "ambient_temperature",
+          "meaning": "ambient temperature",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "ambient temperature",
+            "context_source": null,
+            "why_not_merge_raw": "ambient temperature is standalone"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "ambient=([0-9]+)",
+          "replacement": "ambient={placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'ambient=' + str(record['stored'][0])"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 15,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "temperature_with_unit",
+            "tokens": [
+              "41C",
+              "(41C)"
+            ],
+            "reason": "different displays of the same underlying temperature value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix or header found"
+      },
+      "slot_actions": [
+        {
+          "slot": "S7",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "temperature value",
+          "reason": "semantic equivalent tokens"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [
+          "temperature_value"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [
+        {
+          "tag": "temperature_value",
+          "meaning": "temperature with unit",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "temperature value",
+            "context_source": null,
+            "why_not_merge_raw": "semantic equivalent tokens represent the same value"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\((\\d+)C\\)",
+          "replacement": "({placeholder}C)",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    value = int(groups[0])\n    return {'stored': [value], 'layout': []}\n\ndef inverse(record):\n    value = record['stored'][0]\n    return f'({value}C)'"
+          }
+        }
+      ],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 19,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": []
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix or header found"
+      },
+      "slot_actions": [],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": []
+    },
+    {
+      "family_id": 2,
+      "family_analysis": {
+        "has_composable_tokens": false,
+        "composable_groups": [],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "node-127",
+              "node-230"
+            ],
+            "reason": "a plain value is immediately introduced by a stable field-name literal encoded by the regex",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": false,
+        "reason": "no repeated prefix or header found"
+      },
+      "slot_actions": [
+        {
+          "slot": "S1",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "node identifier",
+          "reason": "explicitly role-anchored plain variable"
+        },
+        {
+          "slot": "S4",
+          "action": "STREAM_RAW | KEEP_IN_MAIN",
+          "meaning": "timestamp-like value",
+          "reason": "deterministic integer"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [],
+        "class_2_formatted_numeric": [],
+        "class_3_common_variable": [
+          "node_identifier"
+        ]
+      },
+      "class_1_functions": [],
+      "class_2_functions": [],
+      "class_3_functions": [
+        {
+          "tag": "node_identifier",
+          "meaning": "node identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "node identifier",
+            "context_source": null,
+            "why_not_merge_raw": "node identifier is standalone"
+          },
+          "general": true,
+          "order_hint": "global_atomic",
+          "regex": "node-([A-Za-z0-9]+)",
+          "replacement": "node-{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'node-' + str(record['stored'][0])"
+          }
+        }
+      ]
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

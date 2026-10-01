@@ -1,0 +1,219 @@
+4c4,10
+< No learned state, dictionaries, or CLI processes are shared between blocks.
+---
+> R76 copy of r68_external_20260923/codec_baseline.py (sha256 0b0c15f6...c26d).
+> No learned state or CLI processes are shared between blocks, with ONE declared
+> exception: codec zstd19dict trains a single zstd dictionary on block 0 of each
+> file; that dictionary file is stored in the archive set and its bytes are
+> counted once per file in archive_bytes (also reported separately).
+> Additional codecs: xz9e, zstd22long, zstd19dict, delog_generic (official DeLog
+> sources with an empty dataset-name regex_map). See README.md in this directory.
+6d11
+< See CODEC_BASELINES.md for the protocol and explicit interpretation limits.
+26c31,32
+< SCHEMA = "semzip.external-cli.v1"
+---
+> SCHEMA = "semzip.external-cli.r76.v1"
+> DICT_SAMPLE_RECORDS = 1000  # zstd19dict: block 0 is split into 1,000-LF-record samples.
+31a38,45
+>     # R76 high-effort generic settings (fixed; never chosen per dataset).
+>     "xz9e": {"exe": "xz", "encode": ["-9e", "-T1", "-c"], "decode": ["-d", "-T1", "-c"], "suffix": ".xz"},
+>     "zstd22long": {"exe": "zstd", "encode": ["--ultra", "-22", "--long=27", "-T1", "-q", "-c"],
+>                    "decode": ["-d", "--long=27", "-T1", "-q", "-c"], "suffix": ".zst"},
+>     "zstd19dict": {"exe": "zstd", "encode": ["-19", "-T1", "-q", "-c"], "decode": ["-d", "-T1", "-q", "-c"],
+>                    "suffix": ".zst", "mode": "block0-trained-dictionary-counted-once-per-file",
+>                    "train": ["--train", "-T1"], "sample_records": DICT_SAMPLE_RECORDS,
+>                    "dictionary_file": "dictionary.zdict", "dictionary_size": "zstd-default(--maxdict unset)"},
+32a47,48
+>     "delog_generic": {"suffix": ".tar.xz", "mode": "official-cli-independent-block-adapter",
+>                       "variant": "official DeLog sources with empty dataset-name regex_map (R76 DeLog-generic)"},
+34a51
+> DELOG_CODECS = ("delog", "delog_generic")
+116a134,156
+> def settle_file(path, window=2.0, max_rounds=30):
+>     """R76 addition, outside all timers.  The <MOUNT> network file system applies the
+>     server-side mtime of a freshly written file lazily after close(); in the first R76
+>     smoke this changed the restored file's mtime *during* its SHA inventory and the
+>     identity guard reported a false "source changed" failure although the restored
+>     bytes were exact.  Flush the owned restored file and wait until its stat identity
+>     is unchanged over `window` seconds before auditing it.  Returns seconds spent."""
+>     start = time.perf_counter()
+>     fd = os.open(str(path), os.O_RDONLY)
+>     try:
+>         os.fsync(fd)
+>     finally:
+>         os.close(fd)
+>     previous = file_identity(path)
+>     for _ in range(max_rounds):
+>         time.sleep(window)
+>         current = file_identity(path)
+>         if current == previous:
+>             return time.perf_counter() - start
+>         previous = current
+>     raise RuntimeError("restored file identity did not settle: %s" % path)
+> 
+> 
+155c195
+<     def __init__(self, name, delog_dir=None, loglite_executable=None):
+---
+>     def __init__(self, name, delog_dir=None, loglite_executable=None, delog_generic_dir=None, executables=None):
+157a198,202
+>         self.dictionary_mode = "dictionary_file" in self.spec
+>         if name == "delog_generic":
+>             delog_dir = delog_generic_dir
+>             if delog_dir is None:
+>                 raise RuntimeError("delog_generic requires --delog-generic-dir")
+174c219
+<         elif name == "delog":
+---
+>         elif name in DELOG_CODECS:
+186a232,233
+>             if (root / "compressor.cpp").is_file():
+>                 self.spec["compressor_source_sha256"] = file_sha(root / "compressor.cpp")
+188c235,236
+<             found = shutil.which(self.spec["exe"])
+---
+>             override = (executables or {}).get(self.spec["exe"])
+>             found = override if override is not None else shutil.which(self.spec["exe"])
+190a239,240
+>             if not Path(found).is_file() or not os.access(found, os.X_OK):
+>                 raise RuntimeError("missing executable: %s" % found)
+197c247,282
+<     def encode(self, dataset, source, archive, work, diagnostic, timeout):
+---
+>     def train_dictionary(self, block0, dictionary, work, diagnostic, timeout):
+>         """zstd19dict only: split block 0 into exact 1,000-LF-record byte samples
+>         (the last sample keeps any shorter/unterminated tail) and run one
+>         `zstd --train -T1 SAMPLES -o dictionary` with zstd's default dictionary size."""
+>         if not self.dictionary_mode:
+>             raise RuntimeError("train_dictionary called for a non-dictionary codec")
+>         samples_dir = work / "dict-samples"
+>         samples_dir.mkdir()
+>         samples = []
+>         out = None
+>         count = 0
+>         with open(block0, "rb") as f:
+>             for line in f:  # binary iteration splits after b"\n" only; bytes untouched
+>                 if out is None:
+>                     path = samples_dir / ("sample_%05d" % len(samples))
+>                     out = open(path, "xb")
+>                     samples.append(path)
+>                 out.write(line)
+>                 count += 1
+>                 if count == self.spec["sample_records"]:
+>                     out.close()
+>                     out, count = None, 0
+>         if out is not None:
+>             out.close()
+>         if not samples:
+>             raise RuntimeError("block 0 is empty; cannot train a dictionary")
+>         diagnostic.mkdir(parents=True, exist_ok=True)
+>         run_process([str(self.encoder)] + self.spec["train"] + [str(p) for p in samples] + ["-o", str(dictionary)],
+>                     work, diagnostic / "train.stdout", diagnostic / "train.stderr", timeout)
+>         if not dictionary.is_file() or dictionary.stat().st_size == 0:
+>             raise RuntimeError("zstd --train produced no dictionary")
+>         info = {"samples": len(samples), "sample_bytes": sum(p.stat().st_size for p in samples)}
+>         shutil.rmtree(str(samples_dir))
+>         return info
+> 
+>     def encode(self, dataset, source, archive, work, diagnostic, timeout, dictionary=None):
+201,202c286,292
+<         if self.name != "delog":
+<             run_process([str(self.encoder)] + self.spec["encode"] + ["--", str(source)],
+---
+>         if self.name not in DELOG_CODECS:
+>             extra = []
+>             if self.dictionary_mode:
+>                 if dictionary is None or not Path(dictionary).is_file():
+>                     raise RuntimeError("dictionary codec without a trained dictionary")
+>                 extra = ["-D", str(dictionary)]
+>             run_process([str(self.encoder)] + self.spec["encode"] + extra + ["--", str(source)],
+216c306
+<     def decode(self, dataset, archive, destination, work, diagnostic, timeout):
+---
+>     def decode(self, dataset, archive, destination, work, diagnostic, timeout, dictionary=None):
+220,221c310,317
+<         if self.name != "delog":
+<             run_process([str(self.decoder)] + self.spec["decode"] + ["--", str(archive)],
+---
+>         if self.name not in DELOG_CODECS:
+>             extra = []
+>             if self.dictionary_mode:
+>                 # The dictionary is read from the archive set itself.
+>                 if dictionary is None or not Path(dictionary).is_file():
+>                     raise RuntimeError("dictionary codec archive set lacks its dictionary file")
+>                 extra = ["-D", str(dictionary)]
+>             run_process([str(self.decoder)] + self.spec["decode"] + extra + ["--", str(archive)],
+240a337,338
+>     extra = {}
+>     dictionary = archives / codec.spec["dictionary_file"] if codec.dictionary_mode else None
+256c354
+<                 codec.encode(dataset, path, archive, work, diag, timeout)
+---
+>                 codec.encode(dataset, path, archive, work, diag, timeout, dictionary=dictionary)
+277a376,383
+>                 if dictionary is not None and meta["index"] == 0:
+>                     # Block 0 is always the first block closed and nothing has been
+>                     # submitted yet: train once, synchronously, inside the encode timer.
+>                     tstart = time.perf_counter()
+>                     info = codec.train_dictionary(current[1], dictionary, current[2],
+>                                                   diagnostics / "dictionary", timeout)
+>                     info["dictionary_train_seconds"] = time.perf_counter() - tstart
+>                     extra.update(info)
+292c398,401
+<     return sorted(completed, key=lambda b: b["index"]), elapsed
+---
+>     if dictionary is not None:
+>         extra.update({"dictionary_archive": str(dictionary.relative_to(attempt)),
+>                       "dictionary_bytes": dictionary.stat().st_size})
+>     return sorted(completed, key=lambda b: b["index"]), elapsed, extra
+298a408,409
+>     # zstd19dict: the decoder reads the dictionary from the archive set only.
+>     dictionary = attempt / "archives" / codec.spec["dictionary_file"] if codec.dictionary_mode else None
+308c419,420
+<                 codec.decode(dataset, attempt / block["archive"], output, work, diag, timeout)
+---
+>                 codec.decode(dataset, attempt / block["archive"], output, work, diag, timeout,
+>                              dictionary=dictionary)
+339,340c451,453
+<         blocks, encode_seconds = encode_all(inv["source"]["path"], inv, codec, dataset, attempt,
+<                                             args.workers, args.timeout)
+---
+>         blocks, encode_seconds, extra = encode_all(inv["source"]["path"], inv, codec, dataset, attempt,
+>                                                    args.workers, args.timeout)
+>         block_bytes = sum(b["archive_bytes"] for b in blocks)
+342c455,460
+<                        "archive_bytes": sum(b["archive_bytes"] for b in blocks)})
+---
+>                        "block_archive_bytes": block_bytes,
+>                        "archive_bytes": block_bytes + extra.get("dictionary_bytes", 0)})
+>         if codec.dictionary_mode:
+>             extra["dictionary_sha256"] = file_sha(attempt / extra["dictionary_archive"])
+>             result.update(extra)
+>             result["archive_components"] = "block archives + one dictionary file (counted once per file)"
+346a465
+>         result["restored_settle_seconds"] = settle_file(restored)
+394a514,518
+>     if codec.dictionary_mode:
+>         path = root / result["dictionary_archive"]
+>         if path.stat().st_size != result["dictionary_bytes"] or file_sha(path) != result["dictionary_sha256"]:
+>             raise RuntimeError("completed dictionary changed: %s" % path)
+>         total += path.stat().st_size
+409a534,537
+>     p.add_argument("--delog-generic-dir", type=Path,
+>                    help="directory with Delog_compress/decompress built from the empty-regex_map sources")
+>     p.add_argument("--exe", action="append", default=[], metavar="NAME=PATH",
+>                    help="explicit executable for a CLI name (e.g. zstd=/path/zstd) instead of PATH lookup")
+434a563,568
+>     a.executables = {}
+>     for value in a.exe:
+>         if "=" not in value:
+>             p.error("--exe requires NAME=PATH")
+>         name, path = value.split("=", 1)
+>         a.executables[name] = str(Path(path).resolve())
+451c585,587
+<         codecs = {name: Codec(name, args.delog_dir, args.loglite_executable) for name in args.codecs}
+---
+>         codecs = {name: Codec(name, args.delog_dir, args.loglite_executable,
+>                               delog_generic_dir=args.delog_generic_dir, executables=args.executables)
+>                   for name in args.codecs}

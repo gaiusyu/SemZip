@@ -1,0 +1,440 @@
+{
+  "families": [
+    {
+      "family_id": 0,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "17/03/23",
+              "14:50:12"
+            ],
+            "reason": "S0 (date) and S1 (time) together represent a timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "4.0 MB",
+              "4.0",
+              "MB"
+            ],
+            "reason": "different displays of the same underlying size value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "intrinsically_structured_variable",
+            "tokens": [
+              "mesos-master-1:38762",
+              "10.10.34.20:56375"
+            ],
+            "reason": "endpoint contains multiple structural separators encoded by regex",
+            "must_emit_function": true
+          },
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "broadcast_6_piece293",
+              "broadcast_4_piece0"
+            ],
+            "reason": "a plain value is introduced by a stable field-name literal",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "lines begin with a consistent date/time and log level prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "combined date and time for log timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "size_mb",
+          "free_gb"
+        ],
+        "class_3_common_variable": [
+          "endpoint",
+          "broadcast_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp is a single semantic entity, no independent sources"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%d/%m/%y %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%d/%m/%y %H:%M:%S\")"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "size_mb",
+          "meaning": "size in MB",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "size in bytes",
+            "context_source": null,
+            "why_not_merge_raw": "unit transformation ensures consistent storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "\\(size: ([0-9]+\\.[0-9]+) MB",
+          "replacement": "(size: {placeholder} MB",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    size_mb = float(groups[0])\n    size_bytes = int(size_mb * 1024 * 1024)\n    return {'stored': [size_bytes], 'layout': []}\n\ndef inverse(record):\n    size_bytes = int(record['stored'][0])\n    size_mb = size_bytes / (1024 * 1024)\n    return f\"{size_mb:.1f}\""
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "broadcast_id",
+          "meaning": "broadcast identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "broadcast id",
+            "context_source": null,
+            "why_not_merge_raw": "broadcast ID is a single structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Added (broadcast_[0-9]+_piece[0-9]+)",
+          "replacement": "Added {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 1,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "Date and time tokens together represent a timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": true,
+        "semantic_equivalent_groups": [
+          {
+            "name": "same_value_multiple_displays",
+            "tokens": [
+              "4.0 MB",
+              "4.0",
+              "MB"
+            ],
+            "reason": "different displays of the same underlying size value",
+            "target_value": "one canonical integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "broadcast_6_piece331",
+              "broadcast_0_piece0"
+            ],
+            "reason": "a plain value is introduced by a stable field-name literal",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "lines begin with a consistent date/time and log level prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "combined date and time for log timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "size_mb",
+          "free_mb"
+        ],
+        "class_3_common_variable": [
+          "block_id"
+        ]
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp is a single semantic entity, no independent sources"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%d/%m/%y %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%d/%m/%y %H:%M:%S\")"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "size_mb",
+          "meaning": "size in MB",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "size in bytes",
+            "context_source": null,
+            "why_not_merge_raw": "unit transformation ensures consistent storage"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "estimated size ([0-9]+\\.[0-9]+) MB",
+          "replacement": "estimated size {placeholder} MB",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    size_mb = float(groups[0])\n    size_bytes = int(size_mb * 1024 * 1024)\n    return {'stored': [size_bytes], 'layout': []}\n\ndef inverse(record):\n    size_bytes = int(record['stored'][0])\n    size_mb = size_bytes / (1024 * 1024)\n    return f\"{size_mb:.1f}\""
+          }
+        }
+      ],
+      "class_3_functions": [
+        {
+          "tag": "block_id",
+          "meaning": "block identifier",
+          "class": "class_3_common_variable",
+          "value_type": "string",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "block id",
+            "context_source": null,
+            "why_not_merge_raw": "block ID is a single structured variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "Block (broadcast_[a-zA-Z0-9_]+) stored",
+          "replacement": "Block {placeholder} stored",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return record['stored'][0]"
+          }
+        }
+      ]
+    },
+    {
+      "family_id": 4,
+      "family_analysis": {
+        "has_composable_tokens": true,
+        "composable_groups": [
+          {
+            "name": "timestamp_or_other_composed_value",
+            "tokens": [
+              "S0",
+              "S1"
+            ],
+            "reason": "Date and time tokens together represent a timestamp",
+            "target_value": "one integer-like value",
+            "must_emit_function": true
+          }
+        ],
+        "has_semantic_equivalent_tokens": false,
+        "semantic_equivalent_groups": [],
+        "raw_variable_groups": [
+          {
+            "name": "explicitly_role_anchored_plain_variable",
+            "tokens": [
+              "TID 2",
+              "task 0.0"
+            ],
+            "reason": "values are introduced by stable field-name literals",
+            "must_emit_function": true
+          }
+        ]
+      },
+      "header": {
+        "has_unified_header": true,
+        "reason": "lines begin with a consistent date/time and log level prefix"
+      },
+      "slot_actions": [
+        {
+          "slot": "S0 or S0+S1",
+          "action": "COMPOSE_FIELDS_TO_INT | STREAM_RAW | UINT_DELTA | DICT_RANK | KEEP_IN_MAIN",
+          "meaning": "timestamp",
+          "reason": "combined date and time for log timestamp"
+        }
+      ],
+      "class_inventory": {
+        "class_1_composed_numeric": [
+          "log_timestamp"
+        ],
+        "class_2_formatted_numeric": [
+          "task_id",
+          "stage_id",
+          "tid"
+        ],
+        "class_3_common_variable": []
+      },
+      "class_1_functions": [
+        {
+          "tag": "log_timestamp",
+          "meaning": "log timestamp",
+          "class": "class_1_composed_numeric",
+          "value_type": "numeric",
+          "target_role": "log_timestamp",
+          "context": null,
+          "source_separation": {
+            "decision": "merge_equivalent",
+            "stored_source": "timestamp",
+            "context_source": null,
+            "why_not_merge_raw": "timestamp is a single semantic entity, no independent sources"
+          },
+          "general": true,
+          "order_hint": "global_composed",
+          "regex": "^(\\d{2}/\\d{2}/\\d{2}) (\\d{2}:\\d{2}:\\d{2})",
+          "replacement": "{placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    dt = datetime.strptime(f\"{groups[0]} {groups[1]}\", \"%d/%m/%y %H:%M:%S\")\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': []}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime(\"%d/%m/%y %H:%M:%S\")"
+          }
+        }
+      ],
+      "class_2_functions": [
+        {
+          "tag": "task_id",
+          "meaning": "task ID",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "task ID",
+            "context_source": null,
+            "why_not_merge_raw": "task ID is a standalone variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "task ([0-9]+\\.[0-9]+)",
+          "replacement": "task {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    task_id = float(groups[0])\n    return {'stored': [task_id], 'layout': []}\n\ndef inverse(record):\n    return f\"{record['stored'][0]:.1f}\""
+          }
+        },
+        {
+          "tag": "stage_id",
+          "meaning": "stage ID",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "stage ID",
+            "context_source": null,
+            "why_not_merge_raw": "stage ID is a standalone variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "stage ([0-9]+\\.[0-9]+)",
+          "replacement": "stage {placeholder}",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    stage_id = float(groups[0])\n    return {'stored': [stage_id], 'layout': []}\n\ndef inverse(record):\n    return f\"{record['stored'][0]:.1f}\""
+          }
+        },
+        {
+          "tag": "tid_value",
+          "meaning": "task instance ID",
+          "class": "class_2_formatted_numeric",
+          "value_type": "numeric",
+          "target_role": "ordinary_value",
+          "context": null,
+          "source_separation": {
+            "decision": "raw_single_source",
+            "stored_source": "TID",
+            "context_source": null,
+            "why_not_merge_raw": "TID is a standalone variable"
+          },
+          "general": false,
+          "order_hint": "family_structured",
+          "regex": "\\(TID ([0-9]+)\\)",
+          "replacement": "(TID {placeholder})",
+          "program": {
+            "op": "python_exec",
+            "code": "def forward(groups):\n    tid = int(groups[0])\n    return {'stored': [tid], 'layout': []}\n\ndef inverse(record):\n    return f\"(TID {record['stored'][0]})\""
+          }
+        }
+      ],
+      "class_3_functions": []
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

@@ -1,0 +1,26 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "{\n  \"functions\": [\n    {\n      \"tag\": \"size_display\",\n      \"meaning\": \"size in bytes with unit\",\n      \"class\": \"class_2_formatted_numeric\",\n      \"value_type\": \"numeric\",\n      \"target_role\": \"ordinary_value\",\n      \"context\": null,\n      \"regex\": \"\\\\(estimated size ([0-9]+\\\\.[0-9]+) (B|KB|MB),\",\n      \"replacement\": \"(estimated size {placeholder},\",\n      \"program\": {\n        \"op\": \"python_exec\",\n        \"code\": \"def forward(groups):\\n    size = float(groups[0])\\n    unit = groups[1]\\n    unit_map = {'B': 1, 'KB': 1024, 'MB': 1024**2}\\n    bytes_size = int(size * unit_map[unit])\\n    return {'stored': [bytes_size], 'layout': [unit]}\\n\\ndef inverse(record):\\n    bytes_size = record['stored'][0]\\n    unit = record['layout'][0]\\n    unit_map = {'B': 1, 'KB': 1024, 'MB': 1024**2}\\n    for u, factor in unit_map.items():\\n        if bytes_size % factor == 0 or u == unit:\\n            size = bytes_size / factor\\n            return f'(estimated size {size:.1f} {u},'\\n    return ''\"\n      }\n    }\n  ]\n}",
+        "role": "assistant"
+      }
+    }
+  ],
+  "model": "gpt-4o",
+  "usage": {
+    "completion_tokens": 319,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1248,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 1567
+  }
+}

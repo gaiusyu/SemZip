@@ -1,0 +1,17 @@
+\begin{table}[t]\centering\small
+\caption{Formal throughput: geometric means of per-file three-run medians over all twelve files no larger than BGL (decimal MB/s of original input), measured for all methods except SemZip+Evo in one serialized session. Separate outer-CLI timers include startup and complete output. Per-file ranges are in the supplement.}
+\label{tab:external-speed}
+\begin{tabular}{lrr}
+\toprule
+Method & Encode & Decode \\
+\midrule
+SemZip & 1.71 & 7.38 \\
+SemZip-1 & 1.78 & 7.63 \\
+DeLog & 8.79 & 15.68 \\
+LogLite-BL* & 9.15 & 17.25 \\
+gzip6 & 16.64 & 26.78 \\
+XZ6 & 5.55 & 21.31 \\
+Zstd3 & 18.20 & 27.53 \\
+\bottomrule
+\end{tabular}\end{table}
+Across the twelve-file cohort, SemZip's geometric-mean encoding and decoding throughputs are 19.5\% and 47.1\% of DeLog's; it is slower than DeLog on every file in both directions. These shared-host comparisons are descriptive, not significance tests.

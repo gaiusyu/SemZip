@@ -1,0 +1,145 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix/header structure containing a timestamp, log level, and component identifier.",
+    "functions": [
+      {
+        "tag": "timestamp_iso8601",
+        "meaning": "ISO8601_date_time_with_milliseconds",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})-(\\d{2})-(\\d{2})( +)(\\d{2}):(\\d{2}):(\\d{2}),(\\d{3})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Store timestamp as epoch microseconds and reconstruct the original ISO8601 format.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, month, day, sp1, hour, minute, second, millis = groups\n    dt_str = f\"{year}-{month}-{day} {hour}:{minute}:{second}.{millis}\"\n    dt = datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S.%f')\n    return {'stored': [int(dt.timestamp() * 1000000)], 'layout': [len(sp1)]}\n\ndef inverse(record):\n    micros = int(record['stored'][0])\n    layout = record.get('layout', [])\n    sp1_len = layout[0]\n    dt = datetime.fromtimestamp(micros / 1000000)\n    return dt.strftime('%Y-%m-%d') + (' ' * sp1_len) + dt.strftime('%H:%M:%S,%f')[:-3]"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "Primary timestamp of the log record",
+      "reason": "The date and time fields together describe the primary log timestamp, and are best stored as a single integer in epoch microseconds."
+    },
+    {
+      "slot": "S2",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Log level",
+      "reason": "The log level is stable across examples and does not have high entropy. It is best kept in the main template."
+    },
+    {
+      "slot": "S3",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Log component identifier",
+      "reason": "The component identifier is stable across examples and does not have high entropy. It is best kept in the main template."
+    },
+    {
+      "slot": "S4",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Log message prefix",
+      "reason": "The prefix is stable and does not represent a variable value."
+    },
+    {
+      "slot": "S5",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Component identifier label",
+      "reason": "This is a static label indicating the start of the component field, not a variable value."
+    },
+    {
+      "slot": "S6",
+      "action": "STREAM_RAW",
+      "meaning": "Component identifier with metadata",
+      "reason": "The component identifier contains high-entropy and structured data, including a combination of words, digits, and separators. It is best stored as a raw string."
+    },
+    {
+      "slot": "S7",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Elevate label",
+      "reason": "This is a static label introducing the elevate value, not a variable value."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "Elevate value",
+      "reason": "The elevate value is a stable numeric quantity that varies across lines and can be efficiently stored as a delta."
+    },
+    {
+      "slot": "S9",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "Applicable label",
+      "reason": "This is a static label introducing the applicable(true/false) value, not a variable value."
+    },
+    {
+      "slot": "S10",
+      "action": "UINT_DELTA",
+      "meaning": "Applicable value",
+      "reason": "The applicable value is a stable numeric quantity (0/1) that varies across lines and can be efficiently stored as a delta."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "component_identifier",
+      "meaning": "Component_name_with_version_and_metadata",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "Component:( +)([\\w.-]+_[\\w.-]+_[\\w.-]+_[\\w.-]+_[\\w.-]+_[\\w.-]+_[\\w.-]+,)",
+      "replacement": "Component:{group1}{placeholder}",
+      "program": {
+        "intent": "Store the full component identifier string as is, including underscores, dots, and commas.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[1]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "elevate_value",
+      "meaning": "Numeric_elevate_value",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "elevate:( +)(\\d+),",
+      "replacement": "elevate:{group1}{placeholder},",
+      "program": {
+        "intent": "Store the elevate value as a numeric integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    },
+    {
+      "tag": "applicable_value",
+      "meaning": "Boolean_applicable_value_as_0_or_1",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "applicable\\(true/false\\):( +)(\\d)",
+      "replacement": "applicable(true/false):{group1}{placeholder}",
+      "program": {
+        "intent": "Store the applicable value as an integer (0 or 1).",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': []}\n\ndef inverse(record):\n    return str(int(record['stored'][0]))"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

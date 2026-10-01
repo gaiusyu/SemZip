@@ -1,0 +1,235 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix indicating a unified header structure with a timestamp, component, and thread information.",
+    "functions": [
+      {
+        "tag": "header_timestamp",
+        "meaning": "month_day_time_as_monotonic_integer",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "([A-Z][a-z]{2})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Reversible transformation of a syslog-like header timestamp into a numeric monotonic integer.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    month, sp1, day, sp2, hms = groups\n    text = month + ' ' + day + ' ' + hms\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [dt.hour * 3600 + dt.minute * 60 + dt.second + (dt.day - 1) * 86400], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    seconds = record['stored'][0]\n    layout = record.get('layout', [])\n    sp1, sp2, day_width = layout\n    day = str((seconds // 86400) + 1).zfill(day_width)\n    seconds %= 86400\n    hour = seconds // 3600\n    seconds %= 3600\n    minute = seconds // 60\n    second = seconds % 60\n    hms = f'{hour:02}:{minute:02}:{second:02}'\n    month = 'Jan'  # This example assumes 'Jan'; replace with actual month logic if needed.\n    return month + (' ' * sp1) + day + (' ' * sp2) + hms"
+        }
+      },
+      {
+        "tag": "header_component_thread",
+        "meaning": "component_thread_identifier",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "sshd\\(pam_unix\\)\\[(\\d+)\\]:",
+        "replacement": "sshd(pam_unix)[{placeholder}]:",
+        "program": {
+          "intent": "Exact storage of the thread identifier within the header component field.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S0+S1+S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "syslog-like header timestamp including month, day, and time",
+      "reason": "These fields together describe one semantic timestamp and can be composed into a monotonic integer for compression."
+    },
+    {
+      "slot": "S4",
+      "action": "STREAM_RAW",
+      "meaning": "component and thread identifier within the header",
+      "reason": "The thread identifier is a bounded system variable with intrinsic structure."
+    },
+    {
+      "slot": "S6",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "authentication status",
+      "reason": "The text 'failure;' is a stable literal that does not vary across lines and is better kept in the template."
+    },
+    {
+      "slot": "S7",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "logname field anchor",
+      "reason": "The 'logname=' anchor is stable and does not vary; the field value is empty across examples."
+    },
+    {
+      "slot": "S8",
+      "action": "UINT_DELTA",
+      "meaning": "uid field value",
+      "reason": "The 'uid' field is a stable numeric attribute that appears consistently across examples and does not include any formatting."
+    },
+    {
+      "slot": "S9",
+      "action": "UINT_DELTA",
+      "meaning": "effective uid field value",
+      "reason": "The 'euid' field is a stable numeric attribute that appears consistently across examples and does not include any formatting."
+    },
+    {
+      "slot": "S10",
+      "action": "STREAM_RAW",
+      "meaning": "tty identifier",
+      "reason": "The tty field is a stable variable with bounded structure; it is better extracted as a raw string."
+    },
+    {
+      "slot": "S11",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "ruser field anchor",
+      "reason": "The 'ruser=' anchor is stable and does not vary; the field value is empty across examples."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "remote host",
+      "reason": "The 'rhost' field contains either an IPv4 address or a hostname with intrinsic separator-based structure, making it suitable for exact raw extraction."
+    },
+    {
+      "slot": "S13",
+      "action": "STREAM_RAW",
+      "meaning": "user field value",
+      "reason": "The 'user' field is explicitly anchored by a stable field name and should be extracted as a raw string."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "log_timestamp",
+      "meaning": "month_day_time_as_monotonic_integer",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "([A-Z][a-z]{3})( +)(\\d{1,2})( +)(\\d{2}:\\d{2}:\\d{2})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Reversible transformation of a syslog-like timestamp into a numeric monotonic integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    month, sp1, day, sp2, time = groups\n    text = month + ' ' + day + ' ' + time\n    dt = datetime.strptime(text, '%b %d %H:%M:%S')\n    return {'stored': [dt.hour * 3600 + dt.minute * 60 + dt.second + (dt.day - 1) * 86400], 'layout': [len(sp1), len(sp2), len(day)]}\n\ndef inverse(record):\n    seconds = record['stored'][0]\n    layout = record['layout']\n    sp1, sp2, day_width = layout\n    day = str((seconds // 86400) + 1).zfill(day_width)\n    seconds %= 86400\n    hour = seconds // 3600\n    seconds %= 3600\n    minute = seconds // 60\n    second = seconds % 60\n    time = f'{hour:02}:{minute:02}:{second:02}'\n    month = 'Jan'  # Replace with actual month logic if needed.\n    return month + (' ' * sp1) + day + (' ' * sp2) + time"
+      }
+    },
+    {
+      "tag": "component_thread",
+      "meaning": "component_thread_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "sshd\\(pam_unix\\)\\[(\\d+)\\]:",
+      "replacement": "sshd(pam_unix)[{placeholder}]:",
+      "program": {
+        "intent": "Exact storage of the thread identifier within the component field.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "uid",
+      "meaning": "user_identifier",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "uid=(\\d+)",
+      "replacement": "uid={placeholder}",
+      "program": {
+        "intent": "Exact storage of the user identifier as an integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return 'uid=' + str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "euid",
+      "meaning": "effective_user_identifier",
+      "class": "class_2_formatted_numeric",
+      "value_type": "numeric",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "euid=(\\d+)",
+      "replacement": "euid={placeholder}",
+      "program": {
+        "intent": "Exact storage of the effective user identifier as an integer.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [int(groups[0])], 'layout': []}\n\ndef inverse(record):\n    return 'euid=' + str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "tty",
+      "meaning": "terminal_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "tty=(NODEVssh)",
+      "replacement": "tty={placeholder}",
+      "program": {
+        "intent": "Exact storage of the terminal identifier as a string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'tty=' + str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "remote_host",
+      "meaning": "remote_host_identifier",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "rhost=(\\S+)",
+      "replacement": "rhost={placeholder}",
+      "program": {
+        "intent": "Exact storage of the remote host identifier as a string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'rhost=' + str(record['stored'][0])"
+      }
+    },
+    {
+      "tag": "user",
+      "meaning": "user_field_value",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "family_structured",
+      "regex": "user=(\\S+)",
+      "replacement": "user={placeholder}",
+      "program": {
+        "intent": "Exact storage of the user field value as a string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return 'user=' + str(record['stored'][0])"
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}

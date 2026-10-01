@@ -1,0 +1,157 @@
+{
+  "header": {
+    "has_unified_header": true,
+    "reason": "The sampled lines share a repeated prefix structure containing fields like timestamp, component, and thread, which can be extracted into side streams for compression.",
+    "functions": [
+      {
+        "tag": "header_timestamp_epoch",
+        "meaning": "epoch_timestamp",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "log_timestamp",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "-( +)(\\d{10})",
+        "replacement": "-{group1}{placeholder}",
+        "program": {
+          "intent": "Convert epoch timestamp to integer and preserve layout for exact rendering.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [int(groups[1])], 'layout': [len(groups[0])]}\n\ndef inverse(record):\n    layout = record.get('layout', [])\n    return '-' + (' ' * int(layout[0])) + str(record['stored'][0])"
+        }
+      },
+      {
+        "tag": "header_date",
+        "meaning": "date_field",
+        "class": "class_1_composed_numeric",
+        "value_type": "numeric",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "global_composed",
+        "regex": "(\\d{4})(\\.(\\d{2}))(\\.(\\d{2}))",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Convert date fields into a packed integer for exact rendering.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    year, dot1, month, dot2, day = groups\n    return {'stored': [int(year) * 10000 + int(month) * 100 + int(day)], 'layout': []}\n\ndef inverse(record):\n    packed_date = record['stored'][0]\n    year = packed_date // 10000\n    month = (packed_date % 10000) // 100\n    day = packed_date % 100\n    return f\"{year}.{str(month).zfill(2)}.{str(day).zfill(2)}\""
+        }
+      },
+      {
+        "tag": "header_component",
+        "meaning": "component_name",
+        "class": "class_3_common_variable",
+        "value_type": "string",
+        "target_role": "ordinary_value",
+        "context": null,
+        "general": true,
+        "order_hint": "family_structured",
+        "regex": "(\\S+)",
+        "replacement": "{placeholder}",
+        "program": {
+          "intent": "Preserve the exact component name as a string.",
+          "op": "python_exec",
+          "parameters": {},
+          "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return str(record['stored'][0])"
+        }
+      }
+    ]
+  },
+  "slot_actions": [
+    {
+      "slot": "S1",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "epoch_timestamp",
+      "reason": "Single numeric field representing the primary log timestamp; compact numeric representation ensures efficient storage."
+    },
+    {
+      "slot": "S2",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "date_field",
+      "reason": "Date field can be packed into a single numeric representation while preserving exact format during rendering."
+    },
+    {
+      "slot": "S3",
+      "action": "STREAM_RAW",
+      "meaning": "component_name",
+      "reason": "Component names are high-entropy strings, preserved exactly as raw streams for deterministic reconstruction."
+    },
+    {
+      "slot": "S5+S6",
+      "action": "COMPOSE_FIELDS_TO_INT",
+      "meaning": "timestamp_time",
+      "reason": "Time fields can be packed into a single integer while preserving exact format for rendering."
+    },
+    {
+      "slot": "S7",
+      "action": "STREAM_RAW",
+      "meaning": "local_context",
+      "reason": "High-entropy string with structured components and separators, preserved as raw for exact reconstruction."
+    },
+    {
+      "slot": "S8",
+      "action": "STREAM_RAW",
+      "meaning": "path_and_process_info",
+      "reason": "Complex structured path and process identifier preserved as raw for exact reconstruction due to high entropy and separators."
+    },
+    {
+      "slot": "S9",
+      "action": "KEEP_IN_MAIN",
+      "meaning": "operation_type",
+      "reason": "Stable literal structure across all examples."
+    },
+    {
+      "slot": "S10",
+      "action": "STREAM_RAW",
+      "meaning": "resource_path",
+      "reason": "Structured path with identifiable separators, preserved as raw for exact reconstruction."
+    },
+    {
+      "slot": "S12",
+      "action": "STREAM_RAW",
+      "meaning": "resource_path_with_quotes",
+      "reason": "Quoted structured path preserved as raw for exact reconstruction; high-entropy variable."
+    }
+  ],
+  "functions": [
+    {
+      "tag": "header_time",
+      "meaning": "timestamp_time",
+      "class": "class_1_composed_numeric",
+      "value_type": "numeric",
+      "target_role": "log_timestamp",
+      "context": null,
+      "general": true,
+      "order_hint": "global_composed",
+      "regex": "(\\d{2})(:)(\\d{2})(:)(\\d{2})",
+      "replacement": "{placeholder}",
+      "program": {
+        "intent": "Pack hour, minute, and second fields into a single monotonic integer for exact rendering.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    hour, colon1, minute, colon2, second = groups\n    return {'stored': [int(hour) * 3600 + int(minute) * 60 + int(second)], 'layout': []}\n\ndef inverse(record):\n    packed_time = record['stored'][0]\n    hour = packed_time // 3600\n    minute = (packed_time % 3600) // 60\n    second = packed_time % 60\n    return f\"{str(hour).zfill(2)}:{str(minute).zfill(2)}:{str(second).zfill(2)}\""
+      }
+    },
+    {
+      "tag": "resource_path",
+      "meaning": "path_to_rrd_file",
+      "class": "class_3_common_variable",
+      "value_type": "string",
+      "target_role": "ordinary_value",
+      "context": null,
+      "general": true,
+      "order_hint": "global_atomic",
+      "regex": "\\(/var/lib/ganglia/rrds/__SummaryInfo__/(\\S+)\\.rrd\\):",
+      "replacement": "({placeholder})",
+      "program": {
+        "intent": "Preserve the exact path to the RRD file as a raw string.",
+        "op": "python_exec",
+        "parameters": {},
+        "code": "def forward(groups):\n    return {'stored': [groups[0]], 'layout': []}\n\ndef inverse(record):\n    return f\"({record['stored'][0]}.rrd)\""
+      }
+    }
+  ],
+  "_proposal_cache_mode": "api"
+}
