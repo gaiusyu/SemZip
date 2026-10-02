@@ -1,0 +1,46 @@
+{
+  "schema": "semzip.r76.lognexus.v1",
+  "upstream": "https://doi.org/10.5281/zenodo.21021398",
+  "source_tarball_sha256": "6baececc1a52594ca419f1198bd996cd437615f5ae79dccdc2339da45ce81678",
+  "block_records": 100000,
+  "profile": "paper",
+  "paper_thresholds": {
+    "Android": "0.05",
+    "Apache": "0.02",
+    "BGL": "0.005",
+    "Hadoop": "0.005",
+    "HDFS": "0.005",
+    "HealthApp": "0.005",
+    "HPC": "0.01",
+    "Linux": "0.001",
+    "Mac": "0.12",
+    "OpenSSH": "0.005",
+    "OpenStack": "0.001",
+    "Proxifier": "0.01",
+    "Spark": "0.001",
+    "Thunderbird": "0.002",
+    "Windows": "0.1",
+    "Zookeeper": "0.001"
+  },
+  "cli": "LogNexus_compress <block> <dataset> 100000 1 1 1 <tau>; LogNexus_decompress <archive_dir> <restored_dir> <dataset>",
+  "residual_lzma": "FORMAT_ALONE preset 9e",
+  "workers": 3,
+  "driver_sha256": "a561dcddd3c36a08718cbb30f189587a93eb653192a71f3e6bffd87dca23ea88",
+  "binaries": {
+    "LogNexus_compress": "4918b037cdd9361266c407073e1e230b7120ca078d9aa834bbf0d3192f7c792f",
+    "LogNexus_decompress": "f82e03e1191aa34b7c920362a6880b9f3f61060ec4d4348fd06c1b8fddfa05b7"
+  },
+  "sources": {
+    "LogNexus_compress.cpp": "bf69e2ab715e5492becb5a4445fd32cb05c3c675a30dce2df9d3b3edd38b6ffa",
+    "LogNexus_decompress.cpp": "c4298407d18c2708f6e59778de5d642d99b52f1b8f8cc0f68e9b2eba5bbb033c",
+    "Makefile": "3febe2bddc2c83c2384912cbb6a821cde391352205a22b0f82e84672bb5e1089",
+    "configs/paper_thresholds.csv": "08431fd0f6c494595776067e502f004e48d8db334fa78c5e61a8e28921b8e03d"
+  },
+  "cxx": "g++ (Debian 10.2.1-6) 10.2.1 20210110",
+  "python": "3.9.2 (default, Feb 28 2021, 17:03:44) \n[GCC 10.2.1 20210110]",
+  "host": "<DEV_HOST>",
+  "created_at": "2026-10-02T01:02:36.437855+00:00",
+  "inputs": [
+    "Thunderbird=<WORKDIR>/data/loghub1/original/Thunderbird/Thunderbird.log"
+  ]
+}

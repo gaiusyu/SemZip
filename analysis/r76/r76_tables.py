@@ -91,6 +91,25 @@ def ls():
                       failed_blocks=len(r.get('failed_blocks') or []), blocks=r.get('blocks'))
     return o, nat
 M['logshrink'], NAT_LS = ls()
+UD_ALL = ['NASA', 'ClarkNet', 'USask', 'Calgary']
+def lnx():
+    """R76-H LogNexus (ISSTA 2026, = arXiv LogPrism): paper per-dataset thresholds, +R separator correction."""
+    o, nat = {}, {}
+    for d in DS + UD_ALL:
+        ps = sorted((DEV/'baselines/lognexus/full_paper').glob(f'*/{d}/result.json'))
+        if not ps: continue
+        r = jl(ps[-1])
+        if r.get('status') == 'PASS' and r.get('full_sha_match') and r.get('roundtrip') == 'byte-exact':
+            o[d] = cell(r['raw_bytes'], r['archive_bytes'], r.get('suffix_raw_bytes') or None, r.get('suffix_archive_bytes') or None)
+        nat[d] = dict(ratio=r.get('native_compression_ratio'), suffix=r.get('native_suffix_ratio'), exact=r.get('native_status') == 'PASS',
+                      token_equal=r.get('native_blocks_token_equal'), blocks=r.get('n_blocks'), tau=r.get('tau'), status=r.get('status'),
+                      fallback=r.get('residual_full_fallback_blocks'), native_bytes=r.get('native_bytes'), archive_bytes=r.get('archive_bytes'),
+                      raw=r.get('raw_bytes'), dropped=r.get('residual_dropped_records'), patched=r.get('residual_patched_records'))
+    return o, nat
+LN_ALL, NAT_LN = lnx()
+U_SEMZIP = {d: jl(DEV/'unseen/summary_all.json')['datasets'][d]['ratio'] for d in UD_ALL} if (DEV/'unseen/summary_all.json').exists() else {}
+M['lognexus'] = {d: c for d, c in LN_ALL.items() if d in DS}
+LN_PAPER_MEAN = 88.202  # artifact/reference/paper_aggregate_results.csv (RQ1, dataset-specific thresholds)
 DENUM = {}
 for d in DS:
     ps = sorted((DEV/'baselines/denum/full_enconly'/d/'denum').glob('trial_001/attempt_*/result.json'))
@@ -98,7 +117,7 @@ for d in DS:
         r = jl(ps[-1])
         if r.get('status') == 'ENCODE_ONLY_UNVERIFIED' and r.get('raw_bytes') == size['delog'][d]['raw_bytes']:
             DENUM[d] = r['raw_bytes']/r['archive_bytes']
-LABEL = {'semzip': r'\tool', 'delog': 'DeLog', 'logshrink': 'LogShrink+R*', 'logreducer': 'LogReducer+R*', 'loglite': 'LogLite-BL*',
+LABEL = {'semzip': r'\tool', 'delog': 'DeLog', 'lognexus': 'LogNexus+R*', 'logshrink': 'LogShrink+R*', 'logreducer': 'LogReducer+R*', 'loglite': 'LogLite-BL*',
          'gzip6': 'gzip6', 'xz6': 'XZ6', 'xz9e': 'XZ9e', 'zstd19': 'Zstd19', 'zstd3': 'Zstd3', 'zstd22long': 'Zstd22L', 'zstd19dict': 'Zstd19+D',
          'empty': 'Empty', 'library': 'Library', 'library_floor': 'Lib.+floor', 'semzip1': 'SemZip-1', 'gated': 'Gated', 'delog_generic': 'DeLog-gen'}
 # raw-identity check across every loaded cell
@@ -133,12 +152,12 @@ def bold_row(vals):
     return [('\\textbf{' + fmt(v) + '}') if (v is not None and abs(v - best) < 1e-9) else fmt(v) for v in vals]
 
 # ---------- Table: extended external comparison (main) ----------
-MAIN = ['semzip', 'delog', 'logshrink', 'logreducer', 'loglite', 'gzip6', 'xz6', 'xz9e', 'zstd19']
+MAIN = ['semzip', 'delog', 'lognexus', 'logshrink', 'logreducer', 'loglite', 'gzip6', 'xz9e', 'zstd19']
 L = [r'\begin{table*}[t]\centering\footnotesize',
      r'\caption{Complete original-file compression ratios (raw / all archive bytes; every cell decoded from its archive alone with a matching SHA-256). '
-     r'\tool: frozen deployment trained on block 0. Bold: best in the row. *Adapted method: LogShrink and LogReducer as released do not restore their input byte-exactly, so +R stores a counted per-line correction (supplement); LogLite-BL uses a disclosed fixed adaptation. '
-     r'Denum is excluded because its released format cannot restore its input (supplement); LogFold and LogPrism have no public implementation. $\dagger$: one block, in-sample; Suffix: blocks 1 onward of the 12 multi-block files. --: pending or failed (supplement).}',
-     r'\label{tab:external-ratios}', r'\setlength{\tabcolsep}{3.4pt}', r'\begin{tabular}{l' + 'r'*len(MAIN) + '}', r'\toprule',
+     r'\tool: frozen deployment trained on block 0. Bold: best in the row. *Adapted method: LogNexus, LogShrink, and LogReducer as released do not restore their input byte-exactly (LogNexus guarantees the whitespace-separated token sequence), so +R stores a counted correction (supplement); LogNexus uses its paper\textquotesingle s per-dataset thresholds; LogLite-BL uses a disclosed fixed adaptation. '
+     r'Denum is excluded because its released format cannot restore its input (supplement); LogFold has no public implementation. XZ6 and Zstd3 are in the supplement. $\dagger$: one block, in-sample; Suffix: blocks 1 onward of the 12 multi-block files. --: pending or failed (supplement).}',
+     r'\label{tab:external-ratios}', r'\setlength{\tabcolsep}{2.7pt}', r'\begin{tabular}{l' + 'r'*len(MAIN) + '}', r'\toprule',
      'Dataset & ' + ' & '.join(LABEL[m] for m in MAIN) + r' \\', r'\midrule']
 for d in DS:
     L.append((d + (r'$^\dagger$' if d in ONE else '')) + ' & ' + ' & '.join(bold_row([ratio(m, d) for m in MAIN])) + r' \\')
@@ -201,7 +220,7 @@ L += [r'\bottomrule', r'\end{tabular}\end{table}']
 (OUT/'repeats_table.tex').write_text('\n'.join(L) + '\n')
 
 # ---------- supplement: other codec settings and non-lossless natives ----------
-SUP = ['zstd3', 'zstd22long', 'zstd19dict', 'delog_generic']
+SUP = ['xz6', 'zstd3', 'zstd22long', 'zstd19dict', 'delog_generic']
 L = [r'\setlength{\tabcolsep}{3pt}', r'\begin{longtable}{l' + 'r'*(len(SUP) + 5) + '}', r'\caption{Supplementary external measurements. Left: further general-purpose settings (Zstd19+D: dictionary trained on block 0 and counted once per file) and DeLog without its dataset-specific regular expressions, all byte-exact from archives alone. Zstd22L: zstd --ultra -22 --long=27. Right: compression-only ratios of LogShrink and LogReducer as released (not byte-exact; exact files marked e), the number of LogShrink blocks that failed to encode or decode, and Denum\textquotesingle s compression-only ratio (its format cannot restore the input; not losslessly verifiable).}\label{tab:supp-external}\\',
      r'\toprule', 'Dataset & ' + ' & '.join(LABEL[m] for m in SUP) + r' & LS native & LS failed & LR native & LR status & Denum \\', r'\midrule\endfirsthead', r'\toprule', 'Dataset & ' + ' & '.join(LABEL[m] for m in SUP) + r' & LS native & LS failed & LR native & LR status & Denum \\', r'\midrule\endhead']
 for d in DS:
@@ -245,16 +264,40 @@ pub_sum = 100*(sum(M['semzip'][d]['arch'] for d in DS)/sum(M['semzip'][d]['raw']
 N['delog_published'] = {'diff_min': min(pubdiff), 'diff_max': max(pubdiff), 'mean_pub': st.mean(PUBDL.values()), 'semzip_wins': pub_w, 'geomean_pct': pub_g, 'summed_pct': pub_sum}
 t = []
 t.append(f"On complete files, \\tool\\ has the largest ratio on {sum(1 for d in DS if max((ratio(m, d) or 0) for m in MAIN) == ratio('semzip', d))}/16 files (Table~\\ref{{tab:external-ratios}}). "
-         f"Against DeLog, the strongest baseline, it is smaller on {wins_dl}/16 files and on {swins_dl}/12 held-out suffixes, which no selection or fitting step reads. "
+         f"Against DeLog, the strongest baseline by geometric mean, it is smaller on {wins_dl}/16 files and on {swins_dl}/12 held-out suffixes, which no selection or fitting step reads. "
          f"Its geometric-mean ratio is {x(S['geomean'])} versus {x(DL['geomean'])} ({x(S['suffix_geomean'])} versus {x(DL['suffix_geomean'])} on suffixes) and its arithmetic mean {x(S['mean'])} versus {x(DL['mean'])}. "
          f"Summed archive bytes, however, are {abs(S['total_vs_delog_pct']):.2f}\\% larger than DeLog's: Thunderbird holds {TB_share:.1f}\\% of all raw bytes and is the one file where DeLog wins "
-         f"({x(ratio('semzip', 'Thunderbird'))} versus {x(ratio('delog', 'Thunderbird'))}; its frozen program is not even 1\\% smaller than the empty program on 79\\% of later blocks; RQ3).")
+         f"({x(ratio('semzip', 'Thunderbird'))} versus {x(ratio('delog', 'Thunderbird'))}; its frozen program is not even 1\\% smaller than the empty program on 79\\% of later blocks; RQ3)."
+         + (f" For the same reason LogNexus+R, whose Thunderbird archive is {100*(1 - M['lognexus']['Thunderbird']['arch']/M['semzip']['Thunderbird']['arch']):.1f}\\% smaller than \\tool\\textquotesingle s, has {100*(1 - ag['lognexus']['total']/S['total']):.1f}\\% fewer summed bytes than \\tool, although \\tool\\ is smaller on every other file." if 'total' in ag.get('lognexus', {}) and ag['lognexus']['total'] < S['total'] else ''))
 dp = N['delog_published']
 t.append(f"DeLog's released implementation, run as its own benchmark script does, reproduces our DeLog numbers exactly on Linux and BGL, but its paper reports ratios {abs(dp['diff_min']):.1f}\\% lower to {dp['diff_max']:.1f}\\% higher per file (mean {dp['mean_pub']:.2f}$\\times$); against those published ratios \\tool\\ has the higher ratio on {dp['semzip_wins']}/16 files (geometric mean {pct(dp['geomean_pct'], 1)}) and its summed bytes are {dp['summed_pct']:.1f}\\% larger (supplement).")
+LN_DS = [d for d in DS if d in NAT_LN and NAT_LN[d].get('ratio')]
+LN_SENT = ''
+if LN_DS:
+    ln_nat_mean = st.mean(NAT_LN[d]['ratio'] for d in LN_DS) if len(LN_DS) == len(DS) else None
+    ln_tok_all = all(NAT_LN[d]['token_equal'] == NAT_LN[d]['blocks'] for d in LN_DS)
+    ln_exact = [d for d in LN_DS if NAT_LN[d]['exact']]
+    ln_beat_nat = sum(M['semzip'][d]['arch'] < NAT_LN[d]['native_bytes'] for d in LN_DS)
+    ln_r = [d for d in DS if d in M['lognexus']]
+    N['lognexus'] = {'native_mean': ln_nat_mean, 'paper_mean': LN_PAPER_MEAN, 'token_all': ln_tok_all, 'exact_files': ln_exact,
+                     'semzip_smaller_than_native': ln_beat_nat, 'n_native': len(LN_DS),
+                     'semzip_smaller_than_r': sum(M['semzip'][d]['arch'] < M['lognexus'][d]['arch'] for d in ln_r), 'n_r': len(ln_r),
+                     'losses_r': [d for d in ln_r if M['semzip'][d]['arch'] >= M['lognexus'][d]['arch']],
+                     'losses_native': [d for d in LN_DS if M['semzip'][d]['arch'] >= NAT_LN[d]['native_bytes']]}
+    nl = N['lognexus']
+    LN_SENT = (f"LogNexus~\\cite{{lognexus}} restores the whitespace-separated token sequence rather than the bytes: run as released with its paper\\textquotesingle s per-dataset thresholds, "
+               + (f"its archives average {x(ln_nat_mean)} on our inputs (its paper reports {x(LN_PAPER_MEAN)}), " if ln_nat_mean else '')
+               + ("every block passes its token check, " if ln_tok_all else "some blocks fail its token check, ")
+               + ((f"and only {names(ln_exact)} {'is' if len(ln_exact) == 1 else 'are'} restored byte-exactly. ") if ln_exact else "and no file is restored byte-exactly. ")
+               + f"\\tool\\ is smaller than LogNexus+R on {nl['semzip_smaller_than_r']}/{nl['n_r']} files"
+               + (f" (not on {names(nl['losses_r'])})" if nl['losses_r'] else '')
+               + f" and smaller than even its uncorrected archives on {ln_beat_nat}/{len(LN_DS)}"
+               + (f" (not on {names(nl['losses_native'])})" if nl['losses_native'] else '') + ". ")
 t.append(f"LogShrink and LogReducer as released do not restore most files byte-exactly (they drop carriage returns, spaces, and leading zeros), so their +R variants store a counted per-line correction. "
          f"\\tool\\ is smaller than LogShrink+R on {ag['logshrink']['semzip_smaller_on']}/{ag['logshrink']['n']} and than LogReducer+R on {ag['logreducer']['semzip_smaller_on']}/{ag['logreducer']['n']} reconstructed files"
          + (f"; LogShrink could not encode or decode every block of {names(sorted(ls_fail))}" if ls_fail else '')
          + (f", and LogReducer+R failed the SHA check on part of {names(sorted(lr_fail))}" if lr_fail else '') + ". "
+         + LN_SENT +
          f"High-effort general-purpose settings remain far behind: XZ9e averages {x(ag['xz9e']['mean'])} and Zstd19 {x(ag['zstd19']['mean'])}; a block-0 Zstd dictionary and the Zstd ultra setting are in the supplement.")
 (OUT/'rq1_text.tex').write_text('\n'.join(t) + '\n')
 
@@ -302,10 +345,14 @@ ab = (f"On sixteen LogHub files, each decoded byte-exactly from its archive alon
       + ("Two further complete runs keep all four narrow wins over DeLog. " if allw else "")
       + "ENCODE_SPEED_PLACEHOLDER")
 (OUT/'abstract_results.tex').write_text(ab + '\n')
-ALLCMP = [m for m in ('logshrink', 'logreducer', 'loglite', 'gzip6', 'xz6', 'xz9e', 'zstd3', 'zstd19', 'zstd22long', 'zstd19dict', 'delog_generic') if M[m]]
+ALLCMP = [m for m in ('lognexus', 'logshrink', 'logreducer', 'loglite', 'gzip6', 'xz6', 'xz9e', 'zstd3', 'zstd19', 'zstd22long', 'zstd19dict', 'delog_generic') if M[m]]
 allbeat = all(beat_all(m) for m in ALLCMP)
+LNC = N.get('lognexus', {})
 co = (f"It is smaller than DeLog on {wins_dl}/16 LogHub files and {swins_dl}/12 held-out suffixes"
-      + (" and, on LogHub, smaller than every other evaluated compressor on every file that compressor restores" if allbeat else "") + f", at summed bytes {pct(S['total_vs_delog_pct'])} relative to DeLog and a slower encoder; "
+      + (f" and than LogNexus+R on {LNC['semzip_smaller_than_r']}/{LNC['n_r']} files" if LNC.get('n_r') else '')
+      + (" and, on LogHub, smaller than every other evaluated compressor on every file that compressor restores" if allbeat else "") + f", at summed bytes {pct(S['total_vs_delog_pct'])} relative to DeLog"
+      + (f" and {pct(100*(S['total']/ag['lognexus']['total'] - 1))} relative to LogNexus+R, both because of Thunderbird," if 'total' in ag.get('lognexus', {}) and ag['lognexus']['total'] < S['total'] else '')
+      + " and a slower encoder; "
       f"without its programs the same pipeline reaches a mean of {e['mean']:.2f}$\\times$ instead of {S['mean']:.2f}$\\times$, and a hand-written library does not substitute for them.")
 (OUT/'conclusion_results.tex').write_text(co + '\n')
 N['missing'] = missing
@@ -332,14 +379,32 @@ ex = [r for r in DP if r['dataset'] in ('Apache', 'HDFS', 'BGL')]
 U += [r'\paragraph{Denum.} The released Denum compressor (commit a3a6975) replaces each match of its per-dataset regular expressions by a tag and stores the concatenated digits as one integer, without group widths or separator positions; its Python decoder also drops carriage returns and leading zeros. '
       f"For each of the sixteen datasets we changed one line of block 0 by moving a digit across a group boundary; in all {sum(r['all_archive_members_identical'] for r in DP)} cases the original and the modified block produce byte-identical archive members, so no decoder can restore both. Examples: "
       + '; '.join(r"\texttt{" + esc(win(r['original_line'], r['modified_line'])) + r"} vs.\ \texttt{" + esc(win(r['modified_line'], r['original_line'])) + '}' for r in ex) + '. Denum is therefore excluded from the lossless comparison.']
-PUB = jl(ROOT/'results/published_baseline_reference_20260915.json')
-U += [r'\paragraph{Published numbers without implementations.} LogFold and LogPrism provide no public implementation (checked before submission: the LogFold repository holds only a license and README; the LogPrism repository is empty). Their papers report the following ratios for 100,000-line chunks; input identities are not verified and these numbers are not matched observations.',
+PUB_ALL = jl(ROOT/'results/published_baseline_reference_20260915.json')
+PUB = [p for p in PUB_ALL if p['method'] == 'LogFold']
+PRISM = {r['dataset']: r['reported_ratio'] for p in PUB_ALL if p['method'] == 'LogPrism' for r in p['rows']}
+if NAT_LN:
+    U += [r'\paragraph{LogNexus (preprint: LogPrism).} The LogPrism preprint (arXiv 2601.17482) was published at ISSTA 2026 as LogNexus by the same authors, with an artifact on Zenodo (record 21021398; the later record 21281836 changes only documentation, which we verified file by file). '
+          r'We built its released source unchanged (GCC 10 instead of the artifact\textquotesingle s GCC 11 container) and ran its default serial configuration (\texttt{LogNexus\_compress <block> <dataset> 100000 1 1 1 <tau>}) independently on every 100,000-line block, with the per-dataset thresholds of its paper tables (0.02, its untuned default, for the four unseen sources, whose names select no built-in rules); every file it writes is stored and counted, and its own decompressor reads only the block archive. '
+          r'Its artifact claims, and we confirm, restoration of the whitespace-separated token sequence only: it collapses whitespace runs and may omit blank lines. LogNexus+R adds a counted, dataset-agnostic, LZMA-compressed correction: the omitted blank lines with their positions, and for every other differing line the separators that differ when the token lists agree (the LogReducer+R line patch otherwise). '
+          r'This correction is cheaper for LogNexus than the line patch of the other +R variants; it was fixed after a probe on Linux only, before any other LogNexus result (change log). Reported ratios in the LogPrism preprint are listed for reference.',
+          r'\begin{longtable}{lrrrrrrr}\caption{LogNexus as released (native: not byte-exact) and with the counted correction (+R, byte-exact from the archive alone), next to \tool. Token: blocks whose restored token sequence equals the original. Corr.: correction bytes as a share of the +R archive. Preprint: ratio reported in LogPrism v2 (inputs unverified).}\label{tab:lognexus}\\\toprule',
+          r'Dataset & $\tau$ & Native & Token & +R & Corr. & Preprint & \tool\ \\\midrule']
+    for d in DS + UD_ALL:
+        v = NAT_LN.get(d)
+        if not v: continue
+        rr = (LN_ALL[d]['raw']/LN_ALL[d]['arch']) if d in LN_ALL else None
+        corr = (100*(1 - v['native_bytes']/v['archive_bytes'])) if (v.get('native_bytes') and v.get('archive_bytes')) else None
+        sz = ratio('semzip', d) if d in DS else U_SEMZIP.get(d)
+        U.append(f"{d} & {v['tau']} & {fmt(v['ratio'])} & {v['token_equal']}/{v['blocks']} & {fmt(rr)} & {fmt(corr, 1)}\\% & {fmt(PRISM.get(d))} & {fmt(sz)}" + r' \\')
+    U += [r'\bottomrule\end{longtable}']
+U += [r'\paragraph{Published numbers without implementations.} LogFold (ICSE 2026) provides no public implementation (checked on 2 October 2026: its repository holds only a license and README). Its paper reports the following ratios for 100,000-line chunks; input identities are not verified and these numbers are not matched observations.',
       r'\begin{longtable}{l' + 'r'*(len(PUB) + 1) + r'}\caption{Published ratios (literature context only) next to \tool.}\label{tab:published}\\\toprule',
-      'Dataset & ' + ' & '.join(p['method'] + ' (' + p['source_version'] + ')' for p in PUB) + r' & \tool\ \\\midrule']
+      'Dataset & ' + ' & '.join(p['method'] + ' (ICSE 2026; arXiv ' + p['source_version'] + ')' for p in PUB) + r' & \tool\ \\\midrule']
 pubrows = {p['method']: {r['dataset']: r['reported_ratio'] for r in p['rows']} for p in PUB}
 for d in DS:
     U.append(d + ' & ' + ' & '.join(fmt(pubrows[p['method']].get(d)) for p in PUB) + f" & {fmt(ratio('semzip', d))}" + r' \\')
 U += [r'\bottomrule\end{longtable}']
+N['logfold_published_above_semzip'] = [d for d in DS if pubrows['LogFold'].get(d, 0) > ratio('semzip', d)]
 U += [r'\paragraph{DeLog: released implementation versus published ratios.} Running the released DeLog (commit 64a074f) on whole files with the command line of its own benchmark script (text mode, 100,000-line blocks, four threads, frequency threshold 0, LZMA, normal mode) gives 27.60$\times$ on Linux and 40.33$\times$ on BGL, identical to our block adapter, whereas the DeLog paper reports 30.63$\times$ and 45.68$\times$. All tables use the measured values; the published ratios are listed here.',
       r'\begin{longtable}{lrrrr}\caption{DeLog: measured on our inputs versus published (literature only).}\label{tab:delog-published}\\\toprule', r'Dataset & Measured & Published & Difference & \tool\ \\\midrule']
 for d in DS:
@@ -429,7 +494,7 @@ if T2:
     sb = lambda m, k: T2['methods'][m].get(k)
     t.append(f"In session B, LogShrink+R encodes at {sb('logshrink_r', 'encode_gmean'):.2f} and LogReducer+R at {sb('logreducer_r', 'encode_gmean'):.2f}~MB/s (geometric mean; \\tool\\ {sb('semzip', 'encode_gmean'):.2f}, DeLog {sb('delog', 'encode_gmean'):.2f}).")
 else:
-    pass  # T2 stopped by design (DEV_DESIGN_R76_zh.md, R76-G resources note); Small column = R73 session A
+    pass  # T2 stopped by design (change log 2026-10-01 21:20); Small column = R73 session A
 if T3:
     se, de, sd, dd = t3bw('semzip', 'encode'), t3bw('delog', 'encode'), t3bw('semzip', 'decode'), t3bw('delog', 'decode')
     a4 = {m: {k: T3['methods'][m][k] for k in ('encode_byte_weighted_MB_per_s', 'decode_byte_weighted_MB_per_s')} for m in ('semzip', 'delog')}
@@ -463,11 +528,11 @@ if (UG/'summary_all.json').exists():
         if not p_.exists(): return None
         r = jl(p_); rp = r.get('repaired', {})
         return rp.get('ratio') if (rp.get('lossless') and rp.get('full_sha256_match') and not r.get('failed_blocks')) else None
-    UC = ['semzip', 'delog', 'logshrink', 'logreducer', 'loglite', 'xz9e', 'zstd19']
+    UC = ['semzip', 'delog', 'lognexus', 'logshrink', 'logreducer', 'loglite', 'xz9e']
     rows = {}
     for d in UD:
         v = U_['datasets'][d]; b = v['baselines']
-        rows[d] = {'semzip': v['ratio'], 'delog': b['delog']['ratio'], 'loglite': b['loglite']['ratio'], 'xz9e': b['xz9e']['ratio'], 'zstd19': b['zstd19']['ratio'],
+        rows[d] = {'semzip': v['ratio'], 'delog': b['delog']['ratio'], 'lognexus': (LN_ALL[d]['raw']/LN_ALL[d]['arch']) if d in LN_ALL else None, 'loglite': b['loglite']['ratio'], 'xz9e': b['xz9e']['ratio'], 'zstd19': b['zstd19']['ratio'],
                    'logshrink': ls_u(d), 'logreducer': lr_u(d), 'lines': v['lines'], 'suffix': v['suffix_ratio'], 'delog_suffix': b['delog']['suffix_ratio']}
     ag_ = U_['aggregate_vs_delog']
     L = [r'\begin{table}[t]\centering\footnotesize',
@@ -478,13 +543,16 @@ if (UG/'summary_all.json').exists():
         L.append(f"{d} & {rows[d]['lines']/1e6:.2f}M & " + ' & '.join(bold_row([rows[d][m] for m in UC])) + r' \\')
     L += [r'\bottomrule', r'\end{tabular}\end{table}']
     (OUT/'unseen_table.tex').write_text('\n'.join(L) + '\n')
-    lossu = [f"{LABEL[m]} on {d}" for d in UD for m in ('logshrink', 'logreducer') if rows[d][m] and rows[d][m] > rows[d]['semzip']]
+    lossu = [f"{LABEL[m]} on {d}" for d in UD for m in ('lognexus', 'logshrink', 'logreducer') if rows[d][m] and rows[d][m] > rows[d]['semzip']]
     dlp = [100*(rows[d]['semzip']/rows[d]['delog'] - 1) for d in UD]
     cal = [(m, 100*(rows['Calgary'][m]/rows['Calgary']['semzip'] - 1)) for m in ('logshrink', 'logreducer') if rows['Calgary'][m]]
+    lnu = [100*(rows[d]['semzip']/rows[d]['lognexus'] - 1) for d in UD if rows[d]['lognexus']]  # % more LogNexus+R bytes than SemZip
     t = [f"To test sources outside the development benchmark, we ran the unchanged pipeline on four public web-server access logs (Table~\\ref{{tab:unseen}}), a format absent from the sixteen files. "
          f"\\tool\\ is smaller than DeLog on {ag_['wins_vs_delog']}/4 files and {ag_['suffix_wins_vs_delog']}/4 suffixes, with {min(dlp):.1f}--{max(dlp):.1f}\\% higher ratios and {abs(100*ag_['total_bytes_difference_semzip_minus_delog']/ag_['total_delog_bytes']):.1f}\\% fewer summed bytes, and smaller than LogLite-BL and every general-purpose setting on every file (supplement). "
          f"The adapted baselines are closer: on Calgary, LogShrink+R and LogReducer+R are {min(v for _, v in cal):.1f}--{max(v for _, v in cal):.1f}\\% smaller than \\tool, and on the 24 of USask's 25 blocks that LogShrink+R encodes it is 1.3\\% smaller; "
-         f"LogShrink+R fails on ClarkNet and USask and LogReducer+R on USask (supplement)."]
+         f"LogShrink+R fails on ClarkNet and USask and LogReducer+R on USask (supplement)."
+         + ((f" LogNexus+R, with its untuned default threshold, is {min(lnu):.1f}--{max(lnu):.1f}\\% larger than \\tool\\ on all four." if all(v > 0 for v in lnu) else
+             f" LogNexus+R, with its untuned default threshold, is smaller than \\tool\\ on {sum(v < 0 for v in lnu)} of {len(lnu)}.") if lnu else '')]
     (OUT/'unseen_text.tex').write_text('\n'.join(t) + '\n')
     N['unseen'] = {'rows': rows, 'aggregate': ag_, 'losses': lossu}
     ab_txt = (OUT/'abstract_results.tex').read_text()
@@ -501,3 +569,31 @@ if (UG/'summary_all.json').exists():
     (OUT/'supp_unseen.tex').write_text('\n\n'.join(US) + '\n')
     (OUT/'r76_numbers.json').write_text(json.dumps(N, indent=1, default=str))
     print('unseen section written; losses', lossu)
+
+# ======================= abstract results (SE style, few numbers; written last) =======================
+EXACT = ['delog'] + ALLCMP  # every byte-exact baseline measured on LogHub
+def best_other(d):
+    return min(M[m][d]['arch'] for m in EXACT if d in M[m])
+lh_best = [d for d in DS if M['semzip'][d]['arch'] < best_other(d)]
+lh_miss = [d for d in DS if d not in lh_best]
+if (DEV/'unseen/summary_all.json').exists():
+    def un_others(d):
+        o = [rows[d][m] for m in UC[1:] if rows[d][m]]
+        return o + [b_['ratio'] for b_ in U_['datasets'][d]['baselines'].values() if b_.get('ratio')]
+    un_best = [d for d in UD if all(rows[d]['semzip'] > r_ for r_ in un_others(d))]
+    un_miss = [d for d in UD if d not in un_best]
+else:
+    un_best, un_miss = [], UD
+k = len(lh_best) + len(un_best); miss = lh_miss + un_miss
+ln_named = 'LogNexus' if M['lognexus'] else None
+N['abstract'] = {'smallest_on': k, 'of': len(DS) + len(UD), 'not_smallest': miss}
+ab = (f"Across sixteen LogHub logs and four web-server logs never used during development, with every archive required to decode byte for byte on its own, "
+      f"\\tool\\ produces the smallest archive on {k} of {len(DS) + len(UD)} logs"
+      + ((f" (all except {names([d for d in miss if d != 'Thunderbird'] + ['the largest, Thunderbird, which dominates summed archive bytes'])})" if 'Thunderbird' in miss else f" (all except {names(miss)})") if 0 < len(miss) <= 2 else '')
+      + f" among DeLog, general-purpose compressors, and byte-exact adaptations of {'LogNexus, ' if ln_named else ''}LogShrink and LogReducer, "
+      f"while encoding {N['slowdown_range'][0]:.0f}--{N['slowdown_range'][1]:.0f}$\\times$ more slowly than DeLog. "
+      f"Without the synthesized programs, the same pipeline\\textquotesingle s geometric-mean compression ratio falls from {S['geomean']:.1f}$\\times$ to {ag['empty']['geomean']:.1f}$\\times$; "
+      f"most of this gain comes from separating rendered fields, and a smaller share from storing them as values.")
+(OUT/'abstract_results.tex').write_text(ab + '\n')
+(OUT/'r76_numbers.json').write_text(json.dumps(N, indent=1, default=str))
+print('abstract:', ab)

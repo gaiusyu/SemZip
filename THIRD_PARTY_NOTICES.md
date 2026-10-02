@@ -29,6 +29,8 @@ this repository; redistribution beyond that follows the terms of the DeLog repos
 No baseline source code is redistributed. `external/loglite_wide_reserve.patch` modifies LogLite and applies under
 LogLite's own license; the adapters under `external/` and `evidence/r76/baselines/` are this repository's code and call
 the upstream tools fetched by `external/fetch_baselines.sh`, which keep their own licenses.
+LogNexus (Zenodo record 21021398, Apache License 2.0) is likewise not redistributed: `fetch_baselines.sh lognexus`
+downloads its source archive and checks its SHA-256; `evidence/r76/baselines/lognexus/ln_run.py` only calls its binaries.
 
 ## Data
 

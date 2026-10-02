@@ -162,7 +162,7 @@ process and adds the per-block audit and suffix accounting. It expects the origi
 
 | Paper element | Generator | Records |
 |---|---|---|
-| Complete-file ratios vs. baselines (external ratio table) and suffix ratios | `analysis/r76/r76_tables.py` → `external_ratio_table.tex`, `rq1_text.tex`, `supp_external.tex` | SemZip: `evidence/selection/results/formal/pool/`; DeLog, LogLite-BL, gzip6, XZ6, Zstd3: `results/final/anonymous_results.json`, `results/suffix/`; XZ9e, Zstd19, Zstd22-long, Zstd19+dict, DeLog-generic: `evidence/r76/codecs/full_20260929/`; LogShrink(+R): `evidence/r76/baselines/logshrink/full_official/`; LogReducer(+R): `evidence/r76/baselines/logreducer/full/` (15 of 16 files; Spark is a terminal failure, printed as `--`); Denum (lossiness proofs): `evidence/r76/baselines/denum/`; LogFold/LogPrism (literature only): `evidence/reference/published_baseline_reference_20260915.json` |
+| Complete-file ratios vs. baselines (external ratio table) and suffix ratios | `analysis/r76/r76_tables.py` → `external_ratio_table.tex`, `rq1_text.tex`, `supp_external.tex` | SemZip: `evidence/selection/results/formal/pool/`; DeLog, LogLite-BL, gzip6, XZ6, Zstd3: `results/final/anonymous_results.json`, `results/suffix/`; XZ9e, Zstd19, Zstd22-long, Zstd19+dict, DeLog-generic: `evidence/r76/codecs/full_20260929/`; LogShrink(+R): `evidence/r76/baselines/logshrink/full_official/`; LogReducer(+R): `evidence/r76/baselines/logreducer/full/` (15 of 16 files; Spark is a terminal failure, printed as `--`); Denum (lossiness proofs): `evidence/r76/baselines/denum/`; LogNexus(+R) (ISSTA 2026; preprint LogPrism): `evidence/r76/baselines/lognexus/full_paper/` (16 files and the four unseen sources); LogFold (literature only): `evidence/reference/published_baseline_reference_20260915.json` |
 | Attribution ladder (empty program → SemZip-1 → gated → selection; library; DeLog-generic) | `analysis/r76/ladder.py`, `r76_tables.py` → `attribution_table.tex`, `rq2_text.tex` | empty program: `evidence/r76/attribution/`; SemZip-1: `results/final/`; gated c0: `evidence/selection/results/formal/qg1c0/`; library: `evidence/r76/library/` |
 | Matched replay (latent vs. literal storage of the same matched spans) | `r76_tables.py` | `evidence/r76/rq2/` (`RESULTS.json`, per-dataset `DESIGN.json`, harness in `code/`) |
 | Repeats of the complete pipeline (HPC, HDFS, Hadoop, Spark) | `r76_tables.py` → `repeats_table.tex`, `rq3_repeats_text.tex` | run 1: `evidence/selection/`; runs 2–3: `evidence/r76/variance/runs/<Dataset>/r{2,3}/` |
@@ -192,11 +192,12 @@ commit used in the paper into `external/upstream/`:
 | LogShrink (+R) | `LOGSHRINK_REPO_URL` | `59ce49434eec` | `evidence/r76/baselines/logshrink/adapter/` (block driver, segmenter, decoder fixes generator) |
 | LogReducer (+R) | `LOGREDUCER_REPO_URL` | `40005419022c` | `evidence/r76/baselines/logreducer/lr_run2.py` |
 | Denum | `DENUM_REPO_URL` | `a3a697564e37` | `evidence/r76/baselines/denum/codec_baseline_denum*.py` |
+| LogNexus (+R; preprint LogPrism) | Zenodo record 21021398 (fixed in the script; Apache-2.0) | source archive SHA-256 `6baececc1a52` | `evidence/r76/baselines/lognexus/ln_run.py` |
 | gzip / XZ / Zstd | system `gzip`, `xz` 5.2.5; zstd 1.5.6 release tarball (SHA-256 checked by the script) | — | `external/codec_baseline.py`, `evidence/r76/codecs/codec_baseline_r76.py` (+ `r68_to_r76_harness.diff`) |
 
 Each track README under `evidence/r76/` gives the exact build commands, compiler versions, executable
 hashes, flags, block protocol and every deviation (for example the counted per-line correction of the
-"+R" variants, needed because the released LogShrink and LogReducer do not restore their input byte
+"+R" variants, needed because the released LogShrink, LogReducer and LogNexus do not restore their input byte
 for byte). All baselines use the same contract as SemZip: independent 100,000-record blocks, all
 decoder-required bytes counted, archive-only decoding, SHA-256 audit.
 

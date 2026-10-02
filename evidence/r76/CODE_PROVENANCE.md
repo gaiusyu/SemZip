@@ -56,6 +56,7 @@ Byte-identical copies that the tracks kept of other code are not repeated here (
 | `baselines/denum/native_official.sh` | host | yes | not listed (machine-specific path replaced in this copy) | - |
 | `baselines/denum/prove_lossy.py` | recorded | no | `2631a9ee3c02cb1d7e616b6be2a5b43d7a7b79d607fcfd1fc787acc54b54767a` | baselines/denum/README.md (prefix 2631a9ee) |
 | `baselines/denum/summarize_smoke.py` | host | no | `4f9db17b71dd12ae6490f5ec6c0fa26096cb6ddd82b272ffce4cdbf9b333e7c5` | - |
+| `baselines/lognexus/ln_run.py` | recorded | no | `a561dcddd3c36a08718cbb30f189587a93eb653192a71f3e6bffd87dca23ea88` | baselines/lognexus/full_paper/*/manifest_*.json (full) |
 | `baselines/logreducer/after_t2_lr_tb.sh` | host | yes | not listed (machine-specific path replaced in this copy) | - |
 | `baselines/logreducer/lr_run2.py` | recorded | no | `bbf044c186b58bd40d0c38826df2a0a2b09add1074eee7d24024d0598c6ce549` | timing/README.md (full) |
 | `baselines/logshrink/adapter/compare_decoders.py` | host | no | `1de59bf8c2e07b8ed60d23edbdb7ea739bce21afa4ed02c6eadac3c4450eba8d` | - |
@@ -156,6 +157,9 @@ hashes) is unchanged, and no record lists a hash of a file changed here.
   `YYYYMMDDThhmmss` in local time): the tag is the UTC time, equal to `created_at` inside. `baselines/logreducer/logs/after_t2_lr_tb.log`:
   the two lines that `after_t2_lr_tb.sh` writes with the local time (`date "+%F %T"`) now begin with ISO 8601 UTC
   strings (`YYYY-MM-DDThh:mm:ss+00:00`); the driver logs next to it already wrote UTC.
+* `baselines/lognexus/smoke/manifest_<tag>.json` and `baselines/lognexus/full_paper/{rest,tb,win}/manifest_<tag>.json`
+  (`baselines/lognexus/ln_run.py` names them `YYYYMMDDThhmmss` in local time): the tag is the UTC time, equal to
+  `created_at` inside.
 * `delogcheck/experiment_results.csv`: the `Timestamp` column that DeLog writes in local time.
 * `safety/README.md`: the clock times of the V1 and V2 runs.
 
@@ -164,7 +168,7 @@ hashes) is unchanged, and no record lists a hash of a file changed here.
 None of these is read by the analysis generators; the numbers come from the included records.
 
 * Third-party sources, builds and binaries: the DeLog sources and binaries of `codecs/delog/official_rebuild/` and
-  `codecs/delog/generic/`, the zstd release tree `codecs/tools/`, `baselines/{denum,logreducer,logshrink}/src*`, `bin/`,
+  `codecs/delog/generic/`, the zstd release tree `codecs/tools/`, `baselines/{denum,lognexus,logreducer,logshrink}/src*`, `bin/`,
   `pydeps/`, the LogShrink copy `baselines/logshrink/code_r76/` (only our two added files would be ours; they are
   re-created by `baselines/logshrink/adapter/make_restore_r76.py`) and the virtual environments.
 * Logs and their excerpts: `timing/samples/`, `unseen/raw/`, `unseen/train/`, `unseen/r69root/`, the training samples of

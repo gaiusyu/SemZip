@@ -179,3 +179,43 @@ DeLog、Denum、LogShrink、LogPrism、LogFold 都纳入基线：有源代码的
   - 结果（同日 13:27 UTC 完成）：SemZip 在 4/4 个新来源上都小于 DeLog（各文件 −8.3% 到 −11.7%，总字节 −9.87%），后缀 4/4，比 LogLite-BL 和所有通用压缩器都小。
   - 可选基线：Calgary 上 LogReducer+R 和 LogShrink+R 比 SemZip 小 0.5–0.6%；USask 的 24 个可编码块上，LogShrink+R 小 1.3%。LogShrink+R 在 ClarkNet、USask 失败，LogReducer+R 在 USask 失败。
 - **更正**：上面"DeLog 数字核对"一条标注的 14:40 UTC 也有误，实际写于约 13:45 UTC。
+
+## R76-H：LogNexus（即 LogPrism 的已录用版本）基线（预注册，2026-10-02 01:00 UTC，看到任何 LogNexus 压缩结果之前）
+
+**起因**：投稿前复查 LogPrism / LogFold 的发表状态，发现：
+
+- LogPrism（arXiv 2601.17482，作者 Yang Liu、Kaiming Zhang、Zhuangbin Chen、Zibin Zheng）以 **LogNexus: Effective Log Compression via Unified Redundancy Encoding** 为题被 ISSTA 2026 录用。作者四人完全相同，核心概念同为 Unified Redundancy Encoding。下文把 LogNexus 当作 LogPrism 的同行评审版本，引用改为 ISSTA 2026。
+- 它的 artifact 已公开：Zenodo 10.5281/zenodo.21021398（2026-06-29），`LogNexus-issta26-ae-source.tar.gz`，SHA-256 `6baececc…0ce81678`，与 Zenodo 记录一致；Apache-2.0。之前"LogPrism 无公开实现"的说法因此作废（论文链接的仓库仍为空，代码在 Zenodo）。
+- LogFold：ICSE 2026 录用，论文链接的仓库仍只有 LICENSE 和 README，未找到 artifact，维持"仅文献数字"。
+
+**LogNexus 自述的还原标准**：只保证"按空白切分的 token 流按序相等"，会规范化空白、可能删除空行或纯空白行，**不声称逐字节还原**（README、artifact/CLAIMS.md 原文）。
+
+**方法**（与 A 节 LogReducer/LogShrink 相同的协议，不改其算法）：
+
+- 源码不改，原生编译（Debian 11、g++ 10；官方容器是 Ubuntu 22.04 + GCC 11，没有 Docker，偏差如实记录）。若 g++ 10 编不过，只允许最小的编译兼容修改，并记录。
+- 输入：A 节同样的 16 个 LogHub 文件，R76-G 同样的 4 个 ITA 访问日志。
+- 分块：R68 块定律，每块 100,000 行，每块一个独立进程，块间不共享状态。每块调用 `LogNexus_compress block.log <D> 100000 1 1 1 <tau>`（官方默认的串行 LogNexus 配置）。
+- 数据集名：LogHub 文件用官方名，会启用它内置的按数据集正则（与 DeLog 一样带手写规则）；ITA 文件传各自来源名，代码里查不到就不启用正则（相当于无规则，与 DeLog 在 R76-G 上的处境相同）。
+- 阈值：主配置用 `configs/paper_thresholds.csv` 里按数据集调过的值（即论文主表配置，对 LogNexus 有利）；ITA 文件没有调过的值，用官方未调参默认值 0.02。时间允许时，LogHub 再跑一遍固定 0.02。
+- 存档字节 = 该块输出目录下全部文件（`compressed_*.tar.xz` 等）打包后的字节，全部计入。只看存档、用官方 `LogNexus_decompress` 解码。
+- 报告两个数：
+  - **原版（native）**：压缩比 + 我们自己核对的 token 流是否相等 + 是否逐字节相等。若不逐字节相等，按预注册规则列为"不可无损验证"，不进入无损比较。
+  - **LogNexus+R**：原版 + 通用、与数据集无关、全部计入字节的补丁（与 LogReducer+R 同一套逐行 wrap/edit 补丁，LZMA 9e）。若还原行数少于原文，先尝试只按"原文中删掉纯空白行"对齐，并把被删行的位置和内容存进补丁；对不齐则整块 LZMA 兜底，块数如实报告。只看存档解码，逐块和全文件 SHA 必须通过。标注为改编方法，不是原系统。
+- 比较：完整文件比率和后缀比率（第 1 块起）、对 SemZip 的胜负和总字节差。结果不论正负都报告；若 LogNexus+R 在某些文件上比 SemZip 小，正文和摘要都如实改写。
+
+- **R76-H 实现修订（2026-10-02 约 01:25 UTC，全量运行前；只看过官方冒烟测试和 Linux 探针）**：
+  - 官方冒烟测试在我们同一份 Linux.log（SHA 相同）上复现了 artifact 文档里的 37.844×（τ=0.02），论文 τ=0.001 的探针得 38.226×，也与文档一致。
+  - 探针显示原版输出与原文的差异几乎全是空白合并（如 `Jun  9` → `Jun 9`，25,567 行里 14,553 行不同）。LogReducer+R 的 edit 补丁要存随行长变化的后缀长度，对这种差异编码效率很低，会不公平地压低 LogNexus+R。
+  - 因此补丁改成对 LogNexus 更有利的通用形式：token 列表相同的行，只存与还原结果不同的分隔符（行首、词间、行尾）；token 不同的行才用原来的 wrap/edit 补丁；被删掉的空行/纯空白行存位置和原字节。仍然与数据集无关，全部字节计入。
+  - 驱动 `baselines/lognexus/ln_run.py`（schema `semzip.r76.lognexus.v1`），本地 303 个合成用例往返全部通过。
+- **R76-H 补充核对（2026-10-02 约 01:40 UTC）**：
+  - Zenodo 上还有一个较新版本（记录 21281836，2026-07-10），源码包 SHA-256 `297dcc0a…5cbcc598`。逐文件比对：只有 README、STATUS、MANIFEST 三个文档不同，代码、脚本、阈值表都完全相同，所以我们的运行同样代表最新版本。
+  - ISSTA 2026 研究论文列表里有 LogNexus；ISSTA 2026 论文集发表在 PACMSE（Issue: ISSTA 2026）。参考文献按此引用，同时保留 LogPrism 预印本。
+  - LogFold 复查（2026-10-02）：论文链接的仓库仍只有 LICENSE 和 README，未找到 artifact，维持只列文献数字。
+- **R76-H 结果（2026-10-02 05:30 UTC 跑完；结果不论正负照报）**：
+  - 20 个文件全部 PASS：+R 只看存档解码，逐块和全文件 SHA 全部通过，没有整块兜底。原版 token 检查全部通过；原版逐字节还原的只有 BGL。
+  - 原版复现：按论文阈值，16 个 LogHub 文件原版压缩比平均 88.17×，论文报告 88.202×，基本一致。
+  - LogNexus+R 对 SemZip：SemZip 在 15/16 个 LogHub 文件上更小，**Thunderbird 上输**（SemZip 64.86×，LogNexus+R 79.27×，LogNexus 存档小 18.2%）。后缀 10/12（HPC、Thunderbird 输）。原版（非逐字节）对 SemZip：SemZip 14/16 更小（HPC 45.99 对 45.79，Thunderbird）。
+  - **总字节**：Thunderbird 占全部原始字节的 48.5%，所以 LogNexus+R 总字节比 SemZip 少 8.3%（SemZip 多 9.1%），也比 DeLog 少 8.0%。几何均值 LogNexus+R 56.18×，DeLog 56.67×，SemZip 65.17×。
+  - 未见来源（τ=0.02，无内置规则）：LogNexus+R 在 4/4 上都比 SemZip 大 4.4%–20.3%。
+  - 固定 τ=0.02 的 LogHub 补跑未做（时间不够），只有论文阈值这一组结果。

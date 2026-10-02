@@ -3,7 +3,7 @@
 # No third-party source is redistributed in this repository; this script only clones/downloads it
 # into external/upstream/ (git-ignored) and checks out the recorded commit.
 #
-# usage:  bash external/fetch_baselines.sh [delog] [loglite] [logshrink] [logreducer] [denum] [zstd]
+# usage:  bash external/fetch_baselines.sh [delog] [loglite] [logshrink] [logreducer] [denum] [lognexus] [zstd]
 #         (no argument = all).  The repository URLs are read from external/upstreams.conf (set them to the
 #         repositories cited in the paper); an exported environment variable of the same name takes precedence.
 set -euo pipefail
@@ -36,6 +36,14 @@ sel logshrink  && pin LogShrink  "${LOGSHRINK_REPO_URL:-}"  59ce49434eec06c709c7
 sel logreducer && pin LogReducer "${LOGREDUCER_REPO_URL:-}" 40005419022c02454eca7b027d76b99b3dfad543
 sel denum      && pin Denum      "${DENUM_REPO_URL:-}"      a3a697564e378643461e27ab92ea44b098424c35
 
+if sel lognexus; then  # ISSTA 2026 artifact (Zenodo record 21021398, Apache-2.0); preprint title "LogPrism"
+  f="$UP/LogNexus-issta26-ae-source.tar.gz"
+  [ -f "$f" ] || curl -fsSL -o "$f" https://zenodo.org/api/records/21021398/files/LogNexus-issta26-ae-source.tar.gz/content
+  echo "6baececc1a52594ca419f1198bd996cd437615f5ae79dccdc2339da45ce81678  $f" | sha256sum -c -
+  [ -d "$UP/LogNexus-issta26-ae" ] || tar -xzf "$f" -C "$UP"
+  echo "LogNexus $UP/LogNexus-issta26-ae"
+fi
+
 if sel zstd; then
   f="$UP/zstd-1.5.6.tar.gz"
   [ -f "$f" ] || curl -fsSL -o "$f" https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz
@@ -51,4 +59,5 @@ Next steps (see external/SETUP.md and evidence/r76/*/README.md):
   LogShrink   make in python_compression/parser; adapter: evidence/r76/baselines/logshrink/adapter/
   LogReducer  make in the repository root; driver: evidence/r76/baselines/logreducer/lr_run2.py
   Denum       g++ build command in evidence/r76/baselines/denum/README.md; adapter codec_baseline_denum*.py
+  LogNexus    link to evidence/r76/baselines/lognexus/src/LogNexus-issta26-ae, make; driver ln_run.py (its README.md)
 EOF

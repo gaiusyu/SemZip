@@ -91,4 +91,4 @@ This adaptation **does not make arbitrary-byte correctness a theorem**. The reta
 
 ## Other methods
 
-The manifest records the checked public availability of LogFold, LogPrism, LogReducer, LogShrink, Denum, LogZip and CLP. Availability limitations are not measurements and their paper-reported results must not enter a same-host measured comparison. Generic CLI profiles are fixed `gzip -6 -n`, `xz -6 -T1`, and `zstd -3 -T1`; do not choose levels by dataset outcomes.
+The manifest records the checked public availability of LogFold, LogPrism, LogReducer, LogShrink, Denum, LogZip and CLP. LogPrism was later published as LogNexus (ISSTA 2026) with an artifact on Zenodo; it is fetched by `fetch_baselines.sh lognexus` and measured by `evidence/r76/baselines/lognexus/` (see its README). Availability limitations are not measurements and their paper-reported results must not enter a same-host measured comparison. Generic CLI profiles are fixed `gzip -6 -n`, `xz -6 -T1`, and `zstd -3 -T1`; do not choose levels by dataset outcomes.

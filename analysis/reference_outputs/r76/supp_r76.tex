@@ -10,43 +10,91 @@ The +R correction deviates from the pre-registered adaptation rule (recorded in 
 
 \paragraph{Denum.} The released Denum compressor (commit a3a6975) replaces each match of its per-dataset regular expressions by a tag and stores the concatenated digits as one integer, without group widths or separator positions; its Python decoder also drops carriage returns and leading zeros. For each of the sixteen datasets we changed one line of block 0 by moving a digit across a group boundary; in all 16 cases the original and the modified block produce byte-identical archive members, so no decoder can restore both. Examples: \texttt{[Thu Jun 09 06:07:04 2005] [notice] LD} vs.\ \texttt{[Thu Jun 09 0:607:04 2005] [notice] LD}; \texttt{...3 R02-M1-N0-C:J12-U11 2005-06-03-15.42.50.363779 R} vs.\ \texttt{...3 R02-M1-N0-C:J12-U11 200-506-03-15.42.50.363779 R}; \texttt{...08999687919862906 src: /10.250.19.102:54106 dest: } vs.\ \texttt{...08999687919862906 src: /1.0250.19.102:54106 dest: }. Denum is therefore excluded from the lossless comparison.
 
-\paragraph{Published numbers without implementations.} LogFold and LogPrism provide no public implementation (checked before submission: the LogFold repository holds only a license and README; the LogPrism repository is empty). Their papers report the following ratios for 100,000-line chunks; input identities are not verified and these numbers are not matched observations.
+\paragraph{LogNexus (preprint: LogPrism).} The LogPrism preprint (arXiv 2601.17482) was published at ISSTA 2026 as LogNexus by the same authors, with an artifact on Zenodo (record 21021398; the later record 21281836 changes only documentation, which we verified file by file). We built its released source unchanged (GCC 10 instead of the artifact\textquotesingle s GCC 11 container) and ran its default serial configuration (\texttt{LogNexus\_compress <block> <dataset> 100000 1 1 1 <tau>}) independently on every 100,000-line block, with the per-dataset thresholds of its paper tables (0.02, its untuned default, for the four unseen sources, whose names select no built-in rules); every file it writes is stored and counted, and its own decompressor reads only the block archive. Its artifact claims, and we confirm, restoration of the whitespace-separated token sequence only: it collapses whitespace runs and may omit blank lines. LogNexus+R adds a counted, dataset-agnostic, LZMA-compressed correction: the omitted blank lines with their positions, and for every other differing line the separators that differ when the token lists agree (the LogReducer+R line patch otherwise). This correction is cheaper for LogNexus than the line patch of the other +R variants; it was fixed after a probe on Linux only, before any other LogNexus result (change log). Reported ratios in the LogPrism preprint are listed for reference.
 
-\begin{longtable}{lrrr}\caption{Published ratios (literature context only) next to \tool.}\label{tab:published}\\\toprule
+\begin{longtable}{lrrrrrrr}\caption{LogNexus as released (native: not byte-exact) and with the counted correction (+R, byte-exact from the archive alone), next to \tool. Token: blocks whose restored token sequence equals the original. Corr.: correction bytes as a share of the +R archive. Preprint: ratio reported in LogPrism v2 (inputs unverified).}\label{tab:lognexus}\\\toprule
 
-Dataset & LogFold (2603.20618v1) & LogPrism (2601.17482v2) & \tool\ \\\midrule
+Dataset & $\tau$ & Native & Token & +R & Corr. & Preprint & \tool\ \\\midrule
 
-Android & 32.72 & 32.82 & 34.55 \\
+Android & 0.05 & 32.41 & 16/16 & 28.61 & 11.7\% & 32.82 & 34.55 \\
 
-Apache & 57.81 & 64.33 & 73.74 \\
+Apache & 0.02 & 65.31 & 1/1 & 65.24 & 0.1\% & 64.33 & 73.74 \\
 
-BGL & 51.02 & 47.15 & 52.32 \\
+BGL & 0.005 & 47.65 & 48/48 & 47.65 & 0.0\% & 47.15 & 52.32 \\
 
-Hadoop & 90.97 & 79.73 & 85.03 \\
+Hadoop & 0.005 & 80.61 & 4/4 & 77.17 & 4.3\% & 79.73 & 85.03 \\
 
-HDFS & 25.22 & 26.47 & 31.05 \\
+HDFS & 0.005 & 25.91 & 112/112 & 25.32 & 2.3\% & 26.47 & 31.05 \\
 
-HealthApp & 56.56 & 50.48 & 59.53 \\
+HealthApp & 0.005 & 49.45 & 3/3 & 47.05 & 4.9\% & 50.48 & 59.53 \\
 
-HPC & 46.95 & 45.45 & 45.79 \\
+HPC & 0.01 & 45.99 & 5/5 & 45.50 & 1.1\% & 45.45 & 45.79 \\
 
-Linux & 31.51 & 38.34 & 40.09 \\
+Linux & 0.001 & 38.21 & 1/1 & 36.67 & 4.0\% & 38.34 & 40.09 \\
 
-Mac & 49.40 & 44.99 & 54.13 \\
+Mac & 0.12 & 43.70 & 2/2 & 39.87 & 8.8\% & 44.99 & 54.13 \\
 
-OpenSSH & 96.76 & 113.33 & 117.78 \\
+OpenSSH & 0.005 & 110.89 & 7/7 & 101.72 & 8.3\% & 113.33 & 117.78 \\
 
-OpenStack & 20.39 & 23.36 & 25.24 \\
+OpenStack & 0.001 & 23.28 & 3/3 & 23.28 & 0.0\% & 23.36 & 25.24 \\
 
-Proxifier & 29.14 & 29.85 & 36.13 \\
+Proxifier & 0.01 & 30.07 & 1/1 & 27.61 & 8.2\% & 29.85 & 36.13 \\
 
-Spark & 59.88 & 54.81 & 62.35 \\
+Spark & 0.001 & 54.70 & 333/333 & 51.68 & 5.5\% & 54.81 & 62.35 \\
 
-Thunderbird & 67.69 & 75.86 & 64.86 \\
+Thunderbird & 0.002 & 79.27 & 2113/2113 & 79.27 & 0.0\% & 75.86 & 64.86 \\
 
-Windows & 570.55 & 497.30 & 618.58 \\
+Windows & 0.1 & 538.93 & 1147/1147 & 509.51 & 5.5\% & 497.30 & 618.58 \\
 
-Zookeeper & 145.74 & 143.74 & 189.42 \\
+Zookeeper & 0.001 & 144.42 & 1/1 & 132.59 & 8.2\% & 143.74 & 189.42 \\
+
+NASA & 0.02 & 21.13 & 19/19 & 21.12 & 0.0\% & -- & 22.76 \\
+
+ClarkNet & 0.02 & 15.89 & 17/17 & 15.89 & 0.0\% & -- & 19.12 \\
+
+USask & 0.02 & 15.95 & 25/25 & 15.95 & 0.0\% & -- & 16.65 \\
+
+Calgary & 0.02 & 19.89 & 8/8 & 19.86 & 0.1\% & -- & 21.12 \\
+
+\bottomrule\end{longtable}
+
+\paragraph{Published numbers without implementations.} LogFold (ICSE 2026) provides no public implementation (checked on 2 October 2026: its repository holds only a license and README). Its paper reports the following ratios for 100,000-line chunks; input identities are not verified and these numbers are not matched observations.
+
+\begin{longtable}{lrr}\caption{Published ratios (literature context only) next to \tool.}\label{tab:published}\\\toprule
+
+Dataset & LogFold (ICSE 2026; arXiv 2603.20618v1) & \tool\ \\\midrule
+
+Android & 32.72 & 34.55 \\
+
+Apache & 57.81 & 73.74 \\
+
+BGL & 51.02 & 52.32 \\
+
+Hadoop & 90.97 & 85.03 \\
+
+HDFS & 25.22 & 31.05 \\
+
+HealthApp & 56.56 & 59.53 \\
+
+HPC & 46.95 & 45.79 \\
+
+Linux & 31.51 & 40.09 \\
+
+Mac & 49.40 & 54.13 \\
+
+OpenSSH & 96.76 & 117.78 \\
+
+OpenStack & 20.39 & 25.24 \\
+
+Proxifier & 29.14 & 36.13 \\
+
+Spark & 59.88 & 62.35 \\
+
+Thunderbird & 67.69 & 64.86 \\
+
+Windows & 570.55 & 618.58 \\
+
+Zookeeper & 145.74 & 189.42 \\
 
 \bottomrule\end{longtable}
 
