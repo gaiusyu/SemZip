@@ -45,6 +45,7 @@ the archive.
 | Path | Contents |
 |---|---|
 | `README.md`, `LICENSE`, `THIRD_PARTY_NOTICES.md`, `MANIFEST_SHA256.txt` | this guide; license of this repository's code; third-party components and terms; SHA-256 of every file |
+| `SUPPLEMENT.pdf` | the paper's evidence supplement (cited as "the supplement" in the paper) |
 | `replay.py` | portable offline encode / archive-only decode / round-trip of a frozen deployment (no model calls) |
 | `source/`, `frozen/` | frozen SemZip source snapshot (runtime, trainer, native backend + binaries) and the guarded runtime wrappers; hashes in `metadata/source_provenance.json` |
 | `deployments/main_pool/<Dataset>/` | **main result**: `program.json` (selected synthesized plan), `storage.json` (block-0 storage policy), `publication.json` (publication record) |
