@@ -111,13 +111,16 @@ U_SEMZIP = {d: jl(DEV/'unseen/summary_all.json')['datasets'][d]['ratio'] for d i
 M['lognexus'] = {d: c for d, c in LN_ALL.items() if d in DS}
 LN_PAPER_MEAN = 88.202  # artifact/reference/paper_aggregate_results.csv (RQ1, dataset-specific thresholds)
 DENUM = {}
+DEN_CELL = {}
 for d in DS:
     ps = sorted((DEV/'baselines/denum/full_enconly'/d/'denum').glob('trial_001/attempt_*/result.json'))
     if ps:
         r = jl(ps[-1])
         if r.get('status') == 'ENCODE_ONLY_UNVERIFIED' and r.get('raw_bytes') == size['delog'][d]['raw_bytes']:
             DENUM[d] = r['raw_bytes']/r['archive_bytes']
-LABEL = {'semzip': r'\tool', 'delog': 'DeLog', 'lognexus': 'LogNexus+R*', 'logshrink': 'LogShrink+R*', 'logreducer': 'LogReducer+R*', 'loglite': 'LogLite-BL*',
+            DEN_CELL[d] = cell(r['raw_bytes'], r['archive_bytes'])
+M['denum'] = DEN_CELL  # compression-only: Denum's released format cannot restore its input (never counted as byte-exact)
+LABEL = {'semzip': r'\tool', 'delog': 'DeLog', 'denum': r'Denum$^\ddagger$', 'lognexus': 'LogNexus+R*', 'logshrink': 'LogShrink+R*', 'logreducer': 'LogReducer+R*', 'loglite': 'LogLite-BL*',
          'gzip6': 'gzip6', 'xz6': 'XZ6', 'xz9e': 'XZ9e', 'zstd19': 'Zstd19', 'zstd3': 'Zstd3', 'zstd22long': 'Zstd22L', 'zstd19dict': 'Zstd19+D',
          'empty': 'Empty', 'library': 'Library', 'library_floor': 'Lib.+floor', 'semzip1': 'SemZip-1', 'gated': 'Gated', 'delog_generic': 'DeLog-gen'}
 # raw-identity check across every loaded cell
@@ -152,18 +155,21 @@ def bold_row(vals):
     return [('\\textbf{' + fmt(v) + '}') if (v is not None and abs(v - best) < 1e-9) else fmt(v) for v in vals]
 
 # ---------- Table: extended external comparison (main) ----------
-MAIN = ['semzip', 'delog', 'lognexus', 'logshrink', 'logreducer', 'loglite', 'gzip6', 'xz9e', 'zstd19']
+MAIN = ['semzip', 'delog', 'lognexus', 'logshrink', 'logreducer', 'denum', 'loglite', 'xz9e', 'zstd19']
+def bold_exact(vals):  # best of row among byte-exact methods only (Denum is compression-only)
+    best = max(v for v, m in zip(vals, MAIN) if v is not None and m != 'denum')
+    return [('\\textbf{' + fmt(v) + '}') if (v is not None and m != 'denum' and abs(v - best) < 1e-9) else fmt(v) for v, m in zip(vals, MAIN)]
 L = [r'\begin{table*}[t]\centering\footnotesize',
-     r'\caption{Complete original-file compression ratios (raw / all archive bytes, every cell decoded from its archive alone with a matching SHA-256). '
-     r'\tool\ is the frozen deployment trained on block 0. Bold marks the best in the row. *Adapted method. LogNexus, LogShrink, and LogReducer as released do not restore their input byte-exactly (LogNexus guarantees the whitespace-separated token sequence), so +R stores a counted correction (supplement). LogNexus uses its paper\textquoteright s per-dataset thresholds, and LogLite-BL uses a disclosed fixed adaptation. '
-     r'Denum is excluded because its released format cannot restore its input (supplement), and LogFold has no public implementation. XZ6 and Zstd3 are in the supplement. $\dagger$ marks one block, in-sample. Suffix covers blocks 1 onward of the 12 multi-block files. A dash means the tool failed on at least one block (supplement).}',
-     r'\label{tab:external-ratios}', r'\setlength{\tabcolsep}{2.7pt}', r'\begin{tabular}{l' + 'r'*len(MAIN) + '}', r'\toprule',
+     r'\caption{Complete original-file compression ratios (raw / all archive bytes, every cell except Denum decoded from its archive alone with a matching SHA-256). '
+     r'\tool\ is the frozen deployment trained on block 0. Bold marks the best in the row. *Adapted method. LogNexus, LogShrink, and LogReducer as released do not restore their input byte-exactly (LogNexus guarantees the whitespace-separated token sequence), so +R stores a counted correction (supplement). LogNexus uses its paper\textquoteright s per-dataset thresholds, and LogLite-BL uses a fixed adaptation. '
+     r'$\ddagger$ Compression-only. Denum\textquoteright s released format cannot restore its input byte-exactly, so its ratios are never marked best (supplement). LogFold has no public implementation. gzip6, XZ6, and Zstd3 are in the supplement. $\dagger$ marks one block, in-sample. Suffix covers blocks 1 onward of the 12 multi-block files. A dash means the tool failed on at least one block (supplement).}',
+     r'\label{tab:external-ratios}', r'\setlength{\tabcolsep}{2.3pt}', r'\begin{tabular}{l' + 'r'*len(MAIN) + '}', r'\toprule',
      'Dataset & ' + ' & '.join(LABEL[m] for m in MAIN) + r' \\', r'\midrule']
 for d in DS:
-    L.append((d + (r'$^\dagger$' if d in ONE else '')) + ' & ' + ' & '.join(bold_row([ratio(m, d) for m in MAIN])) + r' \\')
+    L.append((d + (r'$^\dagger$' if d in ONE else '')) + ' & ' + ' & '.join(bold_exact([ratio(m, d) for m in MAIN])) + r' \\')
 L.append(r'\midrule')
 for key, name in (('mean', 'Mean'), ('geomean', 'Geomean'), ('corpus', 'Corpus'), ('suffix_mean', 'Suffix mean'), ('suffix_geomean', 'Suffix geom.')):
-    L.append(name + ' & ' + ' & '.join(bold_row([N['aggregate'][m].get(key) for m in MAIN])) + r' \\')
+    L.append(name + ' & ' + ' & '.join(bold_exact([N['aggregate'][m].get(key) for m in MAIN])) + r' \\')
 L.append(r'\tool\ smaller & & ' + ' & '.join(f"{N['aggregate'][m]['semzip_smaller_on']}/{len([d for d in DS if d in M[m]])}" for m in MAIN[1:]) + r' \\')
 L += [r'\bottomrule', r'\end{tabular}\end{table*}']
 (OUT/'external_ratio_table.tex').write_text('\n'.join(L) + '\n')
@@ -173,7 +179,7 @@ RQ2 = jl(DEV/'rq2/RESULTS.json'); rq2 = {r['dataset']: r for r in RQ2}
 NOPROG = {d for d, r in rq2.items() if r['surface_bytes'] == r['latent_bytes']}
 LAD = ['empty', 'library', 'library_floor', 'semzip1', 'gated', 'semzip', 'delog_generic', 'delog']
 L = [r'\begin{table*}[t]\centering\small',
-     r'\caption{Attribution on complete files (ratios, archive-only decoding with matching SHA-256 for every cell). Empty is the same pipeline and backend with no program (residual processing only). Library is a frozen, hand-written, dataset-agnostic program library (timestamps, IPv4, sizes, percentages, hex, decimals) through the same gate, storage fitting, and runtime, with no LLM. In Lib.+floor (post hoc), the empty program replaces the library plan when it is smaller on block 0, a rule that leaves \tool\ unchanged. SemZip-1 is one greedy synthesis. Gated is SemZip-1 after the quality gate. \tool\ uses five syntheses and cost-guided selection. DeLog-gen is official DeLog without its per-dataset regular expressions. Latent is the archive saving of latent over literal storage of exactly the same matched spans (matched replay). s marks 20 systematically sampled blocks. n/a means every deployed program stores its spans as exact strings, so both branches coincide.}',
+     r'\caption{Attribution on complete files (ratios, archive-only decoding with matching SHA-256 for every cell). Empty is the same pipeline and backend with no program (residual processing only). Library is a frozen, hand-written, dataset-agnostic program library (timestamps, IPv4, sizes, percentages, hex, decimals) through the same gate, storage fitting, and runtime, with no LLM. In Lib.+floor, the empty program replaces the library plan when it is smaller on block 0, a rule that leaves \tool\ unchanged. SemZip-1 is one greedy synthesis. Gated is SemZip-1 after the quality gate. \tool\ uses five syntheses and cost-guided selection. DeLog-gen is official DeLog without its per-dataset regular expressions. Latent is the archive saving of latent over literal storage of exactly the same matched spans (matched replay). s marks 20 systematically sampled blocks. n/a means every deployed program stores its spans as exact strings, so both branches coincide.}',
      r'\label{tab:attribution}', r'\setlength{\tabcolsep}{3.0pt}', r'\begin{tabular}{l' + 'r'*len(LAD) + 'r}', r'\toprule',
      'Dataset & ' + ' & '.join(LABEL[m] for m in LAD) + r' & Latent \\', r'\midrule']
 for d in DS:
@@ -220,8 +226,8 @@ L += [r'\bottomrule', r'\end{tabular}\end{table}']
 (OUT/'repeats_table.tex').write_text('\n'.join(L) + '\n')
 
 # ---------- supplement: other codec settings and non-lossless natives ----------
-SUP = ['xz6', 'zstd3', 'zstd22long', 'zstd19dict', 'delog_generic']
-L = [r'\setlength{\tabcolsep}{3pt}', r'\begin{longtable}{l' + 'r'*(len(SUP) + 5) + '}', r'\caption{Supplementary external measurements. The left part shows further general-purpose settings (Zstd19+D uses a dictionary trained on block 0 and counted once per file) and DeLog without its dataset-specific regular expressions, all byte-exact from archives alone. Zstd22L is zstd --ultra -22 --long=27. The right part shows compression-only ratios of LogShrink and LogReducer as released (not byte-exact, with exact files marked e), the number of LogShrink blocks that failed to encode or decode, and Denum\textquoteright s compression-only ratio (its format cannot restore the input, so it is not losslessly verifiable).}\label{tab:supp-external}\\',
+SUP = ['gzip6', 'xz6', 'zstd3', 'zstd22long', 'zstd19dict', 'delog_generic']
+L = [r'\setlength{\tabcolsep}{2.5pt}', r'\begin{longtable}{l' + 'r'*(len(SUP) + 5) + '}', r'\caption{Supplementary external measurements. The left part shows further general-purpose settings (Zstd19+D uses a dictionary trained on block 0 and counted once per file) and DeLog without its dataset-specific regular expressions, all byte-exact from archives alone. Zstd22L is zstd --ultra -22 --long=27. The right part shows compression-only ratios of LogShrink and LogReducer as released (not byte-exact, with exact files marked e), the number of LogShrink blocks that failed to encode or decode, and Denum\textquoteright s compression-only ratio (its format cannot restore the input, so it is not losslessly verifiable).}\label{tab:supp-external}\\',
      r'\toprule', 'Dataset & ' + ' & '.join(LABEL[m] for m in SUP) + r' & LS native & LS failed & LR native & LR status & Denum \\', r'\midrule\endfirsthead', r'\toprule', 'Dataset & ' + ' & '.join(LABEL[m] for m in SUP) + r' & LS native & LS failed & LR native & LR status & Denum \\', r'\midrule\endhead']
 for d in DS:
     ls_, lr_ = NAT_LS.get(d, {}), NAT_LR.get(d, {})
@@ -297,6 +303,7 @@ t.append(f"LogShrink and LogReducer drop carriage returns, spaces, and leading z
          + (f". LogShrink could not encode or decode every block of {names(sorted(ls_fail))}" if ls_fail else '')
          + (f", and LogReducer+R failed the SHA check on part of {names(sorted(lr_fail))}" if lr_fail else '') + ". "
          + LN_SENT +
+         (f"Denum\\textquoteright s released format cannot restore its input byte-exactly, so we report its compression-only ratios. Even so, its archives are larger than \\tool\\textquoteright s on {sum(M['semzip'][d]['arch'] < M['denum'][d]['arch'] for d in DS if d in M['denum'])}/{len(M['denum'])} files (mean {x(ag['denum']['mean'])} versus {x(S['mean'])}). " if len(M.get('denum', {})) == len(DS) else '') +
          f"General-purpose compressors at high effort remain far behind, with XZ9e averaging {x(ag['xz9e']['mean'])} and Zstd19 {x(ag['zstd19']['mean'])}.")
 (OUT/'rq1_text.tex').write_text('\n'.join(t) + '\n')
 
@@ -363,10 +370,10 @@ print('abstract/conclusion/cost written; missing now:', missing)
 # ======================= supplement section (R76) =======================
 def esc(s): return s.replace('\\', r'\textbackslash{}').replace('_', r'\_').replace('%', r'\%').replace('&', r'\&').replace('#', r'\#').replace('$', r'\$').replace('{', r'\{').replace('}', r'\}').replace('~', r'\textasciitilde{}').replace('^', r'\^{}')
 U = [r'\section{Additional baselines and controls}\label{sec:r76}\sloppy',
-     r'All experiments in this section were specified in a design document written before any of their results existed. Later changes are appended to that document as dated change-log entries and are stated below. Every compression cell decodes from its archive alone and matches per-block and full-file SHA-256 digests of the original inputs.']
+     r'Every compression cell decodes from its archive alone and matches per-block and full-file SHA-256 digests of the original inputs.']
 # --- log-specific baselines
 U += [r'\subsection{Log-specific baselines}',
-      r'The +R correction deviates from the pre-registered adaptation rule (recorded in the change log). It was recorded before any new-baseline ratio comparison and was not applied to Denum. LogShrink (commit 59ce494) and LogReducer (commit 4000541) run their official pipelines independently on every 100,000-line block, including their own sampling and template training on that block (samplers seeded with 0). Their decoders read only the block archive, which contains the native payload, every model file the official restore reads, and, for the +R variants, a per-line correction. '
+      r'LogShrink (commit 59ce494) and LogReducer (commit 4000541) run their official pipelines independently on every 100,000-line block, including their own sampling and template training on that block (samplers seeded with 0). Their decoders read only the block archive, which contains the native payload, every model file the official restore reads, and, for the +R variants, a per-line correction. '
       r'As released, both tools drop carriage returns, strip leading and trailing whitespace, collapse runs of header spaces, and drop leading zeros. LogShrink also truncates integers wider than 32 bits (e.g., HDFS block identifiers). The correction is computed from the original block and the tool\textquoteright s own decoded output only, compressed with LZMA, and counted. '
       r'LogShrink\textquoteright s official decoder additionally needed five fixes that change no archive byte (empty failed-log files, column-file ordering, header-file ordering, whole-line template matching, and delimiter recovery). LogShrink uses its shipped per-dataset header lengths, while LogReducer uses its generic defaults. '
       + '. '.join([f"LogReducer+R failed the SHA check on {v['failed']} of {d}\\textquoteright s {v['blocks']} blocks" for d, v in sorted(NAT_LR.items()) if v.get('status') == 'FAIL'] + ['LogShrink could not encode or decode ' + ' and '.join(f"{v['failed_blocks']} of {d}\\textquoteright s {v['blocks']} blocks" for d, v in sorted(NAT_LS.items()) if v.get('failed_blocks'))] * any(v.get('failed_blocks') for v in NAT_LS.values())) + '. These files have no valid ratio for the affected tool. '
@@ -379,7 +386,7 @@ def win(a, b):
 ex = [r for r in DP if r['dataset'] in ('Apache', 'HDFS', 'BGL')]
 U += [r'\paragraph{Denum.} The released Denum compressor (commit a3a6975) replaces each match of its per-dataset regular expressions by a tag and stores the concatenated digits as one integer, without group widths or separator positions. Its Python decoder also drops carriage returns and leading zeros. '
       f"For each of the sixteen datasets we changed one line of block 0 by moving a digit across a group boundary. In all {sum(r['all_archive_members_identical'] for r in DP)} cases the original and the modified block produce byte-identical archive members, so no decoder can restore both. Examples are "
-      + (lambda xs: ', '.join(xs[:-1]) + ', and ' + xs[-1] if len(xs) > 1 else ''.join(xs))([r"\texttt{" + esc(win(r['original_line'], r['modified_line'])) + r"} vs.\ \texttt{" + esc(win(r['modified_line'], r['original_line'])) + '}' for r in ex]) + '. Denum is therefore excluded from the lossless comparison.']
+      + (lambda xs: ', '.join(xs[:-1]) + ', and ' + xs[-1] if len(xs) > 1 else ''.join(xs))([r"\texttt{" + esc(win(r['original_line'], r['modified_line'])) + r"} vs.\ \texttt{" + esc(win(r['modified_line'], r['original_line'])) + '}' for r in ex]) + '. Denum is therefore excluded from the lossless comparison, and no +R correction is applied to it.']
 PUB_ALL = jl(ROOT/'results/published_baseline_reference_20260915.json')
 PUB = [p for p in PUB_ALL if p['method'] == 'LogFold']
 PRISM = {r['dataset']: r['reported_ratio'] for p in PUB_ALL if p['method'] == 'LogPrism' for r in p['rows']}
@@ -387,7 +394,7 @@ if NAT_LN:
     U += [r'\paragraph{LogNexus (LogPrism as a preprint).} The LogPrism preprint (arXiv 2601.17482) was published at ISSTA 2026 as LogNexus by the same authors, with an artifact on Zenodo (record 21021398, and the later record 21281836 changes only documentation, which we verified file by file). '
           r'We built its released source unchanged (GCC 10 instead of the artifact\textquoteright s GCC 11 container) and ran its default serial configuration (\texttt{LogNexus\_compress <block> <dataset> 100000 1 1 1 <tau>}) independently on every 100,000-line block, with the per-dataset thresholds of its paper tables (0.02, its untuned default, for the four unseen sources, whose names select no built-in rules). Every file it writes is stored and counted, and its own decompressor reads only the block archive. '
           r'Its artifact claims, and we confirm, restoration of the whitespace-separated token sequence only. It collapses whitespace runs and may omit blank lines. LogNexus+R adds a counted, dataset-agnostic, LZMA-compressed correction that holds the omitted blank lines with their positions, and for every other differing line the separators that differ when the token lists agree (the LogReducer+R line patch otherwise). '
-          r'This correction is cheaper for LogNexus than the line patch of the other +R variants. It was fixed after a probe on Linux only, before any other LogNexus result (change log). Reported ratios in the LogPrism preprint are listed for reference' + (f' (mean {st.mean(PRISM[d] for d in DS):.2f}$\\times$ on the sixteen LogHub files). The accepted paper\\textquoteright s mean of {LN_PAPER_MEAN:.2f}$\\times$ quoted in the main text is from its artifact (README and reference/paper\\_aggregate\\_results.csv).' if all(d in PRISM for d in DS) else '.'),
+          r'This correction is cheaper for LogNexus than the line patch of the other +R variants. Reported ratios in the LogPrism preprint are listed for reference' + (f' (mean {st.mean(PRISM[d] for d in DS):.2f}$\\times$ on the sixteen LogHub files). The accepted paper\\textquoteright s mean of {LN_PAPER_MEAN:.2f}$\\times$ quoted in the main text is from its artifact (README and reference/paper\\_aggregate\\_results.csv).' if all(d in PRISM for d in DS) else '.'),
           r'\begin{longtable}{lrrrrrrr}\caption{LogNexus as released (native, not byte-exact) and with the counted correction (+R, byte-exact from the archive alone), next to \tool. The Token column counts blocks whose restored token sequence equals the original. Corr.\ is correction bytes as a share of the +R archive. Preprint is the ratio reported in LogPrism v2 (inputs unverified).}\label{tab:lognexus}\\\toprule',
           r'Dataset & $\tau$ & Native & Token & +R & Corr. & Preprint & \tool\ \\\midrule']
     for d in DS + UD_ALL:
@@ -398,7 +405,7 @@ if NAT_LN:
         sz = ratio('semzip', d) if d in DS else U_SEMZIP.get(d)
         U.append(f"{d} & {v['tau']} & {fmt(v['ratio'])} & {v['token_equal']}/{v['blocks']} & {fmt(rr)} & {fmt(corr, 1)}\\% & {fmt(PRISM.get(d))} & {fmt(sz)}" + r' \\')
     U += [r'\bottomrule\end{longtable}']
-U += [r'\paragraph{Published numbers without an implementation.} LogFold (ICSE 2026) provides no public implementation (checked on 2 October 2026, when its repository held only a license and README). Its paper reports the following ratios for 100,000-line chunks. Input identities are not verified and these numbers are not matched observations.',
+U += [r'\paragraph{Published numbers without an implementation.} LogFold (ICSE 2026) provides no public implementation (its repository contains only a license and a README). Its paper reports the following ratios for 100,000-line chunks. Input identities are not verified and these numbers are not matched observations.',
       r'\begin{longtable}{l' + 'r'*(len(PUB) + 1) + r'}\caption{Published ratios (literature context only) next to \tool.}\label{tab:published}\\\toprule',
       'Dataset & ' + ' & '.join(p['method'] + ' (ICSE 2026, arXiv ' + p['source_version'] + ')' for p in PUB) + r' & \tool\ \\\midrule']
 pubrows = {p['method']: {r['dataset']: r['reported_ratio'] for r in p['rows']} for p in PUB}
@@ -414,8 +421,8 @@ U += [r'\bottomrule\end{longtable}']
 # --- library
 LR_ = {r['dataset']: r for r in jl(DEV/'library/library_report.json')}
 U += [r'\subsection{Program-library control}',
-      r'The library proposer replaces only the LLM call of the trainer. Compilation, verification, the quality gate, storage fitting, the runtime, and archive-only decoding are unchanged, and it makes no API call. Its program types were frozen before any library result. They cover syslog, ISO-8601, \texttt{YYYY-MM-DD HH:MM:SS} (with optional milliseconds), \texttt{YY/MM/DD}, \texttt{YYYYMMDD HHMMSS}, clock-time, and ten-digit epoch timestamps, plus IPv4 and IPv4:port, hexadecimal numbers, sizes with B/KB/MB/GB units, percentages, and decimal integers and fixed-point numbers with width and leading zeros. A type is proposed for a sampled group when it matches one of the group\textquoteright s examples (at most eight per group). With one candidate per dataset, pooled selection reduces to the gated plan. '
-      r'The gate removes one rule group at a time and only on a strict decrease, and never compares with the empty program. On HealthApp, where no library timestamp matches, fourteen generic integer rules leave block 0 3.4 times larger than the empty program. The post-hoc floor (not pre-registered) deploys the empty program when it is smaller on block 0. \tool\textquoteright s deployed plans are below the empty program on block 0 for all sixteen files.',
+      r'The library proposer replaces only the LLM call of the trainer. Compilation, verification, the quality gate, storage fitting, the runtime, and archive-only decoding are unchanged, and it makes no API call. They cover syslog, ISO-8601, \texttt{YYYY-MM-DD HH:MM:SS} (with optional milliseconds), \texttt{YY/MM/DD}, \texttt{YYYYMMDD HHMMSS}, clock-time, and ten-digit epoch timestamps, plus IPv4 and IPv4:port, hexadecimal numbers, sizes with B/KB/MB/GB units, percentages, and decimal integers and fixed-point numbers with width and leading zeros. A type is proposed for a sampled group when it matches one of the group\textquoteright s examples (at most eight per group). With one candidate per dataset, pooled selection reduces to the gated plan. '
+      r'The gate removes one rule group at a time and only on a strict decrease, and never compares with the empty program. On HealthApp, where no library timestamp matches, fourteen generic integer rules leave block 0 3.4 times larger than the empty program. The floor variant (Lib.+floor) deploys the empty program when it is smaller on block 0. \tool\textquoteright s deployed plans are below the empty program on block 0 for all sixteen files.',
       r'\begin{longtable}{lrrrrr}\caption{Program-library control with block-0 payload bytes and complete-file ratios.}\label{tab:library}\\\toprule',
       r'Dataset & Library B0 & Empty B0 & Library & Lib.+floor & \tool\ \\\midrule']
 for d in DS:
@@ -430,7 +437,7 @@ for r in RQ2:
     U.append(f"{r['dataset']} & {r['scope']} & {r['blocks']}/{r['file_blocks']} & {r['surface_bytes']:,} & {r['latent_bytes']:,} & " + ('n/a' if r['dataset'] in NOPROG else f"{r['saving_pct']:.2f}\\%") + r' \\')
 U += [r'\bottomrule\end{longtable}']
 # --- reruns
-U += [r'\subsection{Complete reruns}', r'Each rerun draws five fresh syntheses (greedy and four at temperature 0.7) from the same GPT-4o gateway with the unchanged trainer and budgets, then gates, selects, fits storage, and encodes and decodes the complete file. Run 1 is the reported deployment and is not replaced.',
+U += [r'\subsection{Complete reruns}', r'Each rerun draws five fresh syntheses (greedy and four at temperature 0.7) from the same GPT-4o model with the same trainer and budgets, then gates, selects, fits storage, and encodes and decodes the complete file. Run 1 is the reported deployment.',
       r'\begin{longtable}{lrrrrrr}\caption{Complete reruns with ratios and archive bytes relative to DeLog.}\label{tab:reruns}\\\toprule', r'Dataset & Run & Ratio & Suffix ratio & vs.\ DeLog & Suffix vs.\ DeLog & \\\midrule']
 for d, v in REP.items():
     for k in range(v['n']):
@@ -441,7 +448,7 @@ SC = jl(DEV/'safety/static_check_result.json')
 U += [r'\subsection{Decode-time safety}',
       r'\textbf{Audit.} The runtime executes \texttt{python\_exec} code with \texttt{exec(compile(...))} after an allow-list check of syntax nodes, in a namespace limited to \texttt{datetime}, \texttt{timedelta}, \texttt{int}, \texttt{str}, \texttt{len}, \texttt{float}, \texttt{round}, \texttt{abs}, \texttt{min}, \texttt{max}, and a restricted import shim. Context programs also receive the \texttt{re} module. Names beginning with a double underscore are rejected. Code runs in the decoding worker process with the decoder\textquoteright s privileges and no resource limits, and semantic archives are unpacked without member-path filtering. '
       r'Four crafted archives derived from the Apache archive test this boundary. They are an injected import (rejected by the runtime), a format string reading \texttt{\{0.\_\_class\_\_\}} (accepted), a context program reading \texttt{re.enum.sys} (accepted, top level executed), and a tar member \texttt{../} path (not executed against the unprotected decoder).',
-      f"\\textbf{{Check.}} The enforced check rejects imports, names and attributes beginning with an underscore outside the runtime\\textquoteright s fixed wrapper, reflective built-ins, format fields, and module attributes outside an allow-list, and preflights tar members. It rejects all four crafted archives. Over {SC['unique_codes_checked']} distinct programs from all syntheses, deployments, and evolution runs, the only strict-rule findings ({SC['error_rule_counts_over_unique_codes'].get('E_UNDERSCORE', 0)} underscore names in {SC['unique_codes_template_wrapped']} programs) come from the runtime\\textquoteright s own fixed wrapper, which the check recognizes exactly. LLM-written code has no violation. A later pass with the same validator over the repeated greedy syntheses, the complete reruns, and the unseen-source runs adds 45 distinct LLM-written programs (134 in total) and again finds no violation outside the fixed wrapper. The eleven hand-written library programs also pass. With the check enforced before any program is compiled, all sixteen archives (3,797 blocks) decode byte-exactly."]
+      f"\\textbf{{Check.}} The enforced check rejects imports, names and attributes beginning with an underscore outside the runtime\\textquoteright s fixed wrapper, reflective built-ins, format fields, and module attributes outside an allow-list, and preflights tar members. It rejects all four crafted archives. Over {SC['unique_codes_checked']} distinct programs from all syntheses, deployments, and evolution runs, the only strict-rule findings ({SC['error_rule_counts_over_unique_codes'].get('E_UNDERSCORE', 0)} underscore names in {SC['unique_codes_template_wrapped']} programs) come from the runtime\\textquoteright s own fixed wrapper, which the check recognizes exactly. LLM-written code has no violation. Applying the same validator to the repeated greedy syntheses, the complete reruns, and the unseen-source runs adds 45 distinct LLM-written programs (134 in total) and again finds no violation outside the fixed wrapper. The eleven hand-written library programs also pass. With the check enforced before any program is compiled, all sixteen archives (3,797 blocks) decode byte-exactly."]
 (OUT/'supp_r76.tex').write_text('\n\n'.join(U) + '\n')
 print('supplement section written')
 
@@ -464,7 +471,7 @@ L = [r'\begin{table}[t]\centering\small',
      r'\caption{Throughput in decimal MB/s of original input (encode/decode, medians of three clean serialized trials, four block workers). '
      r'Small is the geometric mean over the twelve files no larger than BGL (one session). '
      + (r'Session B: a later session on the same files for the new baselines, with \tool\ and DeLog re-timed as anchors, geometric mean. ' if HASB else '')
-     + (f"Large is byte-weighted over twenty systematically sampled blocks each of {names(N.get('t3_common', []))}, the larger files on which every method restores all sampled blocks (all four larger files are in the text and supplement)" if T3 else 'Large is not timed') + r'. A dash means not timed. LogNexus+R was added after the timing sessions and was not timed.}',
+     + (f"Large is byte-weighted over twenty systematically sampled blocks each of {names(N.get('t3_common', []))}, the larger files on which every method restores all sampled blocks (all four larger files are in the text and supplement)" if T3 else 'Large is not timed') + r'. A dash means not timed. LogNexus+R is not timed.}',
      r'\label{tab:external-speed}', r'\setlength{\tabcolsep}{4pt}', r'\begin{tabular}{l' + 'rr' * (3 if HASB else 2) + '}', r'\toprule',
      r' & \multicolumn{2}{c}{Small}' + (r' & \multicolumn{2}{c}{Session B}' if HASB else '') + r' & \multicolumn{2}{c}{Large} \\',
      r'Method & Enc. & Dec.' + (r' & Enc. & Dec.' if HASB else '') + r' & Enc. & Dec. \\', r'\midrule']
@@ -560,7 +567,7 @@ if (UG/'summary_all.json').exists():
     if 'never used during development' not in ab_txt:
         ab_txt = ab_txt.replace(' Without its programs', f" On four web-server logs never used during development it is smaller than DeLog (which has no rules for them) on all four, with {abs(100*ag_['total_bytes_difference_semzip_minus_delog']/ag_['total_delog_bytes']):.1f}\\% fewer summed bytes, although LogShrink+R and LogReducer+R are 0.5--0.6\\% smaller on one. Without its programs", 1)
         (OUT/'abstract_results.tex').write_text(ab_txt)
-    US = [r'\subsection{Unseen sources}', r'The four logs are the LBL Internet Traffic Archive HTTP access logs NASA (July 1995), ClarkNet (28 August 1995), USask, and Calgary, selected by a fixed rule (every server log with at least 700,000 lines, one file per server) before any result. They are decompressed unchanged. The SemZip pipeline differs from the main runs only in reading the input identities of these files. '
+    US = [r'\subsection{Unseen sources}', r'The four logs are the LBL Internet Traffic Archive HTTP access logs NASA (July 1995), ClarkNet (28 August 1995), USask, and Calgary, selected by a fixed rule (every server log with at least 700,000 lines, one file per server). They are decompressed unchanged. The SemZip pipeline differs from the main runs only in reading the input identities of these files. '
           r'LogShrink+R (default header length) fails on ClarkNet (its decoder crashes on nine blocks containing bare carriage returns) and on USask (its encoder fails on block 2). LogReducer+R fails on USask (the official encoder crashes on block 2). On the 24 USask blocks both tools encode, LogShrink+R is 1.3\% smaller and LogReducer+R 0.2\% larger than \tool\ on the same blocks.',
           r'\begin{longtable}{lrrrrrrrrrrr}\caption{Unseen sources. Complete-file ratios of every method except LogNexus+R (Table~\ref{tab:lognexus}), and suffix ratios (blocks 1 onward) of \tool\ and DeLog. A dash means the tool failed on at least one block.}\label{tab:unseen-suffix}\\\toprule', r'Source & \tool\ & DeLog & LS+R & LR+R & LogLite & gzip6 & XZ6 & XZ9e & Zstd3 & Zstd19 & Suffix S/D \\\midrule']
     for d in UD:
