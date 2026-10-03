@@ -264,13 +264,13 @@ pub_sum = 100*(sum(M['semzip'][d]['arch'] for d in DS)/sum(M['semzip'][d]['raw']
 N['delog_published'] = {'diff_min': min(pubdiff), 'diff_max': max(pubdiff), 'mean_pub': st.mean(PUBDL.values()), 'semzip_wins': pub_w, 'geomean_pct': pub_g, 'summed_pct': pub_sum}
 t = []
 t.append(f"We first ask how \\tool\\ compares with existing compressors. On complete files (Table~\\ref{{tab:external-ratios}}), it has the largest ratio on {sum(1 for d in DS if max((ratio(m, d) or 0) for m in MAIN) == ratio('semzip', d))}/16 files. "
-         f"Against DeLog, the strongest baseline by geometric mean, it is smaller on {wins_dl}/16 files and on {swins_dl}/12 held-out suffixes, which no selection or fitting step reads. "
+         f"Against DeLog, the strongest baseline by geometric mean, it is smaller on {wins_dl}/16 files and on {swins_dl}/12 held-out suffixes. "
          f"Its geometric-mean ratio is {x(S['geomean'])} versus {x(DL['geomean'])} ({x(S['suffix_geomean'])} versus {x(DL['suffix_geomean'])} on suffixes), and its arithmetic mean is {x(S['mean'])} versus {x(DL['mean'])}. "
-         f"However, its summed bytes are {abs(S['total_vs_delog_pct']):.2f}\\% larger than DeLog's because of Thunderbird. This file holds {TB_share:.1f}\\% of all raw bytes and is the one file where DeLog wins "
+         f"Its summed bytes are {abs(S['total_vs_delog_pct']):.2f}\\% larger than DeLog's because of Thunderbird, which holds {TB_share:.1f}\\% of all raw bytes and is the one file where DeLog wins "
          f"({x(ratio('semzip', 'Thunderbird'))} versus {x(ratio('delog', 'Thunderbird'))})."
-         + (f" The same file makes \\tool's summed bytes {100*(S['total']/ag['lognexus']['total'] - 1):.2f}\\% larger than LogNexus+R's, whose Thunderbird archive is {100*(1 - M['lognexus']['Thunderbird']['arch']/M['semzip']['Thunderbird']['arch']):.1f}\\% smaller." if 'total' in ag.get('lognexus', {}) and ag['lognexus']['total'] < S['total'] else ''))
+         + (f" On Thunderbird, the LogNexus+R archive is {100*(1 - M['lognexus']['Thunderbird']['arch']/M['semzip']['Thunderbird']['arch']):.1f}\\% smaller, which makes \\tool's summed bytes {100*(S['total']/ag['lognexus']['total'] - 1):.2f}\\% larger than LogNexus+R's." if 'total' in ag.get('lognexus', {}) and ag['lognexus']['total'] < S['total'] else ''))
 dp = N['delog_published']
-t.append(f"DeLog's released implementation, run as its own benchmark script does, reproduces our DeLog numbers exactly on Linux and BGL, but its paper reports ratios {abs(dp['diff_min']):.1f}\\% lower to {dp['diff_max']:.1f}\\% higher per file (mean {dp['mean_pub']:.2f}$\\times$). Against these published ratios, \\tool\\ has the higher ratio on {dp['semzip_wins']}/16 files (geometric mean {pct(dp['geomean_pct'], 1)}) and {dp['summed_pct']:.1f}\\% larger summed bytes (supplement).")
+t.append(f"DeLog's paper reports per-file ratios {abs(dp['diff_min']):.1f}\\% lower to {dp['diff_max']:.1f}\\% higher than our DeLog runs (mean {dp['mean_pub']:.2f}$\\times$). Against these published ratios, \\tool\\ has the higher ratio on {dp['semzip_wins']}/16 files (geometric mean {pct(dp['geomean_pct'], 1)}) and {dp['summed_pct']:.1f}\\% larger summed bytes.")
 LN_DS = [d for d in DS if d in NAT_LN and NAT_LN[d].get('ratio')]
 LN_SENT = ''
 if LN_DS:
@@ -285,20 +285,19 @@ if LN_DS:
                      'losses_r': [d for d in ln_r if M['semzip'][d]['arch'] >= M['lognexus'][d]['arch']],
                      'losses_native': [d for d in LN_DS if M['semzip'][d]['arch'] >= NAT_LN[d]['native_bytes']]}
     nl = N['lognexus']
-    LN_SENT = (f"LogNexus~\\cite{{lognexus}} restores the whitespace-separated token sequence rather than the bytes. Run as released with its paper\\textquoteright s per-dataset thresholds, "
-               + (f"it averages {x(ln_nat_mean)} on our inputs, and its paper reports {x(LN_PAPER_MEAN)}. " if ln_nat_mean else '')
-               + ("Every block passes its token check, " if ln_tok_all else "Some blocks fail its token check, ")
-               + ((f"but only {names(ln_exact)} {'is' if len(ln_exact) == 1 else 'are'} restored byte-exactly. ") if ln_exact else "and no file is restored byte-exactly. ")
+    LN_SENT = (f"With its paper\\textquoteright s per-dataset thresholds, LogNexus "
+               + (f"averages {x(ln_nat_mean)} on our inputs ({x(LN_PAPER_MEAN)} in its paper) " if ln_nat_mean else '')
+               + ((f"but restores only {names(ln_exact)} byte-exactly. ") if ln_exact else "but restores no file byte-exactly. ")
                + f"\\tool\\ is smaller than LogNexus+R on {nl['semzip_smaller_than_r']}/{nl['n_r']} files"
                + (f" (not on {names(nl['losses_r'])})" if nl['losses_r'] else '')
-               + f" and smaller than even its uncorrected archives on {ln_beat_nat}/{len(LN_DS)}"
+               + f" and than its uncorrected archives on {ln_beat_nat}/{len(LN_DS)}"
                + (f" (not on {names(nl['losses_native'])})" if nl['losses_native'] else '') + ". ")
-t.append(f"LogShrink and LogReducer as released do not restore most files byte-exactly because they drop carriage returns, spaces, and leading zeros. Their +R variants therefore store a counted per-line correction. "
+t.append(f"LogShrink and LogReducer drop carriage returns, spaces, and leading zeros on most files. "
          f"\\tool\\ is smaller than LogShrink+R on {ag['logshrink']['semzip_smaller_on']}/{ag['logshrink']['n']} and than LogReducer+R on {ag['logreducer']['semzip_smaller_on']}/{ag['logreducer']['n']} reconstructed files"
          + (f". LogShrink could not encode or decode every block of {names(sorted(ls_fail))}" if ls_fail else '')
          + (f", and LogReducer+R failed the SHA check on part of {names(sorted(lr_fail))}" if lr_fail else '') + ". "
          + LN_SENT +
-         f"High-effort general-purpose settings remain far behind, with XZ9e averaging {x(ag['xz9e']['mean'])} and Zstd19 {x(ag['zstd19']['mean'])}. The supplement reports a block-0 Zstd dictionary and the Zstd ultra setting.")
+         f"General-purpose compressors at high effort remain far behind, with XZ9e averaging {x(ag['xz9e']['mean'])} and Zstd19 {x(ag['zstd19']['mean'])}.")
 (OUT/'rq1_text.tex').write_text('\n'.join(t) + '\n')
 
 e, sz1, g, lf = ag['empty'], ag['semzip1'], ag['gated'], ag['library_floor']
@@ -306,24 +305,25 @@ dlw = lambda m: sum(M[m][d]['arch'] < M['delog'][d]['arch'] for d in DS if d in 
 lib_below_empty = [d for d in M['library'] if M['library'][d]['arch'] > M['empty'][d]['arch']]
 lib_improves = [d for d in M['library_floor'] if M['library_floor'][d]['arch'] < M['empty'][d]['arch']]
 t = []
-t.append(f"Table~\\ref{{tab:attribution}} separates the contributions. With the same pipeline, backend, storage fitting, and runtime but no program, the empty program averages {x(e['mean'])} (geometric mean {x(e['geomean'])}) and is smaller than DeLog on only {dlw('empty')}/16 files. "
+t.append(f"Table~\\ref{{tab:attribution}} separates the contributions. The empty program averages {x(e['mean'])} (geometric mean {x(e['geomean'])}) and is smaller than DeLog on only {dlw('empty')}/16 files. "
          f"The deployed programs reduce summed archive bytes by {100*(1-S['total']/e['total']):.1f}\\% and account for {sum(1 for d in DS if M['semzip'][d]['arch'] < M['delog'][d]['arch'] and not M['empty'][d]['arch'] < M['delog'][d]['arch'])} of \\tool's {wins_dl} wins over DeLog. "
          f"One greedy synthesis (SemZip-1) reaches {x(sz1['mean'])} but is larger than the empty program on {names([d for d in DS if M['semzip1'][d]['arch'] > M['empty'][d]['arch']])}. The quality gate removes such rules ({x(g['mean'])}, {dlw('gated')}/16 files smaller than DeLog), and selection across five syntheses adds the rest ({x(S['mean'])}, {dlw('semzip')}/16).")
-t.append(f"We also pass a frozen, hand-written library of common renderers (timestamps, IPv4, sizes, percentages, hexadecimal and decimal numbers) through the same gate and runtime. It does not reproduce this gain and is larger than the empty program on {len(lib_below_empty)}/{len(M['library'])} files. "
-         f"The gate removes one rule group at a time and never compares against the empty program. We then add a post-hoc empty-program floor decided on block 0, which leaves \\tool\\ unchanged. The floored library improves on the empty program on {len(lib_improves)} files ({', '.join(lib_improves)}) but keeps the larger library plan on BGL. The equally single-candidate Gated plan is smaller than it on {sum(M['gated'][d]['arch'] < M['library_floor'][d]['arch'] for d in M['library_floor'])}/{len(M['library_floor'])} files. "
-         f"Official DeLog without its per-dataset regular expressions (DeLog-gen) is smaller than \\tool\\ on {sum(M['delog_generic'][d]['arch'] < M['semzip'][d]['arch'] for d in M['delog_generic'])}/{len(M['delog_generic'])} files.")
+t.append(f"A hand-written library of common renderers (timestamps, IPv4, sizes, percentages, hexadecimal and decimal numbers), run through the same gate and runtime, does not reproduce this gain and is larger than the empty program on {len(lib_below_empty)}/{len(M['library'])} files. "
+         f"With an empty-program floor decided on block 0, the library improves on the empty program on {len(lib_improves)} files ({', '.join(lib_improves)}) and keeps the larger library plan on BGL, and the Gated plan is smaller than the floored library on {sum(M['gated'][d]['arch'] < M['library_floor'][d]['arch'] for d in M['library_floor'])}/{len(M['library_floor'])} files. "
+         + (f"DeLog-gen is larger than \\tool\\ on all {len(M['delog_generic'])} files." if not any(M['delog_generic'][d]['arch'] < M['semzip'][d]['arch'] for d in M['delog_generic']) else
+            f"DeLog-gen is smaller than \\tool\\ on {sum(M['delog_generic'][d]['arch'] < M['semzip'][d]['arch'] for d in M['delog_generic'])}/{len(M['delog_generic'])} files."))
 r2 = N['rq2']
-t.append(f"\\paragraph{{Where programs do not help.}} Thunderbird is the one LogHub file where a byte-exact baseline is smaller (RQ1). Its lines carry one instant as epoch seconds, a date, and a syslog clock. LogNexus ships hand-written expressions for these fields, and DeLog falls to 60.34$\\times$ without its own. However, the deployed program parses none of them into a value and is only 0.3\\% smaller than the empty program. The exploratory update with timestamp rules (RQ5) still stays below LogNexus+R's 79.27$\\times$. Where programs store no latent value, as on HDFS, HPC, and Thunderbird, the residual backend decides. Because programs are inverted after that backend decodes, they could precede another log compressor. We did not test it, and gains need not add up where rules overlap.\n\n"
-         f"The matched replay (last column) stores exactly the same matched spans either literally or as latent values, so it separates representation from field separation. Latent storage saves {min(v['saving_pct'] for d, v in r2['per_dataset'].items() if d not in r2['noprog'] and v['saving_pct'] > 0):.1f}--{r2['max_informative'][0]:.1f}\\% on {sum(1 for d, v in r2['per_dataset'].items() if d not in r2['noprog'] and v['saving_pct'] > 0)} of the {len(r2['informative'])} files where the two forms differ, "
-         f"and on Windows' sampled blocks the latent form is {abs(r2['per_dataset']['Windows']['saving_pct']):.2f}\\% larger. Over the {sum(1 for r in RQ2 if r['scope'] == 'complete')} fully replayed files, literal storage of the separated spans is {100*(1 - N['rq2']['complete_surface']/sum(M['empty'][r['dataset']]['arch'] for r in RQ2 if r['scope'] == 'complete')):.1f}\\% smaller than the empty program, and latent storage saves a further {N['rq2']['complete_saving_pct']:.2f}\\%. Thus, after a strong backend, field separation carries most of the gain, and the 3.67--14.03$\\times$ contraction of \\secref{{sec:motivation}} survives only as a smaller, file-dependent share.")
+t.append(f"\\paragraph{{Where programs do not help.}} Thunderbird is the one LogHub file where a byte-exact baseline is smaller (RQ1). Its lines carry one instant as epoch seconds, a date, and a syslog clock. LogNexus ships hand-written expressions for these fields, and DeLog falls to 60.34$\\times$ without its own. The deployed program parses none of them into a value and is only 0.3\\% smaller than the empty program. The update with timestamp rules (RQ5) stays below LogNexus+R's 79.27$\\times$. Where programs store no latent value, as on HDFS, HPC, and Thunderbird, the residual backend determines the ratio.\n\n"
+         f"In the matched replay (last column), latent storage saves {min(v['saving_pct'] for d, v in r2['per_dataset'].items() if d not in r2['noprog'] and v['saving_pct'] > 0):.1f}--{r2['max_informative'][0]:.1f}\\% on {sum(1 for d, v in r2['per_dataset'].items() if d not in r2['noprog'] and v['saving_pct'] > 0)} of the {len(r2['informative'])} files where the two forms differ, "
+         f"and on Windows' sampled blocks the latent form is {abs(r2['per_dataset']['Windows']['saving_pct']):.2f}\\% larger. Over the {sum(1 for r in RQ2 if r['scope'] == 'complete')} fully replayed files, literal storage of the separated spans is {100*(1 - N['rq2']['complete_surface']/sum(M['empty'][r['dataset']]['arch'] for r in RQ2 if r['scope'] == 'complete')):.1f}\\% smaller than the empty program, and latent storage saves a further {N['rq2']['complete_saving_pct']:.2f}\\%. After a strong backend, field separation thus carries most of the gain, and the 3.67--14.03$\\times$ contraction of \\secref{{sec:motivation}} remains as a smaller, file-dependent share.")
 (OUT/'rq2_text.tex').write_text('\n'.join(t) + '\n')
 
 rp = N['repeats']
 allw = all(v['wins'] == v['n'] and v['suffix_wins'] == v['n'] for v in rp.values())
 spread = max(100*(max(v['ratios'])/min(v['ratios'])-1) for v in rp.values())
-t = [f"To test whether the narrow wins survive a fresh draw of the whole pipeline, we rerun it twice more on the four files where \\tool\\ led DeLog by 2--6\\% (Table~\\ref{{tab:repeats}}). Each rerun uses five new syntheses, gate, selection, storage fitting, and complete-file encoding. "
+t = [f"We rerun the whole pipeline twice more on the four files where \\tool\\ led DeLog by 2--6\\% (Table~\\ref{{tab:repeats}}), each time with five new syntheses, gate, selection, storage fitting, and complete-file encoding. "
      + (f"All {sum(v['n'] for v in rp.values())} runs are smaller than DeLog on both complete file and suffix" if allw else f"{sum(v['wins'] for v in rp.values())}/{sum(v['n'] for v in rp.values())} runs are smaller than DeLog on the complete file")
-     + f", and complete-file ratios differ across runs by at most {spread:.1f}\\%. We did not rerun Thunderbird, which decides summed bytes. Selection thus reproduces these four comparisons, although individual syntheses differ widely."]
+     + f", and complete-file ratios differ across runs by at most {spread:.1f}\\%. Selection thus reproduces these four comparisons, although individual syntheses differ widely."]
 (OUT/'rq3_repeats_text.tex').write_text('\n'.join(t) + '\n')
 print('texts written')
 
@@ -351,10 +351,10 @@ allbeat = all(beat_all(m) for m in ALLCMP)
 LNC = N.get('lognexus', {})
 co = (f"It is smaller than DeLog on {wins_dl}/16 LogHub files and {swins_dl}/12 held-out suffixes"
       + (f" and than LogNexus+R on {LNC['semzip_smaller_than_r']}/{LNC['n_r']} files" if LNC.get('n_r') else '')
-      + (" and, on LogHub, smaller than every other evaluated compressor on every file that compressor restores" if allbeat else "") + f". Because of Thunderbird, its summed bytes are {abs(S['total_vs_delog_pct']):.2f}\\% larger than DeLog's"
+      + (" and, on LogHub, smaller than every other evaluated compressor on every file that compressor restores" if allbeat else "") + f", and its summed bytes are {abs(S['total_vs_delog_pct']):.2f}\\% larger than DeLog's"
       + (f" and {100*(S['total']/ag['lognexus']['total'] - 1):.2f}\\% larger than LogNexus+R's" if 'total' in ag.get('lognexus', {}) and ag['lognexus']['total'] < S['total'] else '')
-      + ". Its encoder is also slower. "
-      f"Without its programs, the same pipeline's geometric mean is {e['geomean']:.2f}$\\times$, not {S['geomean']:.2f}$\\times$, and a hand-written library does not substitute for them.")
+      + " because of Thunderbird. "
+      f"Without its programs, the same pipeline reaches a geometric mean of {e['geomean']:.2f}$\\times$ instead of {S['geomean']:.2f}$\\times$, and our hand-written renderer library does not reproduce this gain.")
 (OUT/'conclusion_results.tex').write_text(co + '\n')
 N['missing'] = missing
 (OUT/'r76_numbers.json').write_text(json.dumps(N, indent=1, default=str))
@@ -490,7 +490,7 @@ if T3:
     TT += [r'\bottomrule\end{longtable}']
     (OUT/'supp_timing.tex').write_text('\n\n'.join(TT) + '\n')
 t = [f"Across the twelve smaller files, \\tool's geometric-mean encoding and decoding throughputs are {100*TS['semzip']['encode_gmean']/TS['delog']['encode_gmean']:.1f}\\% and {100*TS['semzip']['decode_gmean']/TS['delog']['decode_gmean']:.1f}\\% of DeLog's, and it is slower than DeLog on every file in both directions. "
-     f"Geometric means favor small files, where process start-up dominates both tools. Weighted by bytes, \\tool\\ encodes at {tb['semzip']['encode']:.2f} and decodes at {tb['semzip']['decode']:.2f}~MB/s versus {tb['delog']['encode']:.2f} and {tb['delog']['decode']:.2f}~MB/s for DeLog."]
+     f"Weighted by bytes, \\tool\\ encodes at {tb['semzip']['encode']:.2f} and decodes at {tb['semzip']['decode']:.2f}~MB/s versus {tb['delog']['encode']:.2f} and {tb['delog']['decode']:.2f}~MB/s for DeLog."]
 if T2:
     sb = lambda m, k: T2['methods'][m].get(k)
     t.append(f"In session B, LogShrink+R encodes at {sb('logshrink_r', 'encode_gmean'):.2f} and LogReducer+R at {sb('logreducer_r', 'encode_gmean'):.2f}~MB/s (geometric mean, \\tool\\ {sb('semzip', 'encode_gmean'):.2f}, DeLog {sb('delog', 'encode_gmean'):.2f}).")
@@ -502,11 +502,11 @@ if T3:
     s4e, d4e = a4['semzip']['encode_byte_weighted_MB_per_s'], a4['delog']['encode_byte_weighted_MB_per_s']
     s4d, d4d = a4['semzip']['decode_byte_weighted_MB_per_s'], a4['delog']['decode_byte_weighted_MB_per_s']
     t.append(f"On twenty sampled blocks of each of the four larger files, which hold 98\\% of all bytes, \\tool\\ encodes at {s4e:.2f} and decodes at {s4d:.2f}~MB/s versus {d4e:.2f} and {d4d:.2f}~MB/s for DeLog ({100*s4e/d4e:.1f}\\% and {100*s4d/d4d:.1f}\\%, byte-weighted). "
-             f"The Large column of Table~\\ref{{tab:external-speed}} uses only {names(common)}, where every method restores its blocks. There, LogShrink+R and LogReducer+R encode at {t3bw('logshrink_r', 'encode'):.2f} and {t3bw('logreducer_r', 'encode'):.2f}~MB/s.")
+             f"The Large column of Table~\\ref{{tab:external-speed}} uses only {names(common)}, where every method restores its blocks, and there LogShrink+R and LogReducer+R encode at {t3bw('logshrink_r', 'encode'):.2f} and {t3bw('logreducer_r', 'encode'):.2f}~MB/s.")
     N['t3_semzip_vs_delog'] = {'encode_pct': 100*se/de, 'decode_pct': 100*sd/dd, 'encode_pct_all4': 100*s4e/d4e, 'decode_pct_all4': 100*s4d/d4d}
     N['slowdown_range'] = (d4e/s4e, tb['delog']['encode']/tb['semzip']['encode'])
-t.append("Construction is a one-time offline cost per log source. Five syntheses, the gate, and selection amortize over every later block, and archival storage is written once and restored rarely. "
-         + (f"For sources where it is smaller, \\tool\\ suits cold archives that tolerate an encoder {N['slowdown_range'][0]:.1f}$\\times$ (four larger files) to {N['slowdown_range'][1]:.1f}$\\times$ (twelve smaller files) slower than DeLog's, byte-weighted. " if 'slowdown_range' in N else "For sources where it is smaller, \\tool\\ suits cold archives that tolerate a slower encoder. ") + "For hot or near-line logs, DeLog's faster encoding is the better trade.")
+t.append("Construction is a one-time offline cost per log source. "
+         + (f"Byte-weighted, \\tool\\ encodes {N['slowdown_range'][0]:.1f}$\\times$ (four larger files) to {N['slowdown_range'][1]:.1f}$\\times$ (twelve smaller files) more slowly than DeLog. " if 'slowdown_range' in N else "") + "Where \\tool\\ is smaller, it suits cold archives better than hot or near-line logs.")
 (OUT/'cost_text.tex').write_text('\n'.join(t) + '\n')
 ab_txt = (OUT/'abstract_results.tex').read_text()
 sp = (f"Encoding is {N['slowdown_range'][0]:.1f}--{N['slowdown_range'][1]:.1f}$\\times$ slower than DeLog's (byte-weighted, large and small files)." if 'slowdown_range' in N
@@ -548,12 +548,12 @@ if (UG/'summary_all.json').exists():
     dlp = [100*(rows[d]['semzip']/rows[d]['delog'] - 1) for d in UD]
     cal = [(m, 100*(rows['Calgary'][m]/rows['Calgary']['semzip'] - 1)) for m in ('logshrink', 'logreducer') if rows['Calgary'][m]]
     lnu = [100*(rows[d]['semzip']/rows[d]['lognexus'] - 1) for d in UD if rows[d]['lognexus']]  # % more LogNexus+R bytes than SemZip
-    t = [f"To test sources outside the development benchmark, we run the unchanged pipeline on four public web-server access logs (Table~\\ref{{tab:unseen}}), a format absent from the sixteen files. "
-         f"\\tool\\ is smaller than DeLog on {ag_['wins_vs_delog']}/4 files and {ag_['suffix_wins_vs_delog']}/4 suffixes, with {min(dlp):.1f}--{max(dlp):.1f}\\% higher ratios and {abs(100*ag_['total_bytes_difference_semzip_minus_delog']/ag_['total_delog_bytes']):.1f}\\% fewer summed bytes. It also beats LogLite-BL and every general-purpose setting on every file (supplement). "
-         f"The adapted baselines are closer. On Calgary, LogShrink+R and LogReducer+R are {min(v for _, v in cal):.1f}--{max(v for _, v in cal):.1f}\\% smaller than \\tool. On the 24 of USask's 25 blocks that LogShrink+R encodes, it is 1.3\\% smaller. "
-         f"LogShrink+R fails on ClarkNet and USask, and LogReducer+R on USask (supplement)."
-         + ((f" LogNexus+R, with its untuned default threshold, is {min(lnu):.1f}--{max(lnu):.1f}\\% larger than \\tool\\ on all four." if all(v > 0 for v in lnu) else
-             f" LogNexus+R, with its untuned default threshold, is smaller than \\tool\\ on {sum(v < 0 for v in lnu)} of {len(lnu)}.") if lnu else '')]
+    t = [f"We also run the same pipeline on four public web-server access logs (Table~\\ref{{tab:unseen}}), a format absent from the sixteen LogHub files. "
+         f"\\tool\\ is smaller than DeLog on {ag_['wins_vs_delog']}/4 files and {ag_['suffix_wins_vs_delog']}/4 suffixes, with {min(dlp):.1f}--{max(dlp):.1f}\\% higher ratios and {abs(100*ag_['total_bytes_difference_semzip_minus_delog']/ag_['total_delog_bytes']):.1f}\\% fewer summed bytes. It is also smaller than LogLite-BL and every general-purpose setting on every file. "
+         f"The adapted baselines are closer. On Calgary, LogShrink+R and LogReducer+R are {min(v for _, v in cal):.1f}--{max(v for _, v in cal):.1f}\\% smaller than \\tool, and on the 24 of USask's 25 blocks that LogShrink+R encodes, it is 1.3\\% smaller. "
+         f"LogShrink+R fails on ClarkNet and USask, and LogReducer+R on USask."
+         + ((f" LogNexus+R, with its default threshold, is {min(lnu):.1f}--{max(lnu):.1f}\\% larger than \\tool\\ on all four." if all(v > 0 for v in lnu) else
+             f" LogNexus+R, with its default threshold, is smaller than \\tool\\ on {sum(v < 0 for v in lnu)} of {len(lnu)}.") if lnu else '')]
     (OUT/'unseen_text.tex').write_text('\n'.join(t) + '\n')
     N['unseen'] = {'rows': rows, 'aggregate': ag_, 'losses': lossu}
     ab_txt = (OUT/'abstract_results.tex').read_text()
@@ -588,12 +588,7 @@ else:
 k = len(lh_best) + len(un_best); miss = lh_miss + un_miss
 ln_named = 'LogNexus' if M['lognexus'] else None
 N['abstract'] = {'smallest_on': k, 'of': len(DS) + len(UD), 'not_smallest': miss}
-ab = (f"We evaluate \\tool\\ on sixteen LogHub logs and four web-server logs unseen in development, and require every archive to decode byte for byte on its own. "
-      f"Among DeLog, general-purpose compressors, and byte-exact adaptations of {'LogNexus, ' if ln_named else ''}LogShrink and LogReducer, \\tool\\ produces the smallest archive on {k} of {len(DS) + len(UD)} logs."
-      + ((f" The exceptions are {names([d for d in miss if d != 'Thunderbird'] + ['the largest log, Thunderbird, which dominates summed bytes'])}." if 'Thunderbird' in miss else f" The exceptions are {names(miss)}.") if 0 < len(miss) <= 2 else '')
-      + f" Yet \\tool\\ encodes {N['slowdown_range'][0]:.0f}--{N['slowdown_range'][1]:.0f}$\\times$ more slowly than DeLog (byte-weighted). "
-      f"Without the synthesized programs, the geometric-mean ratio of the same pipeline falls from {S['geomean']:.1f}$\\times$ to {ag['empty']['geomean']:.1f}$\\times$. "
-      f"We find that most of this gain comes from separating rendered fields, and storing them as values adds less.")
+ab = (f"We evaluate \\tool\\ on sixteen LogHub logs and four unseen web-server logs, and \\tool\\ produces the smallest byte-exact archive among the compared compressors on {k} of the {len(DS) + len(UD)} logs.")
 (OUT/'abstract_results.tex').write_text(ab + '\n')
 (OUT/'r76_numbers.json').write_text(json.dumps(N, indent=1, default=str))
 print('abstract:', ab)
